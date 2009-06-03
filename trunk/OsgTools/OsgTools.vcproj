@@ -647,10 +647,6 @@
 					RelativePath=".\Images\Image3d.h"
 					>
 				</File>
-				<File
-					RelativePath=".\Images\Matrix.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Callbacks"

@@ -31,7 +31,6 @@
 #include "Usul/Math/MinMax.h"
 #include "Usul/Network/Names.h"
 #include "Usul/Predicates/CloseFloat.h"
-#include "Usul/Predicates/FileExists.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Format.h"

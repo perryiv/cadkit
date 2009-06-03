@@ -31,7 +31,6 @@
 #include "OsgTools/Triangles/FindLoops.h"
 
 #include "Usul/Interfaces/IRedraw.h"
-#include "Usul/Interfaces/GUI/ICancelButton.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/ISmoothTriangles.h"
@@ -44,9 +43,6 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/File/Path.h"
 #include "Usul/Policies/Update.h"
-#include "Usul/Resources/ProgressBar.h"
-#include "Usul/Resources/StatusBar.h"
-#include "Usul/Resources/CancelButton.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Types/Types.h"
@@ -450,9 +446,6 @@ void TriangleDocument::findLoops ( Usul::Interfaces::IUnknown* caller )
   // Turn off stats updating on the status bar.
   Usul::Interfaces::IRedraw::ResetStatsDisplay resetStats ( redraw.get(), false, true  );
 
-  // Show the cancel button
-  Usul::Interfaces::ICancelButton::ShowHide cancel ( caller );
-
   // Update for finding inner loops
   Usul::Interfaces::IProgressBar::UpdateProgressBar updateProgress ( 0.0, 1.0, caller );
 
@@ -473,9 +466,6 @@ void TriangleDocument::findLoops ( Usul::Interfaces::IUnknown* caller )
 
   // Find the loops that need to be triangulated.
   OsgTools::Triangles::capPolygons ( triangles, _uncapped, adjacent, 3, updateProgress );
-
-  // Interface to flush event queue
-  Usul::Interfaces::IFlushEvents::ValidQueryPtr flush ( caller );
 
   // Functor for updating the status bar
   Usul::Interfaces::IStatusBar::UpdateStatusBar status ( caller );
@@ -527,9 +517,6 @@ void TriangleDocument::findLoops ( Usul::Interfaces::IUnknown* caller )
   {
     for ( Loops::iterator j = _uncapped.begin(); j != _uncapped.end(); ++j )
     {
-      // Make the app responsive.
-      flush->flushEventQueue();
-
       osg::Vec3 v ( j->vertex( 0, me.get() ) );
 
       // Test to see if first point of j is in i.

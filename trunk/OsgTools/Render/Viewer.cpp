@@ -70,8 +70,6 @@
 
 #include "Usul/Registry/Constants.h"
 #include "Usul/Registry/Database.h"
-#include "Usul/Resources/StatusBar.h"
-#include "Usul/Resources/ReportErrors.h"
 #include "Usul/Resources/TextWindow.h"
 #include "Usul/System/Clock.h"
 #include "Usul/Predicates/Tolerance.h"
@@ -472,11 +470,6 @@ void Viewer::render()
 
   // Check for errors.
   Detail::checkForErrors ( 952680810 );
-
-  // Update the status-bar. Do not put this in onPaint() because you want 
-  // it called every time the window is redrawn.
-  if ( this->updateTimes() )
-    this->updateStatusBar();
 }
 
 
@@ -1449,36 +1442,21 @@ void Viewer::changedScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::updateStatusBar()
+std::string Viewer::statusBarText()
 {
-    // Format the text.
-    const unsigned int size ( 512 );
-    char buf[size];
-    double lu ( this->timeLast    ( "update" ) );
-    double lc ( this->timeLast    ( "cull"   ) );
-    double ld ( this->timeLast    ( "draw"   ) );
-    double au ( this->timeAverage ( "update" ) );
-    double ac ( this->timeAverage ( "cull"   ) );
-    double ad ( this->timeAverage ( "draw"   ) );
-    ::sprintf ( buf, "(Last:Avg)   Update: %0.6f:%0.6f   Cull: %0.6f:%0.6f   Draw: %0.6f:%0.6f", 
-                lu, au, lc, ac, ld, ad );
+  // Format the text.
+  const unsigned int size ( 512 );
+  char buf[size];
+  double lu ( this->timeLast    ( "update" ) );
+  double lc ( this->timeLast    ( "cull"   ) );
+  double ld ( this->timeLast    ( "draw"   ) );
+  double au ( this->timeAverage ( "update" ) );
+  double ac ( this->timeAverage ( "cull"   ) );
+  double ad ( this->timeAverage ( "draw"   ) );
+  ::sprintf ( buf, "(Last:Avg)   Update: %0.6f:%0.6f   Cull: %0.6f:%0.6f   Draw: %0.6f:%0.6f", 
+              lu, au, lc, ac, ld, ad );
 
-    // Set the text.
-    this->setStatusBarText ( buf, false );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the status bar text.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::setStatusBarText ( const std::string &text, bool force )
-{
-  Usul::Interfaces::IStatusBar::QueryPtr status ( Usul::Resources::statusBar() );
-  if( status.valid() )
-    status->setStatusBarText( text, force );
+  return std::string ( buf );
 }
 
 
@@ -2241,8 +2219,6 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IFrameDump*>(this);
   case Usul::Interfaces::ITextMatrix::IID:
     return static_cast<Usul::Interfaces::ITextMatrix*>(this);
-  case Usul::Interfaces::IGetDocument::IID:
-    return static_cast<Usul::Interfaces::IGetDocument*>(this);
   case Usul::Interfaces::IGroup::IID:
     return static_cast < Usul::Interfaces::IGroup* > ( this );
   case Usul::Interfaces::IClippingPlanes::IID:
@@ -2259,8 +2235,6 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IRedraw*>(this);
   case Usul::Interfaces::ISpin::IID:
     return static_cast < Usul::Interfaces::ISpin* > ( this );
-  case Usul::Interfaces::IScreenCapture::IID:
-    return static_cast < Usul::Interfaces::IScreenCapture * > ( this );
   case Usul::Interfaces::ISnapShot::IID:
     return static_cast < Usul::Interfaces::ISnapShot* > ( this );
   case Usul::Interfaces::IView::IID:
@@ -4234,46 +4208,6 @@ void Viewer::_setCenterOfRotation()
   ms ( transform.get() );
   
   group->addChild ( transform.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Screen capture at the given view with the given height and width
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Image* Viewer::screenCapture ( const osg::Vec3d& center, double distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const
-{
-  // Get non const pointer to this
-  Viewer *me ( const_cast < Viewer * > ( this ) );
-
-  osg::Matrixd m ( osg::Matrixd::translate(0.0,0.0,distance)*
-                  osg::Matrixd::rotate(rotation)*
-                  osg::Matrixd::translate(center) );
-
-  // Make this context current.
-  if( _context.valid() ) { me->_context->makeCurrent(); }
-
-  return me->_renderer->screenCapture ( m.inverse( m ), width, height );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Screen capture with given height and width
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Image* Viewer::screenCapture ( unsigned int height, unsigned int width ) const
-{
-  // Get non const pointer to this
-  Viewer *me ( const_cast < Viewer * > ( this ) );
-
-  // Make this context current.
-  if( _context.valid() ) { me->_context->makeCurrent(); }
-
-  return me->_renderer->screenCapture ( this->getViewMatrix(), width, height );
 }
 
 

@@ -743,19 +743,11 @@
 				Name="Interfaces"
 				>
 				<File
-					RelativePath=".\Interfaces\GUI\IAboutString.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IActiveDocumentListener.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Interfaces\IActiveViewListener.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\GUI\IAddDockWindow.h"
 					>
 				</File>
 				<File
@@ -771,7 +763,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IAnimateMatrices.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IAnimateNurbsCurve.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IAnimatePath.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IAnimationNotify.h"
 					>
 				</File>
 				<File
@@ -783,7 +787,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IBackground.h"
+					RelativePath=".\Interfaces\IBackgroundColor.h"
 					>
 				</File>
 				<File
@@ -792,6 +796,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IBuildScene.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IBusyState.h"
 					>
 				</File>
 				<File
@@ -827,19 +835,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\GUI\ICancelButton.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\ICanceledStateGet.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Interfaces\ICanClose.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ICanInsert.h"
 					>
 				</File>
 				<File
@@ -852,10 +852,6 @@
 				</File>
 				<File
 					RelativePath="Interfaces\IClassFactory.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ICleanUp.h"
 					>
 				</File>
 				<File
@@ -875,10 +871,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IColorsPerVertex.h"
-					>
-				</File>
-				<File
 					RelativePath="Interfaces\ICommand.h"
 					>
 				</File>
@@ -891,7 +883,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IComputeTriangleNormals.h"
+					RelativePath=".\Interfaces\IContextMenuAdd.h"
 					>
 				</File>
 				<File
@@ -911,7 +903,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IDataChangedListener.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IDataChangedNotify.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IDecimateTriangles.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IDefaultGUIDelegate.h"
 					>
 				</File>
 				<File
@@ -935,11 +939,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IDrtCommands.h"
+					RelativePath=".\Interfaces\IElevationDatabase.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IElevationDatabase.h"
+					RelativePath=".\Interfaces\IEventListener.h"
 					>
 				</File>
 				<File
@@ -955,19 +959,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IFindLoops.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IFlipNormal.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IFlipNormals.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\GUI\IFlushEvents.h"
 					>
 				</File>
 				<File
@@ -1003,19 +995,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IGetOptions.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IGetTriangleNormal.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IGetVertex.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IGetVertexNormal.h"
 					>
 				</File>
 				<File
@@ -1031,11 +1011,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IHandleSeek.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IImageToGrayScale.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Interfaces\IInitNewDocument.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IInputListener.h"
 					>
 				</File>
 				<File
@@ -1080,10 +1068,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\GUI\IMaterialEditor.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IMaterials.h"
 					>
 				</File>
 				<File
@@ -1191,6 +1175,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IProjectionMatrix.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IQtDockWidgetMenu.h"
 					>
 				</File>
@@ -1263,19 +1251,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\ISceneElement.h"
+					RelativePath=".\Interfaces\ISceneGraph.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Interfaces\ISceneIntersect.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IScreenCapture.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ISelectionBox.h"
 					>
 				</File>
 				<File
@@ -1339,11 +1319,23 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\ITimerNotify.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\ITimerService.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\ITimestepAnimation.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Interfaces\ITimeVaryingData.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IToolBarAdd.h"
 					>
 				</File>
 				<File
@@ -1356,10 +1348,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\ITreeNode.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ITriangulate.h"
 					>
 				</File>
 				<File
@@ -1608,10 +1596,6 @@
 				</File>
 				<File
 					RelativePath=".\Predicates\CompareCoordinate.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Predicates\DirExists.h"
 					>
 				</File>
 				<File
@@ -2171,46 +2155,6 @@
 				Name="Resources"
 				>
 				<File
-					RelativePath=".\Resources\CancelButton.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\CancelButton.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\EventQueue.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\EventQueue.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\ProgressBar.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\ProgressBar.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\ReportErrors.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\ReportErrors.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\StatusBar.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\StatusBar.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Resources\TextWindow.cpp"
 					>
 				</File>
@@ -2654,6 +2598,14 @@
 			<Filter
 				Name="Preprocess"
 				>
+				<File
+					RelativePath=".\Preprocess\Deprecated.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Preprocess\Singleton.h"
+					>
+				</File>
 				<File
 					RelativePath=".\Preprocess\UniqueName.h"
 					>

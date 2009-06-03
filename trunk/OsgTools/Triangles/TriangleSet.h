@@ -305,11 +305,11 @@ protected:
 
   void                    _buildDecorations ( const Options &options, osg::Group * ) const;
 
-  void                    _incrementProgress ( bool state );
+  void                    _incrementProgress ( bool state, Usul::Interfaces::IUnknown *caller = 0x0 );
   InsertResult            _insertSharedVertex ( const osg::Vec3f &v, SharedVertex *sv );
 
-  void                    _setProgressBar ( bool state, unsigned int numerator, unsigned int denominator );
-  void                    _setStatusBar ( const std::string &text );
+  void                    _setProgressBar ( bool state, unsigned int numerator, unsigned int denominator, Usul::Interfaces::IUnknown *caller = 0x0  );
+  void                    _setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller = 0x0 );
 
   void                    _updateBlocks();
   void                    _updateDependencies ( Triangle *t );

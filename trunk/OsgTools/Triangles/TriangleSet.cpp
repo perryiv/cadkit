@@ -40,17 +40,12 @@
 
 #include "Usul/Scope/Timer.h"
 
-#include "Usul/Resources/ProgressBar.h"
-#include "Usul/Resources/StatusBar.h"
-#include "Usul/Resources/EventQueue.h"
 #include "Usul/Resources/TextWindow.h"
 
 #include "Usul/Documents/Manager.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
-#include "Usul/Interfaces/GUI/IFlushEvents.h"
-#include "Usul/Interfaces/GUI/ICancelButton.h"
 #include "Usul/Interfaces/IRedraw.h"
 
 #include "osgUtil/IntersectVisitor"
@@ -655,9 +650,9 @@ TriangleSet::InsertResult TriangleSet::_insertSharedVertex ( const osg::Vec3f &v
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::_setStatusBar ( const std::string &text )
+void TriangleSet::_setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller )
 {
-  Usul::Interfaces::IStatusBar::QueryPtr status ( Usul::Resources::statusBar() );
+  Usul::Interfaces::IStatusBar::QueryPtr status ( caller );
   if ( status.valid() )
     status->setStatusBarText ( text, true );
 }
@@ -669,13 +664,13 @@ void TriangleSet::_setStatusBar ( const std::string &text )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::_setProgressBar ( bool state, unsigned int numerator, unsigned int denominator )
+void TriangleSet::_setProgressBar ( bool state, unsigned int numerator, unsigned int denominator, Usul::Interfaces::IUnknown* caller )
 {
   // If we should...
   if ( state )
   {
     // Report progress.
-    Usul::Interfaces::IProgressBar::QueryPtr progress ( Usul::Resources::progressBar() );
+    Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
     if ( progress.valid() )
     {
       float n ( static_cast < float > ( numerator ) );
@@ -683,11 +678,6 @@ void TriangleSet::_setProgressBar ( bool state, unsigned int numerator, unsigned
       float fraction ( n / d );
       progress->updateProgressBar ( static_cast < unsigned int > ( fraction * 100 ) );
     }
-
-    // Give user opportunity to cancel.
-    Usul::Interfaces::IFlushEvents::QueryPtr flush ( Usul::Resources::flushEvents() );
-    if ( flush.valid() )
-      flush->flushEventQueue();
   }
 }
 
@@ -904,7 +894,7 @@ void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnk
 
   // Tell all shared vertices to remove their triangles.
   {
-    this->_setStatusBar ( "Removing Triangles from Shared Vertices..." );
+    this->_setStatusBar ( "Removing Triangles from Shared Vertices...", caller );
     for ( SharedVertices::iterator i = _shared.begin(); i != _shared.end(); ++i )
     {
       // Save the current number of triangles and reserve them again.
@@ -913,13 +903,13 @@ void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnk
       sv->removeAllTriangles();
       sv->reserve ( num );
       USUL_ASSERT ( num + 1 == sv->refCount() );
-      this->_incrementProgress ( update() );
+      this->_incrementProgress ( update(), caller );
     }
   }
 
   // Build new triangles and per-triangle normal vectors.
   {
-    this->_setStatusBar ( "Adding new Triangles..." );
+    this->_setStatusBar ( "Adding new Triangles...", caller );
     TriangleVector triangles;
     NormalsPtr normalsT ( new osg::Vec3Array );
     const unsigned int numKeepers ( keepers.size() );
@@ -941,7 +931,7 @@ void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnk
       t->vertex2()->addTriangle ( t.get() );
 
       // Feedback.
-      this->_incrementProgress ( update() );
+      this->_incrementProgress ( update(), caller );
     }
     _triangles.swap ( triangles ); // Important!
     _normalsT = normalsT.get();
@@ -951,7 +941,7 @@ void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnk
 
   // Purge all shared-vertices that do not have any triangles.
   {
-    this->_setStatusBar ( "Purging Shared Vertices..." );
+    this->_setStatusBar ( "Purging Shared Vertices...", caller );
     CloseFloat closeFloatPred;
     LessVector lessVectorPred ( closeFloatPred );
     SharedVertices shared ( lessVectorPred );
@@ -959,7 +949,7 @@ void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnk
     {
       if ( i->second->numTriangles() > 0 )
         shared.insert ( shared.end(), SharedVertices::value_type ( i->first, i->second ) );
-      this->_incrementProgress ( update() );
+      this->_incrementProgress ( update(), caller );
     }
     _shared.swap ( shared ); // Important!
     USUL_ASSERT ( _shared.size() < shared.size() );
@@ -969,7 +959,7 @@ void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnk
   // Update the vertex pool, the per-vertex normals and colors, the shared-vertices'
   // indices, and the bounding box.
   {
-    this->_setStatusBar ( "Updating Vertex Pool and Per-Vertex Normal Vectors..." );
+    this->_setStatusBar ( "Updating Vertex Pool and Per-Vertex Normal Vectors...", caller );
     _vertices->clear();
     _vertices->reserve ( _shared.size() );
     ColorsPtr colors ( new osg::Vec4Array );
@@ -997,7 +987,7 @@ void TriangleSet::keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnk
 
       // Expand the bounding box and display progress.
       this->updateBounds ( v );
-      this->_incrementProgress ( update() );
+      this->_incrementProgress ( update(), caller );
     }
     _normalsV = normalsV.get(); // Important!
 
@@ -1501,7 +1491,7 @@ void TriangleSet::_buildDecorations ( const Options &options, osg::Group *root )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node *TriangleSet::buildScene ( const Options &options, Unknown * )
+osg::Node *TriangleSet::buildScene ( const Options &options, Unknown *caller )
 {
   USUL_TRACE_SCOPE;
   // Clear the root.
@@ -1512,7 +1502,7 @@ osg::Node *TriangleSet::buildScene ( const Options &options, Unknown * )
     return _root.get();
 
   // Show the progress bar.
-  Usul::Interfaces::IProgressBar::ShowHide showHide ( Usul::Resources::progressBar() );
+  Usul::Interfaces::IProgressBar::ShowHide showHide ( caller );
 
   // Set the progress counter and max.
   _progress.first = 0;
@@ -1522,7 +1512,7 @@ osg::Node *TriangleSet::buildScene ( const Options &options, Unknown * )
   _progress.second = numTriangles + numColors + numNormals;
 
   // Start at zero.
-  this->_setProgressBar ( true, 0, 100 );
+  this->_setProgressBar ( true, 0, 100, caller );
 
   // Make sure we have per-vertex normal vectors if we need them.
   this->_updateNormalsV();
@@ -1784,7 +1774,7 @@ void TriangleSet::purge()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleSet::_incrementProgress ( bool state )
+void TriangleSet::_incrementProgress ( bool state, Usul::Interfaces::IUnknown *caller )
 {
   unsigned int &numerator   ( _progress.first  );
   unsigned int &denominator ( _progress.second );
@@ -1866,7 +1856,7 @@ unsigned int TriangleSet::numberSubDivisions( unsigned int numberTriangles )
 void TriangleSet::createSubsets ( const Subsets& subsets, Unknown *caller )
 {
   // Set the status bar.
-  this->_setStatusBar( "Updating blocks" );
+  this->_setStatusBar( "Updating blocks", caller );
 
   // Get the number divisions.
   unsigned int divisions ( this->numberSubDivisions( this->numTriangles() ) );
@@ -1881,7 +1871,7 @@ void TriangleSet::createSubsets ( const Subsets& subsets, Unknown *caller )
   for( Subsets::const_iterator subsetsIter = subsets.begin(); subsetsIter != subsets.end(); ++subsetsIter )
   {
     // Progress
-    this->_setProgressBar( true, subsetsIter - subsets.begin(), subsets.size() );
+    this->_setProgressBar( true, subsetsIter - subsets.begin(), subsets.size(), caller );
 
     OsgTools::Triangles::Blocks::ValidRefPtr blocks ( new OsgTools::Triangles::Blocks( this->getBoundingBox(), divisions, subsetsIter->size() ) );
 
@@ -2011,8 +2001,8 @@ namespace Detail
     Update ( TriangleSet* triangles ) :
     _triangles    ( triangles ),
     _updatePolicy ( 500 ),
-    _progressBar  ( 0.0, 1.0, Usul::Resources::progressBar() ),
-    _statusBar    ( Usul::Resources::statusBar() )
+    _progressBar  ( 0.0, 1.0, static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ) ),
+    _statusBar    ( static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ) )
     {
     }
 
@@ -2111,14 +2101,8 @@ void TriangleSet::groupTriangles ( Usul::Interfaces::IUnknown *caller )
   // Turn off stats updating on the status bar.
   Usul::Interfaces::IRedraw::ResetStatsDisplay resetStats ( redraw.get(), false, true  );
   
-  // Show the cancel button
-  Usul::Interfaces::ICancelButton::ShowHide cancel ( caller );
-  
   Usul::Interfaces::IProgressBar::ShowHide show ( caller );
   Usul::Interfaces::IProgressBar::ValidQueryPtr progress ( caller );
-  
-  // Interface to flush event queue
-  Usul::Interfaces::IFlushEvents::ValidQueryPtr flush ( caller );
   
   // Functor for updating the status bar
   Usul::Interfaces::IStatusBar::UpdateStatusBar status ( caller );
@@ -2143,9 +2127,6 @@ void TriangleSet::groupTriangles ( Usul::Interfaces::IUnknown *caller )
   // Find all connected groups.
   while ( seed != 0xFFFFFFFF )
   {
-    // Make the app responsive.
-    flush->flushEventQueue();
-
     // The connected triangles.
     Connected connected;
 

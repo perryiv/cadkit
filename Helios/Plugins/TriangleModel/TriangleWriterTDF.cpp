@@ -20,7 +20,6 @@
 
 #include "Usul/File/Temp.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
-#include "Usul/Resources/ProgressBar.h"
 #include "Usul/Policies/Update.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/IO/BinaryWriter.h"
@@ -79,7 +78,7 @@ void TriangleWriterTDF::operator()()
 
   // Progress.
   Usul::Policies::TimeBased update ( 1000 );
-  Usul::Interfaces::IProgressBar::ShowHide scope ( Usul::Resources::progressBar() );
+  Usul::Interfaces::IProgressBar::ShowHide scope ( static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ) );
 
   // Make a temporary file
   Usul::File::Temp file ( Usul::File::Temp::BINARY );

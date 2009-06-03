@@ -20,7 +20,6 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IUpdateListener.h"
-#include "Usul/Interfaces/IJobFinishedListener.h"
 #include "Usul/Types/Types.h"
 
 #include "XmlTree/Document.h"
@@ -38,7 +37,6 @@ namespace Usul { namespace Jobs { class Manager; } }
 class OOCPointDocument : public Usul::Documents::Document,
                       public Usul::Interfaces::IBuildScene,
                       public Usul::Interfaces::IMenuAdd,
-                      public Usul::Interfaces::IJobFinishedListener,
                       public Usul::Interfaces::IUpdateListener
 {
 public:

@@ -23,15 +23,10 @@
 #include "Usul/Interfaces/ISaveFileDialog.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
-#include "Usul/Interfaces/GUI/IFlushEvents.h"
-#include "Usul/Interfaces/GUI/ICancelButton.h"
 #include "Usul/Interfaces/GUI/IQuestion.h"
 #include "Usul/Interfaces/GUI/IUpdateGUI.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Registry/Database.h"
-#include "Usul/Resources/ProgressBar.h"
-#include "Usul/Resources/EventQueue.h"
-#include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/TextWindow.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
@@ -212,8 +207,6 @@ Usul::Interfaces::IUnknown *Document::queryInterface ( unsigned long iid )
     return static_cast< Usul::Interfaces::IDocument*> ( this );
   case Usul::Interfaces::IRead::IID:
     return static_cast< Usul::Interfaces::IRead* > ( this );
-  case Usul::Interfaces::ICanInsert::IID:
-    return static_cast < Usul::Interfaces::ICanInsert* > ( this );
   case Usul::Interfaces::ICanClose::IID:
     return static_cast < Usul::Interfaces::ICanClose* > ( this );
   case Usul::Interfaces::IModifiedSubject::IID:
@@ -396,10 +389,9 @@ void Document::insert ( Unknown *caller )
 
   // Show/hide the progress bar and cancel button.
   Usul::Interfaces::IProgressBar::ShowHide shp  ( caller );
-  Usul::Interfaces::ICancelButton::ShowHide shc ( caller );
 
   // Progress.
-  Usul::Interfaces::IProgressBar::UpdateProgressBar progress ( 0, 1, Usul::Resources::progressBar() );
+  Usul::Interfaces::IProgressBar::UpdateProgressBar progress ( 0, 1, caller );
 
   // Loop through the files.
   unsigned int count ( 0 );
@@ -410,9 +402,6 @@ void Document::insert ( Unknown *caller )
 
     // Show overall progress.
     progress ( ++count, files.size() );
-
-    // Flush events. This lets the user cancel.
-    this->flushEvents();
   }
 }
 
@@ -549,21 +538,6 @@ bool Document::closeWindows ( Usul::Interfaces::IUnknown *caller, const Window* 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convenience function to flush events.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Document::flushEvents()
-{
-  // Give user opportunity to cancel.
-  Usul::Interfaces::IFlushEvents::QueryPtr flush ( Usul::Resources::flushEvents() );
-  if ( flush.valid() )
-    flush->flushEventQueue();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Convenience function to show progress and flush events.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -574,14 +548,11 @@ void Document::setProgressBar ( bool state, float fraction, Usul::Interfaces::IU
   if ( state )
   {
     // Report progress.
-    Usul::Interfaces::IProgressBar::QueryPtr progress ( ( 0x0 == caller ) ? Usul::Resources::progressBar() : caller );
+    Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
     if ( progress.valid() )
     {
       progress->updateProgressBar ( static_cast < unsigned int > ( fraction * 100 ) );
     }
-
-    // Give user opportunity to cancel.
-    this->flushEvents();
   }
 }
 
@@ -625,7 +596,7 @@ void Document::setProgressBar ( bool state, std::istream &in, unsigned int fileS
 
 void Document::setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller )
 {
-  Usul::Interfaces::IStatusBar::QueryPtr status ( ( 0x0 == caller ) ? Usul::Resources::statusBar() : caller );
+  Usul::Interfaces::IStatusBar::QueryPtr status ( caller );
   if ( status.valid() )
     status->setStatusBarText ( text, true );
 }
@@ -720,7 +691,7 @@ void Document::closing ( Window *window )
 
     // Clear the data.
     std::cout << "Closing document: " << this->fileName() << " ... " << Usul::Resources::TextWindow::flush;
-    this->clear ( Usul::Resources::progressBar() );
+    this->clear ( 0x0 );
     std::cout << "done" << Usul::Resources::TextWindow::endl;
   }
 }

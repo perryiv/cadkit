@@ -11,7 +11,6 @@
 
 #include "Usul/Documents/Manager.h"
 
-#include "Usul/Interfaces/IGetDocument.h"
 #include "Usul/Interfaces/IAddTriangle.h"
 #include "Usul/Interfaces/IGetVertex.h"
 #include "Usul/Interfaces/ITriangulateLoop.h"

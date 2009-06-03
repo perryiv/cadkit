@@ -33,7 +33,6 @@
 #include "Usul/Interfaces/IExportModel.h"
 #include "Usul/Interfaces/IFrameDump.h"
 #include "Usul/Interfaces/IFrameStamp.h"
-#include "Usul/Interfaces/IGetDocument.h"
 #include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/IIntersectListener.h"
@@ -49,7 +48,6 @@
 #include "Usul/Interfaces/IRenderInfoOSG.h"
 #include "Usul/Interfaces/IRenderListener.h"
 #include "Usul/Interfaces/IRenderNotify.h"
-#include "Usul/Interfaces/IScreenCapture.h"
 #include "Usul/Interfaces/ISnapShot.h"
 #include "Usul/Interfaces/ISpin.h"
 #include "Usul/Interfaces/IShadeModel.h"
@@ -113,7 +111,6 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IOpenSceneGraph,
                                 public Usul::Interfaces::IFrameDump,
                                 public Usul::Interfaces::ITextMatrix,
-                                public Usul::Interfaces::IGetDocument,
                                 public Usul::Interfaces::IGroup,
                                 public Usul::Interfaces::IClippingPlanes,
                                 public Usul::Interfaces::IGetBoundingBox,
@@ -122,7 +119,6 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::ISceneIntersect,
                                 public Usul::Interfaces::IRedraw,
                                 public Usul::Interfaces::ISpin,
-                                public Usul::Interfaces::IScreenCapture,
                                 public Usul::Interfaces::ISnapShot,
                                 public Usul::Interfaces::IView,
                                 public Usul::Interfaces::IRenderNotify,
@@ -457,8 +453,8 @@ public:
   // Update the scene.
   void                  update();
 
-  // Update the status-bar.
-  void                  updateStatusBar();
+  // Get the text for the status bar.
+  std::string           statusBarText();
 
   // Set/get the flags that says to update the recorded times.
   void                  updateTimes ( bool state );
@@ -679,10 +675,6 @@ protected:
 
   /// Usul::Interfaces::IExportScene
   virtual Filters               filtersWriteScene() const;
-
-  /// Usul::Interfaces::IScreenCapture
-  virtual osg::Image*           screenCapture ( const osg::Vec3d& center, double distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const;
-  virtual osg::Image*           screenCapture ( unsigned int height, unsigned int width ) const;
 
   /// Usul::Interfaces::ISnapShot
   virtual void                  takePicture ( const std::string& filename, float frameSizeScale, unsigned int numSamples );

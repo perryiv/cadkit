@@ -73,10 +73,6 @@ void Progress::Execute ( vtkObject *caller, unsigned long eventId, void *data )
 
     if ( _progress.valid() )
       _progress->updateProgressBar ( *progress * 100 );
-
-    Usul::Interfaces::IFlushEvents::QueryPtr flush ( Usul::Resources::flushEvents() );
-    if ( flush.valid() )
-      flush->flushEventQueue();
   }
 
   else if ( eventId == vtkCommand::EndEvent )

@@ -12,6 +12,7 @@
 
 #include "OsgTools/Export.h"
 
+namespace Usul { namespace Interfaces { struct IUnknown; } }
 namespace osg { template < class T > class ref_ptr; class Image; }
 
 #include <vector>
@@ -22,7 +23,7 @@ namespace Images {
   typedef osg::ref_ptr< osg::Image > ImagePtr;
   typedef std::vector< ImagePtr >    ImageList;
 
-  OSG_TOOLS_EXPORT osg::Image* image3d ( ImageList&, bool ensureProperTextureSize = false, double updateTime = 1000  );
+  OSG_TOOLS_EXPORT osg::Image* image3d ( ImageList&, bool ensureProperTextureSize = false, double updateTime = 1000, Usul::Interfaces::IUnknown *caller = 0x0  );
 }
 }
 

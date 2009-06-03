@@ -20,7 +20,6 @@
 #include "OsgTools/IO/STLWrite.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
-#include "Usul/Resources/ProgressBar.h"
 #include "Usul/Policies/Update.h"
 
 #include <fstream>
@@ -63,7 +62,7 @@ namespace Detail
   template < class WriterType_ > void write ( TriangleDocument &document, WriterType_ &writer, Usul::Interfaces::IUnknown *caller )
   {
     Usul::Policies::TimeBased update ( 1000 );
-    Usul::Interfaces::IProgressBar::ValidQueryPtr progressBar ( Usul::Resources::progressBar() );
+    Usul::Interfaces::IProgressBar::QueryPtr progressBar ( caller );
     Usul::Interfaces::IProgressBar::ShowHide scope ( progressBar.get() );
 
     // Loop through the triangles.

@@ -28,8 +28,7 @@ namespace Base {
 
 struct USUL_EXPORT Typed
 {
-  static const std::type_info &     classTypeId();
-  virtual const std::type_info &    typeId() const = 0;
+  const std::type_info &    typeId() const;
 
 protected:
 
@@ -48,29 +47,9 @@ protected:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define USUL_DECLARE_TYPE_ID(class_name) \
-  static const std::type_info &classTypeId(); \
-  virtual const std::type_info &typeId() const
-
-#define USUL_IMPLEMENT_TYPE_ID(class_name) \
-  const std::type_info &class_name::classTypeId() \
-  { \
-    return typeid ( class_name ); \
-  } \
-  const std::type_info &class_name::typeId() const \
-  { \
-    return class_name::classTypeId(); \
-  }
-
-#define USUL_IMPLEMENT_INLINE_TYPE_ID(class_name) \
-  static const std::type_info &classTypeId() \
-  { \
-    return typeid ( class_name ); \
-  } \
-  virtual const std::type_info &typeId() const \
-  { \
-    return class_name::classTypeId(); \
-  }
+#define USUL_DECLARE_TYPE_ID(class_name)
+#define USUL_IMPLEMENT_TYPE_ID(class_name)
+#define USUL_IMPLEMENT_INLINE_TYPE_ID(class_name)
 
 
 #endif // _USUL_TYPED_BASE_CLASS_H_

@@ -20,3 +20,8 @@ using namespace Usul::Base;
 
 
 USUL_IMPLEMENT_TYPE_ID ( Typed );
+
+const std::type_info & Typed::typeId() const
+{
+  return typeid ( *this );
+}

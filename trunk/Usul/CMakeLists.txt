@@ -123,7 +123,6 @@ SET ( HEADERS
 ./CommandLine/Options.h
 ./CommandLine/Parser.h
 ./Commands/Command.h
-./Commands/GenericCheckCommand.h
 ./Commands/GenericCommand.h
 ./Commands/History.h
 ./Components/Call.h
@@ -650,7 +649,7 @@ ELSE(WIN32)
 ENDIF(WIN32)
 
 # Link the Library
-TARGET_LINK_LIBRARIES( ${TARGET_NAME} ${SYSTEM_LIBRARIES} ${Boost_THREAD_LIBRARY} )
+TARGET_LINK_LIBRARIES( ${TARGET_NAME} ${SYSTEM_LIBRARIES} ${Boost_THREAD_LIBRARY} ${Boost_DATE_TIME_LIBRARY} )
 
 # Create the config file.
 CONFIGURE_FILE ( ${CMAKE_CURRENT_SOURCE_DIR}/Config/Config.h.in.cmake ${CMAKE_CURRENT_SOURCE_DIR}/Config/Config.h )

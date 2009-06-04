@@ -2366,50 +2366,6 @@
 				Name="Resources"
 				>
 				<File
-					RelativePath=".\Resources\CancelButton.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\CancelButton.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\Constants.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\EventQueue.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\EventQueue.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\ProgressBar.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\ProgressBar.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\ReportErrors.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\ReportErrors.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\StatusBar.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\StatusBar.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Resources\TextWindow.cpp"
 					>
 				</File>
@@ -2647,10 +2603,6 @@
 				</File>
 				<File
 					RelativePath=".\Commands\Command.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Commands\GenericCheckCommand.h"
 					>
 				</File>
 				<File

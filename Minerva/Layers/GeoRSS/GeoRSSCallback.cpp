@@ -56,7 +56,7 @@ GeoRSSCallback::~GeoRSSCallback()
 
 namespace Helper
 {
-  OsgTools::Widgets::Text* makeText ( const std::string& s, bool wrap, bool autoSize )
+  inline OsgTools::Widgets::Text* makeText ( const std::string& s, bool wrap, bool autoSize )
   {
     OsgTools::Widgets::Text::RefPtr text ( new OsgTools::Widgets::Text );
     text->text ( s );

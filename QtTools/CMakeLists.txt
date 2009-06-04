@@ -36,7 +36,6 @@ SET (SOURCES
   Move.cpp
   PropertyBrowser.cpp
   Question.cpp
-  SettingsGroupScope.cpp
   Show.cpp
   StringsView.cpp
   TreeControl.cpp

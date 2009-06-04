@@ -417,14 +417,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\SettingsGroupScope.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\SettingsGroupScope.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Show.cpp"
 					>
 				</File>

@@ -10,6 +10,8 @@ PROJECT(MinervaKml)
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
+ADD_DEFINITIONS("-D_COMPILING_MINERVA_KML")
+
 # ------------ Find OpenSceneGraph Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 

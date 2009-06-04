@@ -200,7 +200,8 @@ void InstanceManager::add ( const Referenced *object )
   USUL_ASSERT ( 0x0 != object );
   if ( 0x0 != object )
   {
-    ObjectInfo info ( _count++, object->typeId().name() );
+    const char* name ( typeid ( *object ).name() );
+    ObjectInfo info ( _count++, 0x0 != name ? name : std::string() );
     ObjectMap::value_type value ( object, info );
     const Result result ( _objects.insert ( value ) );
     USUL_ASSERT ( true == result.second );
@@ -244,7 +245,8 @@ void InstanceManager::update ( const Referenced *object )
     }
     else
     {
-      i->second.second = object->typeId().name();
+      const char* name ( typeid ( *object ).name() );
+      i->second.second = ( 0x0 != name ? name : std::string() );
     }
   }
 }

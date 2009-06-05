@@ -16,6 +16,7 @@
 #ifndef __DECIMATETRIANGLESCOMPONENT_H__
 #define __DECIMATETRIANGLESCOMPONENT_H__
 
+namespace Usul { namespace Interfaces { struct IUnknown; } }
 namespace OsgTools { namespace Triangles { class TriangleSet; } }
 namespace osg { class Array; class DrawElementsUInt; }
 
@@ -28,9 +29,10 @@ public:
 	~DecimateTriangles();
 
   void operator() ( osg::Array *inVerts, osg::DrawElementsUInt *inIndices,
-                    osg::Array *outNormalsT, osg::Array *outNormalsV, float reduction );
+                    osg::Array *outNormalsT, osg::Array *outNormalsV, float reduction,
+                    Usul::Interfaces::IUnknown* caller = 0x0 );
 
-  void operator() ( OsgTools::Triangles::TriangleSet*, float reduction );
+  void operator() ( OsgTools::Triangles::TriangleSet*, float reduction, Usul::Interfaces::IUnknown* caller = 0x0 );
 };
 
 #endif /* __DECIMATETRIANGLESCOMPONENT_H__  */		

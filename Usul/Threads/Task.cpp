@@ -14,9 +14,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Threads/Task.h"
-#include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Errors/Stack.h"
-#include "Usul/Functions/SafeCall.h"
 #include "Usul/Trace/Trace.h"
 
 using namespace Usul::Threads;

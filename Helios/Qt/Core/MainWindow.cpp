@@ -52,7 +52,6 @@
 #include "Usul/Config/Config.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/Documents/Manager.h"
-#include "Usul/Errors/Stack.h"
 #include "Usul/Exceptions/Exception.h"
 #include "Usul/Factory/ObjectFactory.h"
 #include "Usul/File/Contents.h"

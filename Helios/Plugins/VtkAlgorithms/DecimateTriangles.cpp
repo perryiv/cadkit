@@ -20,7 +20,6 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Resources/ProgressBar.h"
 #include "Usul/Scope/Timer.h"
 
 #include "OsgTools/Triangles/TriangleSet.h"
@@ -60,7 +59,7 @@ DecimateTriangles::~DecimateTriangles()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DecimateTriangles::operator() ( OsgTools::Triangles::TriangleSet *triangleSet, float reduction )
+void DecimateTriangles::operator() ( OsgTools::Triangles::TriangleSet *triangleSet, float reduction, Usul::Interfaces::IUnknown* caller )
 {
   vtkSmartPointer < vtkPolyData > data ( vtkPolyData::New() );
 
@@ -79,7 +78,7 @@ void DecimateTriangles::operator() ( OsgTools::Triangles::TriangleSet *triangleS
     decimate->SetTargetReduction( reduction );
 
     vtkSmartPointer < VTKTools::Progress > progress ( new VTKTools::Progress );
-    progress->progressBar ( Usul::Resources::progressBar() );
+    progress->progressBar ( Usul::Interfaces::IProgressBar::QueryPtr ( caller ) );
 
     decimate->AddObserver( vtkCommand::StartEvent, progress.GetPointer() );
     decimate->AddObserver( vtkCommand::ProgressEvent, progress.GetPointer() );
@@ -107,7 +106,8 @@ void DecimateTriangles::operator() ( OsgTools::Triangles::TriangleSet *triangleS
 
 
 void DecimateTriangles::operator() ( osg::Array *inVerts_, osg::DrawElementsUInt *indices,
-                                     osg::Array *nT, osg::Array *nV, float reduction )
+                                     osg::Array *nT, osg::Array *nV, float reduction,
+                                     Usul::Interfaces::IUnknown* caller )
 {
   osg::ref_ptr < osg::Vec3Array > inVerts ( dynamic_cast < osg::Vec3Array * > ( inVerts_ ) );
 
@@ -121,7 +121,7 @@ void DecimateTriangles::operator() ( osg::Array *inVerts_, osg::DrawElementsUInt
   decimate->SetTargetReduction( reduction );
 
   vtkSmartPointer < VTKTools::Progress > progress ( new VTKTools::Progress );
-  progress->progressBar ( Usul::Resources::progressBar() );
+  progress->progressBar ( Usul::Interfaces::IProgressBar::QueryPtr ( caller ) );
 
   decimate->AddObserver( vtkCommand::StartEvent, progress.GetPointer() );
   decimate->AddObserver( vtkCommand::ProgressEvent, progress.GetPointer() );

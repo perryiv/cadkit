@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="test: CadKit ToFVUNS"
-	ProjectGUID="{B662BF45-C342-4d67-A008-509912498CC6}"
+	ProjectGUID="{B662BF45-C342-4D67-A008-509912498CC6}"
 	RootNamespace="CadKit"
 	>
 	<Platforms>

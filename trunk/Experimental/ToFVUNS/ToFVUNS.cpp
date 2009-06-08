@@ -629,7 +629,7 @@ void ToFVUNS::_writeGridFile( const std::string &name )
       for( unsigned int j = 0; j < yGridSize; ++j )
       {
         // yvalue calculation X(I)=REAL(I-1)/REAL(NX-2)*2.*PI
-      //float yGridValue = ( static_cast< float > ( j ) / static_cast< float > ( yGridSize - 1 ) ) * 2 * static_cast< float > ( Usul::Math::PIE );
+       float yGridValue = ( static_cast< float > ( j ) / static_cast< float > ( yGridSize - 1 ) ) * 2 * static_cast< float > ( Usul::Math::PIE );
         
         // resize the index grid at jk
         _indexGrid.at( k ).at( j ).resize( xGridSize );
@@ -639,13 +639,16 @@ void ToFVUNS::_writeGridFile( const std::string &name )
           //float xGridValue = static_cast< Float32 > ( _grid.at( 0 ).at( i ) );
 
           // Set the final grid values for this iteration
-          //xValues.at( index ) = xGridValue * static_cast< Float32 > ( cos( static_cast< double > ( yGridValue ) ) );
-          //yValues.at( index ) = xGridValue * static_cast< Float32 > ( sin( static_cast< double > ( yGridValue ) ) );
+          //xValues.at( index ) = _grid.at( 0 ).at( i ) * static_cast< Float32 > ( cos( static_cast< double > ( _grid.at( 2 ).at( j ) ) ) );
+          //yValues.at( index ) = _grid.at( 0 ).at( i ) * static_cast< Float32 > ( sin( static_cast< double > ( _grid.at( 2 ).at( j ) ) ) );
           //zValues.at( index ) = static_cast< Float32 > ( _grid.at( 1 ).at( k ) );
-
-          xValues.at( index ) = static_cast< Float32 > ( _grid.at( 0 ).at( i ) );
-          yValues.at( index ) = static_cast< Float32 > ( _grid.at( 2 ).at( j ) );
+          xValues.at( index ) = _grid.at( 0 ).at( i ) * static_cast< Float32 > ( cos( static_cast< double > ( yGridValue ) ) );
+          yValues.at( index ) = _grid.at( 0 ).at( i ) * static_cast< Float32 > ( sin( static_cast< double > ( yGridValue ) ) );
           zValues.at( index ) = static_cast< Float32 > ( _grid.at( 1 ).at( k ) );
+
+         /* xValues.at( index ) = static_cast< Float32 > ( _grid.at( 0 ).at( i ) );
+          yValues.at( index ) = static_cast< Float32 > ( _grid.at( 2 ).at( j ) );
+          zValues.at( index ) = static_cast< Float32 > ( _grid.at( 1 ).at( k ) );*/
 
           // push back the index counter
           _indexGrid.at( k ).at( j ).at( i ) = index + 1;

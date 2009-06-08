@@ -56,7 +56,6 @@ SET ( HEADERS
 	./Group.h
 	./HasOption.h
 	./Images/DownSample.h
-	./Images/Image3d.h
 	./Index.h
 	./IO/GLFeedback.h
 	./IO/Reader.h
@@ -133,11 +132,6 @@ SET ( HEADERS
 	./Utilities/TranslateGeometry.h
 	./Utilities/Transparency.h
 	./Visitor.h
-	./Volume/GPURayCasting.h
-	./Volume/PlanarProxyGeometry.h
-	./Volume/Texture3DVolume.h
-	./Volume/TransferFunction.h
-	./Volume/TransferFunction1D.h
 	./Widgets/Axes.h
 	./Widgets/ClipPlane.h
 	./Widgets/GradientIcon.h
@@ -173,7 +167,6 @@ SET (SOURCES
   Grid.cpp
   Group.cpp
   Images/DownSample.cpp
-  Images/Image3d.cpp
   IO/GLFeedback.cpp
   IO/Reader.cpp
   IO/STLWriter.cpp
@@ -226,11 +219,6 @@ SET (SOURCES
   Widgets/Legend.cpp
   Widgets/LegendObject.cpp
   Widgets/Text.cpp
-  Volume/GPURayCasting.cpp
-  Volume/PlanarProxyGeometry.cpp
-  Volume/Texture3DVolume.cpp
-  Volume/TransferFunction.cpp
-  Volume/TransferFunction1D.cpp
 )
 
 #########################################################

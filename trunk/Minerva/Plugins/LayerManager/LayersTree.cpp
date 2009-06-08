@@ -28,7 +28,6 @@
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/ILayerAddGUIQt.h"
@@ -45,6 +44,8 @@
 #include "QtGui/QMenu"
 #include "QtGui/QMessageBox"
 #include "QtGui/QSlider"
+
+#include "boost/bind.hpp"
 
 using namespace Minerva;
 

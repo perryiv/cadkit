@@ -123,7 +123,6 @@ SET ( HEADERS
 ./CommandLine/Options.h
 ./CommandLine/Parser.h
 ./Commands/Command.h
-./Commands/GenericCommand.h
 ./Commands/History.h
 ./Components/Call.h
 ./Components/Create.h

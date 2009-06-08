@@ -26,7 +26,6 @@
 #include "Helios/Plugins/ModelPresentation/ModelPresentation/GenericIndexToggle.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Commands/GenericCommand.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
 

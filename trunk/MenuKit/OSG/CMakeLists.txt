@@ -6,24 +6,6 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 INCLUDE ( ${CMakeModules}/FindOSG.cmake)
 
-# setup output Directories
-SET (LIBRARY_OUTPUT_PATH
-	${CADKIT_BIN_DIR}
-	CACHE PATH
-	"Single Directory for all Libraries"
-)
-
-# setup the Executable output Directory
-SET (EXECUTABLE_OUTPUT_PATH
-	${CADKIT_BIN_DIR}
-	CACHE PATH
-	"Single Directory for all Executables."
-)
-
-
-# Find needed libraries.
-INCLUDE(${CMakeModules}/FindOSG.cmake)
-
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 ADD_DEFINITIONS("-D_COMPILING_MENUKIT_OSG")
@@ -33,7 +15,7 @@ ADD_DEFINITIONS("-D_COMPILING_MENUKIT_OSG")
 INCLUDE_DIRECTORIES( 
 		     ${CADKIT_INC_DIR}
 		     ${OSG_INC_DIR} 
-		     ${OT_INC_DIR} 
+		     ${Boost_INCLUDE_DIR} 
 		     )
 
 

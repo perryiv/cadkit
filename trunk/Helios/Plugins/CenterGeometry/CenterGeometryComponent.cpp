@@ -17,7 +17,6 @@
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Components/Factory.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Interfaces/IModelsScene.h"

@@ -13,7 +13,6 @@
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Convert/Vector4.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"

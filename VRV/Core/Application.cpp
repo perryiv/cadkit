@@ -24,8 +24,6 @@
 #include "Usul/App/Application.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Commands/Command.h"
-#include "Usul/Commands/GenericCommand.h"
-#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/CommandLine/Parser.h"
 #include "Usul/CommandLine/Options.h"
@@ -3380,7 +3378,7 @@ void Application::timeBased ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Application::timeBased (  ) const
+bool Application::timeBased() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
@@ -3539,16 +3537,6 @@ void Application::_initMenu()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Help macros to shorten lines below.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define VRV_MAKE_COMMAND_ARG0(text,func_name,arg0)\
-  USUL_MAKE_COMMAND_ARG0(text,"",this,&Application::func_name,arg0)
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Initialize the file menu.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -3563,11 +3551,11 @@ void Application::_initFileMenu ( MenuKit::Menu* menu )
   MenuKit::Menu::RefPtr exportMenu ( new MenuKit::Menu ( "Export", MenuKit::Menu::VERTICAL ) );
   menu->append ( exportMenu.get() );
 
-  exportMenu->append ( new Button ( Usul::Commands::genericCommand ( "Image", boost::bind ( &Application::exportNextFrame, this ) ) ) );
-  exportMenu->append ( new Button ( Usul::Commands::genericCommand ( "Models ASCII", boost::bind ( &Application::exportWorld, this ) ) ) );
-  exportMenu->append ( new Button ( Usul::Commands::genericCommand ( "Models Binary", boost::bind ( &Application::exportWorldBinary, this ) ) ) );
-  exportMenu->append ( new Button ( Usul::Commands::genericCommand ( "Scene ASCII", boost::bind ( &Application::exportScene, this ) ) ) );
-  exportMenu->append ( new Button ( Usul::Commands::genericCommand ( "Scene Binary", boost::bind ( &Application::exportSceneBinary, this ) ) ) );
+  exportMenu->append ( Button::create ( "Image", boost::bind ( &Application::exportNextFrame, this ) ) );
+  exportMenu->append ( Button::create ( "Models ASCII", boost::bind ( &Application::exportWorld, this ) ) );
+  exportMenu->append ( Button::create ( "Models Binary", boost::bind ( &Application::exportWorldBinary, this ) ) );
+  exportMenu->append ( Button::create ( "Scene ASCII", boost::bind ( &Application::exportScene, this ) ) );
+  exportMenu->append ( Button::create ( "Scene Binary", boost::bind ( &Application::exportSceneBinary, this ) ) );
 
   Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
   if ( document.valid() )
@@ -3584,13 +3572,13 @@ void Application::_initFileMenu ( MenuKit::Menu* menu )
 			if ( false == ext.empty() )
 			{
         const std::string name ( Usul::Strings::format ( "Export ", iter->first ) );
-				exportMenu->append ( new Button ( VRV_MAKE_COMMAND_ARG0 ( name, exportDocument, ext ) ) );
+	exportMenu->append ( Button::create ( name, boost::bind ( &Application::exportDocument, this, ext ) ) );
       }
     }
   }
 
   menu->addSeparator();
-  menu->append ( new Button ( Usul::Commands::genericCommand ( "Exit", boost::bind ( &Application::quit, this ) ) ) );
+  menu->append ( Button::create ( "Exit", boost::bind ( &Application::quit, this ) ) );
 }
 
 
@@ -3631,9 +3619,9 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
   typedef MenuKit::RadioButton  RadioButton;
 
   menu->append ( ToggleButton::create ( "Frame Dump", boost::bind ( &Application::frameDump, this, _1 ), boost::bind ( &Application::frameDump, this ) ) );
-  menu->append ( new Button ( Usul::Commands::genericCommand ( "Reset Clipping", boost::bind ( &Application::_setNearAndFarClippingPlanes, this ) ) ) );
-  menu->append ( new Button ( Usul::Commands::genericCommand ( "Set Home", boost::bind ( &Application::_setHome, this ) ) ) );
-  menu->append ( new Button ( Usul::Commands::genericCommand ( "View All", boost::bind ( &Application::viewScene, this ) ) ) );
+  menu->append ( Button::create ( "Reset Clipping", boost::bind ( &Application::_setNearAndFarClippingPlanes, this ) ) );
+  menu->append ( Button::create ( "Set Home", boost::bind ( &Application::_setHome, this ) ) );
+  menu->append ( Button::create ( "View All", boost::bind ( &Application::viewScene, this ) ) );
   menu->append ( ToggleButton::create ( "Seek", boost::bind ( &Application::seekMode, this, _1 ), boost::bind ( &Application::isSeekMode, this ) ) );
 
   MenuKit::Menu::RefPtr nearFar ( new MenuKit::Menu ( "Compute Near Far" ) );
@@ -3735,10 +3723,10 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
   menu->append ( ToggleButton::create ( "Body Centered Rotation", boost::bind ( &Application::bodyCenteredRotation, this, _1 ), boost::bind ( &Application::isBodyCenteredRotation, this ) ) );
   menu->append ( ToggleButton::create ( "Time Based", boost::bind ( &Application::timeBased, this, _1 ), boost::bind ( &Application::timeBased, this ) ) );
 
-	menu->append ( new Button ( Usul::Commands::genericCommand ( "Translate Speed x 10", boost::bind ( &Application::_increaseSpeedTen, this ) ) ) );
-  menu->append ( new Button ( Usul::Commands::genericCommand ( "Translate Speed x 2",  boost::bind ( &Application::_increaseSpeed, this    ) ) ) );
-  menu->append ( new Button ( Usul::Commands::genericCommand ( "Translate Speed / 2",  boost::bind ( &Application::_decreaseSpeed, this    ) ) ) );
-  menu->append ( new Button ( Usul::Commands::genericCommand ( "Translate Speed / 10", boost::bind ( &Application::_decreaseSpeedTen, this ) ) ) );
+  menu->append ( Button::create ( "Translate Speed x 10", boost::bind ( &Application::_increaseSpeedTen, this ) ) );
+  menu->append ( Button::create ( "Translate Speed x 2",  boost::bind ( &Application::_increaseSpeed, this    ) ) );
+  menu->append ( Button::create ( "Translate Speed / 2",  boost::bind ( &Application::_decreaseSpeed, this    ) ) );
+  menu->append ( Button::create ( "Translate Speed / 10", boost::bind ( &Application::_decreaseSpeedTen, this ) ) );
 }
 
 
@@ -3792,25 +3780,25 @@ void Application::_initOptionsMenu ( MenuKit::Menu* menu )
 
     for( Buttons::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
     {
-			VRV::Devices::ButtonDevice::RefPtr button ( *iter );
+      VRV::Devices::ButtonDevice::RefPtr button ( *iter );
 
-			if ( true == button.valid() )
-			{
-				const std::string name ( button->getButtonName() );
-				const unsigned long id ( button->buttonID() );
-
-				assign->append ( new Button ( VRV_MAKE_COMMAND_ARG0 ( name, _assignNextMenuSelection, id ) ) );
-			}
+      if ( true == button.valid() )
+      {
+	const std::string name ( button->getButtonName() );
+	const unsigned long id ( button->buttonID() );
+	
+	assign->append ( Button::create ( name, boost::bind ( &Application::_assignNextMenuSelection, this, id ) ) );
+      }
     }
     
     buttons->append ( assign );
 
-    buttons->append ( new Button ( Usul::Commands::genericCommand ( "Clear button assignments", boost::bind ( &Application::_clearAssignedButtonCommands, this ) ) ) );
+    buttons->append ( Button::create ( "Clear button assignments", boost::bind ( &Application::_clearAssignedButtonCommands, this ) ) );
 
     menu->append ( buttons );
   }
 
-  menu->append ( new Button       ( Usul::Commands::genericCommand ( "Calibrate Joystick", boost::bind ( &Application::analogsCalibrate, this ) ) ) );
+  menu->append ( Button::create ( "Calibrate Joystick", boost::bind ( &Application::analogsCalibrate, this ) ) );
   menu->append ( ToggleButton::create ( "Hide Scene", boost::bind ( &Application::menuSceneShowHide, this, _1 ), boost::bind ( &Application::menuSceneShowHide, this ) ) );
 
   menu->append ( ToggleButton::create  ( "Update", 
@@ -3825,7 +3813,7 @@ void Application::_initOptionsMenu ( MenuKit::Menu* menu )
 
   menu->append ( new MenuKit::Separator );
 
-  menu->append ( new Button ( Usul::Commands::genericCommand ( "Reinitialize", boost::bind ( &Application::reinitialize, this ) ) ) );
+  menu->append ( Button::create ( "Reinitialize", boost::bind ( &Application::reinitialize, this ) ) );
 }
 
 

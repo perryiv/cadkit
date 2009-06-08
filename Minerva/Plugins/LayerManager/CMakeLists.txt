@@ -16,7 +16,7 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
 # ------------ Set Include Folders ----------------------
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
-					 ${CADKIT_INC_DIR} 
+                     ${CADKIT_INC_DIR} 
                      "${CADKIT_INC_DIR}/Experimental"
                      ${OSG_INC_DIR} 
                      "${PROJECT_SOURCE_DIR}/../" 

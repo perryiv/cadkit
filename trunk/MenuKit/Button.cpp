@@ -342,3 +342,122 @@ std::string Button::info() const
 {
   return _command.valid () ? _command->statusTip() : "";
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper command.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper {
+
+class GenericCommand : public Usul::Commands::Command
+{
+public:
+  typedef Usul::Commands::Command BaseClass;
+  typedef Button::ExecuteFunction ExecuteFunctor;
+  typedef Button::EnableFunction EnableFunctor;
+  typedef GenericCommand ThisType;
+
+  USUL_DECLARE_QUERY_POINTERS  ( GenericCommand );
+
+  GenericCommand ( const std::string& name, ExecuteFunctor functor, Usul::Interfaces::IUnknown * caller = 0x0 ) : 
+    BaseClass ( caller ),
+    _functor ( functor ),
+    _enable()
+  {
+    this->text ( name );
+  }
+
+  GenericCommand ( const std::string& name, ExecuteFunctor functor, EnableFunctor e, Usul::Interfaces::IUnknown * caller = 0x0 ) : 
+    BaseClass ( caller ),
+    _functor ( functor ),
+    _enable ( e )
+  {
+    this->text ( name );
+  }
+
+  virtual Usul::Commands::Command* clone() const { return new ThisType ( *this ); }
+
+protected:
+
+  virtual ~GenericCommand() {}
+
+  /// Execute the command.
+  virtual void _execute()
+  {
+    _functor();
+  }
+
+
+  /// Update the enable state.
+  virtual bool updateEnable() const
+  {
+    return ( _enable ? _enable() : true );
+  }
+
+private:
+  ExecuteFunctor _functor;
+  EnableFunctor _enable;
+};
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a button.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Button* Button::create ( const std::string &name, ExecuteFunction f )
+{
+  Usul::Commands::Command::RefPtr command ( new Helper::GenericCommand ( name, f ) );
+  Button::RefPtr button ( new Button ( command.get() ) );
+  return button.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a button.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Button* Button::create ( const std::string &name, ExecuteFunction f, EnableFunction e )
+{
+  Usul::Commands::Command::RefPtr command ( new Helper::GenericCommand ( name, f, e ) );
+  Button::RefPtr button ( new Button ( command.get() ) );
+  return button.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a button.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Button* Button::createWithIcon ( const std::string &name, const std::string& icon, ExecuteFunction f )
+{
+  Usul::Commands::Command::RefPtr command ( new Helper::GenericCommand ( name, f ) );
+  command->iconPath ( icon );
+  Button::RefPtr button ( new Button ( command.get() ) );
+  return button.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a button.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Button* Button::createWithIcon ( const std::string &name, const std::string& icon, ExecuteFunction f, EnableFunction e )
+{
+  Usul::Commands::Command::RefPtr command ( new Helper::GenericCommand ( name, f, e ) );
+  command->iconPath ( icon );
+  Button::RefPtr button ( new Button ( command.get() ) );
+  return button.release();
+}

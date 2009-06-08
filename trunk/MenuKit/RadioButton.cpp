@@ -88,13 +88,87 @@ void RadioButton::accept ( Visitor &v )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper check command.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper {
+
+class CheckCommand : public Usul::Commands::Command
+{
+public:
+  typedef Usul::Commands::Command  BaseClass;
+  typedef RadioButton::ExecuteFunction ExecuteFunctor;
+  typedef RadioButton::EnableFunction EnableFunctor;
+  typedef RadioButton::CheckFunction CheckFunctor;
+  typedef CheckCommand ThisType;
+
+  USUL_DECLARE_QUERY_POINTERS  ( CheckCommand );
+
+  CheckCommand ( const std::string& name, 
+                       ExecuteFunctor functor, 
+                       CheckFunctor check ) : 
+    BaseClass ( 0x0 ),
+    _functor ( functor ),
+    _enable(),
+    _check ( check )
+  {
+    this->text ( name );
+  }
+
+  CheckCommand ( const std::string& name, 
+                        ExecuteFunctor functor, 
+                        CheckFunctor check, 
+                        EnableFunctor e ) : 
+    BaseClass ( 0x0 ),
+    _functor ( functor ),
+    _enable ( e ),
+    _check ( check )
+  {
+    this->text ( name );
+  }
+
+  virtual Usul::Commands::Command* clone() const { return new ThisType ( *this ); }
+
+  static const std::type_info &classTypeId() { return typeid ( ThisType ); }
+  virtual const std::type_info &typeId() const { return ThisType::classTypeId(); }
+
+protected:
+  virtual ~CheckCommand () {}
+
+  virtual void _execute()
+  {
+    _functor();
+  }
+
+  virtual bool updateEnable() const
+  {
+    return ( _enable ? _enable() : true );
+  }
+
+  virtual bool updateCheck() const
+  {
+    return _check();
+  }
+
+private:
+  ExecuteFunctor _functor;
+  EnableFunctor _enable;
+  CheckFunctor _check;
+};
+
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Create a RadioButton.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 RadioButton* RadioButton::create ( const std::string &name, ExecuteFunction f, CheckFunction c )
 {
-  Usul::Commands::Command::RefPtr command ( new CheckCommand ( name, f, c ) );
+  Usul::Commands::Command::RefPtr command ( new Helper::CheckCommand ( name, f, c ) );
   RadioButton::RefPtr button ( new RadioButton ( command.get() ) );
   return button.release();
 }
@@ -108,7 +182,7 @@ RadioButton* RadioButton::create ( const std::string &name, ExecuteFunction f, C
 
 RadioButton* RadioButton::create ( const std::string &name, ExecuteFunction f, CheckFunction c, EnableFunction e )
 {
-  Usul::Commands::Command::RefPtr command ( new CheckCommand ( name, f, c, e ) );
+  Usul::Commands::Command::RefPtr command ( new Helper::CheckCommand ( name, f, c, e ) );
   RadioButton::RefPtr button ( new RadioButton ( command.get() ) );
   return button.release();
 }

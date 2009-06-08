@@ -62,8 +62,6 @@
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
-#include "Usul/Commands/GenericCommand.h"
-#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
@@ -1682,13 +1680,13 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
 
   // Points sub menu.
   MenuKit::Menu::RefPtr points ( new MenuKit::Menu ( "Points" ) );
-  points->append ( new Button ( UC::genericCommand ( "Size * 2", boost::bind ( &MinervaDocument::_resizePoints, this, 2.0 ) ) ) );
-  points->append ( new Button ( UC::genericCommand ( "Size / 2", boost::bind ( &MinervaDocument::_resizePoints, this, 0.5 ) ) ) );
+  points->append ( Button::create ( "Size * 2", boost::bind ( &MinervaDocument::_resizePoints, this, 2.0 ) ) );
+  points->append ( Button::create ( "Size / 2", boost::bind ( &MinervaDocument::_resizePoints, this, 0.5 ) ) );
   m->append ( points.get() );
 
   MenuKit::Menu::RefPtr split ( new MenuKit::Menu ( "Split" ) );
-  split->append ( new Button ( UC::genericCommand ( "Increase Split", boost::bind ( &MinervaDocument::_increaseSplitDistance, this ) ) ) );
-  split->append ( new Button ( UC::genericCommand ( "Decrease Split", boost::bind ( &MinervaDocument::_decreaseSplitDistance, this ) ) ) );
+  split->append ( Button::create ( "Increase Split", boost::bind ( &MinervaDocument::_increaseSplitDistance, this ) ) );
+  split->append ( Button::create ( "Decrease Split", boost::bind ( &MinervaDocument::_decreaseSplitDistance, this ) ) );
 
   m->append ( split.get() );
 
@@ -2361,14 +2359,13 @@ void MinervaDocument::_buildLayerSubMenu ( MenuKit::Menu& menu, Usul::Interfaces
       layerMenu->addSeparator();
 
     layerMenu->append ( new MenuKit::ToggleButton ( new Minerva::Core::Commands::ToggleShown ( node, "This Layer" ) ) );
-    layerMenu->append ( new MenuKit::Button ( UC::genericCommand ( "Goto This Layer", 
-      boost::bind ( &MinervaDocument::lookAtLayer, this, Usul::Interfaces::IUnknown::QueryPtr ( node ).get() ) ) ) );
+    layerMenu->append ( MenuKit::Button::create ( "Goto This Layer", 
+      boost::bind ( &MinervaDocument::lookAtLayer, this, Usul::Interfaces::IUnknown::QueryPtr ( node ).get() ) ) );
 
     Minerva::Interfaces::IRefreshData::QueryPtr rd ( node );
     if ( rd.valid() )
     {
-      layerMenu->append ( new MenuKit::Button ( UC::genericCommand ( "Refresh This Layer", 
-        boost::bind ( &Minerva::Interfaces::IRefreshData::refreshData, rd ) ) ) );
+      layerMenu->append ( MenuKit::Button::create ( "Refresh This Layer", boost::bind ( &Minerva::Interfaces::IRefreshData::refreshData, rd ) ) );
     }
 
     menu.append ( layerMenu.get() );
@@ -2394,12 +2391,9 @@ void MinervaDocument::_buildLayerMenu()
       this->_buildLayerSubMenu ( *_layersMenu, Usul::Interfaces::ITreeNode::QueryPtr ( body ) );
   }
 
-  namespace UA = Usul::Adaptors;
-  namespace UC = Usul::Commands;
-
   _layersMenu->addSeparator();
-  _layersMenu->append ( new MenuKit::Button ( UC::genericCommand ( "Refresh Sub-Menu", 
-    boost::bind ( &MinervaDocument::_buildLayerMenu, this ) ) ) );
+  _layersMenu->append ( MenuKit::Button::create ( "Refresh Sub-Menu", 
+    boost::bind ( &MinervaDocument::_buildLayerMenu, this ) ) );
 }
 
 
@@ -3389,13 +3383,12 @@ void MinervaDocument::contextMenuAdd ( MenuKit::Menu& menu, const Usul::Math::Ve
         
         // Namespace aliases to help shorten lines.
         namespace UA = Usul::Adaptors;
-        namespace UC = Usul::Commands;
 
         const std::string lon ( Usul::Convert::Type<double,std::string>::convert ( lonLatPoint[0] ) );
         const std::string lat ( Usul::Convert::Type<double,std::string>::convert ( lonLatPoint[1] ) );
         const std::string text ( Usul::Strings::format ( lat, ", ", lon ) );
-        menu.append ( new MenuKit::Button ( UC::genericCommand ( "Copy lat/lon to clipboard", 
-          UA::bind1<void> ( text, Usul::System::ClipBoard::addToClipboard ) ) ) );
+        menu.append ( MenuKit::Button::create ( "Copy lat/lon to clipboard", 
+          UA::bind1<void> ( text, Usul::System::ClipBoard::addToClipboard ) ) );
       }
     }
   }

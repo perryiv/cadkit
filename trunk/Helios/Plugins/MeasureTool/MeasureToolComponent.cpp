@@ -16,11 +16,7 @@
 
 #include "Helios/Plugins/MeasureTool/MeasureToolComponent.h"
 
-#include "Usul/Adaptors/Bind.h"
-#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
-#include "Usul/Commands/GenericCommand.h"
-#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Components/Factory.h"
 #include "Usul/Documents/Document.h"
 #include "Usul/Documents/Manager.h"
@@ -355,18 +351,18 @@ void MeasureToolComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnknow
   MenuKit::Menu::RefPtr measure ( new MenuKit::Menu ( "Measurement" ) );
 
   measure->append ( ToggleButton::create ( "On", 
-    Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::measureOn ), 
-    Usul::Adaptors::memberFunction<bool> ( this, &MeasureToolComponent::isMeasureOn ) ) );
+    boost::bind ( &MeasureToolComponent::measureOn, this, _1 ), 
+    boost::bind ( &MeasureToolComponent::isMeasureOn, this ) ) );
 
-  measure->append ( new Button ( Usul::Commands::genericCommand ( "Clear", boost::bind ( &MeasureToolComponent::_clear, this ) ) ) );
+  measure->append ( Button::create ( "Clear", boost::bind ( &MeasureToolComponent::_clear, this ) ) );
   
-  measure->append ( new Button ( Usul::Commands::genericCommand ( "Export Line", 
+  measure->append ( Button::create ( "Export Line", 
     boost::bind ( &MeasureToolComponent::_exportLine, this, caller ),
-    boost::bind ( &MeasureToolComponent::enableExportButton, this ) ) ) );
+    boost::bind ( &MeasureToolComponent::enableExportButton, this ) ) );
 
-	measure->append ( new Button ( Usul::Commands::genericCommand ( "Export Line Segments", 
+  measure->append ( Button::create ( "Export Line Segments", 
     boost::bind ( &MeasureToolComponent::_exportLineSegments, this, caller ),
-    boost::bind ( &MeasureToolComponent::enableExportButton, this ) ) ) );
+    boost::bind ( &MeasureToolComponent::enableExportButton, this ) ) );
 
   menu->append ( measure );
 }

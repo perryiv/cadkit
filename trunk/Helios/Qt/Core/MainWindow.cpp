@@ -46,7 +46,6 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
-#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Components/Loader.h"
 #include "Usul/Config/Config.h"
@@ -548,10 +547,10 @@ void MainWindow::_buildMenuKitMenu()
   // Window menu.
   {
     MenuKit::Menu::RefPtr window ( new MenuKit::Menu ( "&Window" ) );
-    window->append ( new MenuKit::Button ( USUL_MAKE_COMMAND_ENABLE ( "&Cascade", "", this, &MainWindow::_childWindowsCascade, &MainWindow::_childWindowsHas        ) ) );
-    window->append ( new MenuKit::Button ( USUL_MAKE_COMMAND_ENABLE ( "&Tile",    "", this, &MainWindow::_childWindowsTile,    &MainWindow::_childWindowsHas        ) ) );
-    window->append ( new MenuKit::Button ( USUL_MAKE_COMMAND_ENABLE ( "Close Active Window", "", this, &MainWindow::_childWindowsCloseActive, &MainWindow::_childWindowsHas ) ) );
-    window->append ( new MenuKit::Button ( USUL_MAKE_COMMAND_ENABLE ( "Close All Windows",   "", this, &MainWindow::_childWindowsCloseAll,    &MainWindow::_childWindowsHas ) ) );
+    window->append ( MenuKit::Button::create ( "&Cascade", boost::bind ( &MainWindow::_childWindowsCascade, this ), boost::bind ( &MainWindow::_childWindowsHas, this ) ) );
+    window->append ( MenuKit::Button::create ( "&Tile",    boost::bind ( &MainWindow::_childWindowsTile, this ), boost::bind ( &MainWindow::_childWindowsHas, this ) ) );
+    window->append ( MenuKit::Button::create ( "Close Active Window", boost::bind ( &MainWindow::_childWindowsCloseActive, this ), boost::bind ( &MainWindow::_childWindowsHas, this ) ) );
+    window->append ( MenuKit::Button::create ( "Close All Windows",   boost::bind ( &MainWindow::_childWindowsCloseAll, this ), boost::bind ( &MainWindow::_childWindowsHas, this ) ) );
     _menu->append ( window );
   }
 
@@ -690,7 +689,7 @@ void MainWindow::_initRecentFilesMenu()
   _recentFilesMenu->addSeparator();
 
   // Add a clear button.
-  _recentFilesMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Clear", boost::bind ( &MainWindow::_clearRecentFiles, this ) ) ) );
+  _recentFilesMenu->append ( MenuKit::Button::create ( "Clear", boost::bind ( &MainWindow::_clearRecentFiles, this ) ) );
 
   // Enable the menu only if there are recent files.
   _recentFilesMenu->enabled ( false == _recentFiles.empty() );

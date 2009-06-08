@@ -89,17 +89,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Scene Delegate Qt", "
 		{D8524F0F-9938-4BFA-820A-924092ED40AD} = {D8524F0F-9938-4BFA-820A-924092ED40AD}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Volume Model", "..\Plugins\VolumeModel\VolumeModel.vcproj", "{77777D5F-CBD8-4F03-B415-181EB37F0A1D}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
-		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Scene Tree Qt", "Plugins\SceneTree\SceneTreeQt.vcproj", "{17701950-6309-4D13-8C5B-B549E27991CB}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -135,19 +124,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Serialize XML",
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: WRF Model", "..\..\Experimental\WRF\WrfModel\WRFModel.vcproj", "{C6A9E05B-C03A-4445-AC47-32290F1191DD}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
-		{8B99160D-5504-4A93-89DC-F4AE949501A4} = {8B99160D-5504-4A93-89DC-F4AE949501A4}
-		{2AFAFF2F-1967-4124-A178-5F1B703C016F} = {2AFAFF2F-1967-4124-A178-5F1B703C016F}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
 	EndProjectSection
@@ -368,19 +344,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Animation Control Qt"
 		{768EABAD-0721-457D-820D-C0548B1F252A} = {768EABAD-0721-457D-820D-C0548B1F252A}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Flash Model", "..\..\Experimental\Flash\FlashModel\FlashModel.vcproj", "{73176B31-DB8C-41E7-863E-A4FC610C00BF}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{2AFAFF2F-1967-4124-A178-5F1B703C016F} = {2AFAFF2F-1967-4124-A178-5F1B703C016F}
-		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
-		{8B99160D-5504-4A93-89DC-F4AE949501A4} = {8B99160D-5504-4A93-89DC-F4AE949501A4}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Point Model", "..\..\Experimental\PointModel\PointModel.vcproj", "{07D6ED28-0A7F-413A-8487-740736723AFB}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -483,10 +446,6 @@ Global
 		{56404183-F480-4893-8D47-53CD47BA8418}.Debug|Win32.Build.0 = Debug|Win32
 		{56404183-F480-4893-8D47-53CD47BA8418}.Release|Win32.ActiveCfg = Release|Win32
 		{56404183-F480-4893-8D47-53CD47BA8418}.Release|Win32.Build.0 = Release|Win32
-		{77777D5F-CBD8-4F03-B415-181EB37F0A1D}.Debug|Win32.ActiveCfg = Debug|Win32
-		{77777D5F-CBD8-4F03-B415-181EB37F0A1D}.Debug|Win32.Build.0 = Debug|Win32
-		{77777D5F-CBD8-4F03-B415-181EB37F0A1D}.Release|Win32.ActiveCfg = Release|Win32
-		{77777D5F-CBD8-4F03-B415-181EB37F0A1D}.Release|Win32.Build.0 = Release|Win32
 		{17701950-6309-4D13-8C5B-B549E27991CB}.Debug|Win32.ActiveCfg = Debug|Win32
 		{17701950-6309-4D13-8C5B-B549E27991CB}.Debug|Win32.Build.0 = Debug|Win32
 		{17701950-6309-4D13-8C5B-B549E27991CB}.Release|Win32.ActiveCfg = Release|Win32
@@ -503,10 +462,6 @@ Global
 		{2AFAFF2F-1967-4124-A178-5F1B703C016F}.Debug|Win32.Build.0 = Debug|Win32
 		{2AFAFF2F-1967-4124-A178-5F1B703C016F}.Release|Win32.ActiveCfg = Release|Win32
 		{2AFAFF2F-1967-4124-A178-5F1B703C016F}.Release|Win32.Build.0 = Release|Win32
-		{C6A9E05B-C03A-4445-AC47-32290F1191DD}.Debug|Win32.ActiveCfg = Debug|Win32
-		{C6A9E05B-C03A-4445-AC47-32290F1191DD}.Debug|Win32.Build.0 = Debug|Win32
-		{C6A9E05B-C03A-4445-AC47-32290F1191DD}.Release|Win32.ActiveCfg = Release|Win32
-		{C6A9E05B-C03A-4445-AC47-32290F1191DD}.Release|Win32.Build.0 = Release|Win32
 		{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}.Debug|Win32.ActiveCfg = Debug|Win32
 		{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}.Debug|Win32.Build.0 = Debug|Win32
 		{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}.Release|Win32.ActiveCfg = Release|Win32
@@ -591,10 +546,6 @@ Global
 		{728C0210-CFD0-4756-9C56-7E4E033E4E0A}.Debug|Win32.Build.0 = Debug|Win32
 		{728C0210-CFD0-4756-9C56-7E4E033E4E0A}.Release|Win32.ActiveCfg = Release|Win32
 		{728C0210-CFD0-4756-9C56-7E4E033E4E0A}.Release|Win32.Build.0 = Release|Win32
-		{73176B31-DB8C-41E7-863E-A4FC610C00BF}.Debug|Win32.ActiveCfg = Debug|Win32
-		{73176B31-DB8C-41E7-863E-A4FC610C00BF}.Debug|Win32.Build.0 = Debug|Win32
-		{73176B31-DB8C-41E7-863E-A4FC610C00BF}.Release|Win32.ActiveCfg = Release|Win32
-		{73176B31-DB8C-41E7-863E-A4FC610C00BF}.Release|Win32.Build.0 = Release|Win32
 		{07D6ED28-0A7F-413A-8487-740736723AFB}.Debug|Win32.ActiveCfg = Debug|Win32
 		{07D6ED28-0A7F-413A-8487-740736723AFB}.Debug|Win32.Build.0 = Debug|Win32
 		{07D6ED28-0A7F-413A-8487-740736723AFB}.Release|Win32.ActiveCfg = Release|Win32

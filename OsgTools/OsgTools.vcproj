@@ -639,14 +639,6 @@
 					RelativePath=".\Images\DownSample.h"
 					>
 				</File>
-				<File
-					RelativePath=".\Images\Image3d.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Images\Image3d.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Callbacks"

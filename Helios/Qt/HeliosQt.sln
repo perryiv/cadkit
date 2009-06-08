@@ -7,6 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: CadKit Helios Qt App",
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{F7BCD74C-ADEE-4E99-A3DA-5FF03653BD98} = {F7BCD74C-ADEE-4E99-A3DA-5FF03653BD98}
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
@@ -14,6 +15,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\..\U
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit OpenThreadsEx", "..\..\Threads\OpenThreads\OpenThreadsEx.vcproj", "{A4610909-A555-40C5-87A8-B95FEFF45CF5}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Helios Qt Core", "Core\HeliosQtCore.vcproj", "{F7BCD74C-ADEE-4E99-A3DA-5FF03653BD98}"
@@ -283,6 +293,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: Nimue Qt App", "..\..\
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
 		{F7BCD74C-ADEE-4E99-A3DA-5FF03653BD98} = {F7BCD74C-ADEE-4E99-A3DA-5FF03653BD98}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
@@ -455,6 +466,10 @@ Global
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Debug|Win32.Build.0 = Debug|Win32
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Release|Win32.ActiveCfg = Release|Win32
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Release|Win32.Build.0 = Release|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Debug|Win32.Build.0 = Debug|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Release|Win32.ActiveCfg = Release|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Release|Win32.Build.0 = Release|Win32
 		{F7BCD74C-ADEE-4E99-A3DA-5FF03653BD98}.Debug|Win32.ActiveCfg = Debug|Win32
 		{F7BCD74C-ADEE-4E99-A3DA-5FF03653BD98}.Debug|Win32.Build.0 = Debug|Win32
 		{F7BCD74C-ADEE-4E99-A3DA-5FF03653BD98}.Release|Win32.ActiveCfg = Release|Win32

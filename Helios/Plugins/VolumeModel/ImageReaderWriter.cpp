@@ -67,7 +67,7 @@ void ImageReaderWriter::read ( const std::string &name, VolumeDocument &doc, Unk
 
   _filenames.push_back ( name );
 
-  osg::ref_ptr < osg::Image > image3D ( OsgTools::Images::image3d ( _imageList, true, 1000, caller ) );
+  osg::ref_ptr < osg::Image > image3D ( OsgTools::Images::image3d ( _imageList, true, 1000 ) );
   doc.image3D ( image3D.get() );
 
   unsigned int numImages ( _imageList.size() );

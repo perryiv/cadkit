@@ -47,6 +47,7 @@
 #include "Usul/Interfaces/IContextMenuAdd.h"
 #include "Usul/Interfaces/IHandleSeek.h"
 #include "Usul/Interfaces/IIntersectListener.h"
+#include "Usul/Interfaces/IJobFinishedListener.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/IMenuAdd.h"
@@ -79,6 +80,7 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::ICommandExecuteListener,
                                                 public Usul::Interfaces::IIntersectListener,
                                                 public Usul::Interfaces::ITreeNode,
+                                                public Usul::Interfaces::IJobFinishedListener,
                                                 public Usul::Interfaces::IMouseEventListener,
                                                 public Minerva::Interfaces::ILookAtLayer,
                                                 public Usul::Interfaces::IBusyState,
@@ -371,7 +373,7 @@ protected:
   virtual std::string                      getTreeNodeName() const;
 
   /// The job has finished (IJobFinishedListener).
-  void                                     _jobFinished ( Usul::Jobs::Job *job );
+  virtual void                             jobFinished ( Usul::Jobs::Job *job );
 
   // Called when mouse event occurs.
   virtual void                             mouseEventNotify ( osgGA::GUIEventAdapter&, Usul::Interfaces::IUnknown * );

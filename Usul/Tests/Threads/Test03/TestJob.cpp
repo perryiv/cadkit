@@ -69,7 +69,9 @@ void TestJob::_cancelled()
   USUL_TRACE_SCOPE;
 
   std::ostringstream out;
-  out << "Cancelled job " << SET_WIDTH << this->id() << '\n';
+  out << "Cancelled job " << SET_WIDTH << this->id() 
+      << " using thread " << SET_WIDTH << this->thread()->id()
+      << " and system thread " << SET_WIDTH << this->thread()->systemId() << '\n';
   TRACE_AND_PRINT ( out.str() );
 }
 
@@ -85,7 +87,9 @@ void TestJob::_error()
   USUL_TRACE_SCOPE;
 
   std::ostringstream out;
-  out << " Error in job " << SET_WIDTH << this->id() << '\n';
+  out << " Error in job " << SET_WIDTH << this->id() 
+      << " using thread " << SET_WIDTH << this->thread()->id()
+      << " and system thread " << SET_WIDTH << this->thread()->systemId() << '\n';
   TRACE_AND_PRINT ( out.str() );
 }
 
@@ -101,7 +105,9 @@ void TestJob::_finished()
   USUL_TRACE_SCOPE;
 
   std::ostringstream out;
-  out << " Finished job " << SET_WIDTH << this->id() << '\n';
+  out << " Finished job " << SET_WIDTH << this->id() 
+      << " using thread " << SET_WIDTH << this->thread()->id()
+      << " and system thread " << SET_WIDTH << this->thread()->systemId() << '\n';
   TRACE_AND_PRINT ( out.str() );
 }
 
@@ -120,6 +126,8 @@ void TestJob::_started()
 
   std::ostringstream out;
   out << "  Started job " << SET_WIDTH << id 
+      << " using thread " << SET_WIDTH << this->thread()->id()
+      << " and system thread " << SET_WIDTH << this->thread()->systemId()
       << ", sleeping " << _sleep << '\n';
   TRACE_AND_PRINT ( out.str() );
 

@@ -1,4 +1,6 @@
 #include "TriangleReaderFieldViewAscii.h"
+#include "Usul/Interfaces/IColorsPerVertex.h"
+#include "Usul/Interfaces/IVertices.h"
 
 
 #include "Usul/Math/MinMax.h"
@@ -303,10 +305,9 @@ void TriangleReaderFieldViewAscii::_createMirroredTriangle( unsigned int i, osg:
 
 void TriangleReaderFieldViewAscii::_createTriangeSet()
 {
-  USUL_ASSERT ( true == _document.valid() );
-
   // Get color array
-  osg::ref_ptr< osg::Vec4Array > colors = _document->getColorsV ( true );
+  Usul::Interfaces::IColorsPerVertex::QueryPtr colorsV ( _document );
+  osg::ref_ptr< osg::Vec4Array > colors = colorsV->getColorsV ( true );
  
   typedef TriangleDocument::Triangle* (TriangleDocument::*Function) ( SharedVertex *, SharedVertex *, SharedVertex *, const osg::Vec3f &, bool, bool );
   typedef Usul::Adaptors::MemberFunction < void, TriangleDocument*, Function > MemFun;
@@ -514,7 +515,9 @@ void TriangleReaderFieldViewAscii::_createTriangeSet()
     catch( ... )
     {}
 #endif
-  _document->dirtyColorsV ( false );
+  colorsV->dirtyColorsV ( false );
+   
+
 }
 
 

@@ -32,6 +32,7 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Interfaces/ILoadColorFile.h"
 #include "Usul/Predicates/CloseFloat.h"
 #include "Usul/Predicates/LessVector.h"
 #include "Usul/Types/Types.h"
@@ -88,6 +89,7 @@ public:
   typedef std::vector< unsigned int > Connected;
   typedef std::vector < Connected > Subsets;
   typedef osg::ref_ptr< osg::Group > GroupPtr;
+  //typedef ILoadColorFile::HeaderInfo HeaderInfo;
   typedef std::vector< float > HeaderInfo;
 
   // Type information.
@@ -305,11 +307,11 @@ protected:
 
   void                    _buildDecorations ( const Options &options, osg::Group * ) const;
 
-  void                    _incrementProgress ( bool state, Usul::Interfaces::IUnknown *caller = 0x0 );
+  void                    _incrementProgress ( bool state );
   InsertResult            _insertSharedVertex ( const osg::Vec3f &v, SharedVertex *sv );
 
-  void                    _setProgressBar ( bool state, unsigned int numerator, unsigned int denominator, Usul::Interfaces::IUnknown *caller = 0x0  );
-  void                    _setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller = 0x0 );
+  void                    _setProgressBar ( bool state, unsigned int numerator, unsigned int denominator );
+  void                    _setStatusBar ( const std::string &text );
 
   void                    _updateBlocks();
   void                    _updateDependencies ( Triangle *t );

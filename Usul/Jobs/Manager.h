@@ -16,13 +16,12 @@
 #ifndef _USUL_JOBS_JOB_MANAGER_CLASS_H_
 #define _USUL_JOBS_JOB_MANAGER_CLASS_H_
 
+#include "Usul/Interfaces/IJobFinishedListener.h"
 #include "Usul/File/Log.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Pool.h"
-
-#include "boost/signals2/signal.hpp"
 
 #include <string>
 #include <vector>
@@ -39,20 +38,20 @@ public:
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
   typedef Usul::Threads::Pool ThreadPool;
-  typedef boost::signals2::signal<void ( Job* )> JobFinishedListeners;
+  typedef Usul::Interfaces::IJobFinishedListener IJobFinishedListener;
+  typedef std::vector<IJobFinishedListener::RefPtr> JobFinishedListeners;
   typedef Usul::File::Log::RefPtr LogPtr;
   typedef ThreadPool::Strings Strings;
 
   // Constructor and destructor. Use as a singleton or as individual objects.
-  Manager ( const std::string &name, unsigned int poolSize );
+  Manager ( const std::string &name, unsigned int poolSize, bool lazyStart );
   ~Manager();
 
   // Add a job to the list.
   void                    addJob ( Job::RefPtr );
   
   // Add a job finished listener.
-  template<class Slot>
-  void                    addJobFinishedListener ( const Slot& subscriber );
+  void                    addJobFinishedListener ( Usul::Interfaces::IUnknown::RefPtr );
 
   // Cancel the job(s).
   void                    cancel();
@@ -68,7 +67,7 @@ public:
   void                    executingNames ( Strings & ) const;
 
   // Initialize singleton with given thread-pool size.
-  static void             init ( const std::string &name, unsigned int poolSize );
+  static void             init ( const std::string &name, unsigned int poolSize, bool lazyStart );
 
   // Get the singleton.
   static Manager &        instance();
@@ -98,8 +97,7 @@ public:
   unsigned int            poolSize() const;
   
   // Remove a job finished listener.
-  template<class Slot>
-  void                    removeJobFinishedListener ( const Slot& subscriber );
+  void                    removeJobFinishedListener ( Usul::Interfaces::IUnknown::RefPtr );
 
   // Remove the queued job. Has no effect on running jobs.
   void                    removeQueuedJob ( Job::RefPtr );
@@ -125,36 +123,10 @@ private:
   // Data members.
   static Manager *_instance;
   mutable Mutex _mutex;
-  ThreadPool _pool;
+  ThreadPool::RefPtr _pool;
   JobFinishedListeners _jobFinishedListeners;
   LogPtr _log;
 };
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add a job finished listener.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class Slot>
-inline void Manager::addJobFinishedListener ( const Slot& subscriber )
-{
-  _jobFinishedListeners.connect ( subscriber );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove a job finished listener.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class Slot>
-inline void Manager::removeJobFinishedListener ( const Slot& subscriber )
-{
-  _jobFinishedListeners.disconnect ( subscriber );
-}
 
 
 } // namespace Jobs

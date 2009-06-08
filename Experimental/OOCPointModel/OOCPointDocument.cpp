@@ -39,7 +39,6 @@
 #include "Usul/Policies/Update.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Jobs/Manager.h"
@@ -146,6 +145,8 @@ Usul::Interfaces::IUnknown *OOCPointDocument::queryInterface ( unsigned long iid
       return static_cast < Usul::Interfaces::IBuildScene* > ( this );
     case Usul::Interfaces::IMenuAdd::IID:
       return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
+    case Usul::Interfaces::IJobFinishedListener::IID:
+      return static_cast < Usul::Interfaces::IJobFinishedListener * > ( this );
     case Usul::Interfaces::IUpdateListener::IID:
       return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
     default:
@@ -928,7 +929,7 @@ void OOCPointDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown
 
   MenuKit::Menu::RefPtr pointMenu ( menu.find ( "&Points", true ) );
 
-  pointMenu->append( new Button ( Usul::Commands::genericCommand ( "Edit Color...", Usul::Adaptors::memberFunction<void> ( this, &OOCPointDocument::_editPointColor ) ) ) );
+  pointMenu->append( new Button ( Usul::Commands::genericCommand ( "Edit Color...", Usul::Adaptors::memberFunction<void> ( this, &OOCPointDocument::_editPointColor ), Usul::Commands::TrueFunctor() ) ) );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -960,7 +961,7 @@ void OOCPointDocument::removeView ( Usul::Interfaces::IView *view )
   // If there are no more views, remove the job finished listener.
   if ( 0 == this->numViews() )
   {
-    this->_getJobManager()->removeJobFinishedListener ( boost::bind ( &OOCPointDocument::jobFinished, OOCPointDocument::RefPtr ( this ), _1 ) );
+    this->_getJobManager()->removeJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }
 }
 
@@ -1049,9 +1050,9 @@ Usul::Jobs::Manager *OOCPointDocument::_getJobManager()
     Usul::Registry::Node &node ( Reg::instance()[Sections::DOCUMENT_SETTINGS][type]["job_manager_thread_pool_size"] );
     const unsigned int poolSize ( node.get<unsigned int> ( 5, true ) );
     
-    _manager = new Usul::Jobs::Manager ( "Point Document Job Manager", poolSize );
+    _manager = new Usul::Jobs::Manager ( "Point Document Job Manager", poolSize, true );
     _manager->logSet ( Usul::Jobs::Manager::instance().logGet() );
-    _manager->addJobFinishedListener ( boost::bind ( &OOCPointDocument::jobFinished, OOCPointDocument::RefPtr ( this ), _1 ) );
+    _manager->addJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }
   
   return _manager;

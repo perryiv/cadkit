@@ -20,6 +20,9 @@
 #include "VRV/Interfaces/IAuxiliaryScene.h"
 #include "VRV/Functors/Intersect.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Commands/GenericCommand.h"
+#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/IActiveDocumentListener.h"
@@ -43,6 +46,7 @@
 #include "Usul/Interfaces/INavigationFunctor.h"
 #include "Usul/Interfaces/ITranslationSpeed.h"
 #include "Usul/Interfaces/IPolygonMode.h"
+#include "Usul/Interfaces/IRenderingPasses.h"
 #include "Usul/Interfaces/IRenderListener.h"
 #include "Usul/Interfaces/IRenderNotify.h"
 #include "Usul/Interfaces/IRotationCenter.h"
@@ -124,6 +128,7 @@ class VRV_EXPORT Application : public VRV::Core::BaseApplication,
                                public Usul::Interfaces::IShadeModel,
                                public Usul::Interfaces::INavigationFunctor,
                                public Usul::Interfaces::IBackgroundColor,
+                               public Usul::Interfaces::IRenderingPasses,
                                public Usul::Interfaces::IViewport,
                                public Usul::Interfaces::IView,
                                public Usul::Interfaces::ITextMatrix,
@@ -168,6 +173,15 @@ public:
   typedef std::map < std::string, TransformFunctor::RefPtr > TransformFunctors;
   typedef std::map < std::string, FavoriteFunctor::RefPtr >  FavoriteFunctors;
   typedef FavoriteFunctors::iterator                         FavoriteIterator;
+
+  typedef void (Application::*VoidFunction) ();
+  typedef void (Application::*BoolFunction) ( bool );
+  typedef bool (Application::*CheckFunction) () const;
+  typedef Usul::Adaptors::MemberFunction < void, Application*, VoidFunction >  ExecuteFunctor;
+  typedef Usul::Adaptors::MemberFunction < bool, Application*, CheckFunction > CheckFunctor;
+  typedef Usul::Adaptors::MemberFunction < void, Application*, BoolFunction >  BoolFunctor;
+  typedef Usul::Commands::GenericCommand < ExecuteFunctor >                    BasicCommand;
+  typedef Usul::Commands::GenericCheckCommand < BoolFunctor, CheckFunctor >    CheckCommand;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -224,11 +238,15 @@ public:
   const osg::Viewport*    viewport() const { return _viewport.get(); }
 
   /// Export the next frame.
-  void                    exportNextFrame();
+  void                    exportNextFrame ();
+
+  /// Get/Set the number of rendering passes
+  virtual void            renderingPasses ( unsigned int number );
+  virtual unsigned int    renderingPasses () const;
 
   /// Get the Preferences.
-  Preferences *           preferences();
-  const Preferences *     preferences() const;
+  Preferences *           preferences ();
+  const Preferences *     preferences () const;
 
   // Print the usage string.
   static void                   usage ( const std::string &exe, std::ostream &out );
@@ -525,12 +543,12 @@ protected:
   virtual void                  camera ( CameraOption option );
 
   /// Set/get the polygon mode state (IPolygonMode).
-  virtual void                  polygonModeSet ( PolygonMode mode );
-  virtual PolygonMode           polygonModeGet() const;
+  virtual void                  polygonMode ( PolygonMode mode );
+  virtual PolygonMode           polygonMode() const;
 
   /// Set/get the shade model (IShadeModel).
-  virtual void                  shadeModelSet ( ShadeModel mode );
-  virtual ShadeModel            shadeModelGet() const;
+  virtual void                  shadeModel ( ShadeModel mode );
+  virtual ShadeModel            shadeModel() const;
 
   /// Get viewport parameters (IViewport).
   virtual double                x() const;

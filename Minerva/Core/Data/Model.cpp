@@ -55,32 +55,6 @@ Model::~Model()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the matrix for the model.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Model::Matrix Model::matrix ( Usul::Interfaces::IPlanetCoordinates* planet, Usul::Interfaces::IElevationDatabase* elevation ) const
-{
-  osg::Vec3d location ( this->location() );
-
-  // Get the height.
-  const double height ( this->_elevation ( location, elevation ) );
-
-  osg::Vec3d hpr ( this->orientation() );
-  const double heading ( hpr[0] ), tilt ( hpr[1] ), roll ( hpr[2] );
-  
-  osg::Matrixd R ( 0x0 != planet ? planet->planetRotationMatrix ( location[1], location[0], height, heading ) : osg::Matrixd() );
-  osg::Matrixd S ( osg::Matrixd::scale ( this->scale() * this->toMeters() ) );
-
-  Matrix result ( S *
-                  osg::Matrix::rotate ( osg::DegreesToRadians ( tilt ), osg::Vec3 ( 1.0, 0.0, 0.0 ) ) * 
-                  osg::Matrix::rotate ( osg::DegreesToRadians ( roll ), osg::Vec3 ( 0.0, 1.0, 0.0 ) ) * R );
-  return result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Build the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -93,8 +67,24 @@ osg::Node* Model::_buildScene( Usul::Interfaces::IUnknown* caller )
   Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
   Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
   
-  Matrix matrix ( this->matrix ( planet.get(), elevation.get() ) );
-  mt->setMatrix ( matrix );
+  osg::Vec3d location ( this->location() );
+
+  // Make new extents.
+  Extents e ( osg::Vec2d ( location[0], location[1] ), osg::Vec2d ( location[0], location[1] ) );
+  this->extents ( e );
+
+  // Get the height.
+  const double height ( this->_elevation ( location, elevation.get() ) );
+
+  osg::Vec3d hpr ( this->orientation() );
+  const double heading ( hpr[0] ), tilt ( hpr[1] ), roll ( hpr[2] );
+  
+  osg::Matrixd R ( planet.valid() ? planet->planetRotationMatrix ( location[1], location[0], height, heading ) : osg::Matrixd() );
+  osg::Matrixd S ( osg::Matrixd::scale ( this->scale() * this->toMeters() ) );
+
+  mt->setMatrix ( S *
+                  osg::Matrix::rotate ( osg::DegreesToRadians ( tilt ), osg::Vec3 ( 1.0, 0.0, 0.0 ) ) * 
+                  osg::Matrix::rotate ( osg::DegreesToRadians ( roll ), osg::Vec3 ( 0.0, 1.0, 0.0 ) ) * R );
 
   if ( true == this->optimize() )
   {
@@ -103,7 +93,7 @@ osg::Node* Model::_buildScene( Usul::Interfaces::IUnknown* caller )
   }
 
   // If there is a scale, turn on normalize.
-  if ( true == this->_hasScale() )
+  if ( false == S.isIdentity() )
     OsgTools::State::StateSet::setNormalize ( this->model(), true );
 
   mt->addChild ( this->model() );
@@ -121,11 +111,6 @@ void Model::location ( const osg::Vec3d& location )
 {
   Guard guard ( this->mutex() );
   _location = location;
-
-  // Make new extents.
-  Extents e ( osg::Vec2d ( location[0], location[1] ), osg::Vec2d ( location[0], location[1] ) );
-  this->extents ( e );
-  
   this->dirty ( true );
 }
 
@@ -282,17 +267,4 @@ bool Model::optimize() const
 {
   Guard guard ( this->mutex() );
   return _optimize;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return true if there is a scale component.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Model::_hasScale() const
-{
-  Guard guard ( this->mutex() );
-  return ( 1.0 != _toMeters || 1.0 != _scale[0] || 1.0 != _scale[1] || 1.0 != _scale[2] ); 
 }

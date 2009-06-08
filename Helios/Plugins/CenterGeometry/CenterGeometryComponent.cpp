@@ -17,6 +17,7 @@
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Components/Factory.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Interfaces/IModelsScene.h"
@@ -96,13 +97,13 @@ void CenterGeometryComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnk
   // Build the menu.
   MenuKit::Menu::RefPtr menu ( m.find ( "Tools", true ) );
 
-  menu->append ( Button::create ( "Center Geometry", 
+	menu->append ( new Button ( Usul::Commands::genericCommand ( "Center Geometry", 
       Usul::Adaptors::memberFunction<void> ( this, &CenterGeometryComponent::centerGeometry ),
-      Usul::Adaptors::memberFunction<bool> ( this, &CenterGeometryComponent::enableCenterGeometry ) ) );
+      Usul::Adaptors::memberFunction<bool> ( this, &CenterGeometryComponent::enableCenterGeometry ) ) ) );
 
-	menu->append ( Button::create ( "Flatten Geometry", 
+	menu->append ( new Button ( Usul::Commands::genericCommand ( "Flatten Geometry", 
       Usul::Adaptors::memberFunction<void> ( this, &CenterGeometryComponent::flattenGeometry ),
-      Usul::Adaptors::memberFunction<bool> ( this, &CenterGeometryComponent::enableFlattenGeometry ) ) );
+      Usul::Adaptors::memberFunction<bool> ( this, &CenterGeometryComponent::enableFlattenGeometry ) ) ) );
 }
 
 

@@ -25,7 +25,10 @@
 #include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdFasterAnimationSpeed.h"
 #include "Helios/Plugins/ModelPresentation/ModelPresentation/GenericIndexToggle.h"
 
+#include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Commands/GenericCommand.h"
+#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
 
@@ -2136,7 +2139,8 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
     SequenceMenu->append( new Button ( new MpdNextSequence( me.get() ) ) );
     SequenceMenu->append( new Button ( new MpdPrevSequence( me.get() ) ) );
     SequenceMenu->append( new Button ( new MpdFirstSequence( me.get() ) ) );
-    SequenceMenu->append( ToggleButton::create ( "Animate", boost::bind ( &ModelPresentationDocument::_animateSequence, this, _1 ), boost::bind ( &ModelPresentationDocument::_isAnimatingSequence, this ) ) );
+    SequenceMenu->append( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Animate", Usul::Adaptors::memberFunction<void> ( this, &ModelPresentationDocument::_animateSequence ), Usul::Adaptors::memberFunction<bool> ( this, &ModelPresentationDocument::_isAnimatingSequence ) ) ) );
+
   }
 
   if( _locationNames.size() > 0 )

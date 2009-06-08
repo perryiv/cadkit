@@ -13,6 +13,7 @@
 
 #include "MenuKit/Button.h"
 
+
 namespace MenuKit {
 
 
@@ -22,8 +23,6 @@ public:
 
   // Typedefs and smart-pointers.
   typedef Button BaseClass;
-  typedef boost::function<void ( bool )> ExecuteFunction;
-  typedef boost::function<bool ()> CheckFunction;
   USUL_DECLARE_REF_POINTERS ( ToggleButton );
 
   // Construction.
@@ -33,8 +32,6 @@ public:
 
   // Assignment.
   ToggleButton& operator = ( const ToggleButton & );
-
-  static ToggleButton* create ( const std::string &name, ExecuteFunction f, CheckFunction c );
 
   // Accept the visitor.
   virtual void        accept ( Visitor &v );

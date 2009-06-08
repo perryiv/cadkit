@@ -33,6 +33,7 @@
 #include "Usul/Interfaces/IExportModel.h"
 #include "Usul/Interfaces/IFrameDump.h"
 #include "Usul/Interfaces/IFrameStamp.h"
+#include "Usul/Interfaces/IGetDocument.h"
 #include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/IIntersectListener.h"
@@ -48,6 +49,9 @@
 #include "Usul/Interfaces/IRenderInfoOSG.h"
 #include "Usul/Interfaces/IRenderListener.h"
 #include "Usul/Interfaces/IRenderNotify.h"
+#include "Usul/Interfaces/IRenderLoop.h"
+#include "Usul/Interfaces/IRenderingPasses.h"
+#include "Usul/Interfaces/IScreenCapture.h"
 #include "Usul/Interfaces/ISnapShot.h"
 #include "Usul/Interfaces/ISpin.h"
 #include "Usul/Interfaces/IShadeModel.h"
@@ -111,6 +115,7 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IOpenSceneGraph,
                                 public Usul::Interfaces::IFrameDump,
                                 public Usul::Interfaces::ITextMatrix,
+                                public Usul::Interfaces::IGetDocument,
                                 public Usul::Interfaces::IGroup,
                                 public Usul::Interfaces::IClippingPlanes,
                                 public Usul::Interfaces::IGetBoundingBox,
@@ -119,6 +124,7 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::ISceneIntersect,
                                 public Usul::Interfaces::IRedraw,
                                 public Usul::Interfaces::ISpin,
+                                public Usul::Interfaces::IScreenCapture,
                                 public Usul::Interfaces::ISnapShot,
                                 public Usul::Interfaces::IView,
                                 public Usul::Interfaces::IRenderNotify,
@@ -130,6 +136,8 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IMouseEventSubject,
                                 public Usul::Interfaces::IClippingDistance,
                                 public Usul::Interfaces::IViewport,
+                                public Usul::Interfaces::IRenderLoop,
+                                public Usul::Interfaces::IRenderingPasses,
                                 public Usul::Interfaces::IViewMode,
 																public Usul::Interfaces::IModelsScene,
                                 public Usul::Interfaces::IRenderInfoOSG,
@@ -357,16 +365,13 @@ public:
   // Get the number of clipping planes in the scene
   unsigned int          planes() const;
 
-  // Get/Set the polygon mode (IPolygonMode).
-  virtual void                    polygonModeSet ( IPolygonMode::Mode mode );
-  virtual IPolygonMode::Mode      polygonModeGet() const;
+  /// Usul::Interfaces::IPolygonMode
+  // Get/Set the polygon mode.
+  virtual void                    polygonMode ( IPolygonMode::Mode mode );
+  virtual IPolygonMode::Mode      polygonMode() const;
 
   // Render the scene.
   void                  render();
-
-  /// Get/Set the number of rendering passes (IRenderingPasses).
-  virtual void                  renderingPasses ( unsigned int number );
-  virtual unsigned int          renderingPasses () const;
 
   // Resize the viewer
   void                  resize ( unsigned int width, unsigned int height );
@@ -424,7 +429,7 @@ public:
 
   // Set/Get two sided lighting
   void                  twoSidedLightingSet ( bool twoSided );
-  bool                  twoSidedLightingGet() const;
+  bool                  twoSidedLightingGet () const;
 
   // Get the light.
   osg::Light *          light();
@@ -438,10 +443,6 @@ public:
   double                scatterScale() const;
   void                  scatterScale ( double );
 
-  /// Usul::Interfaces::IShadeModel
-  virtual void                      shadeModelSet ( IShadeModel::Mode mode );
-  virtual IShadeModel::Mode         shadeModelGet() const;
-
   // Get/set the stereo mode
   void                  stereoMode ( unsigned int );
   unsigned int          stereoMode() const;
@@ -453,8 +454,8 @@ public:
   // Update the scene.
   void                  update();
 
-  // Get the text for the status bar.
-  std::string           statusBarText();
+  // Update the status-bar.
+  void                  updateStatusBar();
 
   // Set/get the flags that says to update the recorded times.
   void                  updateTimes ( bool state );
@@ -570,7 +571,11 @@ protected:
 
   /// Usul::Interfaces::IViewMatrix
   virtual void                      setViewMatrix ( const osg::Matrixd& );
-  virtual osg::Matrixd              getViewMatrix() const;
+  virtual osg::Matrixd              getViewMatrix ( ) const;
+
+  /// Usul::Interfaces::IShadeModel
+  virtual void                      shadeModel ( IShadeModel::Mode mode );
+  virtual IShadeModel::Mode         shadeModel() const;
 
   /// Usul::Interfaces::IOpenSceneGraph
   /// Get the pointer to the base class for all OSG objects.
@@ -676,6 +681,10 @@ protected:
   /// Usul::Interfaces::IExportScene
   virtual Filters               filtersWriteScene() const;
 
+  /// Usul::Interfaces::IScreenCapture
+  virtual osg::Image*           screenCapture ( const osg::Vec3d& center, double distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const;
+  virtual osg::Image*           screenCapture ( unsigned int height, unsigned int width ) const;
+
   /// Usul::Interfaces::ISnapShot
   virtual void                  takePicture ( const std::string& filename, float frameSizeScale, unsigned int numSamples );
 
@@ -706,6 +715,14 @@ protected:
 
   // Usul::Interfaces::IUpdateSceneVisitor.
   virtual NodeVisitor *         getUpdateSceneVisitor ( Usul::Interfaces::IUnknown *caller );
+
+  /// Get/Set render loop flag (IRenderLoop).
+  virtual void                  renderLoop ( bool b );
+  virtual bool                  renderLoop () const;
+
+  /// Get/Set the number of rendering passes (IRenderingPasses).
+  virtual void                  renderingPasses ( unsigned int number );
+  virtual unsigned int          renderingPasses () const;
 
 	// Get the model's scene (IModelsScene).
   virtual const osg::Group *    modelsScene() const;

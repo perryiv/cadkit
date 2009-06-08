@@ -129,9 +129,14 @@ Usul::Interfaces::IUnknown *Command::queryInterface ( unsigned long iid )
 
   switch ( iid )
   {
-  case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::ICommand::IID:
     return static_cast<Usul::Interfaces::ICommand*>(this);
+  case Usul::Interfaces::IUnknown::IID:
+    return static_cast<Usul::Interfaces::IUnknown*>(static_cast<Usul::Interfaces::ICommand*>(this));
+  case Usul::Interfaces::IUpdateEnable::IID:
+    return static_cast < Usul::Interfaces::IUpdateEnable * > ( this );
+  case Usul::Interfaces::IUpdateCheck::IID:
+    return static_cast < Usul::Interfaces::IUpdateCheck * > ( this );
   default:
     return 0x0;
   }

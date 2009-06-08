@@ -10,6 +10,7 @@
 #include "OsgTools/Images/Image3d.h"
 
 #include "Usul/Policies/Update.h"
+#include "Usul/Resources/ProgressBar.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Types/Types.h"
 
@@ -24,7 +25,7 @@ using namespace Usul::Types;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* OsgTools::Images::image3d ( ImageList& images, bool ensureProperTextureSize, double updateTime, Usul::Interfaces::IUnknown *caller )
+osg::Image* OsgTools::Images::image3d ( ImageList& images, bool ensureProperTextureSize, double updateTime )
 {
   // Make an image
   ImagePtr image3d ( new osg::Image );
@@ -51,8 +52,6 @@ osg::Image* OsgTools::Images::image3d ( ImageList& images, bool ensureProperText
   // Make enough room
   image3d->allocateImage( width, height, images.size(), pixelFormat, images.front()->getDataType());
 
-  Usul::Interfaces::IProgressBar::QueryPtr progress ( caller );
-
   // Add each image to the 3d image
   for( ImageList::iterator i = images.begin(); i != images.end(); ++i )
   {
@@ -69,12 +68,12 @@ osg::Image* OsgTools::Images::image3d ( ImageList& images, bool ensureProperText
     image3d->copySubImage ( 0, 0, ( i - images.begin() ), i->get() );
 
     // Show progress.
-    if ( progress.valid() && elapsed() )
+    if ( Usul::Resources::progressBar() && elapsed() )
     {
       const float s ( images.size() );
       const float d ( std::distance ( i, images.end() ) );
       const float v ( ( s - d ) / s );
-      progress->updateProgressBar ( static_cast < unsigned int > ( v * 100 ) );
+      Usul::Resources::progressBar()->updateProgressBar ( static_cast < unsigned int > ( v * 100 ) );
     }
   }
 

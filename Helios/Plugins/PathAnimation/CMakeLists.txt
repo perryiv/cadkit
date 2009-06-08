@@ -12,11 +12,10 @@ INCLUDE ( Cadkit.plugin )
 # ------------ Set Include Folders ----------------------
 INCLUDE_DIRECTORIES( 
   "${PROJECT_SOURCE_DIR}/../"
-  "${CADKIT_INC_DIR}/" 
+	"${CADKIT_INC_DIR}/" 
   "${CADKIT_INC_DIR}/GenericNurbs"
   "${CADKIT_INC_DIR}/Experimental"
   ${OSG_INC_DIR}
-  ${Boost_INCLUDE_DIR}
 )
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )

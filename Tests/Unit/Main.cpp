@@ -18,6 +18,7 @@
 
 #include "Usul/Factory/ObjectFactory.h"
 #include "Usul/Jobs/Manager.h"
+#include "Usul/Threads/Manager.h"
 #include "Usul/Registry/Database.h"
 
 #include "Usul/Exceptions/Exception.h"

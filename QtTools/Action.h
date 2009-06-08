@@ -18,13 +18,16 @@
 #define _CADKIT_HELIOS_QT_COMMANDS_ACTION_CLASS_H_
 
 #include "QtTools/Export.h"
+#include "QtTools/Image.h"
 
 #include "Usul/Commands/Command.h"
+#include "Usul/Commands/History.h"
+#include "Usul/Threads/Named.h"
+#include "Usul/Trace/Trace.h"
 
 #include "QtGui/QAction"
 
 #include "boost/shared_ptr.hpp"
-#include "boost/function.hpp"
 
 #include <stdexcept>
 
@@ -41,11 +44,9 @@ public:
   typedef QAction BaseClass;
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef boost::shared_ptr<Action> RefPtr;
-  typedef boost::function<void ()> ExecuteCallback;
 
   // Constructor.
   Action ( Usul::Commands::Command *command );
-  Action ( const std::string& text, ExecuteCallback callback );
 
   // Destructor.
   virtual ~Action();
@@ -62,7 +63,7 @@ private:
 
   virtual void _execute();
 
-  ExecuteCallback _executeCallback;
+  Usul::Commands::Command::RefPtr _command;
 };
 
 

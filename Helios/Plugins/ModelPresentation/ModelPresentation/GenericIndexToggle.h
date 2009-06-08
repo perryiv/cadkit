@@ -56,6 +56,19 @@ private:
 
 };
 
+template < class GetFunction, class SetFunction >
+const std::type_info &GenericIndexToggle < GetFunction, SetFunction >::classTypeId() 
+{
+  return typeid ( ThisType );
+}
+
+
+template < class GetFunction, class SetFunction >
+const std::type_info &GenericIndexToggle < GetFunction, SetFunction >::typeId() const 
+{
+  return ThisType::classTypeId();
+}
+
 
 template < class GetFunction, class SetFunction >
 Usul::Commands::Command* GenericIndexToggle < GetFunction, SetFunction >::clone ( ) const 

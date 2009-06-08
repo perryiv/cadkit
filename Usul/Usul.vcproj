@@ -47,7 +47,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../;$(BOOST_INC_DIR)"
+				AdditionalIncludeDirectories="../"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_USUL"
 				ExceptionHandling="2"
 				BasicRuntimeChecks="3"
@@ -85,7 +85,7 @@
 				OutputFile="$(CADKIT_BIN_DIR)/Usuld.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(BOOST_LIB_DIR)"
+				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/Usuld.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/Usuld.lib"
@@ -149,7 +149,7 @@
 				AdditionalOptions="/Zm200 /Oy-"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="false"
-				AdditionalIncludeDirectories="../;$(BOOST_INC_DIR)"
+				AdditionalIncludeDirectories="../"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_USUL"
 				StringPooling="true"
 				ExceptionHandling="2"
@@ -185,7 +185,7 @@
 				OutputFile="$(CADKIT_BIN_DIR)/Usul.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(BOOST_LIB_DIR)"
+				AdditionalLibraryDirectories=""
 				ProgramDatabaseFile=".\Release/Usul.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/Usul.lib"
 			/>
@@ -743,11 +743,19 @@
 				Name="Interfaces"
 				>
 				<File
+					RelativePath=".\Interfaces\GUI\IAboutString.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IActiveDocumentListener.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Interfaces\IActiveViewListener.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\GUI\IAddDockWindow.h"
 					>
 				</File>
 				<File
@@ -763,19 +771,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IAnimateMatrices.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IAnimateNurbsCurve.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IAnimatePath.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IAnimationNotify.h"
 					>
 				</File>
 				<File
@@ -787,7 +783,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IBackgroundColor.h"
+					RelativePath=".\Interfaces\IBackground.h"
 					>
 				</File>
 				<File
@@ -796,10 +792,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IBuildScene.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IBusyState.h"
 					>
 				</File>
 				<File
@@ -835,11 +827,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\GUI\ICancelButton.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\ICanceledStateGet.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Interfaces\ICanClose.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\ICanInsert.h"
 					>
 				</File>
 				<File
@@ -851,7 +851,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\ICFDCommands.h"
+					>
+				</File>
+				<File
 					RelativePath="Interfaces\IClassFactory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\ICleanUp.h"
 					>
 				</File>
 				<File
@@ -871,6 +879,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IColorsPerVertex.h"
+					>
+				</File>
+				<File
 					RelativePath="Interfaces\ICommand.h"
 					>
 				</File>
@@ -883,7 +895,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IContextMenuAdd.h"
+					RelativePath=".\Interfaces\IComputeTriangleNormals.h"
 					>
 				</File>
 				<File
@@ -899,15 +911,11 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IDatabaseConnection.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IDatabasePager.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IDataChangedListener.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IDataChangedNotify.h"
 					>
 				</File>
 				<File
@@ -915,7 +923,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IDefaultGUIDelegate.h"
+					RelativePath=".\Interfaces\IDeleteAllConnected.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IDeletePrimitive.h"
 					>
 				</File>
 				<File
@@ -924,6 +936,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IDisplaylists.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IDldNavigator.h"
 					>
 				</File>
 				<File
@@ -939,11 +955,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IElevationDatabase.h"
+					RelativePath=".\Interfaces\IDrtCommands.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IEventListener.h"
+					RelativePath=".\Interfaces\IElevationDatabase.h"
 					>
 				</File>
 				<File
@@ -959,7 +975,23 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IFindLoops.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IFitLineTerrain.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IFlipNormal.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IFlipNormals.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\GUI\IFlushEvents.h"
 					>
 				</File>
 				<File
@@ -995,11 +1027,31 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IGetLoops.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IGetOptions.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IGetTriangleNormal.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IGetVertex.h"
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IGetVertexNormal.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IGroup.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IGroupPrimitives.h"
 					>
 				</File>
 				<File
@@ -1011,19 +1063,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IHandleSeek.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IImageToGrayScale.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Interfaces\IInitNewDocument.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IInputListener.h"
 					>
 				</File>
 				<File
@@ -1035,7 +1079,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IJobFinishedListener.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IJoystick.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IKeepAllConnected.h"
 					>
 				</File>
 				<File
@@ -1059,6 +1111,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\ILoadColorFile.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\ILoadFileDialog.h"
 					>
 				</File>
@@ -1068,6 +1124,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\GUI\IMaterialEditor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IMaterials.h"
 					>
 				</File>
 				<File
@@ -1175,10 +1235,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IProjectionMatrix.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IQtDockWidgetMenu.h"
 					>
 				</File>
@@ -1227,6 +1283,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IRenderingPasses.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IRenderListener.h"
 					>
 				</File>
@@ -1251,11 +1311,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\ISceneGraph.h"
+					RelativePath=".\Interfaces\ISceneElement.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Interfaces\ISceneIntersect.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IScreenCapture.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\ISelectionBox.h"
 					>
 				</File>
 				<File
@@ -1264,6 +1332,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IShadeModel.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IShowNewPrimitives.h"
 					>
 				</File>
 				<File
@@ -1319,23 +1391,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\ITimerNotify.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ITimerService.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\ITimestepAnimation.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Interfaces\ITimeVaryingData.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IToolBarAdd.h"
 					>
 				</File>
 				<File
@@ -1348,6 +1408,18 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\ITreeNode.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\ITriangle.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\ITriangleSV.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\ITriangulate.h"
 					>
 				</File>
 				<File
@@ -1396,6 +1468,14 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\GUI\IUpdateTreeControls.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IVaporIntrusionGUI.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IVertices.h"
 					>
 				</File>
 				<File
@@ -1599,6 +1679,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Predicates\DirExists.h"
+					>
+				</File>
+				<File
 					RelativePath="Predicates\EndsWith.h"
 					>
 				</File>
@@ -1763,19 +1847,41 @@
 				Name="Threads"
 				>
 				<File
-					RelativePath=".\Threads\Atomic.h"
+					RelativePath=".\Threads\Callback.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Threads\AtomicMutex.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Threads\AtomicTBB.h"
+					RelativePath=".\Threads\Callback.h"
 					>
 				</File>
 				<File
 					RelativePath="Threads\Guard.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\Manager.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)2.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)2.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Threads\Manager.h"
 					>
 				</File>
 				<File
@@ -1843,6 +1949,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Threads\SetThreadFactory.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Threads\Task.cpp"
 					>
 				</File>
@@ -1851,11 +1961,15 @@
 					>
 				</File>
 				<File
-					RelativePath="Threads\ThreadId.h"
+					RelativePath=".\Threads\Thread.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Threads\ThreadName.h"
+					RelativePath=".\Threads\Thread.h"
+					>
+				</File>
+				<File
+					RelativePath="Threads\ThreadId.h"
 					>
 				</File>
 				<File
@@ -1916,10 +2030,6 @@
 				</File>
 				<File
 					RelativePath=".\File\Find.h"
-					>
-				</File>
-				<File
-					RelativePath=".\File\LineEnding.h"
 					>
 				</File>
 				<File
@@ -2154,6 +2264,46 @@
 			<Filter
 				Name="Resources"
 				>
+				<File
+					RelativePath=".\Resources\CancelButton.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Resources\CancelButton.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Resources\EventQueue.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Resources\EventQueue.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Resources\ProgressBar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Resources\ProgressBar.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Resources\ReportErrors.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Resources\ReportErrors.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Resources\StatusBar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Resources\StatusBar.h"
+					>
+				</File>
 				<File
 					RelativePath=".\Resources\TextWindow.cpp"
 					>
@@ -2410,6 +2560,38 @@
 					RelativePath=".\Commands\History.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Commands\PolygonMode.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Commands\PolygonMode.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Commands\RenderingPasses.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Commands\RenderingPasses.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Commands\RenderLoop.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Commands\RenderLoop.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Commands\ShadeModel.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Commands\ShadeModel.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Adaptors"
@@ -2598,14 +2780,6 @@
 			<Filter
 				Name="Preprocess"
 				>
-				<File
-					RelativePath=".\Preprocess\Deprecated.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Preprocess\Singleton.h"
-					>
-				</File>
 				<File
 					RelativePath=".\Preprocess\UniqueName.h"
 					>

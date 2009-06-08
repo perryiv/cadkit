@@ -27,7 +27,7 @@ SET (EXECUTABLE_OUTPUT_PATH
 )
 
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" ${Boost_INCLUDE_DIR} )
+INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" )
 
 ADD_DEFINITIONS("-D_COMPILING_USUL")
 
@@ -123,7 +123,13 @@ SET ( HEADERS
 ./CommandLine/Options.h
 ./CommandLine/Parser.h
 ./Commands/Command.h
+./Commands/GenericCheckCommand.h
+./Commands/GenericCommand.h
 ./Commands/History.h
+./Commands/PolygonMode.h
+./Commands/RenderingPasses.h
+./Commands/RenderLoop.h
+./Commands/ShadeModel.h
 ./Components/Call.h
 ./Components/Create.h
 ./Components/Exceptions.h
@@ -233,12 +239,17 @@ SET ( HEADERS
 ./Headers/SStream.h
 ./Helper/AnimationNotify.h
 ./ID/GUID.h
+./Interfaces/GUI/IAboutString.h
+./Interfaces/GUI/ICancelButton.h
+./Interfaces/GUI/IFlushEvents.h
 ./Interfaces/GUI/IGUIDelegate.h
 ./Interfaces/GUI/IGUIDelegateNotify.h
 ./Interfaces/GUI/IMaterialEditor.h
 ./Interfaces/GUI/IProgressBar.h
 ./Interfaces/GUI/IProgressBarFactory.h
 ./Interfaces/GUI/IQuestion.h
+./Interfaces/GUI/IReportErrors.h
+./Interfaces/GUI/ISetCursorType.h
 ./Interfaces/GUI/IStatusBar.h
 ./Interfaces/GUI/IUpdateGUI.h
 ./Interfaces/GUI/IUpdateTextWindow.h
@@ -255,6 +266,7 @@ SET ( HEADERS
 ./Interfaces/IAnimateMatrices.h
 ./Interfaces/IArcGenReaderWriter.h
 ./Interfaces/IAxes.h
+./Interfaces/IBackground.h
 ./Interfaces/IBackgroundColor.h
 ./Interfaces/IBooleanState.h
 ./Interfaces/IBuildScene.h
@@ -269,16 +281,20 @@ SET ( HEADERS
 ./Interfaces/ICancel.h
 ./Interfaces/ICanceledStateGet.h
 ./Interfaces/ICanClose.h
+./Interfaces/ICanInsert.h
 ./Interfaces/ICanRedo.h
 ./Interfaces/ICanUndo.h
 ./Interfaces/IClassFactory.h
+./Interfaces/ICleanUp.h
 ./Interfaces/IClippingDistance.h
 ./Interfaces/IClippingPlanes.h
 ./Interfaces/IClonable.h
 ./Interfaces/IColorEditor.h
+./Interfaces/IColorsPerVertex.h
 ./Interfaces/ICommand.h
 ./Interfaces/ICommandExecuteListener.h
 ./Interfaces/ICommandQueueAdd.h
+./Interfaces/IComputeTriangleNormals.h
 ./Interfaces/IContextMenuAdd.h
 ./Interfaces/ICoordinateTransform.h
 ./Interfaces/ICreateTriangleDocument.h
@@ -288,35 +304,51 @@ SET ( HEADERS
 ./Interfaces/IDataChangedNotify.h
 ./Interfaces/IDecimateTriangles.h
 ./Interfaces/IDefaultGUIDelegate.h
+./Interfaces/IDeleteAllConnected.h
+./Interfaces/IDeletePrimitive.h
 ./Interfaces/IDirtyState.h
+./Interfaces/IDisplaylists.h
 ./Interfaces/IDocument.h
 ./Interfaces/IDocumentCreate.h
 ./Interfaces/IDocumentSelect.h
+./Interfaces/IDrtCommands.h
 ./Interfaces/IElevationDatabase.h
 ./Interfaces/IExportImage.h
 ./Interfaces/IExportModel.h
 ./Interfaces/IExportScene.h
+./Interfaces/IFindLoops.h
+./Interfaces/IFlipNormal.h
 ./Interfaces/IFlipNormals.h
 ./Interfaces/IFrameDump.h
 ./Interfaces/IFrameInfo.h
 ./Interfaces/IFrameStamp.h
 ./Interfaces/IGeneralShader.h
 ./Interfaces/IGetBoundingBox.h
+./Interfaces/IGetDocument.h
 ./Interfaces/IGetImageData.h
 ./Interfaces/IGetImageProperties.h
+./Interfaces/IGetLoops.h
+./Interfaces/IGetOptions.h
+./Interfaces/IGetTriangleNormal.h
 ./Interfaces/IGetVertex.h
+./Interfaces/IGetVertexNormal.h
 ./Interfaces/IGroup.h
+./Interfaces/IGroupPrimitives.h
 ./Interfaces/IImageToGrayScale.h
 ./Interfaces/IInitNewDocument.h
 ./Interfaces/IIntersectListener.h
 ./Interfaces/IIntersectNotify.h
+./Interfaces/IJobFinishedListener.h
 ./Interfaces/IJoystick.h
+./Interfaces/IKeepAllConnected.h
 ./Interfaces/IKeyListener.h
 ./Interfaces/ILayer.h
 ./Interfaces/ILayerAddGUIQt.h
 ./Interfaces/ILayerExtents.h
 ./Interfaces/ILayerModifyGUIQt.h
+./Interfaces/ILoadColorFile.h
 ./Interfaces/ILoadFileDialog.h
+./Interfaces/IMaterials.h
 ./Interfaces/IMatrixManipulator.h
 ./Interfaces/IMatrixMultiply.h
 ./Interfaces/IMemoryPool.h
@@ -352,11 +384,14 @@ SET ( HEADERS
 ./Interfaces/IRedo.h
 ./Interfaces/IRedraw.h
 ./Interfaces/IRenderInfoOSG.h
+./Interfaces/IRenderingPasses.h
 ./Interfaces/IRenderListener.h
+./Interfaces/IRenderLoop.h
 ./Interfaces/IRenderNotify.h
 ./Interfaces/IRotationCenter.h
 ./Interfaces/ISaveFileDialog.h
 ./Interfaces/ISceneIntersect.h
+./Interfaces/IScreenCapture.h
 ./Interfaces/ISerialize.h
 ./Interfaces/IShadeModel.h
 ./Interfaces/ISmoothTriangles.h
@@ -377,13 +412,20 @@ SET ( HEADERS
 ./Interfaces/ITrackball.h
 ./Interfaces/ITranslationSpeed.h
 ./Interfaces/ITreeNode.h
+./Interfaces/ITriangle.h
+./Interfaces/ITriangleSV.h
+./Interfaces/ITriangulate.h
 ./Interfaces/ITriangulateGrid.h
 ./Interfaces/ITriangulateLoop.h
 ./Interfaces/IUndo.h
 ./Interfaces/IUnknown.h
+./Interfaces/IUpdateCheck.h
+./Interfaces/IUpdateEnable.h
 ./Interfaces/IUpdateListener.h
 ./Interfaces/IUpdateSceneVisitor.h
 ./Interfaces/IUpdateSubject.h
+./Interfaces/IVaporIntrusionGUI.h
+./Interfaces/IVertices.h
 ./Interfaces/IView.h
 ./Interfaces/IViewMatrix.h
 ./Interfaces/IViewMode.h
@@ -451,6 +493,7 @@ SET ( HEADERS
 ./Predicates/CanWrite.h
 ./Predicates/CloseFloat.h
 ./Predicates/CompareCoordinate.h
+./Predicates/DirExists.h
 ./Predicates/EndsWith.h
 ./Predicates/EqualVector.h
 ./Predicates/FileExists.h
@@ -469,6 +512,11 @@ SET ( HEADERS
 ./Registry/Node.h
 ./Registry/Qt.h
 ./Registry/Visitor.h
+./Resources/CancelButton.h
+./Resources/EventQueue.h
+./Resources/ProgressBar.h
+./Resources/ReportErrors.h
+./Resources/StatusBar.h
 ./Resources/TextWindow.h
 ./Scope/Caller.h
 ./Scope/CurrentDirectory.h
@@ -503,7 +551,9 @@ SET ( HEADERS
 ./System/Screen.h
 ./System/Sleep.h
 ./System/Socket.h
+./Threads/Callback.h
 ./Threads/Guard.h
+./Threads/Manager.h
 ./Threads/Map.h
 ./Threads/Mutex.h
 ./Threads/MutexTraits.h
@@ -515,7 +565,9 @@ SET ( HEADERS
 ./Threads/RecursiveMutex.h
 ./Threads/Safe.h
 ./Threads/Set.h
+./Threads/SetThreadFactory.h
 ./Threads/Task.h
+./Threads/Thread.h
 ./Threads/ThreadId.h
 ./Threads/Variable.h
 ./Trace/Print.h
@@ -537,10 +589,13 @@ SET ( HEADERS
 
 SET (SOURCES
 ./Threads/Named.cpp
+./Threads/Callback.cpp
 ./Threads/ReadWriteMutex.cpp
 ./Threads/RecursiveMutex.cpp
 ./Threads/Task.cpp
 ./Threads/Pool.cpp
+./Threads/Manager.cpp
+./Threads/Thread.cpp
 ./Threads/Mutex.cpp
 ./Console/Feedback.cpp
 ./Shared/Preferences.cpp
@@ -566,9 +621,18 @@ SET (SOURCES
 ./File/Rename.cpp
 ./File/Make.cpp
 ./File/Temp.cpp
+./Commands/RenderLoop.cpp
 ./Commands/Command.cpp
+./Commands/RenderingPasses.cpp
+./Commands/PolygonMode.cpp
+./Commands/ShadeModel.cpp
 ./Commands/History.cpp
 ./Resources/TextWindow.cpp
+./Resources/CancelButton.cpp
+./Resources/ProgressBar.cpp
+./Resources/EventQueue.cpp
+./Resources/StatusBar.cpp
+./Resources/ReportErrors.cpp
 ./Registry/Database.cpp
 ./Registry/Node.cpp
 ./Registry/Visitor.cpp
@@ -648,8 +712,7 @@ ELSE(WIN32)
 ENDIF(WIN32)
 
 # Link the Library
-TARGET_LINK_LIBRARIES( ${TARGET_NAME} ${SYSTEM_LIBRARIES} ${Boost_THREAD_LIBRARY} ${Boost_DATE_TIME_LIBRARY} )
+TARGET_LINK_LIBRARIES( ${TARGET_NAME} ${SYSTEM_LIBRARIES} )
 
 # Create the config file.
 CONFIGURE_FILE ( ${CMAKE_CURRENT_SOURCE_DIR}/Config/Config.h.in.cmake ${CMAKE_CURRENT_SOURCE_DIR}/Config/Config.h )
-

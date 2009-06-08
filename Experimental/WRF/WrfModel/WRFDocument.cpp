@@ -13,6 +13,8 @@
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Commands/GenericCommand.h"
+#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Factory/RegisterCreator.h"
@@ -29,6 +31,7 @@
 #include "Usul/Math/MinMax.h"
 #include "Usul/Network/Names.h"
 #include "Usul/Predicates/CloseFloat.h"
+#include "Usul/Predicates/FileExists.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Format.h"
@@ -885,34 +888,36 @@ void WRFDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * ca
   MenuKit::Menu::RefPtr wrf ( new MenuKit::Menu ( "WRF" ) );
   
   // Add animating toggle.
-  wrf->append ( ToggleButton::create (  "Animate", Usul::Adaptors::memberFunction<void>( this, &WRFDocument::animating ), Usul::Adaptors::memberFunction<bool> ( this, &WRFDocument::isAnimating ) ) );
+  wrf->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Animate", Usul::Adaptors::memberFunction<void>( this, &WRFDocument::animating ), Usul::Adaptors::memberFunction<bool> ( this, &WRFDocument::isAnimating ) ) ) );
 
-  wrf->append ( Button::create ( "First Timestep",    boost::bind ( &WRFDocument::setCurrentTimeStep, this, 0 ) ) );
-  wrf->append ( Button::create ( "Next Timestep",     boost::bind ( &WRFDocument::nextTimeStep, this ) ) );
-  wrf->append ( Button::create ( "Previous Timestep", boost::bind ( &WRFDocument::previousTimeStep, this ) ) );
+  wrf->append ( new Button ( Usul::Commands::genericCommand ( "First Timestep",    Usul::Adaptors::bind1<void> ( 0, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::setCurrentTimeStep )  ), Usul::Commands::TrueFunctor() ) ) );
+  wrf->append ( new Button ( Usul::Commands::genericCommand ( "Next Timestep",     Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::nextTimeStep ),     Usul::Commands::TrueFunctor() ) ) );
+  wrf->append ( new Button ( Usul::Commands::genericCommand ( "Previous Timestep", Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::previousTimeStep ), Usul::Commands::TrueFunctor() ) ) );
 
   MenuKit::Menu::RefPtr channels ( new MenuKit::Menu ( "Channels" ) );
   for ( ChannelInfos::iterator iter = _channelInfo.begin(); iter != _channelInfo.end(); ++ iter )
   {
-    channels->append ( RadioButton::create ( (*iter)->name (), 
-      boost::bind ( &WRFDocument::currentChannel, this, (*iter)->index() ), 
-      boost::bind ( &WRFDocument::isCurrentChannel, this, (*iter)->index() ) ) );
+    channels->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( 
+      (*iter)->name (), 
+      Usul::Adaptors::bind1<void> ( (*iter)->index (), Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::currentChannel ) ), 
+      Usul::Adaptors::bind1<bool> ( (*iter)->index (), Usul::Adaptors::memberFunction<bool> ( this, &WRFDocument::isCurrentChannel ) ) ) ) );
   }
   wrf->append ( channels.get() );
 
-  wrf->append ( Button::create ( Usul::Strings::format ( "Multiply planes x ", 4.0  ), boost::bind ( &WRFDocument::numPlanesMultiply, this, 4.0 ) ) );
-  wrf->append ( Button::create ( Usul::Strings::format ( "Multiply planes x ", 2.0  ), boost::bind ( &WRFDocument::numPlanesMultiply, this, 2.0 ) ) );
-  wrf->append ( Button::create ( Usul::Strings::format ( "Multiply planes x ", 0.5  ), boost::bind ( &WRFDocument::numPlanesMultiply, this, 0.5 ) ) );
-  wrf->append ( Button::create ( Usul::Strings::format ( "Multiply planes x ", 0.25 ), boost::bind ( &WRFDocument::numPlanesMultiply, this, 0.25 ) ) );
+  wrf->append ( new Button ( Usul::Commands::genericCommand ( Usul::Strings::format ( "Multiply planes x ", 4.0  ), Usul::Adaptors::bind1<void> ( 4.0,  Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::numPlanesMultiply )  ), Usul::Commands::TrueFunctor() ) ) );
+  wrf->append ( new Button ( Usul::Commands::genericCommand ( Usul::Strings::format ( "Multiply planes x ", 2.0  ), Usul::Adaptors::bind1<void> ( 2.0,  Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::numPlanesMultiply )  ), Usul::Commands::TrueFunctor() ) ) );
+  wrf->append ( new Button ( Usul::Commands::genericCommand ( Usul::Strings::format ( "Multiply planes x ", 0.5  ), Usul::Adaptors::bind1<void> ( 0.5,  Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::numPlanesMultiply )  ), Usul::Commands::TrueFunctor() ) ) );
+  wrf->append ( new Button ( Usul::Commands::genericCommand ( Usul::Strings::format ( "Multiply planes x ", 0.25 ), Usul::Adaptors::bind1<void> ( 0.25, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::numPlanesMultiply )  ), Usul::Commands::TrueFunctor() ) ) );
 
   MenuKit::Menu::RefPtr tf ( new MenuKit::Menu ( "Transfer Functions" ) );
   typedef TransferFunctions::const_iterator ConstIterator;
   for ( ConstIterator iter = _transferFunctions.begin(); iter != _transferFunctions.end(); ++iter )
   {
     const long num ( std::distance<ConstIterator> ( _transferFunctions.begin(), iter ) );
-    tf->append ( RadioButton::create ( Usul::Strings::format ( num ), 
-      boost::bind ( &WRFDocument::transferFunction, this, num ), 
-      boost::bind ( &WRFDocument::isTransferFunction, this, num ) ) );
+    tf->append ( new RadioButton ( 
+                 Usul::Commands::genericCheckCommand ( Usul::Strings::format ( num ), 
+                                 Usul::Adaptors::bind1<void> ( num, Usul::Adaptors::memberFunction<void> ( this, &WRFDocument::transferFunction ) ), 
+                                 Usul::Adaptors::bind1<bool> ( num, Usul::Adaptors::memberFunction<bool> ( this, &WRFDocument::isTransferFunction ) ) ) ) );
   }
 
   wrf->append ( tf.get() );

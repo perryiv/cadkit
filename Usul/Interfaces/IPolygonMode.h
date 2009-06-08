@@ -34,8 +34,8 @@ struct IPolygonMode : public Usul::Interfaces::IUnknown
   enum Mode { NONE, POINTS, WIRE_FRAME, HIDDEN_LINES, FILLED };
 
   /// Set/get the polygon mode state.
-  virtual void                    polygonModeSet ( Mode mode ) = 0;
-  virtual Mode                    polygonModeGet() const = 0;
+  virtual void                    polygonMode ( Mode mode ) = 0;
+  virtual Mode                    polygonMode() const = 0;
 
 }; // class IPolygonMode
 

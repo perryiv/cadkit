@@ -18,6 +18,8 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
+#include "Usul/Interfaces/GUI/IFlushEvents.h"
+
 namespace Usul {
 namespace Interfaces {
 
@@ -69,10 +71,11 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
   struct UpdateProgressBar
   {
     template < class T > UpdateProgressBar( double start, double finish, T *t, bool hideWhenFinished = true ) :
-      _start( start ),
-      _finish ( finish ),
-      _progressBar ( t ),
-      _hideWhenFinished ( hideWhenFinished )
+    _start( start ),
+    _finish ( finish ),
+    _progressBar ( t ),
+    _flush( t ),
+    _hideWhenFinished ( hideWhenFinished )
     {
       //Show the progress bar if we have one
       if( _progressBar.valid() )
@@ -101,6 +104,10 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
       {
         //Update the progress bar
         _progressBar->updateProgressBar ( static_cast < unsigned int > ( percent * 100 ) );
+
+        //Flush the event queue.  Makes application responsive
+        if ( _flush.valid() )
+          _flush->flushEventQueue();
       }
     }
 
@@ -108,7 +115,8 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
     double _start;
     double _finish;
 
-    mutable IProgressBar::QueryPtr _progressBar;
+    mutable IProgressBar::QueryPtr                   _progressBar;
+    mutable Usul::Interfaces::IFlushEvents::QueryPtr _flush;
     bool _hideWhenFinished;
   };
 };

@@ -22,27 +22,61 @@
 #include "OsgTools/Triangles/Loop.h"
 
 #include "Usul/Interfaces/IFlipNormals.h"
+#include "Usul/Interfaces/IFlipNormal.h"
 #include "Usul/Interfaces/IAddTriangle.h"
+#include "Usul/Interfaces/IFindLoops.h"
+#include "Usul/Interfaces/IGetLoops.h"
 #include "Usul/Interfaces/IGetVertex.h"
+#include "Usul/Interfaces/IDeletePrimitive.h"
+#include "Usul/Interfaces/IKeepAllConnected.h"
+#include "Usul/Interfaces/IDeleteAllConnected.h"
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/ITriangle.h"
+#include "Usul/Interfaces/ITriangleSV.h"
+#include "Usul/Interfaces/IGetVertexNormal.h"
+#include "Usul/Interfaces/IGetTriangleNormal.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/IAddSharedVertex.h"
+#include "Usul/Interfaces/IGroupPrimitives.h"
+#include "Usul/Interfaces/IVertices.h"
+#include "Usul/Interfaces/IMaterials.h"
+#include "Usul/Interfaces/IDisplaylists.h"
+#include "Usul/Interfaces/IColorsPerVertex.h"
 #include "Usul/Interfaces/IMemoryPool.h"
+#include "Usul/Interfaces/ILoadColorFile.h"
 
 #include "Usul/Types/Types.h"
 
 #include <string>
 
+using namespace Usul::Types;
+
 
 class TriangleDocument : public Usul::Documents::Document,
                          public Usul::Interfaces::IFlipNormals,
+                         public Usul::Interfaces::IFlipNormal,
                          public Usul::Interfaces::IAddTriangleWithSharedVertex,
                          public Usul::Interfaces::IAddTrangleWithOsgVec3f,
+                         public Usul::Interfaces::IFindLoops,
+                         public Usul::Interfaces::IGetLoops,
                          public Usul::Interfaces::IGetVertex,
+                         public Usul::Interfaces::IDeletePrimitive,
+                         public Usul::Interfaces::IKeepAllConnected,
+                         public Usul::Interfaces::IDeleteAllConnected,
                          public Usul::Interfaces::IBuildScene,
+                         public Usul::Interfaces::ITriangle,
+                         public Usul::Interfaces::ITriangleSV,
+                         public Usul::Interfaces::IGetVertexNormal,
+                         public Usul::Interfaces::IGetTriangleNormal,
                          public Usul::Interfaces::IGetBoundingBox,
                          public Usul::Interfaces::IAddSharedVertex,
-                         public Usul::Interfaces::IMemoryPool
+                         public Usul::Interfaces::IGroupPrimitives,
+                         public Usul::Interfaces::IVertices,
+                         public Usul::Interfaces::IColorsPerVertex,
+                         public Usul::Interfaces::IMemoryPool,
+                         public Usul::Interfaces::IMaterials,
+                         public Usul::Interfaces::IDisplaylists,
+                         public Usul::Interfaces::ILoadColorFile
 {
 public:
 
@@ -51,10 +85,9 @@ public:
   typedef OsgTools::Triangles::TriangleSet TriangleSet;
   typedef TriangleSet::TriangleVector TriangleVector;
   typedef OsgTools::Triangles::SharedVertex SharedVertex;
-  typedef std::vector<OsgTools::Triangles::Loop> Loops;
+  typedef Usul::Interfaces::IGetLoops::Loops Loops;
   typedef OsgTools::Triangles::Triangle Triangle;
   typedef Usul::Interfaces::IUnknown IUnknown;
-  typedef TriangleSet::HeaderInfo HeaderInfo;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( TriangleDocument );
@@ -118,8 +151,9 @@ public:
   // Usul::Interfaces::IFindLoops
   virtual void                findLoops ( Usul::Interfaces::IUnknown* caller );
 
-  // Load the given color file.
+  // Usul::Interfaces::ILoadColorFile
   virtual void                loadColorFile( const std::string &filename, const HeaderInfo& header );
+
 
   /// Flip the normals.
   virtual void                flipNormalVectors();
@@ -207,14 +241,14 @@ protected:
   /// Use reference counting.
   virtual ~TriangleDocument();
 
-  void                        _findAllConnected ( Usul::Interfaces::IUnknown* caller, Connected& connected, Usul::Types::Uint32 seed, bool showProgress, bool clearFlags );
+  void                        _findAllConnected ( Usul::Interfaces::IUnknown* caller, Connected& connected, Uint32 seed, bool showProgress, bool clearFlags );
 
   /// Usul::Interfaces::IKeepAllConnected
   virtual void                keepAllConnected ( Usul::Interfaces::IUnknown *caller, const osgUtil::LineSegmentIntersector::Intersection &hit );
 
   /// Usul::Interfaces::IGroupPrimitives
   virtual void                groupPrimitives ( Usul::Interfaces::IUnknown *caller);
-  virtual unsigned int        groupsNumber() const;
+  virtual unsigned int        groupsNumber () const;
   virtual IUnknown*           getPrimitiveGroup ( unsigned int i );
 
   /// Usul::Interfaces::IGetLoops
@@ -224,16 +258,16 @@ protected:
   virtual Loops&              getCappedLoops();
 
   /// Usul::Interfaces::ISmoothModel
-  virtual void                smoothModel();
+  virtual void                smoothModel ( );
 
   /// Usul::Interfaces::IDecimateModel
-  virtual void                decimateModel();
+  virtual void                decimateModel ( );
 
   /// Usul::Interfaces::ISubdivideModel
   virtual void                subdivideModel ( unsigned int numSubdivisions);
 
   /// Usul::Interfaces::IShowNewPrimitives
-  virtual osg::Node*          getNewPrimitives();
+  virtual osg::Node*          getNewPrimitives ( );
 
 private:
 

@@ -21,6 +21,8 @@
 using namespace Usul;
 using namespace Usul::Base;
 
+USUL_IMPLEMENT_TYPE_ID ( Referenced );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -133,8 +135,7 @@ void Referenced::unref ( bool allowDeletion )
   {
     #ifdef _DEBUG
 
-      const char* typeName ( typeid ( *this ).name() );
-      const std::string name ( 0x0 != typeName ? typeName : std::string() );
+      const std::string name ( this->typeId().name() );
 
       try
       {

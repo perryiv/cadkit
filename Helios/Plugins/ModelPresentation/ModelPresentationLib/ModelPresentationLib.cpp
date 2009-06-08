@@ -11,6 +11,7 @@
 #include "ModelPresentationLib.h"
 #include "DrtSim/DRTSimReader.h"
 
+#include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"

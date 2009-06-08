@@ -52,8 +52,6 @@ public:
   std::string                   getCurrentValue();
   MaterialsMap                  getCheckedMaterials();
 
-  void                          add( const std::string& name, const std::string& value );
-
 
 private:
   Materials                      _materials;

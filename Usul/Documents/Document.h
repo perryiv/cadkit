@@ -26,6 +26,7 @@
 #include "Usul/Interfaces/IRead.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ICanClose.h"
+#include "Usul/Interfaces/ICanInsert.h"
 #include "Usul/Interfaces/IView.h"
 #include "Usul/Interfaces/GUI/IWindow.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
@@ -52,6 +53,7 @@ class USUL_EXPORT Document : public Usul::Base::Object,
                              public Usul::Interfaces::IDocument,
                              public Usul::Interfaces::IRead,
                              public Usul::Interfaces::ICanClose,
+                             public Usul::Interfaces::ICanInsert,
                              public Usul::Interfaces::IModifiedSubject,
                              public Usul::Interfaces::IRenderListener,
                              public Usul::Interfaces::IRedraw
@@ -152,6 +154,9 @@ public:
   virtual Filters             filtersInsert() const = 0;
   virtual Filters             filtersOpen()   const = 0;
   virtual Filters             filtersSave()   const = 0;
+
+  // Flush the event queue. Gives the user the opportunity to cancel.
+  void                        flushEvents();
 
   /// Prompt user for documents to export.
   void                        exportDocument ( Unknown *caller = 0x0 );

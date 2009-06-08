@@ -183,6 +183,10 @@ public:
   void                      needsRedraw ( bool b );
   bool                      needsRedraw() const;
 
+  // Pre- and post-render notifications.
+  virtual void              preRender  ( Usul::Interfaces::IUnknown *caller );
+  virtual void              postRender ( Usul::Interfaces::IUnknown *caller );
+
   // Purge tiles that are ready.
   void                      purgeTiles();
 

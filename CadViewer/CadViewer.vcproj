@@ -241,6 +241,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Signals.h"
+					>
+				</File>
+				<File
 					RelativePath=".\ToolCallback.h"
 					>
 				</File>

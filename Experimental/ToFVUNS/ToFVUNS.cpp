@@ -17,16 +17,8 @@
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Scope/CurrentDirectory.h"
 #include "Usul/Math/Constants.h"
-#include "Usul/Math/Interpolate.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Convert/Convert.h"
-
-#include "osg/Geode"
-#include "osg/Group"
-#include "osg/Geometry"
-#include "osg/Array"
-
-#include "osgDB/WriteFile"
 
 #include <fstream>
 #include <iomanip>
@@ -35,8 +27,13 @@
 #define A_WALL         (07)
 #define NOT_A_WALL     (0)
 
-#define CHANNEL_TO_TEST 0
-#define USE_FORTAN_STORAGE_ORDER 0
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Interface plumbing.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ToFVUNS, ToFVUNS::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -55,8 +52,7 @@ ToFVUNS::ToFVUNS ( int argc, char **argv ) :
   _indexGrid(),
   _xValues(),
   _yValues(),
-  _zValues(),
-  _colorRamp()
+  _zValues()
 {
 }
 
@@ -71,6 +67,28 @@ ToFVUNS::~ToFVUNS()
 {
   // Release all plugins.
   Usul::Components::Manager::instance().clear ( &std::cout );
+
+  // Set the mutex factory to null so that we can find late uses of it.
+  // Usul::Threads::Mutex::createFunction ( 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query the interfaces
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown *ToFVUNS::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IProgressBar::IID:
+    return static_cast < Usul::Interfaces::IProgressBar * > ( this );
+  default:
+    return 0x0;
+  }
 }
 
 
@@ -97,18 +115,8 @@ void ToFVUNS::run()
   // Write the grid file
   this->_writeGridFile( _workingDirectory + _baseFilename + ".grid" );
 
-  // Write the osg file
-  unsigned int y ( _dimensions[1] / 2 );
-  this->_writeOsgSlice( y, _workingDirectory + _baseFilename + ".osg" );
-
   // write debug file
-//#ifdef _DEBUG
-//  this->_writeDebugFile( _workingDirectory + _baseFilename + ".debug.txt" );
-//#endif
-//
-//#ifdef _RELEASE
-//  this->_writeDebugFile( _workingDirectory + _baseFilename + ".debug.txt" );
-//#endif
+  // this->_writeDebugFile( _workingDirectory + _baseFilename + ".debug.txt" );
 }
 
 
@@ -186,14 +194,12 @@ void ToFVUNS::_processFiles()
     {
       if( i < 4 )
       {
-        // Read the result value.
-#if USE_FORTAN_STORAGE_ORDER == 1
-        Result grid ( boost::extents[0][0][0], boost::fortran_storage_order() );
-#else
-        Result grid;
-#endif
-        this->_processResultFile ( file, grid );
-        _values.push_back ( grid );
+        // Temp Value 
+        Grid2D grid;
+
+        // process the values
+        this->_processFile ( file, grid );
+        _values.push_back( grid );
       }
       else
       {
@@ -227,17 +233,26 @@ void ToFVUNS::_processFiles()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ToFVUNS::_processResultFile ( const std::string &file, Result &grid )
+void ToFVUNS::_processFile ( const std::string &file, Grid2D &grid )
 {
-  // Open the file.
-  std::ifstream ifs ( file.c_str(), std::ifstream::in | std::ifstream::binary );
+ // create a file handle
+  std::ifstream* ifs ( new std::ifstream );
+
+  // open the file
+  ifs->open( file.c_str(), std::ifstream::out | std::ifstream::binary );
 
   // make sure the file was opened
-  if( false == ifs.is_open() )
+  if( false == ifs->is_open() )
     throw std::runtime_error ( "Error 1188374386: Failed to open file: " + file );
 
   // output info
   std::cout << "Now reading file: " << file << std::endl;
+
+  // temp values to store the header
+  Usul::Types::Uint16 h1 ( 0 );
+  Usul::Types::Uint16 h2 ( 0 );
+  Usul::Types::Uint16 h3 ( 0 );
+  Usul::Types::Uint16 h4 ( 0 );
 
   // Read and set the dimensions
   Usul::Types::Uint32 ni ( 0 );
@@ -245,23 +260,148 @@ void ToFVUNS::_processResultFile ( const std::string &file, Result &grid )
   Usul::Types::Uint32 nk ( 0 );
   Usul::Types::Uint32 nv ( 0 );
 
-  ifs.read ( reinterpret_cast< char* > ( &ni ), sizeof( Usul::Types::Int32 ) );
-  ifs.read ( reinterpret_cast< char* > ( &nj ), sizeof( Usul::Types::Int32 ) );
-  ifs.read ( reinterpret_cast< char* > ( &nk ), sizeof( Usul::Types::Int32 ) );
-  ifs.read ( reinterpret_cast< char* > ( &nv ), sizeof( Usul::Types::Int32 ) );
+  // read the header
+  //ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
+  //ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );
+
+  ifs->read ( reinterpret_cast< char* > ( &ni ), sizeof( Usul::Types::Int32 ) );
+  ifs->read ( reinterpret_cast< char* > ( &nj ), sizeof( Usul::Types::Int32 ) );
+  ifs->read ( reinterpret_cast< char* > ( &nk ), sizeof( Usul::Types::Int32 ) );
+  ifs->read ( reinterpret_cast< char* > ( &nv ), sizeof( Usul::Types::Int32 ) );
 
   // debugging
   std::cout << "Resolution of: " << Usul::File::base( file ) << "." << Usul::File::extension( file ) << " is ( " << ni << " x " << nj << " x " << nk << " ) last number is: " << nv << std::endl;
 
+  // read the footer
+  //ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
+  //ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );
+
   // set the dimensions
-  _dimensions.set ( static_cast< Usul::Types::Uint32 > ( ni ), 
-                    static_cast< Usul::Types::Uint32 > ( nj ), 
-                    static_cast< Usul::Types::Uint32 > ( nk ) );
+  _dimensions = Usul::Math::Vec3ui ( static_cast< Usul::Types::Uint32 > ( ni ), 
+                                     static_cast< Usul::Types::Uint32 > ( nj ), 
+                                     static_cast< Usul::Types::Uint32 > ( nk ) );
+#if 0
+  for( unsigned int k = 0; k < nk; ++k )
+  {
+    // temp 2d grid
+    Grid1D grid1d;
+    h1 = 0;h2 = 0;h3 = 0;h4 = 0;
 
-  grid.resize ( boost::extents[ni][nj][nk] );
+    // read the header
+    ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
+    ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );
+    
+    // set the size
+    Usul::Types::Uint32 size ( nj * ni * sizeof( GridType ) );
 
-  const Usul::Types::Uint32 numBytes  ( ni * nj * nk * sizeof ( Result::value_type ) );
-  ifs.read ( reinterpret_cast< char * > ( grid.origin() ), numBytes );
+    // resize the grid
+    grid1d.resize( nj * ni );
+
+    // read the 2d grid
+    ifs->read( reinterpret_cast< char * > ( &grid1d[0] ), size );
+
+    ifs->read ( reinterpret_cast< char* > ( &h3 ), sizeof( Usul::Types::Uint16 ) );
+    ifs->read ( reinterpret_cast< char* > ( &h4 ), sizeof( Usul::Types::Uint16 ) );
+  
+    // add to the 3d grid
+    grid.push_back( grid1d );
+  }
+#else
+#if 0
+  unsigned int isize ( ni );
+  unsigned int jsize ( nj );
+  unsigned int ksize ( nk );
+
+  for( unsigned int k = 0; k < ksize; ++k )
+  {
+    // temp 2d grid
+    Grid1D grid1d;
+
+    // resize the grid
+    grid1d.resize( jsize * isize );
+
+    for( unsigned int i = 0; i < isize; ++i )    
+    {
+      h1 = 0;h2 = 0;h3 = 0;h4 = 0;
+
+      // read the header
+      //ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
+      //ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );
+
+      for( unsigned int j = 0; j < jsize; ++j )  
+      {
+
+        unsigned int index ( j + ( i * jsize ) );
+
+        h1 = 0;h2 = 0;h3 = 0;h4 = 0;
+
+        // read the header
+        //ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
+        //ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );  
+        
+        // read the 2d grid
+        GridType value ( 0 );
+        ifs->read( reinterpret_cast< char * > ( &value ), sizeof( GridType ) );
+      
+        //ifs->read ( reinterpret_cast< char* > ( &h3 ), sizeof( Usul::Types::Uint16 ) );
+        //ifs->read ( reinterpret_cast< char* > ( &h4 ), sizeof( Usul::Types::Uint16 ) );
+      
+        grid1d.at( index ) = value;
+        
+      }
+      
+      //ifs->read ( reinterpret_cast< char* > ( &h3 ), sizeof( Usul::Types::Uint16 ) );
+      //ifs->read ( reinterpret_cast< char* > ( &h4 ), sizeof( Usul::Types::Uint16 ) );
+      
+    }
+
+    // add to the 3d grid
+    grid.push_back( grid1d );
+  }
+#else
+
+  unsigned int isize ( ni );
+  unsigned int jsize ( nj );
+  unsigned int ksize ( nk );
+  for( unsigned int k = 0; k < ksize; ++k )
+  {
+    // temp 2d grid
+    Grid1D grid1d;
+    h1 = 0;h2 = 0;h3 = 0;h4 = 0;
+
+    // read the header
+    //ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
+    //ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );
+    
+    // set the size
+    Usul::Types::Uint32 size ( jsize * isize * sizeof( GridType ) );
+
+    // resize the grid
+    grid1d.resize( jsize * isize );
+
+    // read the 2d grid
+    ifs->read( reinterpret_cast< char * > ( &grid1d[0] ), size );
+
+    //ifs->read ( reinterpret_cast< char* > ( &h3 ), sizeof( Usul::Types::Uint16 ) );
+    //ifs->read ( reinterpret_cast< char* > ( &h4 ), sizeof( Usul::Types::Uint16 ) );
+  
+    // add to the 3d grid
+    grid.push_back( grid1d );
+  }
+#endif
+
+#endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Feedback.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ToFVUNS::updateProgressBar ( unsigned int value )
+{
+  std::cout << std::setw ( 3 ) << value << '%' << '\r' << std::flush;
 }
 
 
@@ -409,7 +549,7 @@ void ToFVUNS::_writeResultsFile( const std::string &name )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ToFVUNS::_writeResults ( const std::string &name, std::ofstream* ofs )
+void ToFVUNS::_writeResults( const std::string &name, std::ofstream* ofs )
 {
   // debug
   std::cout << "Results dimensions are: ( " << _dimensions[0] << " x " << _dimensions[1] << " x " << _dimensions[2] << " )" << std::endl;
@@ -421,7 +561,6 @@ void ToFVUNS::_writeResults ( const std::string &name, std::ofstream* ofs )
   unsigned int denominator( zsize );
   for( unsigned int valueNumber = 0; valueNumber < _values.size(); ++valueNumber )
   {
-    const Result& result ( _values.at ( valueNumber ) );
 
     for( unsigned int k = 0; k < zsize; ++k )
     {
@@ -435,16 +574,40 @@ void ToFVUNS::_writeResults ( const std::string &name, std::ofstream* ofs )
       {        
         for( unsigned int i = 0; i < xsize; ++i )
         {          
+          // current node index
+#if 0
+          // read by row
+          unsigned int index ( j + ( i * ( ysize ) ) );
+#else
+          // read by column
+          unsigned int index ( i + ( j * ( xsize ) ) );
+#endif
+          //unsigned int index ( ( i * ( xsize - 1 ) ) + j );
+
           try
           {
-            // P value
-            Usul::Types::Float32 value ( static_cast< Usul::Types::Float32 > ( result[i][j][k] ) );
-            ofs->write ( reinterpret_cast< char* > ( &value ), sizeof ( Usul::Types::Float32 ) );
+          // P value
+          Usul::Types::Float32 value ( static_cast< Usul::Types::Float32 > ( _values.at( valueNumber ).at( k ).at( index ) ) );
+          ofs->write ( reinterpret_cast< char* > ( &value ), sizeof( Usul::Types::Float32 ) );
           }
           catch( ... )
           {
             std::cout << "Failed on i=" << i << " -- j=" << j << "  -- k=" << k << std::endl;
+            std::cout << "Index is: " << index << "Size of values at k=" << k << " is: " << _values.at( k ).size() << std::endl;
+
           }
+          // U value
+          //Usul::Types::Float32 u ( static_cast< Usul::Types::Float32 > ( _values.at( 0 ).at( k ).at( index ) ) );
+          //ofs->write ( reinterpret_cast< char* > ( &u ), sizeof( Usul::Types::Float32 ) );
+
+          //// VU value
+          //Usul::Types::Float32 v ( static_cast< Usul::Types::Float32 > ( _values.at( 1 ).at( k ).at( index ) ) );
+          //ofs->write ( reinterpret_cast< char* > ( &v ), sizeof( Usul::Types::Float32 ) );
+
+          //// W value
+          //Usul::Types::Float32 w ( static_cast< Usul::Types::Float32 > ( _values.at( 2 ).at( k ).at( index ) ) );
+          //ofs->write ( reinterpret_cast< char* > ( &w ), sizeof( Usul::Types::Float32 ) );
+
         }
       }
     }
@@ -629,26 +792,19 @@ void ToFVUNS::_writeGridFile( const std::string &name )
       for( unsigned int j = 0; j < yGridSize; ++j )
       {
         // yvalue calculation X(I)=REAL(I-1)/REAL(NX-2)*2.*PI
-       float yGridValue = ( static_cast< float > ( j ) / static_cast< float > ( yGridSize - 1 ) ) * 2 * static_cast< float > ( Usul::Math::PIE );
+      float yGridValue = ( static_cast< float > ( j ) / static_cast< float > ( yGridSize - 1 ) ) * 2 * static_cast< float > ( Usul::Math::PIE );
         
         // resize the index grid at jk
         _indexGrid.at( k ).at( j ).resize( xGridSize );
         for( unsigned int i = 0; i < xGridSize; ++i )
         {
           // Set the xgrid
-          //float xGridValue = static_cast< Float32 > ( _grid.at( 0 ).at( i ) );
+          float xGridValue = static_cast< Float32 > ( _grid.at( 0 ).at( i ) );
 
           // Set the final grid values for this iteration
-          //xValues.at( index ) = _grid.at( 0 ).at( i ) * static_cast< Float32 > ( cos( static_cast< double > ( _grid.at( 2 ).at( j ) ) ) );
-          //yValues.at( index ) = _grid.at( 0 ).at( i ) * static_cast< Float32 > ( sin( static_cast< double > ( _grid.at( 2 ).at( j ) ) ) );
-          //zValues.at( index ) = static_cast< Float32 > ( _grid.at( 1 ).at( k ) );
-          xValues.at( index ) = _grid.at( 0 ).at( i ) * static_cast< Float32 > ( cos( static_cast< double > ( yGridValue ) ) );
-          yValues.at( index ) = _grid.at( 0 ).at( i ) * static_cast< Float32 > ( sin( static_cast< double > ( yGridValue ) ) );
+          xValues.at( index ) = xGridValue * static_cast< Float32 > ( cos( static_cast< double > ( yGridValue ) ) );
+          yValues.at( index ) = xGridValue * static_cast< Float32 > ( sin( static_cast< double > ( yGridValue ) ) );
           zValues.at( index ) = static_cast< Float32 > ( _grid.at( 1 ).at( k ) );
-
-         /* xValues.at( index ) = static_cast< Float32 > ( _grid.at( 0 ).at( i ) );
-          yValues.at( index ) = static_cast< Float32 > ( _grid.at( 2 ).at( j ) );
-          zValues.at( index ) = static_cast< Float32 > ( _grid.at( 1 ).at( k ) );*/
 
           // push back the index counter
           _indexGrid.at( k ).at( j ).at( i ) = index + 1;
@@ -829,7 +985,7 @@ void ToFVUNS::_writeElementNodes( std::ofstream* ofs )
       for( unsigned int i = 0; i < _dimensions[0] - 1; ++i )
       {
 
-#if 0
+#if 1
         // vertex 1
         Uint32 v1 ( _indexGrid.at( k ).at( j ).at( i ) );
 
@@ -916,9 +1072,6 @@ void ToFVUNS::_writeDebugFile( const std::string& filename )
   if( false == ofs.is_open() )
     throw std::runtime_error ( "Error 1188374386: Failed to open file: " + filename );
 
-  // output debug file write notification
-  std::cout << "\nWriting debug file: " << filename << std::endl;
-
   // output the grid dimensions
   std::string gridMessage( Usul::Strings::format( "Grid Dimensions ( ", _dimensions[0], " x " , _dimensions[1] , " x " , _dimensions[2] , " )\n" ) );
   ofs << gridMessage.c_str();
@@ -947,11 +1100,12 @@ void ToFVUNS::_writeDebugFile( const std::string& filename )
     {
       for( unsigned int i = 0; i < _dimensions[0]; ++i )
       {
+        unsigned int index ( i + ( j * _dimensions[0] ) );
         std::string result ( Usul::Strings::format( i+1, "\t", j+1, "\t", k+1, "\t" ) );
-        result = Usul::Strings::format( result, _values.at( 0 )[i][j][k], "\t", 
-                                                _values.at( 1 )[i][j][k], "\t", 
-                                                _values.at( 2 )[i][j][k], "\t", 
-                                                _values.at( 3 )[i][j][k], "\n" );
+        result = Usul::Strings::format( result, _values.at( 0 ).at( k ).at( index ), "\t", 
+                                                _values.at( 1 ).at( k ).at( index ), "\t", 
+                                                _values.at( 2 ).at( k ).at( index ), "\t", 
+                                                _values.at( 3 ).at( k ).at( index ), "\n" );
         ofs << result.c_str();
       }
     }
@@ -960,7 +1114,7 @@ void ToFVUNS::_writeDebugFile( const std::string& filename )
   ofs << "------------------- End of Results Data ------------------\n\n\n";
 
   // Index data for elements
-  ofs << "******************* Element Node Index Data **********************\n";
+  ofs << "******************* Element Node Index Data **********************";
   ofs << "I\tJ\tK\tIndex\n";
 
   for( unsigned int k = 0; k < _dimensions[2]; ++k )
@@ -979,180 +1133,4 @@ void ToFVUNS::_writeDebugFile( const std::string& filename )
   // close the file
   ofs.close();
 
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// write an osg file for debugging
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ToFVUNS::_findMinMax( const Result& result, Result::element& min, Result::element& max )
-{
-  unsigned int xsize( _dimensions[0] );
-  unsigned int ysize( _dimensions[1] );
-  unsigned int zsize( _dimensions[2] );
-  
-  min = std::numeric_limits<Result::element>::max();
-  max = std::numeric_limits<Result::element>::min();
-
-  for( unsigned int k = 0; k < zsize; ++k )
-  {     
-    for( unsigned int j = 0; j < ysize; ++j )
-    {        
-      for( unsigned int i = 0; i < xsize; ++i )
-      {  
-        Result::element value ( result[i][j][k] );
-
-        if( value < min )
-        {
-          min = value;
-        }
-        if( value > max )
-        {
-          max = value;
-        }
-      }
-    }
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Initialize the color ramp
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ToFVUNS::_intializeColorRamp()
-{
-  unsigned int r ( 0 ), g( 0 ), b( 0 );
-
-  for( b = 254; b != 0; b-=1 )
-  {
-    Usul::Math::Vec3ui color ( r, g, b );
-    _colorRamp.push_back( color );
-
-    g+= 1;
-  }
-  for( r = 0; r < 255; r+=1 )
-	{
-    Usul::Math::Vec3ui color ( r, g, b );
-    _colorRamp.push_back( color );
-
-    g -= 1;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// write an osg file for debugging
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec4 ToFVUNS::_getInterpolatedValue( const Result& result, unsigned int x, unsigned int y, unsigned int z, float min, float max )
-{
-  const osg::Vec4 minColor ( 0.0, 1.0, 0.0, 1.0 );
-  const osg::Vec4 maxColor ( 1.0, 0.0, 0.0, 1.0 );
-
-  const double value ( result[x][y][z] );
-  const double percentage ( ( value - min ) / ( max - min ) );
-  osg::Vec4 color ( Usul::Math::Interpolate<osg::Vec4>::linear ( percentage, minColor, maxColor ) );
-  return color;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// write an osg file for debugging
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ToFVUNS::_writeOsgSlice ( unsigned int y, const std::string& filename )
-{ 
-  // useful typedefs
-  typedef osg::ref_ptr< osg::Group > GroupPtr;
-  typedef osg::ref_ptr< osg::Geometry > GeometryPtr;
-  typedef osg::ref_ptr< osg::Geode > GeodePtr;
-  typedef osg::ref_ptr< osg::Vec3Array > Vec3ArrayPtr;
-
-  // grab the grid points
-  Grid1D xGrid ( _grid.at( 0 ) );
-  Grid1D yGrid ( _grid.at( 2 ) );
-  Grid1D zGrid ( _grid.at( 1 ) ) ;
-
-  // initialize the color ramp
-  this->_intializeColorRamp();
-
-  // get the min and max of the w values
-  const Result& result ( _values.at ( CHANNEL_TO_TEST ) );
-  Result::element min ( 0.0 );
-  Result::element max ( 0.0 );
-  this->_findMinMax ( result, min, max );
-
-  // create the points array
-  Vec3ArrayPtr points ( new osg::Vec3Array );
-
-  // create the color array
-  osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array );
-
-  // create the normals array
-  Vec3ArrayPtr normals ( new osg::Vec3Array );
-
-  for( unsigned int i = 0; i < xGrid.size() - 1; ++i )
-  {
-    for( unsigned int k = 0; k < zGrid.size() - 1; ++k )
-    {
-      osg::Vec3f p0 ( xGrid.at( i     ), yGrid.at( y ), zGrid.at( k     ) );
-      osg::Vec3f p1 ( xGrid.at( i + 1 ), yGrid.at( y ), zGrid.at( k     ) );
-      osg::Vec3f p2 ( xGrid.at( i     ), yGrid.at( y ), zGrid.at( k + 1 ) );
-      osg::Vec3f p3 ( xGrid.at( i + 1 ), yGrid.at( y ), zGrid.at( k + 1 ) );
-
-      osg::Vec4 c0 ( this->_getInterpolatedValue( result, i    , y, k    , min, max ) );
-      osg::Vec4 c1 ( this->_getInterpolatedValue( result, i + 1, y, k    , min, max ) );
-      osg::Vec4 c2 ( this->_getInterpolatedValue( result, i    , y, k + 1, min, max ) );
-      osg::Vec4 c3 ( this->_getInterpolatedValue( result, i + 1, y, k + 1, min, max ) );
-
-      points->push_back( p0 );points->push_back( p1 );points->push_back( p3 );
-      points->push_back( p0 );points->push_back( p3 );points->push_back( p2 );
-
-      colors->push_back( c0 );colors->push_back( c1 );colors->push_back( c3 );
-      colors->push_back( c0 );colors->push_back( c3 );colors->push_back( c2 );
-
-      for( unsigned int n = 0; n < 6; ++n )
-      {
-        normals->push_back( osg::Vec3f( 0.0f, 1.0f, 0.0f ) );
-      }
-
-    }
-  }
-
-  // create the geometry
-  GeometryPtr geometry ( new osg::Geometry );
-
-  // set the normal array and binding
-  geometry->setNormalArray( normals.get() );
-  geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
-
-  // set the color array and binding
-  geometry->setColorArray( colors.get() );
-  geometry->setColorBinding( osg::Geometry::BIND_PER_VERTEX );
-
-  // set the vertices and create the primitives
-  geometry->setVertexArray( points.get() );
-  geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, points->size() ) );
-
-  // create the geode and add the geometry
-  GeodePtr geode ( new osg::Geode );
-  geode->addDrawable( geometry.get() );
-
-  // create the group and add the geode
-  GroupPtr scene ( new osg::Group );
-  scene->addChild( geode.get() );
-  scene->getOrCreateStateSet()->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
-
-  // write the osg file
-  std::cout << "Writing OSG file for: " << filename << "..." << std::endl;
-  osgDB::writeNodeFile( *scene.get(), filename );
 }

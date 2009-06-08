@@ -18,6 +18,7 @@
 #include "Progress.h"
 
 #include "Usul/System/Clock.h"
+#include "Usul/Resources/ProgressBar.h"
 
 #include "OsgTools/Triangles/TriangleSet.h"
 
@@ -58,7 +59,7 @@ SubdivideTriangles::~SubdivideTriangles()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SubdivideTriangles::operator() ( OsgTools::Triangles::TriangleSet *triangleSet, unsigned int numSubdivisions, Usul::Interfaces::IUnknown* caller )
+void SubdivideTriangles::operator() ( OsgTools::Triangles::TriangleSet *triangleSet, unsigned int numSubdivisions )
 {
   vtkSmartPointer < vtkPolyData > data ( vtkPolyData::New() );
 
@@ -69,7 +70,7 @@ void SubdivideTriangles::operator() ( OsgTools::Triangles::TriangleSet *triangle
   subdivide->SetNumberOfSubdivisions( numSubdivisions );
 
   vtkSmartPointer < VTKTools::Progress > progress ( new VTKTools::Progress );
-  progress->progressBar ( Usul::Interfaces::IProgressBar::QueryPtr ( caller ) );
+  progress->progressBar ( Usul::Resources::progressBar() );
 
   subdivide->AddObserver( vtkCommand::StartEvent, progress.GetPointer() );
   subdivide->AddObserver( vtkCommand::ProgressEvent, progress.GetPointer() );
@@ -97,8 +98,7 @@ void SubdivideTriangles::operator() ( OsgTools::Triangles::TriangleSet *triangle
 ///////////////////////////////////////////////////////////////////////////////
 
 void SubdivideTriangles::operator() ( osg::Array *v, osg::DrawElementsUInt *indices,
-                                      osg::Array *nT, osg::Array *nV, unsigned int numSubdivisions,
-                                      Usul::Interfaces::IUnknown* caller )
+                                      osg::Array *nT, osg::Array *nV, unsigned int numSubdivisions )
 {
   osg::ref_ptr< osg::Vec3Array > vertices ( dynamic_cast < osg::Vec3Array * > ( v ) );
 
@@ -111,7 +111,7 @@ void SubdivideTriangles::operator() ( osg::Array *v, osg::DrawElementsUInt *indi
   subdivide->SetNumberOfSubdivisions( numSubdivisions );
 
   vtkSmartPointer < VTKTools::Progress > progress ( new VTKTools::Progress );
-  progress->progressBar ( Usul::Interfaces::IProgressBar::QueryPtr ( caller ) );
+  progress->progressBar ( Usul::Resources::progressBar() );
 
   subdivide->AddObserver( vtkCommand::StartEvent, progress.GetPointer() );
   subdivide->AddObserver( vtkCommand::ProgressEvent, progress.GetPointer() );

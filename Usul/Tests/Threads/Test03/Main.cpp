@@ -16,10 +16,13 @@
 
 #include "TestJob.h"
 
+#include "Threads/OpenThreads/Thread.h"
+
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Math/Absolute.h"
+#include "Usul/Threads/Manager.h"
 #include "Usul/Trace/Trace.h"
 
 #include <iostream>
@@ -62,7 +65,7 @@ void _test()
   std::generate ( Detail::randomNumbers.begin(), Detail::randomNumbers.end(), ::rand );
 
   // Set the job manager's thread-pool size.
-  Usul::Jobs::Manager::init ( "Job manager for test", size );
+  Usul::Jobs::Manager::init ( size, true );
 
   // Start the jobs.
   for ( unsigned int i = 0; i < num; ++i )
@@ -93,6 +96,14 @@ void _clean()
 
   // The job manager has a thread-pool.
   Usul::Jobs::Manager::destroy();
+
+  // There should not be any threads running.
+  TRACE_AND_PRINT ( "Waiting for all threads to finish...\n" );
+  Usul::Threads::Manager::instance().wait();
+  TRACE_AND_PRINT ( "All threads have finished.\n" );
+
+  // Clean up the thread manager.
+  Usul::Threads::Manager::destroy();
 }
 
 
@@ -106,6 +117,8 @@ int main ( int argc, char **argv )
 {
   ::srand ( 10 );
   Detail::randomNumbers.clear();
+
+  Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
 
   std::ofstream trace ( "trace.csv" );
   Usul::Trace::Print::stream ( &trace );

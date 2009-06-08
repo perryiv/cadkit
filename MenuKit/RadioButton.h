@@ -13,7 +13,6 @@
 
 #include "MenuKit/Button.h"
 
-
 namespace MenuKit {
 
 
@@ -23,20 +22,15 @@ public:
 
   // Typedefs and smart-pointers.
   typedef Button BaseClass;
-  typedef boost::function<void ()> ExecuteFunction;
-  typedef boost::function<bool ()> CheckFunction;
   USUL_DECLARE_REF_POINTERS ( RadioButton );
 
   // Construction.
-  RadioButton();
+  RadioButton ();
   RadioButton ( Usul::Commands::Command * );
   RadioButton ( const RadioButton & );
 
   // Assignment.
   RadioButton& operator = ( const RadioButton & );
-
-  static RadioButton* create ( const std::string &name, ExecuteFunction f, CheckFunction c );
-  static RadioButton* create ( const std::string &name, ExecuteFunction f, CheckFunction c, EnableFunction e );
 
   // Accept the visitor.
   virtual void        accept ( Visitor &v );

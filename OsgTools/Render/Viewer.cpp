@@ -47,14 +47,17 @@
 #include "OsgTools/Font.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Bits/Bits.h"
-#include "Usul/Cast/Cast.h"
+#include "Usul/Errors/Checker.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/Convert/Vector2.h"
-#include "Usul/Errors/Checker.h"
-#include "Usul/File/Path.h"
 #include "Usul/Helper/AnimationNotify.h"
+#include "Usul/Math/Constants.h"
+#include "Usul/Math/Functions.h"
+#include "Usul/Math/NaN.h"
+#include "Usul/Bits/Bits.h"
+#include "Usul/Registry/Constants.h"
+
 #include "Usul/Interfaces/IAnimatePath.h"
 #include "Usul/Interfaces/IBusyState.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
@@ -64,17 +67,20 @@
 #include "Usul/Interfaces/GUI/IMaterialEditor.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/IRenderListener.h"
-#include "Usul/Math/Absolute.h"
-#include "Usul/Math/Constants.h"
-#include "Usul/Math/Functions.h"
-#include "Usul/Math/NaN.h"
-#include "Usul/Predicates/Tolerance.h"
-#include "Usul/Registry/Constants.h"
+
 #include "Usul/Registry/Constants.h"
 #include "Usul/Registry/Database.h"
+#include "Usul/Resources/StatusBar.h"
+#include "Usul/Resources/ReportErrors.h"
 #include "Usul/Resources/TextWindow.h"
-#include "Usul/Scope/Caller.h"
 #include "Usul/System/Clock.h"
+#include "Usul/Predicates/Tolerance.h"
+#include "Usul/Scope/Caller.h"
+#include "Usul/Cast/Cast.h"
+#include "Usul/Strings/Case.h"
+#include "Usul/File/Path.h"
+#include "Usul/CommandLine/Arguments.h"
+#include "Usul/Math/Absolute.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Trace/Trace.h"
 
@@ -466,6 +472,11 @@ void Viewer::render()
 
   // Check for errors.
   Detail::checkForErrors ( 952680810 );
+
+  // Update the status-bar. Do not put this in onPaint() because you want 
+  // it called every time the window is redrawn.
+  if ( this->updateTimes() )
+    this->updateStatusBar();
 }
 
 
@@ -1438,21 +1449,36 @@ void Viewer::changedScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Viewer::statusBarText()
+void Viewer::updateStatusBar()
 {
-  // Format the text.
-  const unsigned int size ( 512 );
-  char buf[size];
-  double lu ( this->timeLast    ( "update" ) );
-  double lc ( this->timeLast    ( "cull"   ) );
-  double ld ( this->timeLast    ( "draw"   ) );
-  double au ( this->timeAverage ( "update" ) );
-  double ac ( this->timeAverage ( "cull"   ) );
-  double ad ( this->timeAverage ( "draw"   ) );
-  ::sprintf ( buf, "(Last:Avg)   Update: %0.6f:%0.6f   Cull: %0.6f:%0.6f   Draw: %0.6f:%0.6f", 
-              lu, au, lc, ac, ld, ad );
+    // Format the text.
+    const unsigned int size ( 512 );
+    char buf[size];
+    double lu ( this->timeLast    ( "update" ) );
+    double lc ( this->timeLast    ( "cull"   ) );
+    double ld ( this->timeLast    ( "draw"   ) );
+    double au ( this->timeAverage ( "update" ) );
+    double ac ( this->timeAverage ( "cull"   ) );
+    double ad ( this->timeAverage ( "draw"   ) );
+    ::sprintf ( buf, "(Last:Avg)   Update: %0.6f:%0.6f   Cull: %0.6f:%0.6f   Draw: %0.6f:%0.6f", 
+                lu, au, lc, ac, ld, ad );
 
-  return std::string ( buf );
+    // Set the text.
+    this->setStatusBarText ( buf, false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the status bar text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::setStatusBarText ( const std::string &text, bool force )
+{
+  Usul::Interfaces::IStatusBar::QueryPtr status ( Usul::Resources::statusBar() );
+  if( status.valid() )
+    status->setStatusBarText( text, force );
 }
 
 
@@ -2215,6 +2241,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IFrameDump*>(this);
   case Usul::Interfaces::ITextMatrix::IID:
     return static_cast<Usul::Interfaces::ITextMatrix*>(this);
+  case Usul::Interfaces::IGetDocument::IID:
+    return static_cast<Usul::Interfaces::IGetDocument*>(this);
   case Usul::Interfaces::IGroup::IID:
     return static_cast < Usul::Interfaces::IGroup* > ( this );
   case Usul::Interfaces::IClippingPlanes::IID:
@@ -2231,6 +2259,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IRedraw*>(this);
   case Usul::Interfaces::ISpin::IID:
     return static_cast < Usul::Interfaces::ISpin* > ( this );
+  case Usul::Interfaces::IScreenCapture::IID:
+    return static_cast < Usul::Interfaces::IScreenCapture * > ( this );
   case Usul::Interfaces::ISnapShot::IID:
     return static_cast < Usul::Interfaces::ISnapShot* > ( this );
   case Usul::Interfaces::IView::IID:
@@ -2251,6 +2281,10 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IClippingDistance * > ( this );
   case Usul::Interfaces::IViewport::IID:
     return static_cast < Usul::Interfaces::IViewport * > ( this );
+  case Usul::Interfaces::IRenderLoop::IID:
+    return static_cast < Usul::Interfaces::IRenderLoop * > ( this );
+  case Usul::Interfaces::IRenderingPasses::IID:
+    return static_cast < Usul::Interfaces::IRenderingPasses * > ( this );
   case Usul::Interfaces::IAxes::IID:
     return static_cast < Usul::Interfaces::IAxes * > ( this );
   case Usul::Interfaces::IMouseEventSubject::IID:
@@ -2534,7 +2568,7 @@ osg::Matrixd Viewer::getViewMatrix() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::shadeModelSet ( IShadeModel::Mode mode )
+void Viewer::shadeModel ( IShadeModel::Mode mode )
 {
   if( mode == IShadeModel::NONE )
     this->removeShadeModel();
@@ -2552,7 +2586,7 @@ void Viewer::shadeModelSet ( IShadeModel::Mode mode )
 ///////////////////////////////////////////////////////////////////////////////
 
 
-Viewer::IShadeModel::Mode Viewer::shadeModelGet() const
+Viewer::IShadeModel::Mode Viewer::shadeModel() const
 {
   if ( this->hasShadeModel ( osg::ShadeModel::FLAT ) )
     return IShadeModel::FLAT;
@@ -2570,7 +2604,7 @@ Viewer::IShadeModel::Mode Viewer::shadeModelGet() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::polygonModeSet ( IPolygonMode::Mode mode )
+void Viewer::polygonMode ( IPolygonMode::Mode mode )
 {
   if( this->hasHiddenLines() )
       this->removeHiddenLines();
@@ -2596,7 +2630,7 @@ void Viewer::polygonModeSet ( IPolygonMode::Mode mode )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Viewer::IPolygonMode::Mode Viewer::polygonModeGet() const
+Viewer::IPolygonMode::Mode Viewer::polygonMode() const
 {
   if( this->hasHiddenLines() )
     return IPolygonMode::HIDDEN_LINES;
@@ -4209,6 +4243,46 @@ void Viewer::_setCenterOfRotation()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Screen capture at the given view with the given height and width
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Image* Viewer::screenCapture ( const osg::Vec3d& center, double distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const
+{
+  // Get non const pointer to this
+  Viewer *me ( const_cast < Viewer * > ( this ) );
+
+  osg::Matrixd m ( osg::Matrixd::translate(0.0,0.0,distance)*
+                  osg::Matrixd::rotate(rotation)*
+                  osg::Matrixd::translate(center) );
+
+  // Make this context current.
+  if( _context.valid() ) { me->_context->makeCurrent(); }
+
+  return me->_renderer->screenCapture ( m.inverse( m ), width, height );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Screen capture with given height and width
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Image* Viewer::screenCapture ( unsigned int height, unsigned int width ) const
+{
+  // Get non const pointer to this
+  Viewer *me ( const_cast < Viewer * > ( this ) );
+
+  // Make this context current.
+  if( _context.valid() ) { me->_context->makeCurrent(); }
+
+  return me->_renderer->screenCapture ( this->getViewMatrix(), width, height );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Is there an accumulation buffer?
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -4884,6 +4958,35 @@ void Viewer::setClippingDistances ( double nearDist, double farDist )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set render loop flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::renderLoop ( bool b )
+{
+  // Redirect to the caller.
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( this->caller() );
+  if ( rl.valid() )
+    rl->renderLoop ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get render loop flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::renderLoop() const
+{
+  // Redirect to the caller.
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( const_cast < IUnknown * > ( this->caller() ) );
+  return rl.valid() ? rl->renderLoop ( ) : false ;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the caller.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -4943,6 +5046,11 @@ void Viewer::stateSave() const
     reg["bottom_right"] = this->backgroundColor ( Corners::BOTTOM_RIGHT );
   }
   {
+    // Save properties in registry.
+    Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::RENDER_LOOP][doc] );
+    reg["state"] = this->renderLoop();
+  }
+  {
     Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS] );
     reg[Keys::LOW_LODS ][doc] = this->useLowLodsGet();
     reg[Keys::HIGH_LODS][doc] = this->useHighLodsGet();
@@ -4986,6 +5094,11 @@ void Viewer::stateLoad()
     this->backgroundColor ( reg["top_right"].get<osg::Vec4>    ( this->backgroundColor ( Corners::TOP_RIGHT    ) ), Corners::TOP_RIGHT    );
     this->backgroundColor ( reg["bottom_left"].get<osg::Vec4>  ( this->backgroundColor ( Corners::BOTTOM_LEFT  ) ), Corners::BOTTOM_LEFT  );
     this->backgroundColor ( reg["bottom_right"].get<osg::Vec4> ( this->backgroundColor ( Corners::BOTTOM_RIGHT ) ), Corners::BOTTOM_RIGHT );
+  }
+  {
+    // Get properties from registry.
+    Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::RENDER_LOOP][doc] );
+    this->renderLoop ( reg["state"].get<bool> ( this->renderLoop() ) );
   }
   {
     Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS] );

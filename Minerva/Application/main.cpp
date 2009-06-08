@@ -16,6 +16,8 @@
 
 #include "Helios/Qt/Core/Program.h"
 
+#include "Threads/OpenThreads/Thread.h"
+
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/System/DateTime.h"
 #include "Usul/Trace/Print.h"
@@ -59,6 +61,7 @@ int main ( int argc, char **argv )
     // Run the application.
     CadKit::Helios::Core::Program::run (
       argc, argv,
+      &Threads::OT::newOpenThreadsThread, 
       program, version, vendor, url, icon, splash, plugins, manual,
       jobManagerThreadPoolSize,
       result );

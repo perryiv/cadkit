@@ -46,11 +46,13 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
+#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Components/Loader.h"
 #include "Usul/Config/Config.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Errors/Stack.h"
 #include "Usul/Exceptions/Exception.h"
 #include "Usul/Factory/ObjectFactory.h"
 #include "Usul/File/Contents.h"
@@ -74,6 +76,8 @@
 #include "Usul/Strings/Format.h"
 #include "Usul/Strings/Qt.h"
 #include "Usul/System/Environment.h"
+#include "Usul/Threads/Callback.h"
+#include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Threads/ThreadId.h"
@@ -316,6 +320,17 @@ void MainWindow::_destroy()
   MainWindow::_waitForJobs();
   Usul::Jobs::Manager::destroy();
 
+  // Wait here until all threads are done.
+  std::cout << "Purging all finished threads..." << std::endl;
+  Usul::Threads::Manager::instance().purge();
+  std::cout << "Canceling all remaining threads..." << std::endl;
+  Usul::Threads::Manager::instance().cancel();
+  std::cout << "Waiting for all threads to finish..." << std::endl;
+  Usul::Threads::Manager::instance().wait();
+  std::cout << "Destroying thread manager..." << std::endl;
+  Usul::Threads::Manager::destroy();
+  std::cout << "All threads have finished" << std::endl;
+
   // Unset the text window resource.
   Usul::Resources::textWindow ( 0x0 );
 
@@ -547,10 +562,10 @@ void MainWindow::_buildMenuKitMenu()
   // Window menu.
   {
     MenuKit::Menu::RefPtr window ( new MenuKit::Menu ( "&Window" ) );
-    window->append ( MenuKit::Button::create ( "&Cascade", boost::bind ( &MainWindow::_childWindowsCascade, this ), boost::bind ( &MainWindow::_childWindowsHas, this ) ) );
-    window->append ( MenuKit::Button::create ( "&Tile",    boost::bind ( &MainWindow::_childWindowsTile, this ), boost::bind ( &MainWindow::_childWindowsHas, this ) ) );
-    window->append ( MenuKit::Button::create ( "Close Active Window", boost::bind ( &MainWindow::_childWindowsCloseActive, this ), boost::bind ( &MainWindow::_childWindowsHas, this ) ) );
-    window->append ( MenuKit::Button::create ( "Close All Windows",   boost::bind ( &MainWindow::_childWindowsCloseAll, this ), boost::bind ( &MainWindow::_childWindowsHas, this ) ) );
+    window->append ( new MenuKit::Button ( USUL_MAKE_COMMAND_ENABLE ( "&Cascade", "", this, &MainWindow::_childWindowsCascade, &MainWindow::_childWindowsHas        ) ) );
+    window->append ( new MenuKit::Button ( USUL_MAKE_COMMAND_ENABLE ( "&Tile",    "", this, &MainWindow::_childWindowsTile,    &MainWindow::_childWindowsHas        ) ) );
+    window->append ( new MenuKit::Button ( USUL_MAKE_COMMAND_ENABLE ( "Close Active Window", "", this, &MainWindow::_childWindowsCloseActive, &MainWindow::_childWindowsHas ) ) );
+    window->append ( new MenuKit::Button ( USUL_MAKE_COMMAND_ENABLE ( "Close All Windows",   "", this, &MainWindow::_childWindowsCloseAll,    &MainWindow::_childWindowsHas ) ) );
     _menu->append ( window );
   }
 
@@ -688,8 +703,13 @@ void MainWindow::_initRecentFilesMenu()
 
   _recentFilesMenu->addSeparator();
 
+  // Useful typedefs.
+  typedef void (MainWindow::*Function)();
+  typedef Usul::Adaptors::MemberFunction < void, MainWindow*, Function > MemFun;
+  typedef Usul::Commands::GenericCommand < MemFun > GenericCommand;
+
   // Add a clear button.
-  _recentFilesMenu->append ( MenuKit::Button::create ( "Clear", boost::bind ( &MainWindow::_clearRecentFiles, this ) ) );
+  _recentFilesMenu->append ( new MenuKit::Button ( new GenericCommand ( "Clear", MemFun ( this, &MainWindow::_clearRecentFiles ) ) ) );
 
   // Enable the menu only if there are recent files.
   _recentFilesMenu->enabled ( false == _recentFiles.empty() );
@@ -1514,6 +1534,7 @@ void MainWindow::_idleProcess()
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Threads::Manager::instance()), &Usul::Threads::Manager::purge ) );
 
   // Tell window to refresh.
   Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &MainWindow::updateTextWindow ), true );

@@ -16,8 +16,7 @@ INCLUDE ( FindOSG )
 INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
                      "${CADKIT_INC_DIR}/Experimental" 
                      "${PROJECT_SOURCE_DIR}/../" 
-                      ${OSG_INC_DIR} 
-		      ${Boost_INCLUDE_DIR} )
+                      ${OSG_INC_DIR} )
 
 # Set the sources to compile.
 SET (SOURCES

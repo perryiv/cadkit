@@ -20,8 +20,6 @@
 
 #include "Usul/Commands/Command.h"
 
-#include "boost/function.hpp"
-
 namespace MenuKit {
 
 class Visitor;
@@ -33,19 +31,12 @@ public:
   // Typedefs and smart-pointers.
   typedef Item                     BaseClass;
   typedef Usul::Commands::Command  Command;
-  typedef boost::function<void ()> ExecuteFunction;
-  typedef boost::function<bool ()> EnableFunction;
   USUL_DECLARE_REF_POINTERS ( Button );
 
   // Construction.
   Button();
   Button( Usul::Commands::Command * );
 
-  static Button* create ( const std::string &name, ExecuteFunction f );
-  static Button* create ( const std::string &name, ExecuteFunction f, EnableFunction e );
-  static Button* createWithIcon ( const std::string &name, const std::string& icon, ExecuteFunction f );
-  static Button* createWithIcon ( const std::string &name, const std::string& icon, ExecuteFunction f, EnableFunction e );
-  
   // Accept the visitor.
   virtual void        accept ( Visitor &v );
 

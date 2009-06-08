@@ -12,11 +12,7 @@ INCLUDE ( Cadkit.plugin )
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${OSG_LIB_DIR} )
 
 # ------------ Set Include Folders ----------------------
-INCLUDE_DIRECTORIES( 
-  ${CADKIT_INC_DIR} 
-  "${PROJECT_SOURCE_DIR}/../" 
-  ${OSG_INC_DIR}
-  ${Boost_INCLUDE_DIR} )
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR} )
 
 SET (SOURCES
 ./MeasureToolComponent.cpp

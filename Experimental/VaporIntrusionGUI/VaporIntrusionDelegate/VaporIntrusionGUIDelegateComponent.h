@@ -24,7 +24,6 @@
 #include "GridEditorDialog.h"
 #include "InputParameterDialog.h"
 #include "ScalarEditorDialog.h"
-#include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
@@ -47,8 +46,7 @@ class VaporIntrusionGUIDelegateComponent : public Usul::Base::Object,
                                            public Usul::Interfaces::IGUIDelegate,
                                            public Usul::Interfaces::IMenuAdd,
                                            public Usul::Interfaces::IPluginInitialize,
-                                           public Usul::Interfaces::IInitNewDocument,
-                                           public VaporIntrusionGUI::Interfaces::IVPIDelegate
+                                           public Usul::Interfaces::IInitNewDocument
 {
 public:
 
@@ -68,10 +66,6 @@ public:
   typedef IVaporIntrusionGUI::Category Category;
   typedef IVaporIntrusionGUI::Categories Categories;
   typedef IVaporIntrusionGUI::MaterialsMap MaterialsMap;
-
-  // useful typedefs
-  typedef std::map< std::string, QDockWidget* > Docks;
-  typedef std::map< std::string, MaterialContainer* > MaterialContainers;
 
 
   /// Smart-pointer definitions.
@@ -109,10 +103,6 @@ public:
   // edit the input parameters
   void                        editInputParameters( const std::string& menuName );
 
-  // IVPIDelegate
-  virtual void                addDock( const std::string& name );
-  virtual void                addToDock( const std::string& dockName, const std::string& name, const std::string& value );
-
 protected: 
 
   // Do not copy.
@@ -124,8 +114,8 @@ protected:
 
 private:
   QtViewerPtr                         _xyzView;
-  Docks                               _docks;
-  MaterialContainers                  _materialContainers;
+  QDockWidget*                        _dock;
+  MaterialContainer*                  _materialContainer;
   IUnknown::QueryPtr                  _caller;
 
   IVaporIntrusionGUI::Categories      _categories;

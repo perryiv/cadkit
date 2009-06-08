@@ -28,6 +28,7 @@
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/ILayerAddGUIQt.h"
@@ -44,8 +45,6 @@
 #include "QtGui/QMenu"
 #include "QtGui/QMessageBox"
 #include "QtGui/QSlider"
-
-#include "boost/bind.hpp"
 
 using namespace Minerva;
 
@@ -353,13 +352,13 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   QMenu menu;
   
   // Add button.
-  QtTools::Action add ( "Add...", boost::bind ( &LayersTree::_addLayer, this, unknown.get() ) );
+  QtTools::Action add ( USUL_MAKE_COMMAND_ARG0 ( "Add...", "", this, &LayersTree::_addLayer, unknown.get() ) );
   
   Minerva::Interfaces::IAddLayer::QueryPtr al ( unknown );
   add.setEnabled( al.valid() );
   
   // Remove button.
-  QtTools::Action remove ( "Remove", boost::bind ( &LayersTree::_removeSelectedLayers, this ) );
+  QtTools::Action remove ( USUL_MAKE_COMMAND ( "Remove", "", this, &LayersTree::_removeSelectedLayers ) );
   remove.setText ( "Remove" );
   remove.setToolTip ( "Remove selected layers." );
   
@@ -370,19 +369,19 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   QObject::connect ( &favorites, SIGNAL ( triggered() ), this, SLOT ( _onAddLayerFavorites() ) );
   
   // Move up and down actions.
-  QtTools::Action moveUp   ( "Move up", boost::bind ( &LayersTree::_moveLayerUp, this, currentItem ) );
-  QtTools::Action moveDown ( "Move down", boost::bind ( &LayersTree::_moveLayerDown, this, currentItem ) );
+  QtTools::Action moveUp   ( USUL_MAKE_COMMAND_ARG0 ( "Move up",   "", this, &LayersTree::_moveLayerUp,   currentItem ) );
+  QtTools::Action moveDown ( USUL_MAKE_COMMAND_ARG0 ( "Move down", "", this, &LayersTree::_moveLayerDown, currentItem ) );
   moveUp.setEnabled   ( this->_canMoveLayerUp   ( currentItem ) );
   moveDown.setEnabled ( this->_canMoveLayerDown ( currentItem ) );
   
   // Add refresh button.
-  QtTools::Action refresh ( "Refresh", boost::bind ( &LayersTree::_refreshLayer, this, unknown.get() ) );
+  QtTools::Action refresh ( USUL_MAKE_COMMAND_ARG0 ( "Refresh", "", this, &LayersTree::_refreshLayer, unknown.get() ) );
   
   // Editor for this layer.
   Usul::Interfaces::IUnknown::QueryPtr editor ( this->_findEditor ( unknown.get() ) );
   
   // Properties button.
-  QtTools::Action properties ( "Properties...", boost::bind ( &LayersTree::_editLayerProperties, this, unknown.get(), parent.get(), editor.get() ) );
+  QtTools::Action properties ( Usul::Commands::genericCommand ( "Properties...", Usul::Adaptors::bind3 ( unknown.get(), parent.get(), editor.get(), Usul::Adaptors::memberFunction ( this, &LayersTree::_editLayerProperties ) ), Usul::Commands::TrueFunctor() ) );
   properties.setToolTip ( tr ( "Show the property dialog for this layer" ) );
   properties.setEnabled ( unknown.valid() && editor.valid() );
   

@@ -14,6 +14,7 @@
 #include "VRV/Export.h"
 
 #include "Usul/Commands/Command.h"
+#include "Usul/Interfaces/IUpdateCheck.h"
 #include "Usul/Math/Vector4.h"
 
 namespace VRV {
@@ -29,11 +30,11 @@ public:
   BackgroundColor ( const std::string& name, const Usul::Math::Vec4f& color, Usul::Interfaces::IUnknown *caller = 0x0 );
 
 protected:
-  virtual ~BackgroundColor();
+  virtual ~BackgroundColor ();
 
-  virtual void _execute();
+  virtual void _execute ();
 
-  virtual bool updateCheck() const;
+  virtual bool updateCheck () const;
 
 private:
   Usul::Math::Vec4f _color;

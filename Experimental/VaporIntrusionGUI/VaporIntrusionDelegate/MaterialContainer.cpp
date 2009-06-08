@@ -173,40 +173,6 @@ void MaterialContainer::on_addButton_clicked()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add a scalar
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MaterialContainer::add( const std::string& name, const std::string& value )
-{
-  MaterialDialog* a ( new MaterialDialog );
-
-  // set the name and value
-  a->name( name );
-  a->type( value );
-
-  QCheckBox* box ( new QCheckBox );
-  _buttons->addButton ( box );
-
-  QGridLayout *grid ( new QGridLayout );
-  grid->addWidget ( box, 0, 0 );
-  grid->addWidget ( a, 0, 1 );
-
-  //_layout->addWidget ( a );
-  _layout->insertLayout ( 0, grid );
-
-  _materials[box] = a ;
-
-  UserData::RefPtr data ( dynamic_cast< UserData* > ( a ) );
-
-  box->setUserData( 0, data );
-
-  this->update(); // ?
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the current material color
 //
 ///////////////////////////////////////////////////////////////////////////////

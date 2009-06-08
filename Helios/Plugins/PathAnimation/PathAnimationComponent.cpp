@@ -15,6 +15,9 @@
 
 #include "PathAnimation/PathAnimationComponent.h"
 
+#include "Usul/Adaptors/Bind.h"
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Components/Factory.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Convert/Convert.h"
@@ -50,8 +53,6 @@
 
 #include "osg/Matrixd"
 #include "osg/Vec3d"
-
-#include "boost/bind.hpp"
 
 namespace Sections = Usul::Registry::Sections;
 typedef Usul::Registry::Database Reg;
@@ -167,6 +168,7 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   Guard guard ( this );
 
   namespace UC = Usul::Commands;
+  namespace UA = Usul::Adaptors;
 
   Usul::Interfaces::IUnknown::QueryPtr caller ( c );
 
@@ -181,17 +183,17 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
 
   // Build the menu.
   MenuKit::Menu::RefPtr menu ( m.find ( "&Cameras", true ) );
-  menu->append ( Button::create ( "New Path", boost::bind ( &PathAnimationComponent::_newPath, this ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "New Path", UA::memberFunction<void> ( this, &PathAnimationComponent::_newPath ), UC::TrueFunctor() ) ) );
 
   // Only add the open button if the interface is implemented.
   if ( this->_canOpenPath( caller ) )
-    menu->append ( Button::create ( "Open Path...", boost::bind ( &PathAnimationComponent::_openPath, this, caller ) ) );
+    menu->append ( new Button ( UC::genericCommand ( "Open Path...", UA::bind1<void> ( caller, UA::memberFunction<void> ( this, &PathAnimationComponent::_openPath ) ), UC::TrueFunctor() ) ) );
 
   // Only add the save buttons if hte interface is implemented.
   if ( this->_canSavePath ( caller ) )
   {
-    menu->append ( Button::create ( "Save Path",       boost::bind ( &PathAnimationComponent::_saveCurrentPath, this, caller ), boost::bind ( &PathAnimationComponent::_isCurrentPathModified, this ) ) );
-    menu->append ( Button::create ( "Save Path As...", boost::bind ( &PathAnimationComponent::_saveAsCurrentPath, this, caller ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) );
+    menu->append ( new Button ( UC::genericCommand ( "Save Path",       UA::bind1<void> ( caller, UA::memberFunction<void> ( this, &PathAnimationComponent::_saveCurrentPath ) ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_isCurrentPathModified ) ) ) );
+    menu->append ( new Button ( UC::genericCommand ( "Save Path As...", UA::bind1<void> ( caller, UA::memberFunction<void> ( this, &PathAnimationComponent::_saveAsCurrentPath ) ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
     
     // Look to see if we have any plugins to export movie.
     typedef Usul::Components::Manager PluginManager;
@@ -200,23 +202,23 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
     
     // Only add button if we have plugins to create movie file.
     if ( false == unknowns.empty() )
-      menu->append ( Button::create ( "Export Movie...", boost::bind ( &PathAnimationComponent::_exportMovie, this, caller ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) );
+      menu->append ( new Button ( UC::genericCommand ( "Export Movie...", UA::bind1<void> ( caller, UA::memberFunction<void> ( this, &PathAnimationComponent::_exportMovie ) ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
   }
   
   menu->addSeparator();
-  menu->append ( Button::create ( "&Append Camera",          boost::bind ( &PathAnimationComponent::_currentCameraAppend, this  ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) );
-  menu->append ( Button::create ( "&Prepend Camera",         boost::bind ( &PathAnimationComponent::_currentCameraPrepend, this ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) );
-  menu->append ( Button::create ( "&Insert Between Closest", boost::bind ( &PathAnimationComponent::_currentCameraInsert, this  ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) );
-  menu->append ( Button::create ( "Remove Closest",          boost::bind ( &PathAnimationComponent::_currentCameraRemove, this  ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) );
-  menu->append ( Button::create ( "Replace Closest",         boost::bind ( &PathAnimationComponent::_currentCameraReplace, this ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) );
-  menu->append ( Button::create ( "&Close Path",             boost::bind ( &PathAnimationComponent::_closeCameraPath, this      ), boost::bind ( &PathAnimationComponent::_canClosePath, this   ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "&Append Camera",          UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraAppend  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "&Prepend Camera",         UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraPrepend ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "&Insert Between Closest", UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraInsert  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Remove Closest",          UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraRemove  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Replace Closest",         UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraReplace ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "&Close Path",             UA::memberFunction<void> ( this, &PathAnimationComponent::_closeCameraPath      ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canClosePath   ) ) ) );
 
   menu->addSeparator();
-  menu->append ( Button::create ( "Play &Forward",    boost::bind ( &PathAnimationComponent::_playForward, this    ), boost::bind ( &PathAnimationComponent::_canPlay, this   ) ) );
-  menu->append ( Button::create ( "Play &Backward",   boost::bind ( &PathAnimationComponent::_playBackward, this   ), boost::bind ( &PathAnimationComponent::_canPlay, this   ) ) );
-  menu->append ( Button::create ( "&Next Camera",     boost::bind ( &PathAnimationComponent::_goToNextCamera, this ), boost::bind ( &PathAnimationComponent::_canPlay, this   ) ) );
-  menu->append ( Button::create ( "Pre&vious Camera", boost::bind ( &PathAnimationComponent::_goToPrevCamera, this ), boost::bind ( &PathAnimationComponent::_canPlay, this   ) ) );
-  menu->append ( Button::create ( "&Stop",            boost::bind ( &PathAnimationComponent::stopPlaying, this     ), boost::bind ( &PathAnimationComponent::isPlaying, this ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Play &Forward",    UA::memberFunction<void> ( this, &PathAnimationComponent::_playForward    ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Play &Backward",   UA::memberFunction<void> ( this, &PathAnimationComponent::_playBackward   ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "&Next Camera",     UA::memberFunction<void> ( this, &PathAnimationComponent::_goToNextCamera ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Pre&vious Camera", UA::memberFunction<void> ( this, &PathAnimationComponent::_goToPrevCamera ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "&Stop",            UA::memberFunction<void> ( this, &PathAnimationComponent::stopPlaying    ), UA::memberFunction<bool> ( this, &PathAnimationComponent::isPlaying ) ) ) );
 
   menu->addSeparator();
   
@@ -225,10 +227,10 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
 
   menu->addSeparator();
   MenuKit::Menu::RefPtr sub ( new MenuKit::Menu ( "&Degree" ) );
-  sub->append ( RadioButton::create ( "&1", boost::bind ( &PathAnimationComponent::_setDegree, this, 1 ), boost::bind ( &PathAnimationComponent::_isDegree, this, 1 ) ) );
-  sub->append ( RadioButton::create ( "&2", boost::bind ( &PathAnimationComponent::_setDegree, this, 2 ), boost::bind ( &PathAnimationComponent::_isDegree, this, 2 ) ) );
-  sub->append ( RadioButton::create ( "&3", boost::bind ( &PathAnimationComponent::_setDegree, this, 3 ), boost::bind ( &PathAnimationComponent::_isDegree, this, 3 ) ) );
-  sub->append ( RadioButton::create ( "&4", boost::bind ( &PathAnimationComponent::_setDegree, this, 4 ), boost::bind ( &PathAnimationComponent::_isDegree, this, 4 ) ) );
+  sub->append ( new RadioButton ( UC::genericCheckCommand ( "&1", UA::bind1<void> ( 1, UA::memberFunction<void> ( this, &PathAnimationComponent::_setDegree ) ), UA::bind1<bool> ( 1, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isDegree ) ) ) ) );
+  sub->append ( new RadioButton ( UC::genericCheckCommand ( "&2", UA::bind1<void> ( 2, UA::memberFunction<void> ( this, &PathAnimationComponent::_setDegree ) ), UA::bind1<bool> ( 2, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isDegree ) ) ) ) );
+  sub->append ( new RadioButton ( UC::genericCheckCommand ( "&3", UA::bind1<void> ( 3, UA::memberFunction<void> ( this, &PathAnimationComponent::_setDegree ) ), UA::bind1<bool> ( 3, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isDegree ) ) ) ) );
+  sub->append ( new RadioButton ( UC::genericCheckCommand ( "&4", UA::bind1<void> ( 4, UA::memberFunction<void> ( this, &PathAnimationComponent::_setDegree ) ), UA::bind1<bool> ( 4, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isDegree ) ) ) ) );
   menu->append ( sub.get() );
 
   typedef std::vector<unsigned int> NumSteps;
@@ -241,13 +243,13 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   for ( NumSteps::const_iterator iter = numStep.begin(); iter != numStep.end(); ++iter )
   {
     const unsigned int num ( *iter );
-    steps->append ( RadioButton::create ( Usul::Strings::format ( num ), boost::bind ( &PathAnimationComponent::_setNumSteps, this, num ), boost::bind ( &PathAnimationComponent::_isNumSteps, this, num ) ) );
+    steps->append ( new RadioButton ( UC::genericCheckCommand ( Usul::Strings::format ( num ), UA::bind1<void> ( num, UA::memberFunction<void> ( this, &PathAnimationComponent::_setNumSteps ) ), UA::bind1<bool> ( num, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isNumSteps ) ) ) ) );
   }
   menu->append ( steps );
 
   menu->addSeparator();
-  menu->append ( ToggleButton::create ( "&Loop",      boost::bind ( &PathAnimationComponent::_setLooping, this, _1  ), boost::bind ( &PathAnimationComponent::_isLooping, this     ) ) );
-  menu->append ( ToggleButton::create ( "S&how Path", boost::bind ( &PathAnimationComponent::_setShowPath, this, _1 ), boost::bind ( &PathAnimationComponent::_isShowingPath, this ) ) );
+  menu->append ( new ToggleButton ( UC::genericToggleCommand ( "&Loop",      UA::memberFunction<void> ( this, &PathAnimationComponent::_setLooping  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_isLooping     ) ) ) );
+  menu->append ( new ToggleButton ( UC::genericToggleCommand ( "S&how Path", UA::memberFunction<void> ( this, &PathAnimationComponent::_setShowPath ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_isShowingPath ) ) ) );
 }
 
 
@@ -293,6 +295,17 @@ void PathAnimationComponent::_newPath()
 
 void PathAnimationComponent::_buildPathsMenu()
 {
+  typedef void (PathAnimationComponent::*SetPathFunctionPtr ) ( CameraPath::RefPtr );
+  typedef bool (PathAnimationComponent::*CheckFunction) ( CameraPath::RefPtr ) const;
+  typedef Usul::Adaptors::MemberFunction < void, PathAnimationComponent*, SetPathFunctionPtr > PathFunction;
+  typedef Usul::Adaptors::MemberFunction < bool, PathAnimationComponent*, CheckFunction > CheckFunctor;
+
+  typedef Usul::Adaptors::Bind1 < void, CameraPath::RefPtr, PathFunction > SetPathFunctor;
+  typedef Usul::Adaptors::Bind1 < bool, CameraPath::RefPtr, CheckFunctor > CheckPathFunctor;
+  typedef Usul::Commands::TrueFunctor TrueFunctor;
+  typedef Usul::Commands::ExecutePolicy < SetPathFunctor, CheckPathFunctor > Policy;
+
+  typedef Usul::Commands::GenericCheckCommand < SetPathFunctor, CheckPathFunctor, TrueFunctor, Policy > CheckCommand;
   typedef MenuKit::RadioButton RadioButton;
 
   // Clear current menu.
@@ -304,9 +317,9 @@ void PathAnimationComponent::_buildPathsMenu()
     CameraPath::RefPtr path ( *i );
     if ( true == path.valid() )
     {
-      _pathsMenu->append ( RadioButton::create ( path->fileName(),  
-        boost::bind ( &PathAnimationComponent::_setCurrentPath, this, *i ),
-        boost::bind ( &PathAnimationComponent::_isCurrentPath, this, *i ) ) );
+      _pathsMenu->append ( new RadioButton ( new CheckCommand ( path->fileName(),  
+        SetPathFunctor   ( *i, PathFunction ( this, &PathAnimationComponent::_setCurrentPath ) ), 
+        CheckPathFunctor ( *i, CheckFunctor ( this, &PathAnimationComponent::_isCurrentPath ) ) ) ) );
     }
   }
 }
@@ -383,7 +396,7 @@ void PathAnimationComponent::_currentCameraAppend()
     return;
 
   // Use helper function.
-  Helper::callCameraFunction ( boost::bind ( &CameraPath::append, _currentPath.get(), _1, _2, _3 ) );
+  Helper::callCameraFunction ( Usul::Adaptors::memberFunction ( _currentPath.get(), &CameraPath::append ) );
 
   // Build the camera menu.
   this->_buildCameraMenu();
@@ -409,7 +422,7 @@ void PathAnimationComponent::_currentCameraPrepend()
     return;
 
   // Use helper function.
-  Helper::callCameraFunction ( boost::bind ( &CameraPath::prepend, _currentPath.get(), _1, _2, _3 ) );
+  Helper::callCameraFunction ( Usul::Adaptors::memberFunction ( _currentPath.get(), &CameraPath::prepend ) );
 
   // Build the camera menu.
   this->_buildCameraMenu();
@@ -435,7 +448,7 @@ void PathAnimationComponent::_currentCameraInsert()
     return;
 
   // Use helper function.
-  Helper::callCameraFunction ( boost::bind ( &CameraPath::insertBetweenNearest, _currentPath.get(), _1, _2, _3 ) );
+  Helper::callCameraFunction ( Usul::Adaptors::memberFunction ( _currentPath.get(), &CameraPath::insertBetweenNearest ) );
 
   // Build the camera menu.
   this->_buildCameraMenu();
@@ -461,7 +474,7 @@ void PathAnimationComponent::_currentCameraRemove()
     return;
 
   // Use helper function.
-  Helper::callCameraFunction ( boost::bind ( &CameraPath::removeNearest, _currentPath.get(), _1, _2, _3 ) );
+  Helper::callCameraFunction ( Usul::Adaptors::memberFunction ( _currentPath.get(), &CameraPath::removeNearest ) );
 
   // Build the camera menu.
   this->_buildCameraMenu();
@@ -487,7 +500,7 @@ void PathAnimationComponent::_currentCameraReplace()
     return;
 
   // Use helper function.
-  Helper::callCameraFunction ( boost::bind ( &CameraPath::replaceNearest, _currentPath.get(), _1, _2, _3 ) );
+  Helper::callCameraFunction ( Usul::Adaptors::memberFunction ( _currentPath.get(), &CameraPath::replaceNearest ) );
 
   // Build the camera menu.
   this->_buildCameraMenu();
@@ -839,7 +852,7 @@ void PathAnimationComponent::updateNotify ( IUnknown *caller )
   Guard guard ( this );
 
   // Always update the scene.
-  Usul::Functions::safeCall ( boost::bind ( &PathAnimationComponent::_updateScene, this ) );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &PathAnimationComponent::_updateScene ) );
 }
 
 
@@ -980,7 +993,7 @@ void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &m
       const osg::Matrixd m ( &value[0] );
 
       // Append the camera.
-      Helper::callCameraFunction ( boost::bind ( &CameraPath::append, path.get(), _1, _2, _3 ), m );
+      Helper::callCameraFunction ( Usul::Adaptors::memberFunction ( path.get(), &CameraPath::append ), m );
     }
   }
 
@@ -1363,14 +1376,17 @@ void PathAnimationComponent::_buildCameraMenu()
   // Number of frames.
   const unsigned int numFrames ( _currentPath->size() );
 
+  namespace UC = Usul::Commands;
+  namespace UA = Usul::Adaptors;
+
   // Build the buttons.
   for ( unsigned int i = 0; i < numFrames; ++ i )
   {
     std::string label ( Usul::Convert::Type<unsigned int,std::string>::convert ( i + 1 ) );
     label.insert ( ( 1 == label.size() ) ? 0 : label.size() - 1, "&" );
     label = Usul::Strings::format ( "Camera ", label );
-    _cameraMenu->append ( MenuKit::Button::create ( label, 
-      boost::bind ( &PathAnimationComponent::_setCameraPosition, this, i ) ) );
+    _cameraMenu->append ( new MenuKit::Button ( UC::genericCommand ( label, UA::bind1<void> 
+      ( i, UA::memberFunction ( this, &PathAnimationComponent::_setCameraPosition ) ), UC::TrueFunctor() ) ) );
   }
 }
 
@@ -1596,7 +1612,7 @@ void PathAnimationComponent::activeDocumentChanged ( IUnknown *oldDoc, IUnknown 
   CameraPath::RefPtr currentPath ( Usul::Threads::Safe::get ( this->mutex(), _currentPath ) );
 
   // Make sure current path is restored.
-  Usul::Scope::Caller::RefPtr restorePath ( Usul::Scope::makeCaller ( boost::bind ( &PathAnimationComponent::_setCurrentPath, this, currentPath ) ) );
+  Usul::Scope::Caller::RefPtr restorePath ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( currentPath, Usul::Adaptors::memberFunction ( this, &PathAnimationComponent::_setCurrentPath ) ) ) );
 
   // Save properties in registry.
   Usul::Registry::Node &reg ( Reg::instance()[Sections::PATH_ANIMATION][doc]["paths"] );

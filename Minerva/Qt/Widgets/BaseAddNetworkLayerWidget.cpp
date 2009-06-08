@@ -13,6 +13,7 @@
 #include "Minerva/Qt/Widgets/WmsLayerItem.h"
 #include "ui_BaseAddNetworkLayerWidget.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Network/Names.h"
 #include "Usul/Registry/Convert.h"

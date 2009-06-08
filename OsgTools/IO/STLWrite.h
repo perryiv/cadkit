@@ -15,6 +15,7 @@
 #include "Usul/IO/BinaryWriter.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Resources/ProgressBar.h"
 #include "Usul/Policies/Update.h"
 #include "Usul/Exceptions/Thrower.h"
 
@@ -117,9 +118,7 @@ struct WriteSTLFile
     Writer writer ( out );
 
     Usul::Policies::TimeBased update ( 1000 );
-
-    // TODO: Pass in a caller so we can query for a progress bar.
-    Usul::Interfaces::IProgressBar::ValidQueryPtr progressBar;
+    Usul::Interfaces::IProgressBar::ValidQueryPtr progressBar ( Usul::Resources::progressBar() );
 
     Usul::Interfaces::IProgressBar::ShowHide scope( progressBar.get() );
 
@@ -128,7 +127,7 @@ struct WriteSTLFile
     {
       writer ( normals.at( i / 3 ), vertices.at( i ), vertices.at( i + 1 ), vertices.at ( i + 2 ) );
 
-      if( progressBar.valid() && update() )
+      if( update() )
       {
         progressBar->updateProgressBar( i / vertices.size() );
       }

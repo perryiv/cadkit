@@ -190,7 +190,7 @@ SET (EXECUTABLE_OUTPUT_PATH
 
 # We want to see compiler arguments.
 # Note: If we set this here, the user cannot override in the user interface.
-#SET (CMAKE_VERBOSE_MAKEFILE "ON")
+SET (CMAKE_VERBOSE_MAKEFILE "ON")
 
 
 # -------- Function to build OS X Stand Alone Bundles -----------------

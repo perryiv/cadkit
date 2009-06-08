@@ -15,6 +15,8 @@
 #include "MenuKit/Menu.h"
 
 #include "Usul/Commands/Command.h"
+#include "Usul/Interfaces/IUpdateEnable.h"
+#include "Usul/Interfaces/IUpdateCheck.h"
 
 using namespace MenuKit;
 
@@ -65,15 +67,19 @@ void UpdateVisitor::apply ( Menu &m )
 
 void UpdateVisitor::apply ( Button &b )
 {
-  Usul::Commands::Command::RefPtr command ( b.command() );
+  Usul::Commands::Command::RefPtr command ( b.command () );
 
-  if ( false == command.valid() )
-    return;
-  
-  b.enabled ( command->updateEnable() );
+  Usul::Interfaces::IUpdateEnable::QueryPtr ue ( command );
 
-  if ( b.toggle() || b.radio() )
+  if ( ue.valid () )
   {
-    b.checked ( command->updateCheck() );
+    b.enabled ( ue->updateEnable () );
+  }
+
+  if ( b.toggle () || b.radio () )
+  {
+    Usul::Interfaces::IUpdateCheck::QueryPtr uc ( command );
+    if ( uc.valid () )
+      b.checked ( uc->updateCheck () );
   }
 }

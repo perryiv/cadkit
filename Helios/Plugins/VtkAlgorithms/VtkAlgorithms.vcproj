@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib OpenThreadsd.lib vtkFiltering.lib vtkCommon.lib vtkGraphics.lib vtksys.lib"
+				AdditionalDependencies="osgd.lib OpenThreadsd.lib vtkFiltering.lib vtkCommon.lib vtkGraphics.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/VtkAlgorithms.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib OpenThreads.lib vtkFiltering.lib vtkCommon.lib vtkGraphics.lib vtksys.lib"
+				AdditionalDependencies="osg.lib OpenThreads.lib vtkFiltering.lib vtkCommon.lib vtkGraphics.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/VtkAlgorithms.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

@@ -22,8 +22,6 @@
 #include "osg/Vec3"
 #include "osg/Node"
 
-namespace Usul { namespace Interfaces { struct IElevationDatabase; struct IPlanetCoordinates; } }
-
 namespace Minerva {
 namespace Core {
 namespace Data {
@@ -33,7 +31,6 @@ class MINERVA_EXPORT Model : public Minerva::Core::Data::Geometry
 {
 public:
   typedef Minerva::Core::Data::Geometry BaseClass;
-  typedef osg::Matrixd Matrix;
   
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Model );
@@ -51,9 +48,6 @@ public:
   /// Get/Set the scale.
   void                  scale ( const osg::Vec3d& );
   osg::Vec3d            scale() const;
-
-  /// Get the matrix for the model.
-  Matrix                matrix ( Usul::Interfaces::IPlanetCoordinates* planet, Usul::Interfaces::IElevationDatabase* elevation ) const;
   
   /// Get/Set the model.
   void                  model ( osg::Node* );
@@ -70,9 +64,7 @@ public:
 protected:
   virtual ~Model();
   
-  virtual osg::Node*    _buildScene ( Usul::Interfaces::IUnknown* caller );
-
-  bool _hasScale() const;
+  virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller );
 
 private:
   osg::Vec3d _location;

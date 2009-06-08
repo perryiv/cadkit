@@ -18,6 +18,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/App/Application.h"
+#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Make.h"
 #include "Usul/Functions/SafeCall.h"
@@ -129,7 +130,7 @@ void Favorites::clear()
   if ( true == job.valid() )
   {
     Usul::Jobs::Manager::instance().cancel ( job );
-    while ( false == job->isDone() ){}
+    job->wait();
     job = 0x0;
   }
 
@@ -390,6 +391,8 @@ MenuKit::Menu* Favorites::_buildMenu ( const FavoritesMap& map, const std::strin
   // Shorten the lines.
   typedef MenuKit::Menu Menu;
   typedef MenuKit::Button Button;
+  namespace UA = Usul::Adaptors;
+  namespace UC = Usul::Commands;
 
   // Make the menu.
   Menu::RefPtr menu ( new Menu ( name ) );
@@ -397,7 +400,7 @@ MenuKit::Menu* Favorites::_buildMenu ( const FavoritesMap& map, const std::strin
   // Add buttons to the menu.
   for ( FavoritesMap::const_iterator iter = map.begin(); iter != map.end(); ++iter )
   {
-    menu->append ( Button::create ( iter->first, boost::bind ( &Favorites::_addLayer, this, caller, iter->second.get() ) ) );
+    menu->append ( new Button ( UC::genericCommand ( iter->first, UA::bind2<void> ( caller, iter->second.get(), UA::memberFunction<void> ( this, &Favorites::_addLayer ) ), UC::TrueFunctor() ) ) );
   }
 
   return menu.release();

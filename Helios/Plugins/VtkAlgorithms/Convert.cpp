@@ -11,6 +11,7 @@
 
 #include "Usul/Math/Vector3.h"
 
+#include "Usul/Resources/StatusBar.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 
 #include "OsgTools/Triangles/TriangleSet.h"

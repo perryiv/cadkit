@@ -42,8 +42,6 @@
 #include "QtGui/QMainWindow"
 #include "QtGui/QTreeWidget"
 
-#include <algorithm>
-
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VaporIntrusionGUIDelegateComponent, VaporIntrusionGUIDelegateComponent::BaseClass );
 
 
@@ -58,8 +56,8 @@ _xyzView( 0x0 ),
 //_xyView ( 0x0 ),
 //_xzView ( 0x0 ),
 //_yzView ( 0x0 ),
-_docks   (),
-_materialContainers(),
+_dock   ( 0x0 ),
+_materialContainer( 0x0 ),
 _caller(),
 _categories(),
 _gridMaterials()
@@ -79,21 +77,14 @@ VaporIntrusionGUIDelegateComponent::~VaporIntrusionGUIDelegateComponent()
 
   if( mainWindow.valid() )
   {
-    // get a handle to the main window
+    // Remove the DockWidget from the MainWindow.
     QMainWindow * main  ( mainWindow->mainWindow() );
-
-    // Delete the DockWidgets.
-    for( Docks::iterator iter = _docks.begin(); iter != _docks.end(); ++iter )
-    {
-      // Remove the DockWidget from the MainWindow.
-      main->removeDockWidget ( (*iter).second );
-
-      // Delete the dock and clear
-      delete (*iter).second;
-      (*iter).second = 0x0;
-    }
-
+    main->removeDockWidget ( _dock );
   }
+
+  // Delete the DockWidget.
+  delete _dock;
+  _dock = 0x0;
 
 }
 
@@ -119,8 +110,6 @@ Usul::Interfaces::IUnknown *VaporIntrusionGUIDelegateComponent::queryInterface (
     return static_cast < Usul::Interfaces::IPluginInitialize*>(this);
   case Usul::Interfaces::IInitNewDocument::IID:
     return static_cast < Usul::Interfaces::IInitNewDocument*>(this);
-  case VaporIntrusionGUI::Interfaces::IVPIDelegate::IID:
-    return static_cast < VaporIntrusionGUI::Interfaces::IVPIDelegate*>(this);
   default:
     return 0x0;
   }
@@ -161,7 +150,7 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     QWorkspace *parent ( workspace->workspace() );
 
     // Add XYZ window
-    _xyzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainers );
+    _xyzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainer );
     parent->addWindow ( _xyzView.get() );
 
     //// Add XY window
@@ -244,12 +233,12 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   MenuKit::Menu::RefPtr variableMenu ( new MenuKit::Menu ( "Parameters" ) );
   
   // Add Window arrange button
-  variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Grid", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid ) ) ) );
+  variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Grid", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid ), Usul::Commands::TrueFunctor() ) ) );
  
   // Add Scalar Editor button
-  variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Scalar Editor", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editScalar ) ) ) );
+  variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Scalar Editor", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editScalar ), Usul::Commands::TrueFunctor() ) ) );
 
-  //variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Input", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) );
+  //variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Input", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ), Usul::Commands::TrueFunctor() ) ) );
   
    // Query the active document for IVaporIntrusionGUI
   VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
@@ -266,10 +255,10 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
       std::string menuName ( categories.at( i ).name );
 
       // add the sub menu to the main menu
-      //variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) );
+      //variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ), Usul::Commands::TrueFunctor() ) ) );
 
       // add the sub menu to the main menu
-      variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( menuName, Usul::Adaptors::bind1<void> ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) ) ); 
+      variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( menuName, Usul::Adaptors::bind1<void> ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ), Usul::Commands::TrueFunctor() ) ) ); 
     }
 
   }
@@ -288,35 +277,31 @@ void VaporIntrusionGUIDelegateComponent::initializePlugin ( Usul::Interfaces::IU
 {
   _caller = caller;
 
-  //Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
+  Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
 
-  //if ( mainWindow.valid() )
-  //{
-  //  QMainWindow * main ( mainWindow->mainWindow() );
+  if ( mainWindow.valid() )
+  {
+    QMainWindow * main ( mainWindow->mainWindow() );
 
-  //  // Build the docking window.
-  //  QDockWidget* dock = new QDockWidget ( QObject::tr ( "Materials Container" ), main );
-  //  dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
+    // Build the docking window.
+    _dock = new QDockWidget ( QObject::tr ( "Materials Container" ), main );
+    _dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
 
-  //  // Create the widget
-  //  MaterialContainer* materialContainer = new MaterialContainer ( dock );
+    // Create the widget
+    _materialContainer = new MaterialContainer ( _dock );
 
-  //  // Add the dock to the main window.
-  //  dock->setWidget( materialContainer );
-  //  main->addDockWidget ( Qt::LeftDockWidgetArea, dock );
+    // Add the dock to the main window.
+    _dock->setWidget( _materialContainer );
+    main->addDockWidget ( Qt::LeftDockWidgetArea, _dock );
 
-  //  // Set the object name.
-  //  dock->setObjectName ( "MaterialsContainerWidget" );
+    // Set the object name.
+    _dock->setObjectName ( "MaterialsContainerWidget" );
 
-  //  // Add toggle to the menu.
-  //  Usul::Interfaces::IQtDockWidgetMenu::QueryPtr dwm ( caller );
-  //  if ( dwm.valid () )
-  //    dwm->addDockWidgetMenu ( dock );
-
-  //  // add the dock to the map of docks
-  //  _docks["Materials Container"] = dock;
-  //  _materialContainers["Materials Container"] = materialContainer;
-  //}
+    // Add toggle to the menu.
+    Usul::Interfaces::IQtDockWidgetMenu::QueryPtr dwm ( caller );
+    if ( dwm.valid () )
+      dwm->addDockWidgetMenu ( _dock );
+  }
 }
 
 
@@ -347,7 +332,6 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
 
   if( true == doc.valid() )
   {
-
     // set the dimensions
     doc->dimensions( d );
 
@@ -411,26 +395,7 @@ void VaporIntrusionGUIDelegateComponent::editScalar()
   ScalarEditorDialog dialog( document->dimensions() );
 
   // get the currently checked materials
-  MaterialsMap mmap;// ( _materialContainers["Materials Container"]->getCheckedMaterials() );
-
-  //loop through the map of material containers and grab all the checked scalars
-  for( MaterialContainers::iterator iter = _materialContainers.begin(); iter != _materialContainers.end(); ++iter )
-  {
-    // get the checked items from the current material dialog
-    MaterialsMap imap ( (*iter).second->getCheckedMaterials() );
-
-    for( MaterialsMap::iterator iter2 = imap.begin(); iter2 != imap.end(); ++iter2 )
-    {
-      // get the name
-      std::string name ( (*iter2).first );
-
-      // get the value
-      std::string value ( (*iter2).second );
-
-      mmap[name] = value;
-    }
-
-  }
+  MaterialsMap mmap ( _materialContainer->getCheckedMaterials() );
 
   dialog.materials( mmap );
 
@@ -485,65 +450,9 @@ void VaporIntrusionGUIDelegateComponent::editInputParameters( const std::string&
       break;
     }
   }
-      
-}
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Add a dock to the main window
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void VaporIntrusionGUIDelegateComponent::addDock( const std::string& name )
-{
-  Guard guard ( this );
-
-  Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( _caller );
-
-  if ( mainWindow.valid() )
-  {
-    QMainWindow * main ( mainWindow->mainWindow() );
-
-    // Build the docking window.
-    QDockWidget* dock = new QDockWidget ( QObject::tr ( name.c_str() ), main );
-    dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
-
-    // Create the widget
-    MaterialContainer* materialContainer = new MaterialContainer ( dock );
-
-    // Add the dock to the main window.
-    dock->setWidget( materialContainer );
-    main->addDockWidget ( Qt::LeftDockWidgetArea, dock );
-
-    // Set the object name.
-    dock->setObjectName ( "MaterialsContainerWidget" );
-
-    // Add toggle to the menu.
-    Usul::Interfaces::IQtDockWidgetMenu::QueryPtr dwm ( _caller );
-    if ( dwm.valid () )
-      dwm->addDockWidgetMenu ( dock );
-
-    // add the dock to the map of docks
-    _docks[name] = dock;
-    _materialContainers[name] = materialContainer;
-
-    if( _docks.size() > 1 )
-    {
-      main->tabifyDockWidget( (*_docks.begin()).second, dock );
-    }
-      
-  }
   
-}
 
-
-void VaporIntrusionGUIDelegateComponent::addToDock( const std::string& dockName, const std::string& name, const std::string& value )
-{
-  // check for validity
-  if( 0x0 == _materialContainers[dockName] )
-    return;
-
-  // add the material to the dock
-  _materialContainers[dockName]->add( name, value );
+  
+      
 }

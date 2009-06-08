@@ -27,7 +27,6 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Commands/GenericCommand.h"
-#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
 

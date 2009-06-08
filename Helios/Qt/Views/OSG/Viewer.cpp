@@ -11,13 +11,9 @@
 #include "Helios/Qt/Views/OSG/Viewer.h"
 #include "Helios/Qt/Views/OSG/EditBackground.h"
 
-#include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Adaptors/Bind.h"
 #include "Usul/App/Application.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Cast/Cast.h"
-#include "Usul/Commands/GenericCommand.h"
-#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Make.h"
 #include "Usul/Functions/SafeCall.h"
@@ -30,6 +26,7 @@
 #include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/System/DateTime.h"
+#include "Usul/Threads/Named.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/User/Directory.h"
@@ -595,8 +592,8 @@ void Viewer::mouseDoubleClickEvent ( QMouseEvent * event )
   // Set and restore the seek state.
   OsgTools::Render::Viewer::ViewMode mode ( viewer->getViewMode() );
   viewer->setViewMode ( OsgTools::Render::Viewer::SEEK );
-  Usul::Scope::Caller::RefPtr resetMode ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 
-    ( mode, ( Usul::Adaptors::memberFunction ( viewer.get(), &OsgTools::Render::Viewer::setViewMode ) ) ) ) );
+  Usul::Scope::Caller::RefPtr resetMode ( Usul::Scope::makeCaller ( 
+    boost::bind ( &OsgTools::Render::Viewer::setViewMode, viewer.get(), mode ) ) );
 
   // Simulate mouse button state.
   const bool left   ( true  );
@@ -1046,7 +1043,7 @@ void Viewer::_onTimeoutRenderLoop()
   OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
   if ( true == viewer.valid() )
   {
-    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( viewer, &OsgTools::Render::Viewer::render ), "1600949648" );
+    Usul::Functions::safeCall ( boost::bind ( &OsgTools::Render::Viewer::render, viewer ), "1600949648" );
   }
 
   // Do it again if we should.
@@ -1107,13 +1104,12 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   typedef OsgTools::Render::Viewer OsgViewer;
 
   namespace UC = Usul::Commands;
-  namespace UA = Usul::Adaptors;
 
   // Background menu.
   {
     MenuKit::Menu::RefPtr background ( new MenuKit::Menu ( "&Background" ) );
-    background->append ( new Button ( UC::genericCommand ( "&Edit...", boost::bind ( &Viewer::editBackground, this ) ) ) );
-    background->append ( new Button ( UC::genericCommand ( "&Default", boost::bind ( &OsgViewer::defaultBackground, viewer.get() ) ) ) );
+    background->append ( Button::create ( "&Edit...", boost::bind ( &Viewer::editBackground, this ) ) );
+    background->append ( Button::create ( "&Default", boost::bind ( &OsgViewer::defaultBackground, viewer.get() ) ) );
     menu.append ( background.get() );
   }
   
@@ -1121,9 +1117,9 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   {
     MenuKit::Menu::RefPtr clip ( new MenuKit::Menu ( "&Clip Distances" ) );
     clip->append ( ToggleButton::create ( "&Auto", 
-                                          UA::memberFunction<void> ( viewer.get(), &OsgViewer::computeNearFarSet ), 
-                                          UA::memberFunction<bool> ( viewer.get(), &OsgViewer::computeNearFarGet ) ) );
-    clip->append ( new Button ( UC::genericCommand ( "&Edit...", boost::bind ( &Viewer::editClippingDistances, this ) ) ) );
+      boost::bind ( &OsgViewer::computeNearFarSet, viewer.get(), _1 ), 
+      boost::bind ( &OsgViewer::computeNearFarGet, viewer.get() ) ) );
+    clip->append ( Button::create ( "&Edit...", boost::bind ( &Viewer::editClippingDistances, this ) ) );
     menu.append ( clip.get() );
   }
   
@@ -1131,19 +1127,19 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   {
     MenuKit::Menu::RefPtr gotoMenu ( new MenuKit::Menu ( "&Camera" ) );
     
-    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Fit",    "eye.png",    viewer.get(), &OsgViewer::camera, OsgViewer::FIT   ) ) );
-    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Home",   "home.png",   viewer.get(), &OsgViewer::camera, OsgViewer::RESET ) ) );
-    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Front",  "Front.png",  viewer.get(), &OsgViewer::camera, OsgViewer::FRONT ) ) );
-    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Back",   "Back.png",   viewer.get(), &OsgViewer::camera, OsgViewer::BACK ) ) );
-    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Left",   "Left.png",   viewer.get(), &OsgViewer::camera, OsgViewer::LEFT ) ) );
-    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Right",  "Right.png",  viewer.get(), &OsgViewer::camera, OsgViewer::RIGHT ) ) );
-    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Top",    "Top.png",    viewer.get(), &OsgViewer::camera, OsgViewer::TOP ) ) );
-    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "B&ottom", "Bottom.png", viewer.get(), &OsgViewer::camera, OsgViewer::BOTTOM ) ) );
+    gotoMenu->append ( Button::createWithIcon ( "&Fit",    "eye.png",    boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::FIT ) ) );
+    gotoMenu->append ( Button::createWithIcon ( "&Home",   "home.png",   boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::RESET ) ) );
+    gotoMenu->append ( Button::createWithIcon ( "&Front",  "Front.png",  boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::FRONT ) ) );
+    gotoMenu->append ( Button::createWithIcon ( "&Back",   "Back.png",   boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::BACK ) ) );
+    gotoMenu->append ( Button::createWithIcon ( "&Left",   "Left.png",   boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::LEFT ) ) );
+    gotoMenu->append ( Button::createWithIcon ( "&Right",  "Right.png",  boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::RIGHT ) ) );
+    gotoMenu->append ( Button::createWithIcon ( "&Top",    "Top.png",    boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::TOP ) ) );
+    gotoMenu->append ( Button::createWithIcon ( "B&ottom", "Bottom.png", boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::BOTTOM ) ) );
     gotoMenu->addSeparator();
-    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Rotate Y +45", "", viewer.get(), &OsgViewer::camera, OsgViewer::ROTATE_Y_P45 ) ) );
-    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Rotate Y -45", "", viewer.get(), &OsgViewer::camera, OsgViewer::ROTATE_Y_N45 ) ) );
-    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Rotate X +45", "", viewer.get(), &OsgViewer::camera, OsgViewer::ROTATE_X_N45 ) ) );
-    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Rotate X -45", "", viewer.get(), &OsgViewer::camera, OsgViewer::ROTATE_X_N45 ) ) );
+    gotoMenu->append ( Button::create ( "Rotate Y +45", boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::ROTATE_Y_P45 ) ) );
+    gotoMenu->append ( Button::create ( "Rotate Y -45", boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::ROTATE_Y_N45 ) ) );
+    gotoMenu->append ( Button::create ( "Rotate X +45", boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::ROTATE_X_N45 ) ) );
+    gotoMenu->append ( Button::create ( "Rotate X -45", boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::ROTATE_X_N45 ) ) );
 
     menu.append ( gotoMenu.get() );
   }
@@ -1226,11 +1222,11 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
     menu.append ( lods.get() );
     
     lods->append ( ToggleButton::create ( "&Use Low LOD When Navigating", 
-                                                    UA::memberFunction<void> ( viewer.get(), &OsgViewer::useLowLodsSet ), 
-                                                    UA::memberFunction<bool> ( viewer.get(), &OsgViewer::useLowLodsGet ) ) );
+      boost::bind ( &OsgViewer::useLowLodsSet, viewer.get(), _1 ), 
+      boost::bind ( &OsgViewer::useLowLodsGet, viewer.get() ) ) );
     lods->append ( ToggleButton::create ( "&Always Use High LOD", 
-                                                    UA::memberFunction<void> ( viewer.get(), &OsgViewer::useHighLodsSet ), 
-                                                    UA::memberFunction<bool> ( viewer.get(), &OsgViewer::useHighLodsGet ) ) );
+      boost::bind ( &OsgViewer::useHighLodsSet, viewer.get(), _1 ), 
+      boost::bind ( &OsgViewer::useHighLodsGet, viewer.get() ) ) );
   }
 
   // Add common window sizes.
@@ -1255,7 +1251,7 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
       boost::bind ( &Viewer::_resize, this, s[0], s[1] ), 
       boost::bind ( &Viewer::_isSize, this, s[0], s[1] ) ) );
   }
-  size->append ( new Button ( UC::genericCommand ( "Custom...", boost::bind ( &Viewer::_customSize, this ) ) ) );
+  size->append ( Button::create ( "Custom...", boost::bind ( &Viewer::_customSize, this ) ) );
 
   menu.append ( size );
 
@@ -1277,16 +1273,24 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   }
 
   // Axes button.
-  menu.append ( ToggleButton::create ( "Show &Axes", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::axesShown ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isAxesShown ) ) );
+  menu.append ( ToggleButton::create ( "Show &Axes", 
+    boost::bind ( &OsgViewer::axesShown, _viewer.get(), _1 ), 
+    boost::bind ( &OsgViewer::isAxesShown, viewer.get() ) ) );
 
   // On-screen text button.
-  menu.append ( ToggleButton::create ( "Show &Text", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::textShown ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isTextShown ) ) );
+  menu.append ( ToggleButton::create ( "Show &Text", 
+    boost::bind ( &OsgViewer::textShown, _viewer.get(), _1 ), 
+    boost::bind ( &OsgViewer::isTextShown, viewer.get() ) ) );
   
   // Back face culling.
-  menu.append ( ToggleButton::create ( "Show Back &Faces", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::showBackFaces ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isBackFacesShowing ) ) );
+  menu.append ( ToggleButton::create ( "Show Back &Faces", 
+    boost::bind ( &OsgViewer::showBackFaces, _viewer.get(), _1 ), 
+    boost::bind ( &OsgViewer::isBackFacesShowing, viewer.get() ) ) );
   
   // Two Sided Lighting.
-  menu.append ( ToggleButton::create ( "Two Sided &Lighting", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::twoSidedLightingSet ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::twoSidedLightingGet ) ) );
+  menu.append ( ToggleButton::create ( "Two Sided &Lighting", 
+    boost::bind ( &OsgViewer::twoSidedLightingSet, _viewer.get(), _1 ),
+    boost::bind ( &OsgViewer::twoSidedLightingGet, viewer.get() ) ) );
 }
 
 
@@ -1678,8 +1682,7 @@ void Viewer::_onContextMenuShow ( const QPoint& pos )
   this->_menuAdd ( *menu );
   
   typedef MenuKit::Button Button;
-  menu->append ( new Button ( 
-    Usul::Commands::genericCommand ( "OpenGL information", boost::bind ( &Viewer::_openGLInformation, this ) ) ) );
+  menu->append ( Button::create ( "OpenGL information", boost::bind ( &Viewer::_openGLInformation, this ) ) );
 
   QtTools::Menu qMenu;
   qMenu.menu ( menu.get() );
@@ -1697,7 +1700,7 @@ void Viewer::_onContextMenuShow ( const QPoint& pos )
 void Viewer::closeEvent ( QCloseEvent *event )
 {
   USUL_TRACE_SCOPE;
-  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &Viewer::_closeEvent ), event, "2663774419" );
+  Usul::Functions::safeCall ( boost::bind ( &Viewer::_closeEvent, this, event ), "2663774419" );
 }
 
 
@@ -1723,7 +1726,7 @@ void Viewer::_closeEvent ( QCloseEvent* event )
   }
 
   // Close.  Removing this from the document's windows.
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Viewer::_close ), "1749695082" );
+  Usul::Functions::safeCall ( boost::bind ( &Viewer::_close, this ), "1749695082" );
 
   // Pass along to the base class.
   BaseClass::closeEvent ( event );
@@ -1866,7 +1869,7 @@ void Viewer::forceClose()
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
 
   // Close.  Removing this from the document's windows.
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Viewer::_close ), "3614568329" );
+  Usul::Functions::safeCall ( boost::bind ( &Viewer::_close, this ), "3614568329" );
   this->close();
 }
 
@@ -2005,14 +2008,14 @@ void Viewer::toolBarAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown* calle
   // Camera menu.
   MenuKit::Menu::RefPtr toolBar ( new MenuKit::Menu ( "view_toolbar" ) );
 
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Fit",    "eye.png",    viewer.get(), &OsgViewer::camera, OsgViewer::FIT   ) ) );
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Home",   "home.png",   viewer.get(), &OsgViewer::camera, OsgViewer::RESET ) ) );
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Front",  "Front.png",  viewer.get(), &OsgViewer::camera, OsgViewer::FRONT ) ) );
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Back",   "Back.png",   viewer.get(), &OsgViewer::camera, OsgViewer::BACK ) ) );
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Left",   "Left.png",   viewer.get(), &OsgViewer::camera, OsgViewer::LEFT ) ) );
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Right",  "Right.png",  viewer.get(), &OsgViewer::camera, OsgViewer::RIGHT ) ) );
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Top",    "Top.png",    viewer.get(), &OsgViewer::camera, OsgViewer::TOP ) ) );
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Bottom", "Bottom.png", viewer.get(), &OsgViewer::camera, OsgViewer::BOTTOM ) ) );
+  toolBar->append ( Button::createWithIcon ( "Fit",    "eye.png",    boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::FIT   ) ) );
+  toolBar->append ( Button::createWithIcon ( "Home",   "home.png",   boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::RESET ) ) );
+  toolBar->append ( Button::createWithIcon ( "Front",  "Front.png",  boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::FRONT ) ) );
+  toolBar->append ( Button::createWithIcon ( "Back",   "Back.png",   boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::BACK ) ) );
+  toolBar->append ( Button::createWithIcon ( "Left",   "Left.png",   boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::LEFT ) ) );
+  toolBar->append ( Button::createWithIcon ( "Right",  "Right.png",  boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::RIGHT ) ) );
+  toolBar->append ( Button::createWithIcon ( "Top",    "Top.png",    boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::TOP ) ) );
+  toolBar->append ( Button::createWithIcon ( "Bottom", "Bottom.png", boost::bind ( &OsgViewer::camera, viewer.get(), OsgViewer::BOTTOM ) ) );
   
   menu.append ( toolBar.get() );
 }

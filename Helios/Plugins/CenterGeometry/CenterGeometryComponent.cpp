@@ -97,13 +97,13 @@ void CenterGeometryComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnk
   // Build the menu.
   MenuKit::Menu::RefPtr menu ( m.find ( "Tools", true ) );
 
-	menu->append ( new Button ( Usul::Commands::genericCommand ( "Center Geometry", 
+  menu->append ( Button::create ( "Center Geometry", 
       Usul::Adaptors::memberFunction<void> ( this, &CenterGeometryComponent::centerGeometry ),
-      Usul::Adaptors::memberFunction<bool> ( this, &CenterGeometryComponent::enableCenterGeometry ) ) ) );
+      Usul::Adaptors::memberFunction<bool> ( this, &CenterGeometryComponent::enableCenterGeometry ) ) );
 
-	menu->append ( new Button ( Usul::Commands::genericCommand ( "Flatten Geometry", 
+	menu->append ( Button::create ( "Flatten Geometry", 
       Usul::Adaptors::memberFunction<void> ( this, &CenterGeometryComponent::flattenGeometry ),
-      Usul::Adaptors::memberFunction<bool> ( this, &CenterGeometryComponent::enableFlattenGeometry ) ) ) );
+      Usul::Adaptors::memberFunction<bool> ( this, &CenterGeometryComponent::enableFlattenGeometry ) ) );
 }
 
 

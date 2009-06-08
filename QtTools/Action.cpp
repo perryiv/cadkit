@@ -9,11 +9,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "QtTools/Action.h"
+#include "QtTools/Image.h"
 
-#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Trace/Trace.h"
+
+#include "boost/bind.hpp"
 
 using namespace QtTools;
 
@@ -25,17 +27,17 @@ using namespace QtTools;
 ///////////////////////////////////////////////////////////////////////////////
 
 Action::Action ( Usul::Commands::Command *command ) : BaseClass ( 0x0 ),
-  _command ( command )
+  _executeCallback()
 {
   USUL_TRACE_SCOPE;
 
-  if ( _command.valid () )
+  if ( 0x0 != command )
   {
-    const std::string text      ( _command->text() );
-    const std::string shortcut  ( _command->shortcut() );
-    const std::string statusTip ( _command->statusTip() );
-    const std::string toolTip   ( _command->toolTip() );
-    const std::string iconPath  ( _command->iconPath() );
+    const std::string text      ( command->text() );
+    const std::string shortcut  ( command->shortcut() );
+    const std::string statusTip ( command->statusTip() );
+    const std::string toolTip   ( command->toolTip() );
+    const std::string iconPath  ( command->iconPath() );
 
     if ( false == text.empty() )
       this->setText ( tr ( text.c_str() ) );
@@ -51,7 +53,28 @@ Action::Action ( Usul::Commands::Command *command ) : BaseClass ( 0x0 ),
 
     if ( false == iconPath.empty() )
       QtTools::Image::icon ( command->iconPath().c_str(), this );
+
+    typedef Usul::Commands::Command Command;
+    _executeCallback = boost::bind ( &Command::execute, Command::RefPtr ( command ), static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ) );
   }
+
+  this->connect ( this, SIGNAL ( triggered() ), this, SLOT ( _slot() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Action::Action ( const std::string& text, ExecuteCallback callback ) : BaseClass ( 0x0 ),
+  _executeCallback ( callback )
+{
+  USUL_TRACE_SCOPE;
+  
+  if ( false == text.empty() )
+    this->setText ( tr ( text.c_str() ) );
 
   this->connect ( this, SIGNAL ( triggered() ), this, SLOT ( _slot() ) );
 }
@@ -78,7 +101,7 @@ Action::~Action()
 void Action::_slot()
 {
   USUL_TRACE_SCOPE;
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Action::_execute ), "2485487655" );
+  Usul::Functions::safeCall ( boost::bind (&Action::_execute, this ), "2485487655" );
 }
 
 
@@ -93,9 +116,8 @@ void Action::_execute()
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "3551910933" );
   
-  if ( _command.valid () )
+  if ( _executeCallback )
   {
-    Usul::Commands::Command::RefPtr command ( _command->clone () );
-    command->execute ( 0x0 );
+    _executeCallback();
   }
 }

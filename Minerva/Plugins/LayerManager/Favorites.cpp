@@ -18,7 +18,6 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/App/Application.h"
-#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Make.h"
 #include "Usul/Functions/SafeCall.h"
@@ -391,8 +390,6 @@ MenuKit::Menu* Favorites::_buildMenu ( const FavoritesMap& map, const std::strin
   // Shorten the lines.
   typedef MenuKit::Menu Menu;
   typedef MenuKit::Button Button;
-  namespace UA = Usul::Adaptors;
-  namespace UC = Usul::Commands;
 
   // Make the menu.
   Menu::RefPtr menu ( new Menu ( name ) );
@@ -400,7 +397,7 @@ MenuKit::Menu* Favorites::_buildMenu ( const FavoritesMap& map, const std::strin
   // Add buttons to the menu.
   for ( FavoritesMap::const_iterator iter = map.begin(); iter != map.end(); ++iter )
   {
-    menu->append ( new Button ( UC::genericCommand ( iter->first, boost::bind ( &Favorites::_addLayer, this, caller, iter->second.get() ) ) ) );
+    menu->append ( Button::create ( iter->first, boost::bind ( &Favorites::_addLayer, this, caller, iter->second.get() ) ) );
   }
 
   return menu.release();

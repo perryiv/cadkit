@@ -253,10 +253,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MemFunCallback.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Menu.cpp"
 				>
 			</File>

@@ -13,7 +13,6 @@
 
 #include "MenuKit/Button.h"
 
-#include "Usul/Commands/GenericCheckCommand.h"
 
 namespace MenuKit {
 
@@ -24,10 +23,8 @@ public:
 
   // Typedefs and smart-pointers.
   typedef Button BaseClass;
-  typedef Usul::Commands::GenericCheckCommand CheckCommand;
-  typedef CheckCommand::ExecuteFunctor ExecuteFunction;
-  typedef CheckCommand::CheckFunctor CheckFunction;
-  typedef CheckCommand::EnableFunctor EnableFunction;
+  typedef boost::function<void ()> ExecuteFunction;
+  typedef boost::function<bool ()> CheckFunction;
   USUL_DECLARE_REF_POINTERS ( RadioButton );
 
   // Construction.

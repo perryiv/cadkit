@@ -15,8 +15,6 @@
 
 #include "PathAnimation/PathAnimationComponent.h"
 
-#include "Usul/Commands/GenericCommand.h"
-#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Components/Factory.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Convert/Convert.h"
@@ -183,17 +181,17 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
 
   // Build the menu.
   MenuKit::Menu::RefPtr menu ( m.find ( "&Cameras", true ) );
-  menu->append ( new Button ( UC::genericCommand ( "New Path", boost::bind ( &PathAnimationComponent::_newPath, this ) ) ) );
+  menu->append ( Button::create ( "New Path", boost::bind ( &PathAnimationComponent::_newPath, this ) ) );
 
   // Only add the open button if the interface is implemented.
   if ( this->_canOpenPath( caller ) )
-    menu->append ( new Button ( UC::genericCommand ( "Open Path...", boost::bind ( &PathAnimationComponent::_openPath, this, caller ) ) ) );
+    menu->append ( Button::create ( "Open Path...", boost::bind ( &PathAnimationComponent::_openPath, this, caller ) ) );
 
   // Only add the save buttons if hte interface is implemented.
   if ( this->_canSavePath ( caller ) )
   {
-    menu->append ( new Button ( UC::genericCommand ( "Save Path",       boost::bind ( &PathAnimationComponent::_saveCurrentPath, this, caller ), boost::bind ( &PathAnimationComponent::_isCurrentPathModified, this ) ) ) );
-    menu->append ( new Button ( UC::genericCommand ( "Save Path As...", boost::bind ( &PathAnimationComponent::_saveAsCurrentPath, this, caller ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) ) );
+    menu->append ( Button::create ( "Save Path",       boost::bind ( &PathAnimationComponent::_saveCurrentPath, this, caller ), boost::bind ( &PathAnimationComponent::_isCurrentPathModified, this ) ) );
+    menu->append ( Button::create ( "Save Path As...", boost::bind ( &PathAnimationComponent::_saveAsCurrentPath, this, caller ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) );
     
     // Look to see if we have any plugins to export movie.
     typedef Usul::Components::Manager PluginManager;
@@ -202,23 +200,23 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
     
     // Only add button if we have plugins to create movie file.
     if ( false == unknowns.empty() )
-      menu->append ( new Button ( UC::genericCommand ( "Export Movie...", boost::bind ( &PathAnimationComponent::_exportMovie, this, caller ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) ) );
+      menu->append ( Button::create ( "Export Movie...", boost::bind ( &PathAnimationComponent::_exportMovie, this, caller ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) );
   }
   
   menu->addSeparator();
-  menu->append ( new Button ( UC::genericCommand ( "&Append Camera",          boost::bind ( &PathAnimationComponent::_currentCameraAppend, this  ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "&Prepend Camera",         boost::bind ( &PathAnimationComponent::_currentCameraPrepend, this ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "&Insert Between Closest", boost::bind ( &PathAnimationComponent::_currentCameraInsert, this  ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Remove Closest",          boost::bind ( &PathAnimationComponent::_currentCameraRemove, this  ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Replace Closest",         boost::bind ( &PathAnimationComponent::_currentCameraReplace, this ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "&Close Path",             boost::bind ( &PathAnimationComponent::_closeCameraPath, this      ), boost::bind ( &PathAnimationComponent::_canClosePath, this   ) ) ) );
+  menu->append ( Button::create ( "&Append Camera",          boost::bind ( &PathAnimationComponent::_currentCameraAppend, this  ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) );
+  menu->append ( Button::create ( "&Prepend Camera",         boost::bind ( &PathAnimationComponent::_currentCameraPrepend, this ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) );
+  menu->append ( Button::create ( "&Insert Between Closest", boost::bind ( &PathAnimationComponent::_currentCameraInsert, this  ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) );
+  menu->append ( Button::create ( "Remove Closest",          boost::bind ( &PathAnimationComponent::_currentCameraRemove, this  ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) );
+  menu->append ( Button::create ( "Replace Closest",         boost::bind ( &PathAnimationComponent::_currentCameraReplace, this ), boost::bind ( &PathAnimationComponent::_hasCurrentPath, this ) ) );
+  menu->append ( Button::create ( "&Close Path",             boost::bind ( &PathAnimationComponent::_closeCameraPath, this      ), boost::bind ( &PathAnimationComponent::_canClosePath, this   ) ) );
 
   menu->addSeparator();
-  menu->append ( new Button ( UC::genericCommand ( "Play &Forward",    boost::bind ( &PathAnimationComponent::_playForward, this    ), boost::bind ( &PathAnimationComponent::_canPlay, this   ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Play &Backward",   boost::bind ( &PathAnimationComponent::_playBackward, this   ), boost::bind ( &PathAnimationComponent::_canPlay, this   ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "&Next Camera",     boost::bind ( &PathAnimationComponent::_goToNextCamera, this ), boost::bind ( &PathAnimationComponent::_canPlay, this   ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Pre&vious Camera", boost::bind ( &PathAnimationComponent::_goToPrevCamera, this ), boost::bind ( &PathAnimationComponent::_canPlay, this   ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "&Stop",            boost::bind ( &PathAnimationComponent::stopPlaying, this     ), boost::bind ( &PathAnimationComponent::isPlaying, this ) ) ) );
+  menu->append ( Button::create ( "Play &Forward",    boost::bind ( &PathAnimationComponent::_playForward, this    ), boost::bind ( &PathAnimationComponent::_canPlay, this   ) ) );
+  menu->append ( Button::create ( "Play &Backward",   boost::bind ( &PathAnimationComponent::_playBackward, this   ), boost::bind ( &PathAnimationComponent::_canPlay, this   ) ) );
+  menu->append ( Button::create ( "&Next Camera",     boost::bind ( &PathAnimationComponent::_goToNextCamera, this ), boost::bind ( &PathAnimationComponent::_canPlay, this   ) ) );
+  menu->append ( Button::create ( "Pre&vious Camera", boost::bind ( &PathAnimationComponent::_goToPrevCamera, this ), boost::bind ( &PathAnimationComponent::_canPlay, this   ) ) );
+  menu->append ( Button::create ( "&Stop",            boost::bind ( &PathAnimationComponent::stopPlaying, this     ), boost::bind ( &PathAnimationComponent::isPlaying, this ) ) );
 
   menu->addSeparator();
   
@@ -1371,8 +1369,8 @@ void PathAnimationComponent::_buildCameraMenu()
     std::string label ( Usul::Convert::Type<unsigned int,std::string>::convert ( i + 1 ) );
     label.insert ( ( 1 == label.size() ) ? 0 : label.size() - 1, "&" );
     label = Usul::Strings::format ( "Camera ", label );
-    _cameraMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( label, 
-      boost::bind ( &PathAnimationComponent::_setCameraPosition, this, i ) ) ) );
+    _cameraMenu->append ( MenuKit::Button::create ( label, 
+      boost::bind ( &PathAnimationComponent::_setCameraPosition, this, i ) ) );
   }
 }
 

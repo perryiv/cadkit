@@ -2606,10 +2606,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Commands\GenericCommand.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Commands\History.cpp"
 					>
 				</File>

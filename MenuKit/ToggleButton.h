@@ -13,8 +13,6 @@
 
 #include "MenuKit/Button.h"
 
-#include "boost/function.hpp"
-
 namespace MenuKit {
 
 
@@ -25,7 +23,6 @@ public:
   // Typedefs and smart-pointers.
   typedef Button BaseClass;
   typedef boost::function<void ( bool )> ExecuteFunction;
-  typedef boost::function<bool ()> EnableFunction;
   typedef boost::function<bool ()> CheckFunction;
   USUL_DECLARE_REF_POINTERS ( ToggleButton );
 

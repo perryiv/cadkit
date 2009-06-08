@@ -1,0 +1,59 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test: CadKit Usul Threads 01", "Test01\TestThreads01.vcproj", "{C973AA39-4129-4F4A-A8A0-BCA19D7A3782}"
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit OpenThreadsEx", "..\..\..\Threads\OpenThreads\OpenThreadsEx.vcproj", "{A4610909-A555-40C5-87A8-B95FEFF45CF5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\..\Usul.vcproj", "{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test: CadKit Usul Threads 02", "Test02\TestThreads02.vcproj", "{470869B0-2670-455B-AB83-F01344517C35}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test: CadKit Usul Threads 03", "Test03\TestThreads03.vcproj", "{07696400-EC74-43F6-AAAA-540828554699}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C973AA39-4129-4F4A-A8A0-BCA19D7A3782}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C973AA39-4129-4F4A-A8A0-BCA19D7A3782}.Debug|Win32.Build.0 = Debug|Win32
+		{C973AA39-4129-4F4A-A8A0-BCA19D7A3782}.Release|Win32.ActiveCfg = Release|Win32
+		{C973AA39-4129-4F4A-A8A0-BCA19D7A3782}.Release|Win32.Build.0 = Release|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Debug|Win32.Build.0 = Debug|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Release|Win32.ActiveCfg = Release|Win32
+		{A4610909-A555-40C5-87A8-B95FEFF45CF5}.Release|Win32.Build.0 = Release|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Debug|Win32.ActiveCfg = Debug|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Debug|Win32.Build.0 = Debug|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Release|Win32.ActiveCfg = Release|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Release|Win32.Build.0 = Release|Win32
+		{470869B0-2670-455B-AB83-F01344517C35}.Debug|Win32.ActiveCfg = Debug|Win32
+		{470869B0-2670-455B-AB83-F01344517C35}.Debug|Win32.Build.0 = Debug|Win32
+		{470869B0-2670-455B-AB83-F01344517C35}.Release|Win32.ActiveCfg = Release|Win32
+		{470869B0-2670-455B-AB83-F01344517C35}.Release|Win32.Build.0 = Release|Win32
+		{07696400-EC74-43F6-AAAA-540828554699}.Debug|Win32.ActiveCfg = Debug|Win32
+		{07696400-EC74-43F6-AAAA-540828554699}.Debug|Win32.Build.0 = Debug|Win32
+		{07696400-EC74-43F6-AAAA-540828554699}.Release|Win32.ActiveCfg = Release|Win32
+		{07696400-EC74-43F6-AAAA-540828554699}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

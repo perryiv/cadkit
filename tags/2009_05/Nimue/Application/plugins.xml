@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<plugins>
+  <plugin file="QtSceneTree.plug" />
+  <plugin file="QtClipPlanes.plug" />
+  <plugin file="QtSnapShot.plug" />
+  <plugin file="ModflowDelegateQt.plug" />
+  <plugin file="ModflowModel.plug" />
+  <plugin file="SceneModel.plug" />
+  <plugin file="PathAnimation.plug"/>
+</plugins>

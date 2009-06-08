@@ -1,0 +1,131 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "Core"=.\GSG\Core\Core.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "DemoFoxViewer"=.\Demos\Viewer\FOX\DemoFoxViewer.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Core
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Fox
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name OpenGL
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "Fox"=.\GSG\FOX\Fox.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name OpenGL
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Core
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "OpenGL"=.\GSG\OpenGL\OpenGL.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Core
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "Test01"=.\Tests\Test01\Test01.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Core
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name OpenGL
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "Test02"=.\Tests\Test02\Test02.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Core
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name OpenGL
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "Test03"=.\Tests\Test03\Test03.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

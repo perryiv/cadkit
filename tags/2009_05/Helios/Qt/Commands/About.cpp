@@ -1,0 +1,64 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author(s): Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "Helios/Qt/Commands/About.h"
+
+#include "Usul/Trace/Trace.h"
+
+#include "QtGui/QWidget"
+#include "QtGui/QMessageBox"
+
+using namespace CadKit::Helios::Commands;
+
+USUL_IMPLEMENT_COMMAND ( About );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+About::About ( QWidget *widget, const std::string& text, const std::string& about ) : BaseClass ( 0x0 ),
+  _parent ( widget ),
+  _about ( about )
+{
+  USUL_TRACE_SCOPE;
+  
+  this->text ( text );
+  this->statusTip ( "Display information about this program." );
+  this->toolTip ( "Display information about this program." );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+About::~About ()
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Save the active document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void About::_execute ()
+{
+  USUL_TRACE_SCOPE;
+  
+  QMessageBox::about ( _parent, this->text().c_str(), _about.c_str() );
+}

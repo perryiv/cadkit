@@ -1,0 +1,29 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "Minerva/Plugins/PostGISLayerQt/UniqueColorWidget.h"
+
+#include "QtTools/ColorButton.h"
+
+#include "QtGui/QHBoxLayout"
+#include "QtGui/QPushButton"
+#include "QtGui/QLabel"
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+UniqueColorWidget::UniqueColorWidget ( Layer *layer, QWidget *parent ) :
+  BaseClass ( parent ),
+  _layer ( layer )
+{
+}

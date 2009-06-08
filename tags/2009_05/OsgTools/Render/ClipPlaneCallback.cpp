@@ -1,0 +1,80 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2005, Adam Kubach
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "OsgTools/Render/ClipPlaneCallback.h"
+
+#include "OsgTools/Draggers/Dragger.h"
+
+#include "osg/ClipPlane"
+
+using namespace OsgTools::Render;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ClipPlaneCallback::ClipPlaneCallback ( const osg::Vec3& topLeft, const osg::Vec3& bottomLeft, const osg::Vec3& topRight, osg::ClipPlane* clipPlane ) :
+BaseClass(),
+_topLeft( topLeft ),
+_bottomLeft ( bottomLeft ),
+_topRight ( topRight ),
+_clipPlane ( clipPlane )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copy Constructor
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ClipPlaneCallback::ClipPlaneCallback ( const ClipPlaneCallback &c ) :
+BaseClass( c ),
+_topLeft( c._topLeft ),
+_bottomLeft ( c._bottomLeft ),
+_topRight ( c._topRight ),
+_clipPlane ( c._clipPlane )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ClipPlaneCallback::~ClipPlaneCallback()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute the callback.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ClipPlaneCallback::operator() ( Dragger &d )
+{
+  osg::Matrix m ( d.getMatrix() );
+
+  osg::Vec3 topLeft    ( _topLeft * m );
+  osg::Vec3 bottomLeft ( _bottomLeft * m );
+  osg::Vec3 topRight   ( _topRight * m );
+
+  osg::Plane plane( topLeft, bottomLeft, topRight );
+
+  _clipPlane->setClipPlane( plane );
+}
+  
+

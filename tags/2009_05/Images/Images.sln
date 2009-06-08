@@ -1,0 +1,40 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Images", "Images.vcproj", "{C9C67B1C-4E30-429F-9B38-7C04CA236FF4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: Images Test 1", "Examples\Example01\Example01.vcproj", "{7F4ECCD4-E4D3-4650-A2E4-036B9CD0BAB9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C9C67B1C-4E30-429F-9B38-7C04CA236FF4} = {C9C67B1C-4E30-429F-9B38-7C04CA236FF4}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\Usul\Usul.vcproj", "{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: IO TIFF", "Plugins\ReadWriteTIFF\ReadWriteTIFF.vcproj", "{31F56BD2-B88A-43C6-BC3B-C41F794A1EF4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: ITK", "Plugins\ItkWrapper\ItkWrapper.vcproj", "{70897908-D31C-4D55-8EC8-7C1B6970E9D2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C9C67B1C-4E30-429F-9B38-7C04CA236FF4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C9C67B1C-4E30-429F-9B38-7C04CA236FF4}.Debug|Win32.Build.0 = Debug|Win32
+		{C9C67B1C-4E30-429F-9B38-7C04CA236FF4}.Release|Win32.ActiveCfg = Release|Win32
+		{C9C67B1C-4E30-429F-9B38-7C04CA236FF4}.Release|Win32.Build.0 = Release|Win32
+		{7F4ECCD4-E4D3-4650-A2E4-036B9CD0BAB9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7F4ECCD4-E4D3-4650-A2E4-036B9CD0BAB9}.Debug|Win32.Build.0 = Debug|Win32
+		{7F4ECCD4-E4D3-4650-A2E4-036B9CD0BAB9}.Release|Win32.ActiveCfg = Release|Win32
+		{7F4ECCD4-E4D3-4650-A2E4-036B9CD0BAB9}.Release|Win32.Build.0 = Release|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Debug|Win32.ActiveCfg = Debug|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Release|Win32.ActiveCfg = Release|Win32
+		{31F56BD2-B88A-43C6-BC3B-C41F794A1EF4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{31F56BD2-B88A-43C6-BC3B-C41F794A1EF4}.Release|Win32.ActiveCfg = Release|Win32
+		{70897908-D31C-4D55-8EC8-7C1B6970E9D2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{70897908-D31C-4D55-8EC8-7C1B6970E9D2}.Release|Win32.ActiveCfg = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

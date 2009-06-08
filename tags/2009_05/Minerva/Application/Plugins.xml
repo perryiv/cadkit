@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<plugins>
+
+  <!-- Sample plugin file for Minerva. -->
+
+  <plugin load="true" file="QtPasswordPrompt.plug" />
+  <plugin load="true" file="QtSceneDelegate.plug" />
+  <plugin load="true" file="QtSnapShot.plug" />
+
+  <plugin load="true" file="WmsLayerQt.plug" />
+  <plugin load="true" file="PostGISLayerQt.plug" />
+  <plugin file="QtArcIMS.plug" />
+  <plugin file="QtCustomGeometry.plug" />
+
+  <plugin load="true" file="MatrixAnimation.plug"/>
+  <plugin load="true" file="PathAnimation.plug"/>
+  <plugin load="true" file="MinervaModel.plug" />
+  <plugin load="true" file="LayerManager.plug" />
+  <plugin load="true" file="OssimLayerQt.plug" />
+  <plugin load="true" file="GDALReadImage.plug" />
+
+  <plugin load="true" file="WRFModel.plug" />
+  <plugin load="true" file="ModflowModel.plug" />
+
+  <library file="MinervaGdal" />
+  <library file="MinervaGeoNames" />
+  <library file="MinervaGeoRSS" />
+  <library file="MinervaKml" />
+  <library file="MinervaOSM" />
+  <library file="MinervaOssim" />
+
+</plugins>

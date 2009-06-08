@@ -1,0 +1,89 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
+//
+//  SlFunctionDefines: Pound defines of certain functions.
+//
+//////////////////////////////////////////////////////////////////////////
+
+#ifndef _CADKIT_STANDARD_LIBRARY_FUNCTION_POUND_DEFINES_H_
+#define _CADKIT_STANDARD_LIBRARY_FUNCTION_POUND_DEFINES_H_
+
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include <wchar.h>
+# include <stdio.h>
+#endif
+
+//////////////////////////////////////////////////////////////////////////
+//
+//  Define the "current working directory" function.
+//
+//////////////////////////////////////////////////////////////////////////
+
+#ifdef _WIN32
+# define SL_GETCWD ::_getcwd
+#else
+# define SL_GETCWD ::getcwd
+#endif // Platforms
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+//  Define the snprintf function.
+//
+//////////////////////////////////////////////////////////////////////////
+
+#ifdef _WIN32
+# define SL_SNPRINTF ::_snprintf
+#else
+# define SL_SNPRINTF ::snprintf
+#endif // Platforms
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+//  Define the vsnprintf function.
+//
+//////////////////////////////////////////////////////////////////////////
+
+#ifdef _WIN32
+#if _MSC_VER >= 1400
+# define SL_VSNPRINTF ::_vsnprintf_s
+#else
+# define SL_VSNPRINTF ::_vsnprintf
+#endif
+#else
+# define SL_VSNPRINTF ::vsnprintf
+#endif // Platforms
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+//  Define the vsnwprintf function. Note, gnu variant doesn't have it, 
+//  but vswprintf() takes the same arguments as Window's _vsnwprintf().
+//
+//////////////////////////////////////////////////////////////////////////
+
+#ifdef _WIN32
+#if _MSC_VER >= 1400
+# define SL_VSNWPRINTF ::_vsnwprintf_s
+#else
+# define SL_VSNWPRINTF ::_vsnwprintf
+#endif
+#elif __linux__
+# define SL_VSNWPRINTF ::vswprintf
+#elif defined ( __sgi ) || defined ( __CYGWIN__ )
+# define SL_VSNWPRINTF CadKit::vsnwprintf2
+#else // ?
+TODO
+#endif // Platforms
+
+
+#endif // _CADKIT_STANDARD_LIBRARY_FUNCTION_POUND_DEFINES_H_

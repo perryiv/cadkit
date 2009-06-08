@@ -1,0 +1,34 @@
+<ui version="4.0" >
+ <class>MaterialContainer</class>
+ <widget class="QWidget" name="MaterialContainer" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>313</width>
+    <height>768</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Materials</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <item>
+    <widget class="QPushButton" name="addButton" >
+     <property name="text" >
+      <string>Add</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="materialsGroup" >
+     <property name="title" >
+      <string>Materials</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

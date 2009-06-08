@@ -1,0 +1,84 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2008, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Traits for the different mutex types.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _USUL_THREADS_MUTEX_TRAITS_CLASSES_H_
+#define _USUL_THREADS_MUTEX_TRAITS_CLASSES_H_
+
+#include "Usul/Threads/Guard.h"
+#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/ReadWriteLocks.h"
+#include "Usul/Threads/ReadWriteMutex.h"
+
+
+namespace Usul {
+namespace Threads {
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Generic definition.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class MutexType_ > struct MutexTraits;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Regular mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <> struct MutexTraits < Usul::Threads::Mutex >
+{
+  typedef Usul::Threads::Mutex MutexType;
+  typedef Usul::Threads::Guard<MutexType> ReadLock;
+  typedef Usul::Threads::Guard<MutexType> WriteLock;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Recursive mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <> struct MutexTraits < Usul::Threads::RecursiveMutex >
+{
+  typedef Usul::Threads::RecursiveMutex MutexType;
+  typedef Usul::Threads::Guard<MutexType> ReadLock;
+  typedef Usul::Threads::Guard<MutexType> WriteLock;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read-write mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <> struct MutexTraits < Usul::Threads::ReadWriteMutex >
+{
+  typedef Usul::Threads::ReadWriteMutex MutexType;
+  typedef Usul::Threads::ReadLock<MutexType> ReadLock;
+  typedef Usul::Threads::WriteLock<MutexType> WriteLock;
+};
+
+
+} // namespace Threads
+} // namespace Usul
+
+
+#endif // _USUL_THREADS_MUTEX_TRAITS_CLASSES_H_

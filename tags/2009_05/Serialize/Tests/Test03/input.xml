@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects>
+  <AppGroup>
+    <_nodes>
+      <element TypeName="AppNode">
+        <_id>Aashish1</_id>
+      </element>
+      <element TypeName="AppNode">
+        <_id>Aashish2</_id>
+      </element>
+    </_nodes>
+  </AppGroup>
+</objects>

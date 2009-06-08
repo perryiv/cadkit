@@ -1,0 +1,49 @@
+
+INCLUDE ( Cadkit )
+
+
+MACRO ( CADKIT_ADD_PLUGIN PLUGIN_NAME )
+
+	# Add the compile guard.
+	ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
+
+	# Add the Export.def file.
+	IF ( MSVC )
+		SET ( SOURCES ${SOURCES} Export.def )
+	ENDIF ( MSVC )
+
+	# Create a shared library.
+	ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} )
+
+	# Add the debug posfix.
+	SET_TARGET_PROPERTIES( ${PLUGIN_NAME} PROPERTIES DEBUG_POSTFIX "d")
+	
+	# Set the libary prefix and suffix.
+	SET_TARGET_PROPERTIES (${PLUGIN_NAME} PROPERTIES PREFIX "" SUFFIX ".plug" )
+
+	# Add the target label.
+	IF( MSVC )
+		SET ( CADKIT_PLUGIN_LABEL_PREFIX "Plugin:" )
+	ELSE( MSVC )
+		SET ( CADKIT_PLUGIN_LABEL_PREFIX "Plugin" )
+	ENDIF( MSVC )
+	
+	# Add the target label.
+	SET_TARGET_PROPERTIES(${PLUGIN_NAME} PROPERTIES PROJECT_LABEL "${CADKIT_PLUGIN_LABEL_PREFIX} ${PLUGIN_NAME}")
+	
+	# Link to other Cadkit libraries.
+	LINK_CADKIT( ${PLUGIN_NAME} ${CADKIT_LIBRARIES} )
+	
+	# Link to these other libraries.
+	IF ( OTHER_LIBRARIES )
+		TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} ${OTHER_LIBRARIES} )
+	ENDIF ( OTHER_LIBRARIES )
+	
+	# Set the install paths.
+	INSTALL(TARGETS ${PLUGIN_NAME}
+			RUNTIME DESTINATION bin
+			LIBRARY DESTINATION bin
+			ARCHIVE DESTINATION bin )
+
+
+ENDMACRO(CADKIT_ADD_PLUGIN PLUGIN_NAME)

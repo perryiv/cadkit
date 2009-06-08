@@ -1,0 +1,75 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Perry L Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Returns true of the window is visible.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "AppFrameWork/Conditions/IsVisible.h"
+#include "AppFrameWork/Windows/Window.h"
+
+using namespace AFW::Conditions;
+
+USUL_IMPLEMENT_TYPE_ID ( IsVisible );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+IsVisible::IsVisible ( AFW::Core::Object *obj, bool want ) : BaseClass ( want ),
+  _object ( obj )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+IsVisible::~IsVisible()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Returns true of the window is visible.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool IsVisible::evaluate ( AFW::Core::Object *object )
+{
+  Guard guard ( this->mutex() );
+
+  // First try the member object.
+  if ( _object.valid() )
+  {
+    AFW::Windows::Window::RefPtr window ( dynamic_cast < AFW::Windows::Window * > ( _object.get() ) );
+    if ( window.valid() )
+      return ( window->visible() == _want );
+  }
+
+  // Return state for given object.
+  if ( object )
+  {
+    AFW::Windows::Window::RefPtr window ( dynamic_cast < AFW::Windows::Window * > ( object ) );
+    if ( window.valid() )
+      return ( window->visible() == _want );
+  }
+
+  // If we get to here then nothing is visible.
+  return false;
+}

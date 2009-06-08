@@ -1,0 +1,24 @@
+
+# ------------ Ossim variables ----------------------
+ set(OSSIM_LIB_DIR "$ENV{OSSIM_LIB_DIR}")
+
+FIND_PATH (OSSIM_INC_DIR ossim/base/ossimCommon.h "$ENV{OSSIM_INC_DIR}")
+
+
+# ------------ Find Ossim Library --------------------
+FIND_LIBRARY(OSSIM_LIB ossim ${OSSIM_LIB_DIR} )
+
+IF (OSSIM_INC_DIR AND OSSIM_LIB)
+  SET (OSSIM_FOUND TRUE)
+  SET (OSSIM_LIBRARIES "${OSSIM_LIB}")
+ENDIF (OSSIM_INC_DIR AND OSSIM_LIB)
+ 
+IF (OSSIM_FOUND)
+  IF (NOT OSSIM_FIND_QUIETLY)
+    MESSAGE (STATUS "Found Ossim: ${OSSIM_LIB}")
+  ENDIF (NOT OSSIM_FIND_QUIETLY)
+ELSE (OSSIM_FOUND)
+  IF (OSSIM_FIND_REQUIRED)
+    MESSAGE(FATAL_ERROR "Could not find Ossim")
+  ENDIF (OSSIM_FIND_REQUIRED)
+ENDIF (OSSIM_FOUND)

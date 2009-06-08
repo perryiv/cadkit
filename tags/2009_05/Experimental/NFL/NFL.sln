@@ -1,0 +1,48 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: NFL", "Core\Core.vcproj", "{6C5BC734-774A-4157-8CC5-F187B9456E83}"
+	ProjectSection(ProjectDependencies) = postProject
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Generic Nurbs", "..\..\GenericNurbs\GN\gn_library.vcproj", "{1C8F8A43-B135-4301-959A-1ED41708A63F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Usul", "..\..\Usul\Usul.vcproj", "{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: NFL Test 1", "Examples\Example01\Example01.vcproj", "{6D474094-7DD4-48D1-9E6F-30FD056297DD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6C5BC734-774A-4157-8CC5-F187B9456E83} = {6C5BC734-774A-4157-8CC5-F187B9456E83}
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C} = {77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{6C5BC734-774A-4157-8CC5-F187B9456E83}.Debug.ActiveCfg = Debug|Win32
+		{6C5BC734-774A-4157-8CC5-F187B9456E83}.Debug.Build.0 = Debug|Win32
+		{6C5BC734-774A-4157-8CC5-F187B9456E83}.Release.ActiveCfg = Release|Win32
+		{6C5BC734-774A-4157-8CC5-F187B9456E83}.Release.Build.0 = Release|Win32
+		{1C8F8A43-B135-4301-959A-1ED41708A63F}.Debug.ActiveCfg = Debug|Win32
+		{1C8F8A43-B135-4301-959A-1ED41708A63F}.Debug.Build.0 = Debug|Win32
+		{1C8F8A43-B135-4301-959A-1ED41708A63F}.Release.ActiveCfg = Release|Win32
+		{1C8F8A43-B135-4301-959A-1ED41708A63F}.Release.Build.0 = Release|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Debug.ActiveCfg = Debug|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Debug.Build.0 = Debug|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Release.ActiveCfg = Release|Win32
+		{77ACDFFD-C64B-4A18-8FBC-3B0C8A877F0C}.Release.Build.0 = Release|Win32
+		{6D474094-7DD4-48D1-9E6F-30FD056297DD}.Debug.ActiveCfg = Debug|Win32
+		{6D474094-7DD4-48D1-9E6F-30FD056297DD}.Debug.Build.0 = Debug|Win32
+		{6D474094-7DD4-48D1-9E6F-30FD056297DD}.Release.ActiveCfg = Release|Win32
+		{6D474094-7DD4-48D1-9E6F-30FD056297DD}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

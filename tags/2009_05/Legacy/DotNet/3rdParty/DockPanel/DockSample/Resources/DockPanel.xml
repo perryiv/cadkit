@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<!-- DockPanel configuration file. Author: Weifen Luo, all rights reserved. -->
+<!-- !!! AUTOMATICALLY GENERATED FILE. DO NOT MODIFY !!! -->
+<DockPanel FormatVersion="1.0" DockLeftPortion="0.25" DockRightPortion="0.25" DockTopPortion="0.25" DockBottomPortion="0.25" ActiveDocumentPane="3" ActivePane="3">
+  <Contents Count="9">
+    <Content ID="0" PersistString="DockSample.DummySolutionExplorer" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+    <Content ID="1" PersistString="DockSample.DummyPropertyWindow" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+    <Content ID="2" PersistString="DockSample.DummyToolbox" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+    <Content ID="3" PersistString="DockSample.DummyOutputWindow" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+    <Content ID="4" PersistString="DockSample.DummyTaskList" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+    <Content ID="5" PersistString="DockSample.DummyDoc,,Document1" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+    <Content ID="6" PersistString="DockSample.DummyDoc,,Document2" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+    <Content ID="7" PersistString="DockSample.DummyDoc,,Document3" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+    <Content ID="8" PersistString="DockSample.DummyDoc,,Document4" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+  </Contents>
+  <Panes Count="9">
+    <Pane ID="0" DockState="DockRight" ActiveContent="0">
+      <Contents Count="2">
+        <Content ID="0" RefID="0" />
+        <Content ID="1" RefID="1" />
+      </Contents>
+    </Pane>
+    <Pane ID="1" DockState="Float" ActiveContent="-1">
+      <Contents Count="1">
+        <Content ID="0" RefID="2" />
+      </Contents>
+    </Pane>
+    <Pane ID="2" DockState="Float" ActiveContent="-1">
+      <Contents Count="1">
+        <Content ID="0" RefID="4" />
+      </Contents>
+    </Pane>
+    <Pane ID="3" DockState="Document" ActiveContent="5">
+      <Contents Count="2">
+        <Content ID="0" RefID="5" />
+        <Content ID="1" RefID="6" />
+      </Contents>
+    </Pane>
+    <Pane ID="4" DockState="Document" ActiveContent="7">
+      <Contents Count="1">
+        <Content ID="0" RefID="7" />
+      </Contents>
+    </Pane>
+    <Pane ID="5" DockState="Document" ActiveContent="8">
+      <Contents Count="1">
+        <Content ID="0" RefID="8" />
+      </Contents>
+    </Pane>
+    <Pane ID="6" DockState="Float" ActiveContent="-1">
+      <Contents Count="1">
+        <Content ID="0" RefID="3" />
+      </Contents>
+    </Pane>
+    <Pane ID="7" DockState="DockBottomAutoHide" ActiveContent="3">
+      <Contents Count="2">
+        <Content ID="0" RefID="3" />
+        <Content ID="1" RefID="4" />
+      </Contents>
+    </Pane>
+    <Pane ID="8" DockState="DockLeftAutoHide" ActiveContent="2">
+      <Contents Count="1">
+        <Content ID="0" RefID="2" />
+      </Contents>
+    </Pane>
+  </Panes>
+  <DockWindows>
+    <DockWindow ID="0" DockState="Document" ZOrderIndex="1">
+      <DockList Count="3">
+        <Pane ID="0" RefID="3" PrevPane="-1" Alignment="Right" Proportion="0.5" />
+        <Pane ID="1" RefID="4" PrevPane="3" Alignment="Bottom" Proportion="0.5" />
+        <Pane ID="2" RefID="5" PrevPane="4" Alignment="Right" Proportion="0.5" />
+      </DockList>
+    </DockWindow>
+    <DockWindow ID="1" DockState="DockLeft" ZOrderIndex="6">
+      <DockList Count="1">
+        <Pane ID="0" RefID="8" PrevPane="-1" Alignment="Bottom" Proportion="0.5" />
+      </DockList>
+    </DockWindow>
+    <DockWindow ID="2" DockState="DockRight" ZOrderIndex="4">
+      <DockList Count="1">
+        <Pane ID="0" RefID="0" PrevPane="-1" Alignment="Bottom" Proportion="0.5" />
+      </DockList>
+    </DockWindow>
+    <DockWindow ID="3" DockState="DockBottom" ZOrderIndex="5">
+      <DockList Count="1">
+        <Pane ID="0" RefID="7" PrevPane="-1" Alignment="Right" Proportion="0.5" />
+      </DockList>
+    </DockWindow>
+    <DockWindow ID="4" DockState="DockTop" ZOrderIndex="2">
+	  <DockList Count="0" />
+    </DockWindow>
+  </DockWindows>
+  <FloatWindows Count="2">
+    <FloatWindow ID="0" Bounds="552, 502, 300, 300" AllowRedocking="True" ZOrderIndex="0">
+      <DockList Count="1">
+        <Pane ID="0" RefID="6" PrevPane="-1" Alignment="Right" Proportion="0.5" />
+      </DockList>
+    </FloatWindow>
+    <FloatWindow ID="1" Bounds="534, 167, 200, 383" AllowRedocking="True" ZOrderIndex="1">
+      <DockList Count="2">
+        <Pane ID="0" RefID="1" PrevPane="-1" Alignment="Right" Proportion="0.5" />
+        <Pane ID="1" RefID="2" PrevPane="1" Alignment="Left" Proportion="0.4" />
+      </DockList>
+    </FloatWindow>
+  </FloatWindows>
+</DockPanel>

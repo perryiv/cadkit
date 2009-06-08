@@ -1,0 +1,290 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2008, Adam Kubach
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "QtTools/TreeModel.h"
+#include "QtTools/TreeNode.h"
+
+using namespace QtTools;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+TreeModel::TreeModel ( QObject* parent ) : BaseClass ( parent ),
+  _root ( 0x0 )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+TreeModel::~TreeModel()
+{
+  delete _root;
+  _root = 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the root node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TreeModel::root ( TreeNode* root )
+{
+  delete _root;
+  _root = root;
+  
+  // Set the TreeNode's model.
+  if ( 0x0 != root )
+    root->model ( this );
+  
+  this->reset();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the TreeNode for the index.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+TreeNode* TreeModel::_nodeFromIndex ( const QModelIndex& index ) const
+{
+  // If the index is valid, return the internal pointer as a TreeNode.
+  if ( true == index.isValid() )
+    return static_cast<TreeNode*> ( index.internalPointer() );
+  
+  // Return the root by default.
+  return _root;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the ModelIndex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+QModelIndex TreeModel::index ( int row, int column, const QModelIndex& parent ) const
+{
+  // Return an invalid QModelIndex if we don't have a root node.
+  if ( 0x0 == _root )
+    return QModelIndex();
+  
+  TreeNode* node ( this->_nodeFromIndex ( parent ) );
+  
+  if ( 0x0 == node )
+    return QModelIndex();
+  
+  return this->createIndex ( row, column, node->child ( row ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the row count.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int TreeModel::rowCount ( const QModelIndex &parent ) const
+{
+  const TreeNode* node ( this->_nodeFromIndex ( parent ) );
+  return ( 0x0 == node ? 0 : node->count() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the column count.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int TreeModel::columnCount ( const QModelIndex &parent ) const
+{
+  return 1;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the parent.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+QModelIndex TreeModel::parent ( const QModelIndex & index ) const
+{
+  TreeNode* node ( this->_nodeFromIndex ( index ) );
+  
+  if ( 0x0 == node )
+    return QModelIndex();
+  
+  TreeNode *parent ( node->parent() );
+  
+  if ( 0x0 == parent )
+    return QModelIndex();
+  
+  TreeNode *grandParent ( parent->parent() );
+  
+  if ( 0x0 == grandParent )
+    return QModelIndex();
+  
+  const int row ( grandParent->index ( parent ) );
+  return this->createIndex ( row, 0, parent );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+QVariant TreeModel::data ( const QModelIndex& index, int role ) const
+{
+  TreeNode* node ( this->_nodeFromIndex ( index ) );
+  if ( 0x0 == node )
+    return QVariant();
+
+  return node->data ( role );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool TreeModel::setData ( const QModelIndex& index, const QVariant& value, int role )
+{
+  if ( index.isValid() )
+  {
+    TreeNode *node ( this->_nodeFromIndex ( index ) );
+    if ( 0x0 == node )
+      return false;
+
+    return node->setData ( value, role );
+  }
+  
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Qt::ItemFlags TreeModel::flags ( const QModelIndex &index ) const
+{
+  Qt::ItemFlags flags ( BaseClass::flags ( index ) );
+  
+  if ( index.isValid() )
+  {
+    TreeNode* node ( this->_nodeFromIndex ( index ) );
+    if ( 0x0 != node && node->isCheckable() )
+    {
+      // Add flags for check box.
+      flags |= Qt::ItemIsUserCheckable;
+      flags |= Qt::ItemIsTristate;
+    }
+  }
+  
+  return flags;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Emit data changed signal for node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TreeModel::emitDataChanged ( TreeNode *node )
+{
+  QModelIndex index ( this->_indexFromNode ( node ) );
+  emit dataChanged ( index, index );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the index for the node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+QModelIndex TreeModel::_indexFromNode ( TreeNode *node ) const
+{
+  if ( 0x0 == node || node == _root )
+    return QModelIndex();
+  
+  TreeNode *parent ( 0x0 != node->parent() ? node->parent() : _root );
+
+  const int row ( 0x0 != parent ? parent->index ( node ) : 0 );
+  return this->createIndex ( row, 0, node );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Begin removing of rows
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TreeModel::beginRemoveRows ( TreeNode* parent, int row, int count )
+{
+  QModelIndex index ( this->_indexFromNode ( parent ) );
+  BaseClass::beginRemoveRows ( index, row, row + count - 1 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  End removing of rows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TreeModel::endRemoveRows()
+{
+  BaseClass::endRemoveRows();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Begin inserting of rows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TreeModel::beginInsertRows ( TreeNode* parent, int row, int count )
+{
+  QModelIndex index ( this->_indexFromNode ( parent ) );
+  BaseClass::beginInsertRows ( index, row, row + count - 1 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  End inserting of rows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TreeModel::endInsertRows()
+{
+  BaseClass::endInsertRows();
+}

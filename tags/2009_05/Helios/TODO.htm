@@ -1,0 +1,116 @@
+<html>
+	<head>
+		<title>OSG FOX TODO List</title></head>
+	<body>
+		<center>
+			<h1>
+    Helios TODO List</h1>
+		</center>
+		<BLOCKQUOTE>
+			<hr>
+			<h2>Bugs:</h2>
+			<OL>
+				<LI>
+				When loading an stl file, clicking cancel while the scene is building should 
+				destroy the created window
+				<li>
+				Find out why pdbs take so long to close
+				<li>
+				Too many animation buttons are active as an animation plays.
+				<li>
+				Fix screen draggers
+				<LI>
+				Fix Translate1 and Rotate1 draggers
+				<li>
+				Fix selection
+				<li>
+				Hiding/Show standard toolbar messes up locations of other toolbars.&nbsp;&nbsp;
+				<LI>
+				Loading a camera file that is already loaded will overwrite any changes
+				<LI>
+				Timing is incorrect for cull and draw when multi-pass rendering.
+				<LI>
+				Load mod1.stl and turn on two-sided lighting. It turns black. Why? Other 
+				models, such as smallermod.stl, do not exibit this behavior.
+				<LI>
+				Frame exporting does not work if there is a space in the file path
+				<LI>
+					Dialogs are sometimes showing up in the exported images from the scene.</LI>
+    <li>Fix image library compile errors with visual studio 8</li>
+</OL>
+		</BLOCKQUOTE>
+		<P></P>
+		<P></P>
+			<hr>
+		<P></P>
+		<P></P>
+			<h2>Needed Features:</h2>
+<OL>
+				<li>Port Helios to GUI
+        toolkit other than Fox.<li>Create CMakeLists for all libraries. These will complement
+            manually adding to solution files, not replace.</li>
+        <li>
+				Create a Tab for "3D View Options" that would include things like the bounding 
+				box, Glass Bounding box, corner values... etc </li>
+				<LI>
+				LOD control.&nbsp; Button for always use low-lod.&nbsp; Button for ultra-high 
+				lod, which is only made if the user requests it and document supports it.
+				<LI>
+				LODs for the Triangle Document
+				<LI>
+				  Light Editor
+				<LI>
+				Improve Material editor&nbsp;&nbsp;
+				<LI>
+				Improve Volume Visualization
+				<LI>
+            Tab for Volume Document options
+				<LI>
+				Make composite dragger for clipping plane
+				<li>
+				Need to prompt for yes/no before clearing camera frames, but only remember 
+				answers of "yes". See 1314169231.
+				<li>
+				Exporting anti-aliased images of an arbitrary size, either as a percentage of 
+				the viewport, or by specifying the width or height
+				<li>
+				Hiding status bar and tabbook
+				<li>
+				User manual for Helios<LI>
+			Animations
+			<OL type="A">
+				<li>
+				Add views for each saved frame to tab control (like Power Point but OpenGL 
+				Window)
+				<li>
+				Pause movie
+				<li>
+                Add draggers on animation path</li></OL>
+			<LI>Build undo/redo architecture.<LI>
+			Fix Tri-strip when saving as STL&nbsp;
+			<li>
+			Make big and small icons. Have ability to toggle between them.
+			<li>
+			Markup
+			<li>
+			Place toolbars into dock sites in proper order
+			<li>
+			Figure out how to set the floating toolbar's height and width<LI>
+			Add solution file for associating camera files with models
+			<LI>
+				Add checks for Usul::State::Busy to relavent update functions
+			</LI>
+      <li>Check document for intersection in Viewer before intersecting with the scene.</li>
+      <li>Fix clip plane widget.</li>
+      <li>Fix cone builder in shape factory</li>
+      <li>Create picking notification architecture.</li>
+      <li>Fix selection</li>
+      <li>Add interface to get bounding box by osg::Object*</li>
+      <li>Move readers and writers to own plugins</li>
+      <li>Add TriangleSet interface</li>
+      <li>Factor out renderer from viewer</li>
+      <li>Refactor handling of status and progress bar.&nbsp; Right now all code assumes just
+          one, but this might not be the case all the time. Do we need one per Viewer?</li>
+    </OL>
+	</body>
+</html>

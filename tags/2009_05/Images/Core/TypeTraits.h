@@ -1,0 +1,60 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2005, Adam Kubach & Perry Miller
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Type traits.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _IMAGES_TYPE_TRAITS_CLASS_H_
+#define _IMAGES_TYPE_TRAITS_CLASS_H_
+
+#include "Usul/Interfaces/IGetImageData.h"
+#include "Usul/Interfaces/IImageToGrayScale.h"
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convenient macro.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define MAKE_TYPE_TRAITS(value_type) \
+template <> struct TypeTraits < Usul::Types::##value_type > \
+{ \
+  typedef Usul::Interfaces::IGetImageData##value_type IGetImageData; \
+  typedef Usul::Interfaces::IImageToGrayScale##value_type IImageToGrayScale; \
+}
+
+
+namespace Images {
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Generic and specialized template definitions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class ValueType_ > struct TypeTraits;
+
+MAKE_TYPE_TRAITS ( Uint8 );
+MAKE_TYPE_TRAITS ( Uint16 );
+MAKE_TYPE_TRAITS ( Uint32 );
+MAKE_TYPE_TRAITS ( Float32 );
+MAKE_TYPE_TRAITS ( Float64 );
+
+#undef MAKE_TYPE_TRAITS
+
+
+} // Images
+
+
+#endif // _IMAGES_TYPE_TRAITS_CLASS_H_

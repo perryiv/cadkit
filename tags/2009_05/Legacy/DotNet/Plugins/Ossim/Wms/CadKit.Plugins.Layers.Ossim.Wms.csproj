@@ -1,0 +1,92 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{62B76B44-7AAD-4B40-9E13-0250C6A6BA1A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CadKit.Plugins.Layers.Ossim.Wms</RootNamespace>
+    <AssemblyName>CadKit.Plugins.Layers.Ossim.Wms</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\../bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\../bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Component.cs" />
+    <Compile Include="Factory.cs" />
+    <Compile Include="WmsLayer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WmsLayer.resx">
+      <DependentUpon>WmsLayer.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Documents\CadKit.Documents.csproj">
+      <Project>{53DF6058-FBE2-4D41-8CE7-DF8ED0436EAE}</Project>
+      <Name>CadKit.Documents</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Helios\Lib\CadKit.Helios.Lib.csproj">
+      <Project>{FEFE0DC2-5208-4F93-910A-2B4D78163AA3}</Project>
+      <Name>CadKit.Helios.Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Images\CadKit.Images.csproj">
+      <Project>{7B2D553D-0909-4C86-94E4-3474BD8F8E69}</Project>
+      <Name>CadKit.Images</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Interfaces\CadKit.Interfaces.csproj">
+      <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
+      <Name>CadKit.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\OssimPlanet\OssimPlanet.vcproj">
+      <Project>{5D7C06E0-F0B8-4EF0-953A-E25283F58435}</Project>
+      <Name>CadKit.OSSIMPlanet.Glue</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Persistence\CadKit.Persistence.csproj">
+      <Project>{DFD2710D-3AB3-4707-B74E-80F21E33A23F}</Project>
+      <Name>CadKit.Persistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Referenced\CadKit.Referenced.csproj">
+      <Project>{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}</Project>
+      <Name>CadKit.Referenced</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>move /Y $(TargetDir)\$(TargetName).dll $(TargetDir)\$(TargetName).plug</PostBuildEvent>
+  </PropertyGroup>
+</Project>

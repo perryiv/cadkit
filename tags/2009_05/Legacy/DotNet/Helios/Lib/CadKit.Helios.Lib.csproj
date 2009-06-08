@@ -1,0 +1,176 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FEFE0DC2-5208-4F93-910A-2B4D78163AA3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>CadKit.Helios.Lib</RootNamespace>
+    <AssemblyName>CadKit.Helios.Lib</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\../bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\../bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Application.cs" />
+    <Compile Include="Commands\CameraViewCommand.cs" />
+    <Compile Include="Commands\ExportFileCommand.cs" />
+    <Compile Include="Commands\SaveAsDocumentCommand.cs" />
+    <Compile Include="Commands\SaveDocumentCommand.cs" />
+    <Compile Include="Commands\TextureModeCommands.cs" />
+    <Compile Include="Commands\TextureModeCommand.cs" />
+    <Compile Include="Commands\InsertFileCommand.cs" />
+    <Compile Include="Commands\DragDropFilesCommand.cs" />
+    <Compile Include="Commands\TextureEnvironmentCommands.cs" />
+    <Compile Include="Commands\TextureEnvironmentCommand.cs" />
+    <Compile Include="Commands\ShadeModelCommands.cs" />
+    <Compile Include="Commands\ShadeModelCommand.cs" />
+    <Compile Include="Commands\RenderLoopCommand.cs" />
+    <Compile Include="Commands\PolygonModeCommands.cs" />
+    <Compile Include="Commands\PolygonModeCommand.cs" />
+    <Compile Include="Commands\DisplayListCommand.cs" />
+    <Compile Include="Commands\ExportModelCommand.cs" />
+    <Compile Include="Commands\FrameDumpCommand.cs" />
+    <Compile Include="Commands\CameraViewCommands.cs" />
+    <Compile Include="Commands\ExportImageCommand.cs" />
+    <Compile Include="Commands\ExportSceneCommand.cs" />
+    <Compile Include="Commands\ViewerModeCommands.cs" />
+    <Compile Include="Commands\ViewerModeCommand.cs" />
+    <Compile Include="NewDocumentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewDocumentForm.Designer.cs">
+      <DependentUpon>NewDocumentForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Tasks\ReadDocumentTask.cs" />
+    <Compile Include="Tasks\InsertDocumentTask.cs" />
+    <Compile Include="FrameDump.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrameDump.Designer.cs">
+      <DependentUpon>FrameDump.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Tasks\OpenDocumentTask.cs" />
+    <Compile Include="OptionsPage.cs">
+    </Compile>
+    <Compile Include="OptionsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Commands\OptionsCommand.cs" />
+    <Compile Include="Commands\RecentDocumentCommand.cs" />
+    <Compile Include="RecentFiles.cs" />
+    <Compile Include="Commands\RedoCommand.cs" />
+    <Compile Include="Commands\UndoCommand.cs" />
+    <Compile Include="Commands\ExitCommand.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Commands\NewDocumentCommand.cs" />
+    <Compile Include="Commands\OpenDocumentCommand.cs" />
+    <Compile Include="SplashScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\3rdParty\DockPanel\WinFormsUI\WeifenLuo.WinFormsUI.Docking.csproj">
+      <Project>{C75532C4-765B-418E-B09B-46D36B2ABDB1}</Project>
+      <Name>WeifenLuo.WinFormsUI.Docking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Commands\CadKit.Commands.csproj">
+      <Project>{4255A478-49D3-4250-B06A-AB16AEF9579E}</Project>
+      <Name>CadKit.Commands</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Documents\CadKit.Documents.csproj">
+      <Project>{53DF6058-FBE2-4D41-8CE7-DF8ED0436EAE}</Project>
+      <Name>CadKit.Documents</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Images\CadKit.Images.csproj">
+      <Project>{7B2D553D-0909-4C86-94E4-3474BD8F8E69}</Project>
+      <Name>CadKit.Images</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interfaces\CadKit.Interfaces.csproj">
+      <Project>{233305C0-C997-440A-9AA2-BAFEF0D15156}</Project>
+      <Name>CadKit.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Persistence\CadKit.Persistence.csproj">
+      <Project>{DFD2710D-3AB3-4707-B74E-80F21E33A23F}</Project>
+      <Name>CadKit.Persistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\Manager\CadKit.Plugins.csproj">
+      <Project>{38E6CB43-88D0-4549-B27D-0F23F50CC395}</Project>
+      <Name>CadKit.Plugins</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Referenced\CadKit.Referenced.csproj">
+      <Project>{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}</Project>
+      <Name>CadKit.Referenced</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Threads\Jobs\CadKit.Threads.Jobs.csproj">
+      <Project>{A27CF288-D89D-4184-A413-011D6E4AD9F6}</Project>
+      <Name>CadKit.Threads.Jobs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Threads\Tools\CadKit.Threads.Tools.csproj">
+      <Project>{EF977229-371D-4FB1-90C5-237DEE74D069}</Project>
+      <Name>CadKit.Threads.Tools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Tools\CadKit.Tools.csproj">
+      <Project>{01EAAF17-D9EB-4303-A5BD-BE061F8E58F7}</Project>
+      <Name>CadKit.Tools</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FrameDump.resx">
+      <DependentUpon>FrameDump.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NewDocumentForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>NewDocumentForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionsForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>OptionsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SplashScreen.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SplashScreen.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(ProjectDir)Icons $(TargetDir)icons /f /i /k /y /c</PostBuildEvent>
+  </PropertyGroup>
+</Project>

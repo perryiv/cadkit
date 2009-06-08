@@ -1,0 +1,58 @@
+<ui version="4.0" >
+ <class>MaterialDialog</class>
+ <widget class="QWidget" name="MaterialDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>265</width>
+    <height>119</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string/>
+  </property>
+  <layout class="QVBoxLayout" >
+   <item>
+    <layout class="QGridLayout" >
+     <item row="0" column="1" >
+      <widget class="QLineEdit" name="_name" />
+     </item>
+     <item row="1" column="1" >
+      <widget class="QLineEdit" name="_type" />
+     </item>
+     <item row="0" column="2" >
+      <widget class="QLabel" name="_nameLabel" >
+       <property name="text" >
+        <string>Name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2" >
+      <widget class="QLabel" name="_valueLabel" >
+       <property name="text" >
+        <string>Value</string>
+       </property>
+      </widget>
+     </item>
+     <item rowspan="2" row="0" column="0" >
+      <widget class="QtTools::ColorButton" name="_color" >
+       <property name="text" >
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtTools::ColorButton</class>
+   <extends>QPushButton</extends>
+   <header>QtTools/ColorButton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

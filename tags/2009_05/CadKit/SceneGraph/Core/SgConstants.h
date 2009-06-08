@@ -1,0 +1,31 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  SgConstants: Constant definitions.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+#ifndef _CADKIT_SCENEGRAPH_CORE_LIBRARY_CONSTANTS_H_
+#define _CADKIT_SCENEGRAPH_CORE_LIBRARY_CONSTANTS_H_
+
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlTypedefs.h"
+# include "Standard/SlDeclareConst.h"
+#endif
+
+
+namespace CadKit
+{
+
+};
+
+
+#endif // _CADKIT_SCENEGRAPH_CORE_LIBRARY_CONSTANTS_H_

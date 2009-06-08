@@ -1,0 +1,115 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{233305C0-C997-440A-9AA2-BAFEF0D15156}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>CadKit.Interfaces</RootNamespace>
+    <AssemblyName>CadKit.Interfaces</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\../bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\../bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="IClassFactory.cs" />
+    <Compile Include="ICommand.cs" />
+    <Compile Include="ICommandHistory.cs" />
+    <Compile Include="ICommandManager.cs" />
+    <Compile Include="IDocument.cs" />
+    <Compile Include="IDocumentNew.cs" />
+    <Compile Include="IDocumentOpen.cs" />
+    <Compile Include="IFiltersOpen.cs" />
+    <Compile Include="IMainForm.cs" />
+    <Compile Include="IWindowsForward.cs" />
+    <Compile Include="IFileOpen.cs" />
+    <Compile Include="IGuiDelegate.cs" />
+    <Compile Include="IMenuBar.cs" />
+    <Compile Include="IProgressBar.cs" />
+    <Compile Include="IPlugin.cs" />
+    <Compile Include="IUpdateDisplay.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IFileExport.cs" />
+    <Compile Include="IFileSave.cs" />
+    <Compile Include="IFiltersExport.cs" />
+    <Compile Include="IFiltersSave.cs" />
+    <Compile Include="IMovieMode.cs" />
+    <Compile Include="ScopedReference.cs" />
+    <Compile Include="IReferenced.cs" />
+    <Compile Include="IAnimateTemporal.cs" />
+    <Compile Include="ICreateLayer.cs" />
+    <Compile Include="IDocumentIcon.cs" />
+    <Compile Include="IGroup.cs" />
+    <Compile Include="IOssimLayer.cs" />
+    <Compile Include="IFiltersInsert.cs" />
+    <Compile Include="Filter.cs" />
+    <Compile Include="IFileInsert.cs" />
+    <Compile Include="ILayer.cs" />
+    <Compile Include="ILayerList.cs" />
+    <Compile Include="ILayerOperation.cs" />
+    <Compile Include="ILegend.cs" />
+    <Compile Include="INativePtr.cs" />
+    <Compile Include="IOssimPlanetSettings.cs" />
+    <Compile Include="ITextureEnvironment.cs" />
+    <Compile Include="IShadeModel.cs" />
+    <Compile Include="IPolygonMode.cs" />
+    <Compile Include="IDisplayListUse.cs" />
+    <Compile Include="IJitterAntialias.cs" />
+    <Compile Include="ISnapShot.cs" />
+    <Compile Include="IClearColor.cs" />
+    <Compile Include="IPropertyGridObject.cs" />
+    <Compile Include="IDocumentView.cs" />
+    <Compile Include="INotifyChanged.cs" />
+    <Compile Include="IBuildScene.cs" />
+    <Compile Include="ICamera.cs" />
+    <Compile Include="IDiskStorageCreate.cs" />
+    <Compile Include="IDiskStorage.cs" />
+    <Compile Include="IExportImage.cs" />
+    <Compile Include="IExportScene.cs" />
+    <Compile Include="IFrameDump.cs" />
+    <Compile Include="IGuiCreate.cs" />
+    <Compile Include="IGuiDelegateCreate.cs" />
+    <Compile Include="IOptionsForm.cs" />
+    <Compile Include="IOptionsPage.cs" />
+    <Compile Include="IOptionsPageAdd.cs" />
+    <Compile Include="IDockPanel.cs" />
+    <Compile Include="IPersistantFormData.cs" />
+    <Compile Include="IRecentFileList.cs" />
+    <Compile Include="ITextureMode.cs" />
+    <Compile Include="IUpdateScene.cs" />
+    <Compile Include="IViewer.cs" />
+    <Compile Include="IViewerMode.cs" />
+    <Compile Include="IWindowMenu.cs" />
+    <Compile Include="IRenderLoop.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

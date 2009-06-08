@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<plugins>
+  <plugin file="QtAnimationControl.plug" />
+  <plugin file="QtSceneDelegate.plug" />
+  <plugin file="QtSceneTree.plug" />
+  <plugin file="QtClipPlanes.plug" />
+  <plugin file="QtSnapShot.plug" />
+  <plugin file="QtFlashDelegate.plug" />
+  
+  <plugin file="SceneModel.plug" />
+  <plugin file="PathAnimation.plug"/>
+  <plugin file="FlashModel.plug" />
+  <plugin file="WRFModel.plug" />
+  <plugin file="ModelPresentation.plug" />
+</plugins>

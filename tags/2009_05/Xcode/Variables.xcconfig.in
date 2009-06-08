@@ -1,0 +1,30 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2008, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Variables to specify installation locations of dependencies.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+BOOST_INC_DIR=/usr/local/include/boost-1_36
+BOOST_LIB_DIR=/usr/local/lib
+
+OSG_INC_DIR=/usr/local/include
+OSG_LIB_DIR=/usr/local/lib
+
+QT_UIC=/usr/bin/uic
+QT_MOC=/usr/bin/moc
+
+SPATIALITE_INC_DIR=/usr/local/include
+SPATIALITE_LIB_DIR=/usr/local/lib
+SPATIALITE_LIBRARIES=/usr/local/lib/libspatialite.a /usr/local/lib/libgeos_c.a /usr/local/lib/libgeos.a /usr/local/lib/libproj.a -liconv
+
+XERCESC_LIBRARY=/usr/local/lib/libxerces-c.dylib

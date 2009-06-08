@@ -1,0 +1,110 @@
+<ui version="4.0" >
+ <class>AddModelDialog</class>
+ <widget class="QDialog" name="AddModelDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>272</width>
+    <height>302</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Add Model</string>
+  </property>
+  <widget class="QDialogButtonBox" name="okCancelButtons" >
+   <property name="geometry" >
+    <rect>
+     <x>50</x>
+     <y>260</y>
+     <width>161</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="browseButton" >
+   <property name="geometry" >
+    <rect>
+     <x>100</x>
+     <y>200</y>
+     <width>75</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Browse</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="modelsLabel" >
+   <property name="geometry" >
+    <rect>
+     <x>120</x>
+     <y>10</y>
+     <width>41</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Models</string>
+   </property>
+  </widget>
+  <widget class="QtTools::StringsView" name="_modelsList" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>30</y>
+     <width>251</width>
+     <height>151</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtTools::StringsView</class>
+   <extends>QTreeView</extends>
+   <header>QtTools/StringsView.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>okCancelButtons</sender>
+   <signal>accepted()</signal>
+   <receiver>AddModelDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>okCancelButtons</sender>
+   <signal>rejected()</signal>
+   <receiver>AddModelDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

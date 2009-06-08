@@ -1,0 +1,35 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Function and macros to help with boost version compatability.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _USUL_ADAPTORS_BOOST_H_
+#define _USUL_ADAPTORS_BOOST_H_
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macros to help with file system.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#if BOOST_VERSION >= 103400
+#define BOOST_FILE_SYSTEM_ITERATOR_TO_STATUS(iterator_name) iterator_name->status()
+#define BOOST_FILE_SYSTEM_ITERATOR_TO_PATH(iterator_name) iterator_name->path()
+#else
+#define BOOST_FILE_SYSTEM_ITERATOR_TO_STATUS(iterator_name) *iterator_name
+#define BOOST_FILE_SYSTEM_ITERATOR_TO_PATH(iterator_name) *iterator_name
+#endif
+
+
+#endif // _USUL_ADAPTORS_BOOST_H_

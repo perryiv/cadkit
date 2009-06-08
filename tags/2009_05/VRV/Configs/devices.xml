@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Devices>
+  <Device>
+    <Analogs>
+      <Analog name ="RightJoystick" horizontal_name="VJAnalog0" vertical_name="VJAnalog1" h_modifier="1.0" v_modifier="1.0" />
+      <Analog name ="LeftJoystick"  horizontal_name="VJAnalog2" vertical_name="VJAnalog3" h_modifier="1.0" v_modifier="1.0" />
+      <Analog name ="DirectionalPad"  horizontal_name="VJAnalog4" vertical_name="VJAnalog5" h_modifier="1.0" v_modifier="1.0" />
+    </Analogs>
+    <Buttons>
+      <Button name="Button1" vj_name="VJButton0" id="0x00000001" />
+      <Button name="Button2" vj_name="VJButton1" id="0x00000002" />
+      <Button name="Button3" vj_name="VJButton2" id="0x00000004" />
+      <Button name="Button4" vj_name="VJButton3" id="0x00000008" />
+      <Button name="Button5" vj_name="VJButton4" id="0x00000010" />
+      <Button name="Button6" vj_name="VJButton5" id="0x00000020" />
+      <Button name="Button7" vj_name="VJButton6" id="0x00000040" />
+      <Button name="Button8" vj_name="VJButton7" id="0x00000080" />
+      <Button name="Button9" vj_name="VJButton8" id="0x00000100" />
+      <Button name="Button10" vj_name="VJButton9" id="0x00000200" />
+      <Button name="PushAnalog1" vj_name="VJButton10" id="0x00000400" />
+      <Button name="PushAnalog2" vj_name="VJButton11" id="0x00000800" />
+    </Buttons>
+    
+  </Device>
+</Devices>

@@ -1,0 +1,72 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  SgRenderer: The base renderer class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "SgPrecompiled.h"
+#include "SgRenderer.h"
+
+#ifndef _CADKIT_USE_PRECOMPILED_HEADERS
+# include "Standard/SlPrint.h"
+#endif
+
+using namespace CadKit;
+
+SG_IMPLEMENT_VISITOR(SgRenderer,SgVisitor);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+SgRenderer::SgRenderer() : SgVisitor(), _backgroundColor ( 0.0f, 0.0f, 0.0f, 1.0f )
+{
+  SL_PRINT2 ( "SgRenderer::SgRenderer(), this = %X\n", this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+SgRenderer::~SgRenderer()
+{
+  SL_PRINT2 ( "SgRenderer::~SgRenderer(), this = %X\n", this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The background color. Note: we have this data member so that I can 
+//  access the background color from the OpenGL renderer without having to 
+//  deal with the rendering context.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool SgRenderer::setBackgroundColor ( const SlColorf &color )
+{
+  SL_PRINT ( "SgRenderer::setBackgroundColor()\n" );
+  SL_ASSERT ( this );
+  SL_ASSERT ( color.isValid() );
+
+  // Set the color.
+  _backgroundColor.setValue ( color );
+
+  // It worked. Keep this a bool return because you don't know what child 
+  // classes may have to do (and they might fail).
+  return true;
+}

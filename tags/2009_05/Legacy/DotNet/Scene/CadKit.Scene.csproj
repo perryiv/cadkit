@@ -1,0 +1,67 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{56D87C82-359A-4495-B3D6-F17FED7BEE17}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>CadKit.Scene</RootNamespace>
+    <AssemblyName>CadKit.Scene</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\../bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\../bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Base\Object.cs" />
+    <Compile Include="Bins\Bin.cs" />
+    <Compile Include="Nodes\Geometry\Geomety.cs" />
+    <Compile Include="Nodes\Geometry\Implicit.cs" />
+    <Compile Include="Nodes\Geometry\VertexBased.cs" />
+    <Compile Include="Nodes\Groups\Transform.cs" />
+    <Compile Include="Nodes\Groups\Group.cs" />
+    <Compile Include="Nodes\Node.cs" />
+    <Compile Include="Viewers\Viewer.cs" />
+    <Compile Include="Visitors\NoDraw.cs" />
+    <Compile Include="Visitors\FrustumCull.cs" />
+    <Compile Include="Visitors\Renderer.cs" />
+    <Compile Include="Visitors\Draw.cs" />
+    <Compile Include="Visitors\Cull.cs" />
+    <Compile Include="Visitors\Update.cs" />
+    <Compile Include="Visitors\Visitor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Referenced\CadKit.Referenced.csproj">
+      <Project>{F7919AA5-6EE6-4BBA-8A41-B2362AB1972D}</Project>
+      <Name>CadKit.Referenced</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

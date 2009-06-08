@@ -1,0 +1,48 @@
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Database SQLite", "..\..\..\Experimental\Database\SQLite\SQLiteWrap_v9.vcproj", "{85F49415-1665-4386-A3E8-BF2021FD5EB7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test: CadKit SQLiteWrap 01", "Test01\Test01_v9.vcproj", "{B2449920-BC53-4336-A423-D7B446151D5B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{85F49415-1665-4386-A3E8-BF2021FD5EB7} = {85F49415-1665-4386-A3E8-BF2021FD5EB7}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\..\..\Usul\Usul_vc9.vcproj", "{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test: CadKit SQLiteWrap 02", "Test02\Test02_v9.vcproj", "{ABFBF1F1-5C69-4F8D-BC9F-10A2226E8D65}"
+	ProjectSection(ProjectDependencies) = postProject
+		{85F49415-1665-4386-A3E8-BF2021FD5EB7} = {85F49415-1665-4386-A3E8-BF2021FD5EB7}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{85F49415-1665-4386-A3E8-BF2021FD5EB7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{85F49415-1665-4386-A3E8-BF2021FD5EB7}.Debug|Win32.Build.0 = Debug|Win32
+		{85F49415-1665-4386-A3E8-BF2021FD5EB7}.Release|Win32.ActiveCfg = Release|Win32
+		{85F49415-1665-4386-A3E8-BF2021FD5EB7}.Release|Win32.Build.0 = Release|Win32
+		{B2449920-BC53-4336-A423-D7B446151D5B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B2449920-BC53-4336-A423-D7B446151D5B}.Debug|Win32.Build.0 = Debug|Win32
+		{B2449920-BC53-4336-A423-D7B446151D5B}.Release|Win32.ActiveCfg = Release|Win32
+		{B2449920-BC53-4336-A423-D7B446151D5B}.Release|Win32.Build.0 = Release|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Debug|Win32.ActiveCfg = Debug|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Debug|Win32.Build.0 = Debug|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Release|Win32.ActiveCfg = Release|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Release|Win32.Build.0 = Release|Win32
+		{ABFBF1F1-5C69-4F8D-BC9F-10A2226E8D65}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ABFBF1F1-5C69-4F8D-BC9F-10A2226E8D65}.Debug|Win32.Build.0 = Debug|Win32
+		{ABFBF1F1-5C69-4F8D-BC9F-10A2226E8D65}.Release|Win32.ActiveCfg = Release|Win32
+		{ABFBF1F1-5C69-4F8D-BC9F-10A2226E8D65}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

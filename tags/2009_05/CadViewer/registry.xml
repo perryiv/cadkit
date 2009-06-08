@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<plugins>
+  <plugin file="display_scene_stats.cvplug" />
+  <plugin file="scene_operations.cvplug" />
+  <plugin file="SceneModel.plug" />
+  <plugin file="WRFModel.plug" />
+  <plugin file="DynamicLandModel.plug" />
+</plugins>

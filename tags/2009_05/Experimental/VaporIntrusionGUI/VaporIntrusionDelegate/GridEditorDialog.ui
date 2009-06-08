@@ -1,0 +1,180 @@
+<ui version="4.0" >
+ <class>GridEditorDialog</class>
+ <widget class="QDialog" name="GridEditorDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>616</width>
+    <height>546</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Grid Editor</string>
+  </property>
+  <widget class="QDialogButtonBox" name="okCancelButtons" >
+   <property name="geometry" >
+    <rect>
+     <x>140</x>
+     <y>510</y>
+     <width>160</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="_xGridLabel" >
+   <property name="geometry" >
+    <rect>
+     <x>80</x>
+     <y>10</y>
+     <width>81</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>X Grid Values</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="_yGridLabel" >
+   <property name="geometry" >
+    <rect>
+     <x>430</x>
+     <y>10</y>
+     <width>81</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Y Grid Values</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="_zGridLabel" >
+   <property name="geometry" >
+    <rect>
+     <x>250</x>
+     <y>270</y>
+     <width>81</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Z Grid Values</string>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="_xList" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>256</width>
+     <height>192</height>
+    </rect>
+   </property>
+   <property name="editTriggers" >
+    <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::NoEditTriggers</set>
+   </property>
+   <property name="columnCount" >
+    <number>2</number>
+   </property>
+   <column/>
+   <column/>
+  </widget>
+  <widget class="QTableWidget" name="_yList" >
+   <property name="geometry" >
+    <rect>
+     <x>340</x>
+     <y>30</y>
+     <width>256</width>
+     <height>192</height>
+    </rect>
+   </property>
+   <property name="columnCount" >
+    <number>2</number>
+   </property>
+   <column/>
+   <column/>
+  </widget>
+  <widget class="QTableWidget" name="_zList" >
+   <property name="geometry" >
+    <rect>
+     <x>180</x>
+     <y>300</y>
+     <width>256</width>
+     <height>192</height>
+    </rect>
+   </property>
+   <property name="columnCount" >
+    <number>2</number>
+   </property>
+   <column/>
+   <column/>
+  </widget>
+  <widget class="QPushButton" name="resetButton" >
+   <property name="geometry" >
+    <rect>
+     <x>310</x>
+     <y>510</y>
+     <width>77</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Reset</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="applyButton" >
+   <property name="geometry" >
+    <rect>
+     <x>400</x>
+     <y>510</y>
+     <width>77</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Apply</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>okCancelButtons</sender>
+   <signal>accepted()</signal>
+   <receiver>GridEditorDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>okCancelButtons</sender>
+   <signal>rejected()</signal>
+   <receiver>GridEditorDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

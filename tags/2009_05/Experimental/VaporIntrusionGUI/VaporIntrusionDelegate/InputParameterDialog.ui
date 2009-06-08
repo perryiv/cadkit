@@ -1,0 +1,112 @@
+<ui version="4.0" >
+ <class>InputParameterDialog</class>
+ <widget class="QDialog" name="InputParameterDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>596</width>
+    <height>578</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Input Parameters</string>
+  </property>
+  <widget class="QDialogButtonBox" name="okCancelButtons" >
+   <property name="geometry" >
+    <rect>
+     <x>130</x>
+     <y>530</y>
+     <width>160</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="_inputList" >
+   <property name="geometry" >
+    <rect>
+     <x>50</x>
+     <y>30</y>
+     <width>481</width>
+     <height>481</height>
+    </rect>
+   </property>
+   <property name="editTriggers" >
+    <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::NoEditTriggers</set>
+   </property>
+   <property name="columnCount" >
+    <number>3</number>
+   </property>
+   <column/>
+   <column/>
+   <column/>
+  </widget>
+  <widget class="QPushButton" name="applyButton" >
+   <property name="geometry" >
+    <rect>
+     <x>300</x>
+     <y>530</y>
+     <width>77</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Apply</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="resetButton" >
+   <property name="geometry" >
+    <rect>
+     <x>390</x>
+     <y>530</y>
+     <width>77</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Reset</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>okCancelButtons</sender>
+   <signal>accepted()</signal>
+   <receiver>InputParameterDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>okCancelButtons</sender>
+   <signal>rejected()</signal>
+   <receiver>InputParameterDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

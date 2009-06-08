@@ -1,0 +1,254 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "Controllers"=.\Controllers\Controllers.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DatabaseBase"=.\Database\Base\DatabaseBase.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DatabaseItri"=.\Database\ITRI\DatabaseItri.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name DatabaseBase
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DatabaseJt"=.\Database\Jupiter\DatabaseJt.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseBase
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DatabaseOsg"=.\Database\OpenSceneGraph\DatabaseOsg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseBase
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DatabasePf"=.\Database\Performer\DatabasePf.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name DatabaseBase
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DatabaseStl"=.\Database\STL\DatabaseStl.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name DatabaseBase
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DemoJt2Itri"=.\Demos\Jupiter2Itri\DemoJtItri.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Controllers
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseItri
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DemoJt2Osg"=.\Demos\Jupiter2Osg\DemoJtOsg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Controllers
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseOsg
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DemoJt2Pfb"=.\Demos\Jupiter2Performer\DemoJt2Pfb.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Controllers
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabasePf
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "DemoJt2Stl"=.\Demos\Jupiter2Stl\DemoJtStl.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Standard
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseJt
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Controllers
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name DatabaseStl
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "Interfaces"=.\Interfaces\Interfaces.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Standard"=.\Standard\Standard.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

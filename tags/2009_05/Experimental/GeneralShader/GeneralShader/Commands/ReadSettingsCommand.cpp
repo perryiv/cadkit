@@ -1,0 +1,66 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author(s): Jeff Conner
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "ReadSettingsCommand.h"
+
+#include "Usul/Trace/Trace.h"
+#include "Usul/Interfaces/IGeneralShader.h"
+
+USUL_IMPLEMENT_COMMAND ( ReadSettingsCommand );
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ReadSettingsCommand::ReadSettingsCommand ( Usul::Interfaces::IUnknown * caller, const std::string &name, const std::string &workingDir ) :
+  BaseClass ( caller ),
+  _workingDir ( workingDir )
+{
+  USUL_TRACE_SCOPE;
+  this->text ( name );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ReadSettingsCommand::~ReadSettingsCommand ()
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReadSettingsCommand::_execute ()
+{
+  USUL_TRACE_SCOPE;
+  
+#if 1
+  Usul::Interfaces::IGeneralShader::QueryPtr nav ( this->caller() );
+
+  if ( nav.valid () )
+  {
+    nav->readSettings( _workingDir );
+  }
+#endif
+}
+
+
+

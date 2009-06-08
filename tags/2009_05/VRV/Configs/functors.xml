@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<functors>
+  <interaction>
+    
+    <!-- All analog input functors -->
+    <inputs>
+      <analog type="horizontal joystick" name="horizontal joystick" analog_device="LeftJoystick" range="-1 1"/>
+      <analog type="vertical joystick"   name="vertical joystick"   analog_device="LeftJoystick" range="-1 1"/>
+      <analog type="horizontal joystick" name="horizontal joystick2" analog_device="RightJoystick" range="-1 1"/>
+      <analog type="vertical joystick"   name="vertical joystick2"   analog_device="RightJoystick" range="-1 1"/>
+      <analog type="horizontal joystick" name="horizontal joystick3" analog_device="DirectionalPad" range="-1 1"/>
+      <analog type="vertical joystick"   name="vertical joystick3"   analog_device="DirectionalPad" range="-1 1"/>
+      
+      <analog type="wand pitch"          name="wand pitch"          range="-1 1"/>
+      <analog type="wand yaw"            name="wand yaw"            range="-1 1"/>
+    </inputs>
+    <!-- All button input functors -->
+    <inputs>
+      <digital type="button" name="blue button" />
+      <digital type="button" name="red button" />
+      <digital type="button" name="yellow button" />
+      <digital type="button" name="green button" />
+    </inputs>
+    <!-- All matrix functors -->
+    <matrices>
+      <matrix type="wand matrix"     name="wand matrix" />
+      <matrix type="wand position"   name="wand position" />
+      <matrix type="wand rotation"   name="wand rotation" />
+      <matrix type="identity matrix" name="identity matrix" />
+      <matrix type="inverse matrix"  name="inverse wand matrix" matrix="wand matrix" />
+      <matrix type="matrix pair"     name="matrix pair test" left="wand matrix" right="identity matrix"/>
+    </matrices>
+    <!-- All direction functors -->
+    <directions>
+      <direction type="direction" name="Wand X"    vector=" 1  0  0" matrix="wand matrix" />
+      <direction type="direction" name="Wand Y"    vector=" 0  1  0" matrix="wand matrix" />
+      <direction type="direction" name="Wand Z"    vector=" 0  0  1" matrix="wand matrix" />
+      <direction type="direction" name="Wand -X"   vector="-1  0  0" matrix="wand matrix" />
+      <direction type="direction" name="Wand -Y"   vector=" 0 -1  0" matrix="wand matrix" />
+      <direction type="direction" name="Wand -Z"   vector=" 0  0 -1" matrix="wand matrix" />
+      <direction type="direction" name="Global X"  vector=" 1  0  0" matrix="identity matrix" />
+      <direction type="direction" name="Global Y"  vector=" 0  1  0" matrix="identity matrix" />
+      <direction type="direction" name="Global Z"  vector=" 0  0  1" matrix="identity matrix" />
+      <direction type="direction" name="Global -X" vector="-1  0  0" matrix="identity matrix" />
+      <direction type="direction" name="Global -Y" vector=" 0 -1  0" matrix="identity matrix" />
+      <direction type="direction" name="Global -Z" vector=" 0  0 -1" matrix="identity matrix" />
+    </directions>
+    <!-- All transform functors -->
+    <transforms>
+      <transform type="translate" name="Translate Wand X"    speed="0.1" direction="Wand X"    />
+      <transform type="translate" name="Translate Wand Y"    speed="0.1" direction="Wand Y"    />
+      <transform type="translate" name="Translate Wand Z"    speed="0.1" direction="Wand Z"    />
+      <transform type="translate" name="Translate Wand -X"   speed="0.1" direction="Wand -X"   />
+      <transform type="translate" name="Translate Wand -Y"   speed="0.1" direction="Wand -Y"   />
+      <transform type="translate" name="Translate Wand -Z"   speed="0.1" direction="Wand -Z"   />
+      <transform type="translate" name="Translate Global X"  speed="0.1" direction="Global X"  />
+      <transform type="translate" name="Translate Global Y"  speed="0.1" direction="Global Y"  />
+      <transform type="translate" name="Translate Global Z"  speed="0.1" direction="Global Z"  />
+      <transform type="translate" name="Translate Global -X" speed="0.1" direction="Global -X" />
+      <transform type="translate" name="Translate Global -Y" speed="0.1" direction="Global -Y" />
+      <transform type="translate" name="Translate Global -Z" speed="0.1" direction="Global -Z" />
+      <transform type="rotate"    name="Rotate Wand X"       speed="15" direction="Wand X"    />
+      <transform type="rotate"    name="Rotate Wand Y"       speed="15" direction="Wand Y"    />
+      <transform type="rotate"    name="Rotate Wand Z"       speed="15" direction="Wand Z"    />
+      <transform type="rotate"    name="Rotate Wand -X"      speed="15" direction="Wand -X"   />
+      <transform type="rotate"    name="Rotate Wand -Y"      speed="15" direction="Wand -Y"   />
+      <transform type="rotate"    name="Rotate Wand -Z"      speed="15" direction="Wand -Z"   />
+      <transform type="rotate"    name="Rotate Global X"     speed="15" direction="Global X"  />
+      <transform type="rotate"    name="Rotate Global Y"     speed="15" direction="Global Y"  />
+      <transform type="rotate"    name="Rotate Global Z"     speed="15" direction="Global Z"  />
+      <transform type="rotate"    name="Rotate Global -X"    speed="15" direction="Global -X" />
+      <transform type="rotate"    name="Rotate Global -Y"    speed="15" direction="Global -Y" />
+      <transform type="rotate"    name="Rotate Global -Z"    speed="15" direction="Global -Z" />
+    </transforms>
+    <!-- All favorites -->
+    <favorites>
+	
+      <favorite type="sequence" name="Natural Fly">
+        <component input="horizontal joystick" transform="Translate Global X"/>
+        <component input="vertical joystick"   transform="Translate Global Z"/>
+        <component input="horizontal joystick2" transform="Rotate Global Y"/>
+        <component input="vertical joystick2"   transform="Translate Global Y"/>
+        <component input="horizontal joystick3" transform="Rotate Global Z"/>
+        <component input="vertical joystick3"  transform="Rotate Global X" />
+
+      </favorite>
+      <favorite type="sequence" name="6 Degrees Wingman">
+        <component input="horizontal joystick" transform="Translate Global X"/>
+        <component input="vertical joystick"   transform="Translate Global Z"/>
+        <component input="horizontal joystick2" transform="Rotate Global Y"/>
+        <component input="vertical joystick2"   transform="Rotate Global X"/>
+        <component input="horizontal joystick3" transform="Rotate Global Z"/>
+        <component input="vertical joystick3"   transform="Translate Global Y"/>
+      </favorite>
+
+      <favorite type="sequence" name="Rotate">
+        <component input="horizontal joystick" transform="Translate Global X"/>
+        <component input="vertical joystick"   transform="Rotate Global Z"/>
+        <component input="horizontal joystick2" transform="Rotate Global Y"/>
+        <component input="vertical joystick2"   transform="Rotate Global X"/>
+      </favorite>
+
+    </favorites>
+    <Mappings>
+      <Mapping button_id="0x00000400" command="menu" />
+      <Mapping button_id="0x00000800" command="trigger" />
+      <Mapping button_id="DirectionalPad" command="menu_navigation" />
+      <Mapping button_id="0x00000002" command="|Navigate|Favorites|Natural Fly" />
+      <Mapping button_id="0x00000001" command="|Navigate|Favorites|6 Degrees Wingman" />
+      <Mapping button_id="0x00000020" command="|Navigate|Translate Speed x 2" />
+      <Mapping button_id="0x00000010" command="|Navigate|Translate Speed / 2" />
+    </Mappings>
+  </interaction>
+</functors>

@@ -1,0 +1,172 @@
+<ui version="4.0" >
+ <class>NewVaporIntrusion</class>
+ <widget class="QDialog" name="NewVaporIntrusion" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>556</width>
+    <height>583</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>New Vapor Intrusion Model</string>
+  </property>
+  <widget class="QDialogButtonBox" name="okCancelButtons" >
+   <property name="geometry" >
+    <rect>
+     <x>190</x>
+     <y>540</y>
+     <width>160</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox" >
+   <property name="geometry" >
+    <rect>
+     <x>130</x>
+     <y>90</y>
+     <width>251</width>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>Define the experiment space</string>
+   </property>
+   <widget class="QLineEdit" name="xValue" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>61</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>61</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Width (X)</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>20</y>
+      <width>61</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Height (Y)</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="yValue" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>40</y>
+      <width>61</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3" >
+    <property name="geometry" >
+     <rect>
+      <x>170</x>
+      <y>20</y>
+      <width>61</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Depth (Z)</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="zValue" >
+    <property name="geometry" >
+     <rect>
+      <x>170</x>
+      <y>40</y>
+      <width>61</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="label_4" >
+   <property name="geometry" >
+    <rect>
+     <x>180</x>
+     <y>10</y>
+     <width>151</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Name for this experiment</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="spaceName" >
+   <property name="geometry" >
+    <rect>
+     <x>180</x>
+     <y>40</y>
+     <width>141</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>okCancelButtons</sender>
+   <signal>accepted()</signal>
+   <receiver>NewVaporIntrusion</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>okCancelButtons</sender>
+   <signal>rejected()</signal>
+   <receiver>NewVaporIntrusion</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

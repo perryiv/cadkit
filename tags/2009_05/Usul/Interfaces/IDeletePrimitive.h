@@ -1,0 +1,45 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2005, Adam Kubach
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Delete a primitive
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _USUL_INTERFACE_DELETE_PRIMITIVE_H_
+#define _USUL_INTERFACE_DELETE_PRIMITIVE_H_
+
+#include "Usul/Interfaces/IUnknown.h"
+
+namespace osgUtil { class Hit; }
+
+namespace Usul {
+namespace Interfaces {
+
+
+struct IDeletePrimitive : public Usul::Interfaces::IUnknown
+{
+  /// Smart-pointer definitions.
+  USUL_DECLARE_QUERY_POINTERS ( IDeletePrimitive );
+
+  /// Id for this interface.
+  enum { IID = 1744889731u };
+
+  // Delete primitive at the hit.
+  virtual void deletePrimitive ( const osgUtil::LineSegmentIntersector::Intersection& hit ) = 0;
+
+}; // struct IDeletePrimitive
+
+
+} // namespace Interfaces
+} // namespace Usul
+
+
+#endif // _USUL_INTERFACE_DELETE_PRIMITIVE_H_

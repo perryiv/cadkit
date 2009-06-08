@@ -1,0 +1,101 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2008, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "ModflowDelegate/HeadLevelOutputForm.h"
+
+#include "XmlTree/ReplaceIllegalCharacters.h"
+
+#include <limits>
+#include <sstream>
+
+using namespace Modflow;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constants for the registry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  const std::string SECTION ( "head_level_output_form" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+HeadLevelOutputForm::HeadLevelOutputForm ( QWidget *parent  ) : 
+  BaseClass ( parent )
+{
+  // Initialize code from Designer.
+  this->setupUi ( this );
+
+  _noDataValue->setRange ( std::numeric_limits<double>::max() * -1.0, std::numeric_limits<double>::max() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+HeadLevelOutputForm::~HeadLevelOutputForm()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build xml string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string HeadLevelOutputForm::buildXml() const
+{
+  // Get the filename.
+  std::string filename ( _filename->text().toStdString() );
+  XmlTree::replaceIllegalCharacters ( filename );
+
+  std::ostringstream os;
+  os << "<file type=\"head_level_output\"" << std::endl;
+  os << "      name=\"" << filename << "\"" << std::endl;
+  os << "      no_data=\"" << _noDataValue->value() << "\"" << std::endl;
+  os << "/>" << std::endl;
+  return os.str();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The browse button has been clicked.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void HeadLevelOutputForm::on_browseButton_clicked()
+{
+  std::string filters ( "Head Level Output (*.out);;All Files (*.*)" );
+  this->_browse ( filters, Detail::SECTION, _filename );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Does this form only get added once?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool HeadLevelOutputForm::addOnce() const
+{
+  return true;
+}

@@ -1,0 +1,28 @@
+#! /bin/bash
+
+
+#echo "Starting up Helios.app...."
+PRG=$0
+open -a /Applications/Utilities/X11.app/Contents/MacOS/X11
+
+progdir=`dirname "$PRG"`
+plugins=`dirname "$progdir"`/PlugIns
+libs=`dirname "$progdir"`/lib
+
+#echo "plugins"
+#echo $plugins
+#echo "libs"
+#echo $libs
+cd "$plugins"
+
+LD_LIBRARY_PATH=$libs:$plugins
+DYLD_LIBRARY_PATH=$libs:$plugins
+
+#echo "DYLD_LIBRARY_PATH"
+#echo $DYLD_LIBRARY_PATH
+
+#echo "LD_LIBRARY_PATH" 
+#echo $LD_LIBRARY_PATH
+
+${plugins}/Helios &
+

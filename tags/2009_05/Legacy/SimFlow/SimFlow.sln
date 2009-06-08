@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Viewer", "Viewer\Viewer.vcproj", "{BB27AA3F-6AA7-4B2B-A2B2-8074B579E63F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7EE06BAD-B638-422F-8782-B8FC9082A72C} = {7EE06BAD-B638-422F-8782-B8FC9082A72C}
+		{A99AACCF-4101-4005-A943-A453F5784B02} = {A99AACCF-4101-4005-A943-A453F5784B02}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: SimFlow VTKUtil", "VTKUtil\VTKUtil.vcproj", "{A99AACCF-4101-4005-A943-A453F5784B02}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: SimFlow Core", "Core\SimFlowCore.vcproj", "{7EE06BAD-B638-422F-8782-B8FC9082A72C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+		{A99AACCF-4101-4005-A943-A453F5784B02} = {A99AACCF-4101-4005-A943-A453F5784B02}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\Usul\Usul.vcproj", "{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit OsgTools", "..\OsgTools\OsgTools.vcproj", "{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB27AA3F-6AA7-4B2B-A2B2-8074B579E63F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BB27AA3F-6AA7-4B2B-A2B2-8074B579E63F}.Debug|Win32.Build.0 = Debug|Win32
+		{BB27AA3F-6AA7-4B2B-A2B2-8074B579E63F}.Release|Win32.ActiveCfg = Release|Win32
+		{BB27AA3F-6AA7-4B2B-A2B2-8074B579E63F}.Release|Win32.Build.0 = Release|Win32
+		{A99AACCF-4101-4005-A943-A453F5784B02}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A99AACCF-4101-4005-A943-A453F5784B02}.Debug|Win32.Build.0 = Debug|Win32
+		{A99AACCF-4101-4005-A943-A453F5784B02}.Release|Win32.ActiveCfg = Release|Win32
+		{A99AACCF-4101-4005-A943-A453F5784B02}.Release|Win32.Build.0 = Release|Win32
+		{7EE06BAD-B638-422F-8782-B8FC9082A72C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7EE06BAD-B638-422F-8782-B8FC9082A72C}.Debug|Win32.Build.0 = Debug|Win32
+		{7EE06BAD-B638-422F-8782-B8FC9082A72C}.Release|Win32.ActiveCfg = Release|Win32
+		{7EE06BAD-B638-422F-8782-B8FC9082A72C}.Release|Win32.Build.0 = Release|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Debug|Win32.ActiveCfg = Debug|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Debug|Win32.Build.0 = Debug|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Release|Win32.ActiveCfg = Release|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Release|Win32.Build.0 = Release|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Debug|Win32.Build.0 = Debug|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Release|Win32.ActiveCfg = Release|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

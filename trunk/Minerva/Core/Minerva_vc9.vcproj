@@ -690,14 +690,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Visitors\Scale.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Visitors\Scale.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Visitors\StackPoints.cpp"
 						>
 					</File>

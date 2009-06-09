@@ -91,7 +91,6 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _useSkirts ( true ),
   _useBorders ( true ),
   _splitCallback ( 0x0 ),
-  _scale ( 1 ),
   _deleteTiles(),
   _topTiles(),
   _updateListeners(),
@@ -121,7 +120,6 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   this->_addMember ( "use_skirts", _useSkirts );
   this->_addMember ( "use_borders", _useBorders );
   this->_addMember ( "split_callback", _splitCallback );
-  this->_addMember ( "scale", _scale );
   this->_addMember ( "name", _name );
   this->_addMember ( "image_size", _imageSize );
   this->_addMember ( "alpha", _alpha );
@@ -559,9 +557,6 @@ void Body::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Ve
   if ( true == _landModel.valid() )
   {
     _landModel->latLonHeightToXYZ ( lat, lon, elevation, point.x(), point.y(), point.z() );
-
-    // Scale
-    point *= _scale;
   }
 }
 
@@ -579,13 +574,7 @@ void Body::xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon
 
   if ( true == _landModel.valid() )
   {
-    // Make a copy.
-    osg::Vec3d p ( point );
-
-    // Restore scale
-    p /= _scale;
-
-    _landModel->xyzToLatLonHeight ( p.x(), p.y(), p.z(), lat, lon, elevation );
+    _landModel->xyzToLatLonHeight ( point.x(), point.y(), point.z(), lat, lon, elevation );
   }
 }
 
@@ -901,38 +890,6 @@ Body::SplitCallback::RefPtr Body::splitCallback()
     _splitCallback = new Minerva::Core::TileEngine::Callbacks::PassThrough;
   }
   return SplitCallback::RefPtr ( _splitCallback );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the scale.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Body::scale( double s )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  _scale = s;
-
-  this->_dirtyTiles ( Tile::VERTICES | Tile::CHILDREN, Extents( -180, -90, 180, 90 ) );
-
-  _transform->dirtyBound();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the scale.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double Body::scale() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _scale;
 }
 
 

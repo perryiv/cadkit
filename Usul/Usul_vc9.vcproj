@@ -236,10 +236,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Algorithms\FindAllConnected.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Algorithms\Sphere.h"
 					>
 				</File>
@@ -1906,18 +1902,6 @@
 				Name="Types"
 				>
 				<File
-					RelativePath=".\Types\BaseProxy.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Types\BaseProxy.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Types\ObjectProxy.h"
-					>
-				</File>
-				<File
 					RelativePath="Types\Types.cpp"
 					>
 				</File>
@@ -2050,23 +2034,7 @@
 				Name="Containers"
 				>
 				<File
-					RelativePath=".\Containers\Array.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Containers\Array2D.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Containers\DynamicArray.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Containers\Hash.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Containers\OctTree.h"
 					>
 				</File>
 				<File

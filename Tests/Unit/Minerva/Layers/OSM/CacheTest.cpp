@@ -141,7 +141,7 @@ TEST_F(OSMCacheTest,LineString)
   EXPECT_TRUE ( cache->hasLineData ( key, extents ) );
 
   Extents ll, lr, ul, ur;
-  Minerva::Core::Algorithms::split ( extents, ll, lr, ul, ur );
+  extents.split ( ll, lr, ul, ur );
 
   EXPECT_TRUE ( cache->hasLineData ( key, ll ) );
   EXPECT_TRUE ( cache->hasLineData ( key, lr ) );

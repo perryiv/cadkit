@@ -68,6 +68,9 @@ public:
   /// Less-than operator for using this class as the key in an std::map.
   bool                  operator < ( const ThisType &rhs ) const;
 
+  /// Split the extents.
+  void                  split ( Extents &ll, Extents &lr, Extents &ul, Extents &ur ) const;
+
 private:
 
   Vertex _min;
@@ -375,6 +378,25 @@ template < class VertexType > inline bool ThisClass::operator < ( const ThisClas
 {
   // Sort based on the min. Break ties with the max.
   return ( ( _min == rhs._min ) ? ( _max < rhs._max ) : ( _min < rhs._min ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Split the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class VertexType > inline void ThisClass::split ( Extents &ll, Extents &lr, Extents &ul, Extents &ur ) const
+{
+  const Vertex &mn ( this->minimum() );
+  const Vertex &mx ( this->maximum() );
+  const Vertex md ( ( mx + mn ) * static_cast < ValueType > ( 0.5 ) );
+
+  ll = Extents ( Vertex ( mn[0], mn[1] ), Vertex ( md[0], md[1] ) );
+  lr = Extents ( Vertex ( md[0], mn[1] ), Vertex ( mx[0], md[1] ) );
+  ul = Extents ( Vertex ( mn[0], md[1] ), Vertex ( md[0], mx[1] ) );
+  ur = Extents ( Vertex ( md[0], md[1] ), Vertex ( mx[0], mx[1] ) );
 }
 
 

@@ -110,8 +110,10 @@ namespace Usul
 Manager::Manager ( const std::string &name, unsigned int poolSize ) :
   _mutex     (),
   _pool      ( name, poolSize ),
-  _jobFinishedListeners(),
   _log       ( 0x0 )
+#if BOOST_VERSION >= 103900
+  , _jobFinishedListeners()
+#endif
 {
   USUL_TRACE_SCOPE;
 }
@@ -420,7 +422,9 @@ void Manager::_jobFinished ( Job::RefPtr job )
   USUL_TRACE_SCOPE;
 
   // Notify the listeners.
+#if BOOST_VERSION >= 103900
   _jobFinishedListeners ( job.get() );
+#endif
 }
 
 

@@ -19,7 +19,6 @@
 #include "Minerva/Interfaces/IElevationChangedListener.h"
 #include "Minerva/Interfaces/IIntersectNotify.h"
 #include "Minerva/Interfaces/IRemoveLayer.h"
-#include "Minerva/Interfaces/ITilesChangedListener.h"
 #include "Minerva/Interfaces/IWithinExtents.h"
 
 #include "Usul/Base/Object.h"
@@ -56,7 +55,6 @@ class MINERVA_EXPORT Container :
   public Minerva::Interfaces::IContainer,
   public Minerva::Interfaces::IRemoveLayer,
   public Minerva::Interfaces::IElevationChangedListener,
-  public Minerva::Interfaces::ITilesChangedListener,
   public Usul::Interfaces::ITileVectorData,
   public Minerva::Interfaces::IWithinExtents,
   public Minerva::Interfaces::IIntersectNotify
@@ -156,10 +154,6 @@ public:
   /// Get/Set show layer (ILayer).
   virtual void                showLayer ( bool b );
   virtual bool                showLayer() const;
-  
-  /// Notifications of change in tile state.
-  virtual void                tileAddNotify     ( IUnknown::RefPtr child, IUnknown::RefPtr parent );
-  virtual void                tileRemovedNotify ( IUnknown::RefPtr child, IUnknown::RefPtr parent );
 
   /// Traverse all DataObjects.
   virtual void                traverse ( Minerva::Core::Visitor& visitor );

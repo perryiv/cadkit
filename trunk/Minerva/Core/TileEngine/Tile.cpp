@@ -745,17 +745,6 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
     // Remove high level of detail.
     if ( numChildren > 1 && false == body->cacheTiles() )
     {
-      // Need to notify vector data so it can re-adjust.
-      Minerva::Core::Data::Container::RefPtr vector ( ( true == body.valid() ) ? body->vectorData() : 0x0 );
-      if ( vector.valid() )
-      {
-        IUnknown::QueryPtr me ( this );
-        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 0 ).get() ), me );
-        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 1 ).get() ), me );
-        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 2 ).get() ), me );
-        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 3 ).get() ), me );
-      }
-
       // Clear all the children.
       this->_clearChildren ( false, true );
     }
@@ -909,13 +898,6 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
     vector->elevationChangedNotify ( t1->extents(), t1->level(), t1->elevationData(), unknown.get() );
     vector->elevationChangedNotify ( t2->extents(), t2->level(), t2->elevationData(), unknown.get() );
     vector->elevationChangedNotify ( t3->extents(), t3->level(), t3->elevationData(), unknown.get() );
-
-    // Notify new children have been added.
-    IUnknown::QueryPtr me ( this );
-    vector->tileAddNotify ( IUnknown::QueryPtr ( t0 ), me );
-    vector->tileAddNotify ( IUnknown::QueryPtr ( t1 ), me );
-    vector->tileAddNotify ( IUnknown::QueryPtr ( t2 ), me );
-    vector->tileAddNotify ( IUnknown::QueryPtr ( t3 ), me );
   }
   
   {

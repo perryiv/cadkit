@@ -72,8 +72,6 @@ Usul::Interfaces::IUnknown* CityLayer::queryInterface ( unsigned long iid )
 {
   switch ( iid )
   {
-  case Minerva::Interfaces::ITilesChangedListener::IID:
-    return static_cast<Minerva::Interfaces::ITilesChangedListener*> ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast<Usul::Interfaces::IUpdateListener*> ( this );
   default:

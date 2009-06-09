@@ -151,8 +151,6 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IDataChangedNotify* > ( this );
   case Minerva::Interfaces::IElevationChangedListener::IID:
     return static_cast<Minerva::Interfaces::IElevationChangedListener*> ( this );
-  case Minerva::Interfaces::ITilesChangedListener::IID:
-    return static_cast<Minerva::Interfaces::ITilesChangedListener*> ( this );
   case Usul::Interfaces::ITileVectorData::IID:
     return static_cast<Usul::Interfaces::ITileVectorData*> ( this );
   case Minerva::Interfaces::IWithinExtents::IID:
@@ -770,54 +768,6 @@ void Container::name ( const std::string& name )
 {
   USUL_TRACE_SCOPE;
   BaseClass::name ( name );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  A tile has been added.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Container::tileAddNotify ( Usul::Interfaces::IUnknown::RefPtr child, Usul::Interfaces::IUnknown::RefPtr parent )
-{
-  USUL_TRACE_SCOPE;
-
-  Unknowns unknowns ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
-  {
-    for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
-    {
-      Minerva::Interfaces::ITilesChangedListener::QueryPtr tcl ( *iter );
-      if ( tcl.valid() )
-      {
-        tcl->tileAddNotify ( child, parent );
-      }
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  A tile has been removed.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Container::tileRemovedNotify ( Usul::Interfaces::IUnknown::RefPtr child, Usul::Interfaces::IUnknown::RefPtr parent ) 
-{
-  USUL_TRACE_SCOPE;
-
-  Unknowns unknowns ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
-  {
-    for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
-    {
-      Minerva::Interfaces::ITilesChangedListener::QueryPtr tcl ( *iter );
-      if ( tcl.valid() )
-      {
-        tcl->tileRemovedNotify ( child, parent );
-      }
-    }
-  }
 }
 
 

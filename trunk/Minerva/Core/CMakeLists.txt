@@ -31,7 +31,6 @@ INCLUDE_DIRECTORIES(
 		     ${CADKIT_INC_DIR}
 		     ${CADKIT_INC_DIR}/GenericNurbs
 		     ${OSG_INC_DIR} 
-		     ${OT_INC_DIR} 
 		     ${CURL_INCLUDE_DIR}
 		     )
 
@@ -148,7 +147,6 @@ SET ( HEADERS
 	./Visitors/FindObject.h
 	./Visitors/FindUnknowns.h
 	./Visitors/ResizePoints.h
-	./Visitors/Scale.h
 	./Visitors/StackPoints.h
 	./Visitors/TemporalAnimation.h
 )
@@ -231,7 +229,6 @@ SET (SOURCES
 ./Visitors/FindMinMaxDates.cpp
 ./Visitors/FindObject.cpp
 ./Visitors/ResizePoints.cpp
-./Visitors/Scale.cpp
 ./Visitors/StackPoints.cpp
 ./Visitors/TemporalAnimation.cpp
 )

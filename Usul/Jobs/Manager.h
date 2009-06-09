@@ -22,7 +22,10 @@
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Pool.h"
 
+#include "boost/version.hpp"
+#if BOOST_VERSION >= 103900
 #include "boost/signals2/signal.hpp"
+#endif
 
 #include <string>
 #include <vector>
@@ -39,9 +42,12 @@ public:
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
   typedef Usul::Threads::Pool ThreadPool;
-  typedef boost::signals2::signal<void ( Job* )> JobFinishedListeners;
-  typedef Usul::File::Log::RefPtr LogPtr;
   typedef ThreadPool::Strings Strings;
+  typedef Usul::File::Log::RefPtr LogPtr;
+  
+#if BOOST_VERSION >= 103900
+  typedef boost::signals2::signal<void ( Job* )> JobFinishedListeners;
+#endif
 
   // Constructor and destructor. Use as a singleton or as individual objects.
   Manager ( const std::string &name, unsigned int poolSize );
@@ -126,8 +132,10 @@ private:
   static Manager *_instance;
   mutable Mutex _mutex;
   ThreadPool _pool;
-  JobFinishedListeners _jobFinishedListeners;
   LogPtr _log;
+#if BOOST_VERSION >= 103900
+  JobFinishedListeners _jobFinishedListeners;
+#endif
 };
 
 
@@ -140,7 +148,9 @@ private:
 template<class Slot>
 inline void Manager::addJobFinishedListener ( const Slot& subscriber )
 {
+#if BOOST_VERSION >= 103900
   _jobFinishedListeners.connect ( subscriber );
+#endif
 }
 
 
@@ -153,7 +163,9 @@ inline void Manager::addJobFinishedListener ( const Slot& subscriber )
 template<class Slot>
 inline void Manager::removeJobFinishedListener ( const Slot& subscriber )
 {
+#if BOOST_VERSION >= 103900
   _jobFinishedListeners.disconnect ( subscriber );
+#endif
 }
 
 

@@ -24,30 +24,6 @@ namespace Algorithms {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Split once.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class ExtentsType >
-inline void split ( const ExtentsType &extents, ExtentsType &ll, ExtentsType &lr, ExtentsType &ul, ExtentsType &ur )
-{
-  typedef ExtentsType Extents;
-  typedef typename Extents::Vertex Vertex;
-  typedef typename Extents::ValueType ValueType;
-
-  const Vertex &mn ( extents.minimum() );
-  const Vertex &mx ( extents.maximum() );
-  const Vertex md ( ( mx + mn ) * static_cast < ValueType > ( 0.5 ) );
-
-  ll = Extents ( Vertex ( mn[0], mn[1] ), Vertex ( md[0], md[1] ) );
-  lr = Extents ( Vertex ( md[0], mn[1] ), Vertex ( mx[0], md[1] ) );
-  ul = Extents ( Vertex ( mn[0], md[1] ), Vertex ( md[0], mx[1] ) );
-  ur = Extents ( Vertex ( md[0], md[1] ), Vertex ( mx[0], mx[1] ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Split extents one or more times.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,7 +49,7 @@ inline void split ( const ExtentsType &extents, ContainerType &answer, unsigned 
       // Just split once.
       {
         Extents ll, lr, ul, ur;
-        Minerva::Core::Algorithms::split ( extents, ll, lr, ul, ur );
+        extents.split ( ll, lr, ul, ur );
 
         answer.insert ( answer.end(), ll );
         answer.insert ( answer.end(), lr );

@@ -877,7 +877,7 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
   
   // Extents for child tiles.
   Extents ll, lr, ul, ur;
-  Minerva::Core::Algorithms::split ( this->extents(), ll, lr, ul, ur );
+  this->extents().split ( ll, lr, ul, ur );
   
   // Mesh sizes for child tiles.
   const MeshSize mll ( body->meshSize ( ll ) );

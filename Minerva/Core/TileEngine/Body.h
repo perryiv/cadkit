@@ -201,10 +201,6 @@ public:
   // Get the raster data.
   RasterLayer::RefPtr       rasterData();
 
-  // Get/Set the scale for the system.
-  void                      scale( double );
-  double                    scale() const;
-
   // Get the scene.
   const osg::Node *         scene() const;
   osg::Node *               scene();
@@ -308,7 +304,6 @@ private:
   bool _useSkirts;
   bool _useBorders;
   SplitCallback::RefPtr _splitCallback;
-  double _scale;
   Tiles _deleteTiles;
   Tiles _topTiles;
   UpdateListeners _updateListeners;

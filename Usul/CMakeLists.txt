@@ -132,11 +132,7 @@ SET ( HEADERS
 ./Components/Manager.h
 ./Config/Config.h
 ./Console/Feedback.h
-./Containers/Array.h
 ./Containers/Array2D.h
-./Containers/DynamicArray.h
-./Containers/Hash.h
-./Containers/OctTree.h
 ./Containers/Unknowns.h
 ./Containers/Vector.h
 ./Convert/Convert.h
@@ -502,7 +498,6 @@ SET ( HEADERS
 ./System/Memory.h
 ./System/Screen.h
 ./System/Sleep.h
-./System/Socket.h
 ./Threads/Guard.h
 ./Threads/Map.h
 ./Threads/Mutex.h
@@ -521,8 +516,6 @@ SET ( HEADERS
 ./Trace/Print.h
 ./Trace/Scope.h
 ./Trace/Trace.h
-./Types/BaseProxy.h
-./Types/ObjectProxy.h
 ./Types/Types.h
 ./Units/Length.h
 ./User/Directory.h
@@ -551,7 +544,6 @@ SET (SOURCES
 ./Jobs/Job.cpp
 ./Predicates/CanWrite.cpp
 ./System/ClipBoard.cpp
-./System/Socket.cpp
 ./System/LastError.cpp
 ./System/DateTime.cpp
 ./System/Host.cpp

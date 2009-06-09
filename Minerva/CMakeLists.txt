@@ -2,11 +2,31 @@
 PROJECT(MinervaAll)
 
 SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Core
-		  ${CADKIT_INC_DIR}/Minerva/Layers/Kml
-		  ${CADKIT_INC_DIR}/Minerva/Layers/GeoNames
-		  
+		  ${CADKIT_INC_DIR}/Minerva/Layers/GeoNames		  
 		  ${CADKIT_INC_DIR}/Minerva/Document )
-		
+
+
+# Try to find Collada
+FIND_PATH(COLLADA_INCLUDE_DIR dae.h
+  $ENV{COLLADA_INC_DIR}
+)
+
+# Find the library
+FIND_LIBRARY(COLLADA_LIBRARY
+	NAMES collada14dom
+	PATHS
+	$ENV{COLLADA_LIB_DIR}
+	DOC "The name of the COLLADA library"
+)
+
+IF (COLLADA_INCLDUE_DIR AND COLLADA_LIBRARY)
+  SET(COLLADA_FOUND TRUE)
+ENDIF (COLLADA_INCLDUE_DIR AND COLLADA_LIBRARY)
+
+IF(COLLADA_FOUND)
+  SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Layers/Kml )
+ENDIF(COLLADA_FOUND)
+
 
 IF ( SPATIALITE_FOUND )
 	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Layers/OSM )

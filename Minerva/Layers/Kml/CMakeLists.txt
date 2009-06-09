@@ -15,19 +15,6 @@ ADD_DEFINITIONS("-D_COMPILING_MINERVA_KML")
 # ------------ Find OpenSceneGraph Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 
-# try to find the header
-FIND_PATH(COLLADA_INCLUDE_DIR dae.h
-  $ENV{COLLADA_INC_DIR}
-)
-
-# Find the library
-FIND_LIBRARY(COLLADA_LIBRARY
-	NAMES collada14dom
-	PATHS
-    $ENV{COLLADA_LIB_DIR}
-	DOC "The name of the COLLADA library"
-)
-
 # Currenly zlib is only used on Windows.
 IF(WIN32)
 	FIND_PACKAGE( ZLib )

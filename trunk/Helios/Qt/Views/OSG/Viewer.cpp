@@ -1159,6 +1159,11 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
     menu.append ( modes.get() );
   }
   
+#ifdef __APPLE__
+  menu.append ( ToggleButton::create ( "&Mutli-Sample", 
+                                      boost::bind ( &OsgViewer::useMultisampleSet, viewer.get(), _1 ), 
+                                      boost::bind ( &OsgViewer::useMultisampleGet, viewer.get() ) ) );
+#else
   // Rendering passes menu.
   {
     MenuKit::Menu::RefPtr passes ( new MenuKit::Menu ( "&Rendering Passes" ) );
@@ -1166,7 +1171,7 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
 
     passes->append ( RadioButton::create ( "&1", 
       boost::bind ( &OsgViewer::renderingPasses, viewer.get(), 1 ), 
-      boost::bind ( static_cast<unsigned int ( OsgViewer::*) () const> ( &OsgViewer::renderingPasses ), viewer.get() ) == 1 ) );
+      boost::bind (static_cast<unsigned int ( OsgViewer::*) () const> ( &OsgViewer::renderingPasses ), viewer.get() ) == 1 ) );
     passes->append ( RadioButton::create ( "&3",
       boost::bind ( &OsgViewer::renderingPasses, viewer.get(), 3 ), 
       boost::bind ( static_cast<unsigned int ( OsgViewer::*) () const> ( &OsgViewer::renderingPasses ), viewer.get() ) == 3 ) );
@@ -1177,13 +1182,8 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
       boost::bind ( &OsgViewer::renderingPasses, viewer.get(), 12 ), 
       boost::bind ( static_cast<unsigned int ( OsgViewer::*) () const> ( &OsgViewer::renderingPasses ), viewer.get() ) == 12 ) );
   }
-  
-#ifdef __APPLE__
-  menu.append ( ToggleButton::create ( "&Mutli-Sample", 
-                                                             UA::memberFunction<void> ( viewer.get(), &OsgViewer::useMultisampleSet ), 
-                                                             UA::memberFunction<bool> ( viewer.get(), &OsgViewer::useMultisampleGet ) ) );
 #endif
-
+  
   // Polygons menu.
   {
     MenuKit::Menu::RefPtr polygons ( new MenuKit::Menu ( "&Polygons" ) );

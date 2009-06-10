@@ -17,7 +17,6 @@
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/Qt/IWorkspace.h"
@@ -244,10 +243,10 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   MenuKit::Menu::RefPtr variableMenu ( new MenuKit::Menu ( "Parameters" ) );
   
   // Add Window arrange button
-  variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Grid", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid ) ) ) );
+  variableMenu->append ( MenuKit::Button::create ( "Grid", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid ) ) );
  
   // Add Scalar Editor button
-  variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Scalar Editor", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editScalar ) ) ) );
+  variableMenu->append ( MenuKit::Button::create ( "Scalar Editor", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editScalar ) ) );
 
   //variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Input", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) );
   
@@ -269,7 +268,7 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
       //variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) );
 
       // add the sub menu to the main menu
-      variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( menuName, Usul::Adaptors::bind1<void> ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) ) ); 
+      variableMenu->append ( MenuKit::Button::create ( menuName, Usul::Adaptors::bind1<void> ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) );
     }
 
   }

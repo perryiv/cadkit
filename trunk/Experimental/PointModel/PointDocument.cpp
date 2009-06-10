@@ -22,7 +22,6 @@
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
 
-#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Split.h"
 #include "Usul/Scope/RemoveFile.h"
@@ -36,7 +35,6 @@
 #include "Usul/Policies/Update.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Interfaces/IColorEditor.h"
 #include "Usul/Documents/Manager.h"
 
@@ -879,5 +877,5 @@ void PointDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * 
 
   MenuKit::Menu::RefPtr pointMenu ( menu.find ( "&Points", true ) );
 
-  pointMenu->append( new Button ( Usul::Commands::genericCommand ( "Edit Color...", Usul::Adaptors::memberFunction<void> ( this, &PointDocument::_editPointColor ) ) ) );
+  pointMenu->append ( Button::create ( "Edit Color...", Usul::Adaptors::memberFunction<void> ( this, &PointDocument::_editPointColor ) ) );
 }

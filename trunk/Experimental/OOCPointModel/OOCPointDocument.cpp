@@ -39,8 +39,6 @@
 #include "Usul/Policies/Update.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Commands/GenericCommand.h"
-#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Registry/Database.h"
@@ -928,7 +926,7 @@ void OOCPointDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown
 
   MenuKit::Menu::RefPtr pointMenu ( menu.find ( "&Points", true ) );
 
-  pointMenu->append( new Button ( Usul::Commands::genericCommand ( "Edit Color...", Usul::Adaptors::memberFunction<void> ( this, &OOCPointDocument::_editPointColor ) ) ) );
+  pointMenu->append ( Button::create ( "Edit Color...", Usul::Adaptors::memberFunction<void> ( this, &OOCPointDocument::_editPointColor ) ) );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -16,12 +16,10 @@
 #ifndef _USUL_THREADS_POOL_CLASS_H_
 #define _USUL_THREADS_POOL_CLASS_H_
 
-#include "Usul/Base/Object.h"
 #include "Usul/File/Log.h"
 #include "Usul/Threads/Task.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
-#include "Usul/Pointers/Pointers.h"
 
 #include <map>
 #include <set>
@@ -47,12 +45,6 @@ public:
   typedef std::set < Task::RefPtr > TaskSet;
   typedef std::vector < std::string > Strings;
   typedef Usul::File::Log::RefPtr LogPtr;
-
-  // Type information.
-  USUL_DECLARE_TYPE_ID ( Pool );
-
-  // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Pool );
 
   // Constructor
   Pool ( const std::string &name, unsigned int numThreads );

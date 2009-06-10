@@ -98,6 +98,8 @@
 #include "osgUtil/IntersectVisitor"
 #include "osgUtil/CullVisitor"
 
+#include "boost/bind.hpp"
+
 #include <algorithm>
 #include <limits>
 #include <sstream>

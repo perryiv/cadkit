@@ -68,6 +68,7 @@
 #include "osgText/Text"
 #include "osgUtil/GLObjectsVisitor"
 
+#include "boost/bind.hpp"
 
 #include <iterator>
 #include <vector>

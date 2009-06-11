@@ -29,7 +29,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/ITreeNode.h"
-#include "Usul/Interfaces/GUI/IProgressBarFactory.h"
+#include "Usul/Interfaces/IProgressBarFactory.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Registry/Database.h"

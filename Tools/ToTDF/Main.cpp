@@ -21,7 +21,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/IProgressBar.h"
 #include "Usul/Threads/Mutex.h"
 
 #include <algorithm>

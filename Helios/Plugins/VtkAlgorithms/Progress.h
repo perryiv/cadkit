@@ -10,7 +10,7 @@
 #ifndef __VTK_TOOLS_COMMANDS_PROGRESS_H__
 #define __VTK_TOOLS_COMMANDS_PROGRESS_H__
 
-#include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/IProgressBar.h"
 
 #include "vtkCommand.h"
 

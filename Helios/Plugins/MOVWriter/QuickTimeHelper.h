@@ -10,7 +10,7 @@
 #ifndef __QUICK_TIME_HELPER_H__
 #define __QUICK_TIME_HELPER_H__
 
-#include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/IProgressBar.h"
 
 // Quick Time headers.
 #include "QTML.h"

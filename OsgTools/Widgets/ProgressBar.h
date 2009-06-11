@@ -20,8 +20,8 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Guard.h"
-#include "Usul/Interfaces/GUI/IStatusBar.h"
-#include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/IStatusBar.h"
+#include "Usul/Interfaces/IProgressBar.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 

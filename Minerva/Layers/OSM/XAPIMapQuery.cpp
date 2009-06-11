@@ -19,7 +19,7 @@
 #include "Minerva/Core/Utilities/Download.h"
 
 #include "Usul/File/Temp.h"
-#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/IStatusBar.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Scope/RemoveFile.h"
 #include "Usul/Strings/Format.h"

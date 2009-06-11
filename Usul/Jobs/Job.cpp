@@ -16,7 +16,7 @@
 #include "Usul/Jobs/Job.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
-#include "Usul/Interfaces/GUI/IProgressBarFactory.h"
+#include "Usul/Interfaces/IProgressBarFactory.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/System/Sleep.h"

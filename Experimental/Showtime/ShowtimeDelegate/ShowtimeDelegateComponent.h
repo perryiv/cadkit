@@ -22,7 +22,7 @@
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IDefaultGUIDelegate.h"
-#include "Usul/Interfaces/GUI/IGUIDelegate.h"
+#include "Usul/Interfaces/IGUIDelegate.h"
 
 #include <string>
 

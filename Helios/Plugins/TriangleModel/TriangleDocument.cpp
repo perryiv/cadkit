@@ -31,8 +31,8 @@
 #include "OsgTools/Triangles/FindLoops.h"
 
 #include "Usul/Interfaces/IRedraw.h"
-#include "Usul/Interfaces/GUI/IStatusBar.h"
-#include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/IStatusBar.h"
+#include "Usul/Interfaces/IProgressBar.h"
 #include "Usul/Interfaces/ISmoothTriangles.h"
 #include "Usul/Interfaces/IDecimateTriangles.h"
 #include "Usul/Interfaces/ISubdivideTriangles.h"

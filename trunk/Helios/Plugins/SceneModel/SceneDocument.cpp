@@ -28,8 +28,8 @@
 #include "Usul/Scope/CurrentDirectory.h"
 #include "Usul/Adaptors/MemberFunction.h"
 
-#include "Usul/Interfaces/GUI/IProgressBar.h"
-#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Interfaces/IStatusBar.h"
 
 #include "osg/Group"
 #include "osg/Geode"

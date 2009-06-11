@@ -22,7 +22,7 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/IPluginInitialize.h"
-#include "Usul/Interfaces/GUI/IUpdateTreeControls.h"
+#include "Usul/Interfaces/IUpdateTreeControls.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IActiveViewListener.h"
 

@@ -12,8 +12,8 @@
 #include "VRV/Interfaces/IModelAdd.h"
 #include "VRV/Interfaces/IPostModelLoad.h"
 
-#include "Usul/Interfaces/GUI/IStatusBar.h"
-#include "Usul/Interfaces/GUI/IProgressBarFactory.h"
+#include "Usul/Interfaces/IStatusBar.h"
+#include "Usul/Interfaces/IProgressBarFactory.h"
 #include "Usul/Interfaces/IUpdateSubject.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Components/Manager.h"

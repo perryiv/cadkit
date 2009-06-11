@@ -22,7 +22,7 @@
 #include "ModflowModel/Interfaces/IModflowModel.h"
 
 #include "Usul/Base/Object.h"
-#include "Usul/Interfaces/GUI/IGUIDelegate.h"
+#include "Usul/Interfaces/IGUIDelegate.h"
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/IInitNewDocument.h"
 #include "Usul/Interfaces/IPlugin.h"

@@ -21,7 +21,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IDefaultGUIDelegate.h"
 #include "Usul/Interfaces/IDocumentCreate.h"
-#include "Usul/Interfaces/GUI/IGUIDelegate.h"
+#include "Usul/Interfaces/IGUIDelegate.h"
 #include "Usul/Interfaces/IDocumentSelect.h"
 
 #include <algorithm>

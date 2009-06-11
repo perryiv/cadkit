@@ -22,7 +22,7 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" ${Boost_INCLUDE_DIR} ${OSG_INC_DIR} ${OT_INC_DIR} )
+INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" ${Boost_INCLUDE_DIR} ${OSG_INC_DIR} )
 
 #########################################################
 #
@@ -250,6 +250,14 @@ ADD_LIBRARY(${TARGET_NAME} SHARED ${TARGET_FILES} )
 
 # Add a library
 CADKIT_ADD_LIBRARY ( ${TARGET_NAME} )
+
+SET ( SUB_DIRECTORIES Builders Callbacks Configure Convert IO Images Objects Points Render State Triangles Utilities Widgets )
+FOREACH( DIR ${SUB_DIRECTORIES} )
+	FILE( GLOB HEADERS_TO_INSTALL ${CMAKE_CURRENT_SOURCE_DIR}/${DIR}/*.h )
+	INSTALL(FILES ${HEADERS_TO_INSTALL} DESTINATION include/OsgTools/${DIR})
+ENDFOREACH( DIR SUB_DIRECTORIES )
+
+INSTALL(FILES Export.h ShapeFactory.h DESTINATION include/OsgTools)
 
 # Link to these Cadkit libraries.
 LINK_CADKIT(${TARGET_NAME} Usul)

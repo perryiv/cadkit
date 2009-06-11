@@ -42,6 +42,8 @@ SET (SOURCES
 ADD_LIBRARY(SerializeXML SHARED ${SOURCES} ${HEADERS} )
 CADKIT_ADD_LIBRARY(SerializeXML)
 
+INSTALL(FILES ${HEADERS} DESTINATION include/Serialize/XML )
+
 # Link the Library
 LINK_CADKIT(SerializeXML Usul XmlTree )
 

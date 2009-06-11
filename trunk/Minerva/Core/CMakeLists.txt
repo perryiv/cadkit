@@ -239,6 +239,18 @@ ADD_LIBRARY(Minerva SHARED ${SOURCES} ${HEADERS} )
 # Add a library
 CADKIT_ADD_LIBRARY ( Minerva )
 
+SET ( SUB_DIRECTORIES Animate Data Functions Jobs Layers TileEngine Utilities Visitors )
+FOREACH( DIR ${SUB_DIRECTORIES} )
+	FILE( GLOB HEADERS_TO_INSTALL ${CMAKE_CURRENT_SOURCE_DIR}/${DIR}/*.h )
+	INSTALL(FILES ${HEADERS_TO_INSTALL} DESTINATION include/Minerva/Core/${DIR})
+ENDFOREACH( DIR SUB_DIRECTORIES )
+
+INSTALL(FILES ../Config.h  DESTINATION include/Minerva)
+INSTALL(FILES ElevationData.h Export.h Extents.h Macros.h Serialize.h Visitor.h DESTINATION include/Minerva/Core)
+
+FILE( GLOB HEADERS_TO_INSTALL ${CMAKE_CURRENT_SOURCE_DIR}/../Interfaces/*.h )
+INSTALL(FILES ${HEADERS_TO_INSTALL} DESTINATION include/Minerva/Interfaces)
+	
 # Link the Library	
 LINK_CADKIT( Minerva Usul OsgTools SerializeXML XmlTree )
 TARGET_LINK_LIBRARIES(Minerva

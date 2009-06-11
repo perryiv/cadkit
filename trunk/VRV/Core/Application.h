@@ -20,8 +20,8 @@
 #include "VRV/Interfaces/IAuxiliaryScene.h"
 #include "VRV/Functors/Intersect.h"
 
-#include "Usul/Interfaces/GUI/IProgressBarFactory.h"
-#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/IProgressBarFactory.h"
+#include "Usul/Interfaces/IStatusBar.h"
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/IBackgroundColor.h"
 #include "Usul/Interfaces/IButtonPressListener.h"

@@ -18,8 +18,8 @@
 #define __CADKIT_HELIOS_QT_CORE_PROGRESS_BAR_DOCK_H__
 
 #include "Usul/Base/Object.h"
-#include "Usul/Interfaces/GUI/IProgressBar.h"
-#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Interfaces/IStatusBar.h"
 
 #include "QtCore/QObject"
 

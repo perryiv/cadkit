@@ -18,7 +18,7 @@
 
 #include "Display/View/Viewer.h"
 
-#include "Usul/Interfaces/GUI/IWindow.h"
+#include "Usul/Interfaces/IWindow.h"
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/IInputListener.h"
 #include "Usul/Interfaces/IModifiedObserver.h"

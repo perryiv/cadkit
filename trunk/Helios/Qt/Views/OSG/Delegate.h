@@ -20,7 +20,7 @@
 #include "Helios/Qt/Views/OSG/Export.h"
 
 #include "Usul/Base/Referenced.h"
-#include "Usul/Interfaces/GUI/IGUIDelegate.h"
+#include "Usul/Interfaces/IGUIDelegate.h"
 #include "Usul/Interfaces/IColorEditor.h"
 
 #include <string>

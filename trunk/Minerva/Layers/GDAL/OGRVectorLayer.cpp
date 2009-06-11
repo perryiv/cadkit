@@ -18,7 +18,7 @@
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Factory/RegisterCreator.h"
-#include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/IProgressBar.h"
 #include "Usul/Scope/Caller.h"
 
 #include "ogr_api.h"

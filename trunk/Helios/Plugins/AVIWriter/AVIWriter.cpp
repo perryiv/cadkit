@@ -16,7 +16,7 @@
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/File/Remove.h"
 #include "Usul/Functions/SafeCall.h"
-#include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/IProgressBar.h"
 
 #include "osg/ref_ptr"
 #include "osg/Image"

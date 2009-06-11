@@ -22,7 +22,7 @@
 #include "Usul/Threads/Guard.h"
 
 #include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Interfaces/GUI/IGUIDelegate.h"
+#include "Usul/Interfaces/IGUIDelegate.h"
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/IActiveViewListener.h"
 #include "Usul/Interfaces/IView.h"

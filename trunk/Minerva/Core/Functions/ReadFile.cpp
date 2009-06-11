@@ -13,7 +13,7 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
-#include "Usul/Interfaces/GUI/IProgressBarFactory.h"
+#include "Usul/Interfaces/IProgressBarFactory.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //

@@ -17,8 +17,8 @@
 #define _USUL_JOBS_JOB_CLASS_H_
 
 #include "Usul/Base/Observed.h"
-#include "Usul/Interfaces/GUI/IProgressBar.h"
-#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/IProgressBar.h"
+#include "Usul/Interfaces/IStatusBar.h"
 #include "Usul/Interfaces/ICancel.h"
 #include "Usul/Interfaces/ICanceledStateGet.h"
 

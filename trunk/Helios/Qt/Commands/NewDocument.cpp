@@ -22,7 +22,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IDocumentCreate.h"
 #include "Usul/Interfaces/IInitNewDocument.h"
-#include "Usul/Interfaces/GUI/IGUIDelegateNotify.h"
+#include "Usul/Interfaces/IGUIDelegateNotify.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Trace/Trace.h"
 

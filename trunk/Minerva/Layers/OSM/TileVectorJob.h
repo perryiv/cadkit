@@ -22,7 +22,7 @@
 
 #include "Usul/Jobs/Job.h"
 #include "Usul/Interfaces/ITileVectorJob.h"
-#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/IStatusBar.h"
 
 namespace Minerva {
 namespace Layers {

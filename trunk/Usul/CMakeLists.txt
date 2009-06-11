@@ -229,17 +229,17 @@ SET ( HEADERS
 ./Headers/SStream.h
 ./Helper/AnimationNotify.h
 ./ID/GUID.h
-./Interfaces/GUI/IGUIDelegate.h
-./Interfaces/GUI/IGUIDelegateNotify.h
-./Interfaces/GUI/IMaterialEditor.h
-./Interfaces/GUI/IProgressBar.h
-./Interfaces/GUI/IProgressBarFactory.h
-./Interfaces/GUI/IQuestion.h
-./Interfaces/GUI/IStatusBar.h
-./Interfaces/GUI/IUpdateGUI.h
-./Interfaces/GUI/IUpdateTextWindow.h
-./Interfaces/GUI/IUpdateTreeControls.h
-./Interfaces/GUI/IWindow.h
+./Interfaces/IGUIDelegate.h
+./Interfaces/IGUIDelegateNotify.h
+./Interfaces/IMaterialEditor.h
+./Interfaces/IProgressBar.h
+./Interfaces/IProgressBarFactory.h
+./Interfaces/IQuestion.h
+./Interfaces/IStatusBar.h
+./Interfaces/IUpdateGUI.h
+./Interfaces/IUpdateTextWindow.h
+./Interfaces/IUpdateTreeControls.h
+./Interfaces/IWindow.h
 ./Interfaces/IActiveDocumentListener.h
 ./Interfaces/IActiveViewListener.h
 ./Interfaces/IAddRowLegend.h
@@ -628,6 +628,27 @@ ADD_LIBRARY( ${TARGET_NAME} SHARED ${HEADERS} ${SOURCES} )
 
 # Add a library
 CADKIT_ADD_LIBRARY ( ${TARGET_NAME} )
+
+SET ( SUB_DIRECTORIES Adaptors         Jobs        
+	Algorithms        Diagnostics  MPL         Scope
+	App               Documents    Make        Shared
+	Base              Endian       Makefile    Signals
+	Bits              Errors       Math        Strings
+    Exceptions   Memory      System
+    Export       Network     
+	Cast              Factory      Pointers    Threads
+	CommandLine       File         Policies    Trace
+	Commands          Functions    Predicates  Types
+	Components        Functors     Preprocess  Units
+	Config            Headers      Print       User
+	Console           Helper       Properties  
+	Containers        ID           Registry    
+	Convert           IO           Release     
+	DLL               Interfaces   Resources )
+FOREACH( DIR ${SUB_DIRECTORIES} )
+	FILE( GLOB HEADERS_TO_INSTALL ${CMAKE_CURRENT_SOURCE_DIR}/${DIR}/*.h )
+	INSTALL(FILES ${HEADERS_TO_INSTALL} DESTINATION include/Usul/${DIR})
+ENDFOREACH( DIR SUB_DIRECTORIES )
 
 # Find needed system libraries.	
 IF(WIN32)

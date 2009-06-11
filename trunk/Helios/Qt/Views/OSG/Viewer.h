@@ -14,8 +14,8 @@
 #include "Helios/Qt/Views/OSG/Export.h"
 
 #include "Usul/Documents/Document.h"
-#include "Usul/Interfaces/GUI/IQuestion.h"
-#include "Usul/Interfaces/GUI/IWindow.h"
+#include "Usul/Interfaces/IQuestion.h"
+#include "Usul/Interfaces/IWindow.h"
 #include "Usul/Interfaces/IFrameDump.h"
 #include "Usul/Interfaces/IOpenGLContext.h"
 #include "Usul/Interfaces/ISaveFileDialog.h"

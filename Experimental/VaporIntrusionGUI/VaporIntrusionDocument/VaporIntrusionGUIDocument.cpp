@@ -1577,6 +1577,11 @@ int VaporIntrusionGUIDocument::_getComparitor( const std::string& comparitor )
     return IV::NOT_EQUAL;
   }
 
+  if( comparitor == "SIZEOF_EQUAL" )
+  {
+    return IV::SIZEOF_EQUAL;
+  }
+
   // default return equal
   return IV::EQUAL;
 }

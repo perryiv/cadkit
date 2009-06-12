@@ -57,7 +57,8 @@ _xyzView( 0x0 ),
 //_xyView ( 0x0 ),
 //_xzView ( 0x0 ),
 //_yzView ( 0x0 ),
-_docks   (),
+_dockMap   (),
+_dockList   (),
 _materialContainers(),
 _caller(),
 _categories(),
@@ -82,14 +83,14 @@ VaporIntrusionGUIDelegateComponent::~VaporIntrusionGUIDelegateComponent()
     QMainWindow * main  ( mainWindow->mainWindow() );
 
     // Delete the DockWidgets.
-    for( Docks::iterator iter = _docks.begin(); iter != _docks.end(); ++iter )
+    for( DockList::iterator iter = _dockList.begin(); iter != _dockList.end(); ++iter )
     {
       // Remove the DockWidget from the MainWindow.
-      main->removeDockWidget ( (*iter).second );
+      main->removeDockWidget ( (*iter) );
 
       // Delete the dock and clear
-      delete (*iter).second;
-      (*iter).second = 0x0;
+      delete (*iter);
+      (*iter) = 0x0;
     }
 
   }
@@ -248,8 +249,6 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   // Add Scalar Editor button
   variableMenu->append ( MenuKit::Button::create ( "Scalar Editor", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editScalar ) ) );
 
-  //variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Input", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) );
-  
    // Query the active document for IVaporIntrusionGUI
   VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
@@ -265,10 +264,7 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
       std::string menuName ( categories.at( i ).name );
 
       // add the sub menu to the main menu
-      //variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) );
-
-      // add the sub menu to the main menu
-      variableMenu->append ( MenuKit::Button::create ( menuName, Usul::Adaptors::bind1<void> ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) );
+      variableMenu->append ( MenuKit::Button::create ( menuName, Usul::Adaptors::bind1<void> ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) ); 
     }
 
   }
@@ -287,35 +283,7 @@ void VaporIntrusionGUIDelegateComponent::initializePlugin ( Usul::Interfaces::IU
 {
   _caller = caller;
 
-  //Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
-
-  //if ( mainWindow.valid() )
-  //{
-  //  QMainWindow * main ( mainWindow->mainWindow() );
-
-  //  // Build the docking window.
-  //  QDockWidget* dock = new QDockWidget ( QObject::tr ( "Materials Container" ), main );
-  //  dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
-
-  //  // Create the widget
-  //  MaterialContainer* materialContainer = new MaterialContainer ( dock );
-
-  //  // Add the dock to the main window.
-  //  dock->setWidget( materialContainer );
-  //  main->addDockWidget ( Qt::LeftDockWidgetArea, dock );
-
-  //  // Set the object name.
-  //  dock->setObjectName ( "MaterialsContainerWidget" );
-
-  //  // Add toggle to the menu.
-  //  Usul::Interfaces::IQtDockWidgetMenu::QueryPtr dwm ( caller );
-  //  if ( dwm.valid () )
-  //    dwm->addDockWidgetMenu ( dock );
-
-  //  // add the dock to the map of docks
-  //  _docks["Materials Container"] = dock;
-  //  _materialContainers["Materials Container"] = materialContainer;
-  //}
+ 
 }
 
 
@@ -516,7 +484,7 @@ void VaporIntrusionGUIDelegateComponent::addDock( const std::string& name )
     main->addDockWidget ( Qt::LeftDockWidgetArea, dock );
 
     // Set the object name.
-    dock->setObjectName ( "MaterialsContainerWidget" );
+    dock->setObjectName ( name.c_str() );
 
     // Add toggle to the menu.
     Usul::Interfaces::IQtDockWidgetMenu::QueryPtr dwm ( _caller );
@@ -524,14 +492,21 @@ void VaporIntrusionGUIDelegateComponent::addDock( const std::string& name )
       dwm->addDockWidgetMenu ( dock );
 
     // add the dock to the map of docks
-    _docks[name] = dock;
+    _dockList.push_back( dock );
+    _dockMap[ name ] = _dockList.size() - 1;
     _materialContainers[name] = materialContainer;
 
-    if( _docks.size() > 1 )
+    if( _dockList.size() > 1 )
     {
-      main->tabifyDockWidget( (*_docks.begin()).second, dock );
-    }
-      
+      for( unsigned int i = 0; i < _dockList.size() - 1; ++i )
+      {
+        if( ( i + 1 ) < _dockList.size() )
+        {
+          main->tabifyDockWidget( _dockList.at( i ), _dockList.at( i + 1 ) );
+        }
+      }
+    }   
+    
   }
   
 }

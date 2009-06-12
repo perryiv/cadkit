@@ -42,6 +42,7 @@
 
 #include <string>
 #include <memory>
+#include <fstream>
 
 namespace osg { class Node; }
 
@@ -70,6 +71,8 @@ public:
   typedef IVaporIntrusionGUI::MaterialsMap                      MaterialsMap;
   typedef IVaporIntrusionGUI::GridMaterial                      GridMaterial;
   typedef IVaporIntrusionGUI::GridMaterials                     GridMaterials; 
+  typedef std::vector< std::string > StringVec;
+
   
   // structs and typedefs for structs
   struct Value
@@ -231,6 +234,9 @@ protected:
   void                        _createDock( const std::string& name );
   void                        _addMaterialToDock( const std::string& dock, const std::string& name, const std::string& value );
   
+
+  void                        _readAllofValues( unsigned int& index, InputColumn& column, const StringVec& sv );
+  void                        _readOneofValues( unsigned int& index, InputColumn& column, const StringVec& sv );
 
 private:
     GroupPtr                  _root;

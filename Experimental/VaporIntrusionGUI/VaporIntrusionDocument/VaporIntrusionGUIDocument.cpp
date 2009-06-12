@@ -56,7 +56,6 @@
 
 #include <iterator>
 #include <vector>
-#include <fstream>
 #include <iostream>
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VaporIntrusionGUIDocument, VaporIntrusionGUIDocument::BaseClass );
@@ -1097,6 +1096,115 @@ void VaporIntrusionGUIDocument::setZGrid( GridPoints points )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Read the "allof" values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readAllofValues( unsigned int& index, InputColumn& column, const StringVec& sv )
+{
+  // Check for end of section
+  bool end ( false );
+
+  while( false == end && index < sv.size() )
+  {
+    if( ( index + 2 ) < sv.size() )
+    {
+     // Get the next string and check for section keyword
+      std::string keyword ( sv.at( index ) );
+
+      if( keyword != "allof" && keyword != "oneof" )
+      {
+        // get the activator name and value
+        std::string aName ( keyword );
+        std::string aComp ( sv.at( index + 1 ) );
+        std::string aValue ( sv.at( index + 2 ) );
+
+        // get the comparitor conversion
+        int comparitor ( this->_getComparitor( aComp ) );
+
+        // create a activator pair and add it to the activator list on the column
+        ActivatorValue aV ( comparitor, aValue );
+        ActivatorPair aPair ( aName, aV );
+        column.allofActivators.push_back( aPair );
+
+        // increment the index
+        index += 3;
+      }
+      else
+      {
+        end = true;
+      }
+    }
+    else
+    {
+      // There is a mismatch in number of remaining values
+      // Should probably throw an invalid input error here
+
+      // TODO: throw here instead of warning message
+      std::cout << "Warning: invalid number of activator pair combination(s)!" << std::endl;
+      end = true;
+    }
+  }
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the "oneof" values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readOneofValues( unsigned int& index, InputColumn& column, const StringVec& sv )
+{
+  // Check for end of section
+  bool end ( false );
+
+  while( false == end && index < sv.size() )
+  {
+    if( ( index + 2 ) < sv.size() )
+    {
+      // Get the next string and check for section keyword
+      std::string keyword ( sv.at( index ) );
+
+      if( keyword != "allof" && keyword != "oneof" )
+      {
+        // get the activator name and value
+        std::string aName ( keyword );
+        std::string aComp ( sv.at( index + 1 ) );
+        std::string aValue ( sv.at( index + 2 ) );
+
+        // get the comparitor conversion
+        int comparitor ( this->_getComparitor( aComp ) );
+
+        // create a activator pair and add it to the activator list on the column
+        ActivatorValue aV ( comparitor, aValue );
+        ActivatorPair aPair ( aName, aV );
+        column.oneofActivators.push_back( aPair );
+
+        // increment the index
+        index += 3;
+      }
+      else
+      {
+        end = true;
+      }
+    }
+    else
+    {
+      // There is a mismatch in number of remaining values
+      // Should probably throw an invalid input error here
+
+      // TODO: throw here instead of warning message
+      std::cout << "Warning: invalid number of activator pair combination(s)!" << std::endl;
+      end = true;
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // Read the config file
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1169,7 +1277,6 @@ void VaporIntrusionGUIDocument::_readConfigFile( const std::string& catName, con
     {
 
       // separate the strings
-      typedef std::vector< std::string > StringVec;
       StringVec sv;
       Usul::Strings::split( tStr, ",", false, sv );
       
@@ -1192,30 +1299,35 @@ void VaporIntrusionGUIDocument::_readConfigFile( const std::string& catName, con
         {
           InputColumn column( name, value, description, type ); 
 
-          // read the activators
-          for( unsigned int i = 4; i < sv.size(); i+=3 )
-          { 
-            if( ( i + 2 ) < sv.size() )
-            {
-              // get the activator name and value
-              std::string aName ( sv.at( i ) );
-              std::string aComp ( sv.at( i + 1 ) );
-              std::string aValue ( sv.at( i + 2 ) );
+          
+          // get the section descriptor
+          if( sv.size() > 4 )
+          {
+            // index of the current column
+            unsigned int index ( 4 );
 
-              // create a activator pair and add it to the activator list on the column
-              ActivatorValue aV ( _getComparitor( aComp ), aValue );
-              ActivatorPair aPair ( aName, aV );
-              column.activators.push_back( aPair );
-            }
-            else
+            while( index < sv.size() )
             {
-              // There is a mismatch in number of remaining values
-              // Should probably throw an invalid input error here
+              // read the section identifier
+              std::string section ( sv.at( index ) );
 
-              // TODO: throw here instead of warning message
-              std::cout << "Warning: invalid number of activator pair combination(s)!" << std::endl;
-              break;
+              // increment the index
+              ++index;
+
+              if( section == "allof" )
+              {
+                // read the allof section
+                this->_readAllofValues( index, column, sv );
+              }
+              if( section == "oneof" )
+              {
+                // read the oneof section
+                this->_readOneofValues( index, column, sv );
+              }
+
             }
+
+           
           }
 
           // add the column to the list of columns for this category

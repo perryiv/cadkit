@@ -53,7 +53,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     std::string value;
     std::string description;
     std::string type;
-    ActivatorPairs activators;
+    ActivatorPairs allofActivators;
+    ActivatorPairs oneofActivators;
     bool active;
 
     InputColumn():
@@ -61,7 +62,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
       value(),
       description(),
       type(),
-      activators(),
+      allofActivators(),
+      oneofActivators(),
       active( false )
       {}
     InputColumn( const std::string& n, const std::string& v, const std::string& d, const std::string& t ) :
@@ -69,7 +71,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
       value( v ),
       description( d ),
       type( t ),
-      activators(),
+      allofActivators(),
+      oneofActivators(),
       active( false )
       {}
   };

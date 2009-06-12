@@ -70,7 +70,8 @@ public:
   typedef IVaporIntrusionGUI::MaterialsMap MaterialsMap;
 
   // useful typedefs
-  typedef std::map< std::string, QDockWidget* > Docks;
+  typedef std::map< std::string, unsigned int > DockMap;
+  typedef std::vector< QDockWidget* > DockList;
   typedef std::map< std::string, MaterialContainer* > MaterialContainers;
 
 
@@ -124,7 +125,8 @@ protected:
 
 private:
   QtViewerPtr                         _xyzView;
-  Docks                               _docks;
+  DockMap                             _dockMap;
+  DockList                            _dockList;
   MaterialContainers                  _materialContainers;
   IUnknown::QueryPtr                  _caller;
 

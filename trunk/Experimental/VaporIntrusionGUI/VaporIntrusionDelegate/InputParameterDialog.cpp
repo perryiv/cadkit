@@ -88,40 +88,82 @@ void InputParameterDialog::_initializeList ()
        ++column )
   {
     // verify that the column is active
-    bool isActive( true );
+    bool allofActive( true );
+    bool oneofActive( false );
 
-    // check the activators
-    if( (*column).second.activators.size() > 0 )
+    // check the all of activators to see if the AND logic holds
+    if( (*column).second.allofActivators.size() > 0 )
     {
-      for( ActivatorPairs::iterator aPairs = (*column).second.activators.begin();
-           aPairs != (*column).second.activators.end();
-           ++aPairs )
+      for( ActivatorPairs::iterator allofPairs = (*column).second.allofActivators.begin();
+           allofPairs != (*column).second.allofActivators.end();
+           ++allofPairs )
       {
         // get the activator name
-        std::string name ( (*aPairs).first );
+        std::string name ( (*allofPairs).first );
 
         // get the expected activator value
-        std::string value ( (*aPairs).second.second );
+        std::string value ( (*allofPairs).second.second );
 
         // get the current activator value
         std::string aCurrentValue ( _category.columns[ name ].value );
 
         // get the comparitor
-        int aComp ( (*aPairs).second.first );
+        int aComp ( (*allofPairs).second.first );
 
         // check the activation value
         if( false == document->checkValue( aComp, aCurrentValue, value ) )
         {
           // if the values don't agree then de-activate this row
-          isActive = false;
+          allofActive = false;
 
           // stop checking
           break;
         }
       }
-    }    
+    }
 
-    if( true == isActive )
+    // check the one of activators to see if the OR statement holds
+    // allofActive must be true for this section to be checked.
+    if( true == allofActive )
+    {
+      if( (*column).second.oneofActivators.size() > 0 )
+      {
+        for( ActivatorPairs::iterator oneofPairs = (*column).second.oneofActivators.begin();
+             oneofPairs != (*column).second.oneofActivators.end();
+             ++oneofPairs )
+        {
+          // get the activator name
+          std::string name ( (*oneofPairs).first );
+
+          // get the expected activator value
+          std::string value ( (*oneofPairs).second.second );
+
+          // get the current activator value
+          std::string aCurrentValue ( _category.columns[ name ].value );
+
+          // get the comparitor
+          int aComp ( (*oneofPairs).second.first );
+
+          // check the activation value
+          if( true == document->checkValue( aComp, aCurrentValue, value ) )
+          {
+            // if the values don't agree then de-activate this row
+            oneofActive = true;
+
+            // stop checking
+            break;
+          }
+        }
+      }
+      else
+      {
+        // if there are no oneofActivators then the statement is true
+        oneofActive = true;
+      }
+    }
+
+    // allofActive and oneofActive must be true to activate the column
+    if( true == allofActive && true == oneofActive )
     {
       // insert a row
       _inputList->insertRow( rowCount );

@@ -110,14 +110,17 @@ void InputParameterDialog::_initializeList ()
         // get the comparitor
         int aComp ( (*allofPairs).second.first );
 
-        // check the activation value
-        if( false == document->checkValue( aComp, aCurrentValue, value ) )
+        if( aComp != VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::SIZEOF_EQUAL )
         {
-          // if the values don't agree then de-activate this row
-          allofActive = false;
+          // check the activation value
+          if( false == document->checkValue( aComp, aCurrentValue, value ) )
+          {
+            // if the values don't agree then de-activate this row
+            allofActive = false;
 
-          // stop checking
-          break;
+            // stop checking
+            break;
+          }
         }
       }
     }
@@ -144,14 +147,17 @@ void InputParameterDialog::_initializeList ()
           // get the comparitor
           int aComp ( (*oneofPairs).second.first );
 
-          // check the activation value
-          if( true == document->checkValue( aComp, aCurrentValue, value ) )
+          if( aComp != VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::SIZEOF_EQUAL )
           {
-            // if the values don't agree then de-activate this row
-            oneofActive = true;
+            // check the activation value
+            if( true == document->checkValue( aComp, aCurrentValue, value ) )
+            {
+              // if the values don't agree then de-activate this row
+              oneofActive = true;
 
-            // stop checking
-            break;
+              // stop checking
+              break;
+            }
           }
         }
       }

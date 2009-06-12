@@ -28,7 +28,6 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/IGUIDelegate.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IPluginInitialize.h"
 #include "Usul/Interfaces/IInitNewDocument.h"

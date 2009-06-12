@@ -42,7 +42,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     LESS_THAN,
     GREATER_THAN,
     GREATER_THAN_OR_EQUAL,
-    LESS_THAN_OR_EQUAL
+    LESS_THAN_OR_EQUAL,
+    SIZEOF_EQUAL
   };
 
   // structs

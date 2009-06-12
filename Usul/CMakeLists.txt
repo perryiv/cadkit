@@ -647,7 +647,7 @@ SET ( SUB_DIRECTORIES Adaptors         Jobs
 	DLL               Interfaces   Resources )
 FOREACH( DIR ${SUB_DIRECTORIES} )
 	FILE( GLOB HEADERS_TO_INSTALL ${CMAKE_CURRENT_SOURCE_DIR}/${DIR}/*.h )
-	INSTALL(FILES ${HEADERS_TO_INSTALL} DESTINATION include/Usul/${DIR})
+	INSTALL(FILES ${HEADERS_TO_INSTALL} DESTINATION include/cadkit/Usul/${DIR})
 ENDFOREACH( DIR SUB_DIRECTORIES )
 
 # Find needed system libraries.	

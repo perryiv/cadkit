@@ -254,10 +254,10 @@ CADKIT_ADD_LIBRARY ( ${TARGET_NAME} )
 SET ( SUB_DIRECTORIES Builders Callbacks Configure Convert IO Images Objects Points Render State Triangles Utilities Widgets )
 FOREACH( DIR ${SUB_DIRECTORIES} )
 	FILE( GLOB HEADERS_TO_INSTALL ${CMAKE_CURRENT_SOURCE_DIR}/${DIR}/*.h )
-	INSTALL(FILES ${HEADERS_TO_INSTALL} DESTINATION include/OsgTools/${DIR})
+	INSTALL(FILES ${HEADERS_TO_INSTALL} DESTINATION include/cadkit/OsgTools/${DIR})
 ENDFOREACH( DIR SUB_DIRECTORIES )
 
-INSTALL(FILES Export.h ShapeFactory.h DESTINATION include/OsgTools)
+INSTALL(FILES Export.h ShapeFactory.h DESTINATION include/cadkit/OsgTools)
 
 # Link to these Cadkit libraries.
 LINK_CADKIT(${TARGET_NAME} Usul)

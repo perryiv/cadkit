@@ -59,6 +59,9 @@ TreeNode::~TreeNode()
   if ( notify.valid() )
     notify->removeDataChangedListener ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
   
+  // I'm not sure that this is needed.  The intended functionality (removing node from parent) happens with out this code.  Qt must be doing something under the hood similar to this.
+  // This causes a crash in debug and probably leads to memory corruption in release.
+#if 0
   TreeNode *parent ( this->parent() );
   if ( 0x0 != parent )
   {
@@ -70,6 +73,7 @@ TreeNode::~TreeNode()
       _model->endRemoveRows();
     }
   }
+#endif
   
   this->_clear();
   _model = 0x0;

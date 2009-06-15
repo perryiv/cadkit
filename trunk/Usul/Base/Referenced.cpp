@@ -133,8 +133,7 @@ void Referenced::unref ( bool allowDeletion )
   {
     #ifdef _DEBUG
 
-      const char* typeName ( typeid ( *this ).name() );
-      const std::string name ( 0x0 != typeName ? typeName : std::string() );
+      const char* name ( typeid ( *this ).name() );
 
       try
       {
@@ -148,7 +147,7 @@ void Referenced::unref ( bool allowDeletion )
           "Error 1078343241: deleting this instance caused an exception.",
           "\n\tMessage: ", e.what(),
           "\n\tAddress: ", this,
-          "\n\tClass:   ", name ) );
+          "\n\tClass:   ", 0x0 != name ? name : "" ) );
       }
 
       catch ( ... )
@@ -157,7 +156,7 @@ void Referenced::unref ( bool allowDeletion )
         throw std::runtime_error ( Usul::Strings::format (
           "Error 1078340800: deleting this instance caused an exception.",
           "\n\tAddress: ", this,
-          "\n\tClass:   ", name ) );
+          "\n\tClass:   ", 0x0 != name ? name : "" ) );
       }
 
     #else

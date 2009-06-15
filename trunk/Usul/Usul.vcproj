@@ -1739,18 +1739,6 @@
 				Name="Types"
 				>
 				<File
-					RelativePath=".\Types\BaseProxy.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Types\BaseProxy.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Types\ObjectProxy.h"
-					>
-				</File>
-				<File
 					RelativePath="Types\Types.cpp"
 					>
 				</File>

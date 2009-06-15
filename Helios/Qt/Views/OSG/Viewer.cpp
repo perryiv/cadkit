@@ -982,13 +982,13 @@ Viewer::Mutex &Viewer::mutex() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::renderLoop ( bool state )
+void Viewer::renderLoopSet ( bool state )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
   // Do nothing if it's already the same.
-  if ( state == this->renderLoop() )
+  if ( state == this->renderLoopGet() )
     return;
 
   // Set the flag.
@@ -1022,7 +1022,7 @@ void Viewer::_oneRenderLoopTimeout()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::renderLoop() const
+bool Viewer::renderLoopGet() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -1047,7 +1047,7 @@ void Viewer::_onTimeoutRenderLoop()
   }
 
   // Do it again if we should.
-  if ( true == this->renderLoop() )
+  if ( true == this->renderLoopGet() )
   {
     this->_oneRenderLoopTimeout();
   }
@@ -1183,6 +1183,11 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
       boost::bind ( static_cast<unsigned int ( OsgViewer::*) () const> ( &OsgViewer::renderingPasses ), viewer.get() ) == 12 ) );
   }
 #endif
+
+  MenuKit::Button::RefPtr rl ( ToggleButton::create ( "Render &Loop", 
+      boost::bind ( &Viewer::renderLoopSet, this, _1 ), 
+      boost::bind ( &Viewer::renderLoopGet, this ) ) );
+  menu.append ( rl );
   
   // Polygons menu.
   {
@@ -1754,7 +1759,7 @@ std::string Viewer::question ( const std::string &buttons, const std::string &ti
 void Viewer::_close()
 {
   // Stop the timers.
-  this->renderLoop ( false );
+  this->renderLoopSet ( false );
   this->stopSpin();
 
   // Clean up the viewer first.

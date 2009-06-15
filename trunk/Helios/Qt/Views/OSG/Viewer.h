@@ -118,9 +118,9 @@ public:
   
   virtual QSize                           sizeHint() const;
 
-  /// Get/Set render loop flag (IRenderLoop).
-  virtual void                            renderLoop ( bool b );
-  virtual bool                            renderLoop () const;
+  /// Get/Set render loop flag.
+  virtual void                            renderLoopSet ( bool b );
+  virtual bool                            renderLoopGet () const;
 
   /// Redraw the view (IRedraw).
   virtual void                            redraw();

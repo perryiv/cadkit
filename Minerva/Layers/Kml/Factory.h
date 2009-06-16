@@ -38,6 +38,7 @@ namespace Minerva {
       class LineStyle;
       class PolyStyle;
       class IconStyle;
+      class Link;
     }
   }
   
@@ -45,7 +46,6 @@ namespace Layers {
 namespace Kml {
   
   class NetworkLink;
-  class Link;
   
 class MINERVA_KML_EXPORT Factory
 {
@@ -61,6 +61,7 @@ public:
   typedef Minerva::Core::Data::IconStyle  IconStyle;
   typedef Minerva::Core::Data::PolyStyle  PolyStyle;
   typedef Minerva::Core::Data::LineStyle  LineStyle;
+  typedef Minerva::Core::Data::Link       Link;
   typedef Usul::Math::Vec3d               Vertex;
   typedef std::vector < Vertex >          Vertices;
   typedef Minerva::Core::Extents<osg::Vec2d> Extents;
@@ -71,6 +72,7 @@ public:
   Line*         createLine ( const XmlTree::Node& ) const;
   Polygon*      createPolygon ( const XmlTree::Node& ) const;
   Model*        createModel ( const XmlTree::Node& ) const;
+  void          createMultiGeometry ( const XmlTree::Node&, PlaceMark& ) const;
   
   LookAt*       createLookAt ( const XmlTree::Node& ) const;
   

@@ -9,7 +9,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/Kml/Factory.h"
-#include "Minerva/Layers/Kml/Link.h"
 #include "Minerva/Layers/Kml/NetworkLink.h"
 
 #include "Minerva/Core/Data/DataObject.h"
@@ -24,6 +23,7 @@
 #include "Minerva/Core/Data/IconStyle.h"
 #include "Minerva/Core/Data/PolyStyle.h"
 #include "Minerva/Core/Data/LineStyle.h"
+#include "Minerva/Core/Data/Link.h"
 
 #include "XmlTree/Node.h"
 
@@ -136,41 +136,34 @@ namespace Helper
 
 namespace Helper
 {
-  void setFeatureDataMembers ( Minerva::Core::Data::Feature *feature, const Children& children )
+  void setFeatureDataMembers ( Minerva::Core::Data::Feature& feature, const XmlTree::Node& node )
   {
-    if ( 0x0 != feature )
+    std::string name ( node.name() );
+    
+    if ( "name" == name )
     {
-      for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
-      {
-        XmlTree::Node::RefPtr node ( (*iter).get() );
-        std::string name ( node->name() );
-        
-        if ( "name" == name )
-        {
-          feature->name ( node->value() );
-        }
-        else if ( "visibility" == name )
-        {
-          bool visible ( "0" != node->value() );
-          feature->visibility ( visible );
-        }
-        else if ( "LookAt" == name )
-        {
-          feature->lookAt ( Factory::instance().createLookAt ( *node ) );
-        }
-        else if ( "styleUrl" == name )
-        {
-          feature->styleUrl ( node->value() );
-        }
-        else if ( "TimeSpan" == name )
-        {
-          feature->timePrimitive ( Factory::instance().createTimeSpan ( *node ) );
-        }
-        else if ( "description" == name )
-        {
-          feature->description ( node->value() );
-        }
-      }
+      feature.name ( node.value() );
+    }
+    else if ( "visibility" == name )
+    {
+      bool visible ( "0" != node.value() );
+      feature.visibility ( visible );
+    }
+    else if ( "LookAt" == name )
+    {
+      feature.lookAt ( Factory::instance().createLookAt ( node ) );
+    }
+    else if ( "styleUrl" == name )
+    {
+      feature.styleUrl ( node.value() );
+    }
+    else if ( "TimeSpan" == name )
+    {
+      feature.timePrimitive ( Factory::instance().createTimeSpan ( node ) );
+    }
+    else if ( "description" == name )
+    {
+      feature.description ( node.value() );
     }
   }
 }
@@ -560,6 +553,8 @@ Factory::Model* Factory::createModel ( const XmlTree::Node& node ) const
       scale = Helper::buildVec3 ( *node, 1.0 );
     else if ( "altitudeMode" == name )
       model->altitudeMode ( Helper::parseAltitudeMode ( *node ) );
+    else if ( "Link" == name )
+      model->link ( this->createLink ( *node ) );
   }
   
   model->location ( location );
@@ -571,6 +566,52 @@ Factory::Model* Factory::createModel ( const XmlTree::Node& node ) const
   
   Helper::setObjectDataMembers ( model.get(), node );
   return model.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a MultiGeometry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Factory::createMultiGeometry ( const XmlTree::Node& node, PlaceMark& placeMark ) const
+{
+  const Children& children ( node.children() );
+  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    Geometry::RefPtr geometry ( 0x0 );
+
+    XmlTree::Node::RefPtr child ( (*iter).get() );
+    const std::string name ( child->name() );
+
+    // Pick which function to redirect to.
+    if ( "Model" == name )
+    {
+      geometry = this->createModel ( *child );
+    }
+    else if ( "Point" == name )
+    {
+      geometry = this->createPoint ( *child );
+    }
+    else if ( "Polygon" == name )
+    {
+      geometry = this->createPolygon ( *child );
+    }
+    else if ( "LineString" == name )
+    {
+      geometry = this->createLine ( *child );
+    }
+    else if ( "LineRing" == name )
+    {
+      geometry = this->createLine ( *child );
+    }
+
+    if ( geometry.valid() )
+    {
+      placeMark.addGeometry ( geometry );
+    }
+  }
 }
 
 
@@ -661,7 +702,63 @@ Minerva::Core::Data::DataObject* Factory::createPlaceMark ( const XmlTree::Node&
  
   const Children& children ( node.children() );
   
-  Helper::setFeatureDataMembers ( object.get(), children );
+  Style::RefPtr style ( 0x0 );
+
+  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr child ( (*iter).get() );
+
+    Helper::setFeatureDataMembers ( *object, *child );
+
+    const std::string name ( child->name() );
+    if ( "Style" == name )
+    {
+      style = Factory::instance().createStyle ( *child );
+    }
+    else if ( "Model" == name )
+    {
+      object->addGeometry ( this->createModel ( *child ) );
+    }
+    else if ( "Point" == name )
+    {
+      object->addGeometry ( this->createPoint ( *child ) );
+
+      // Google Earth only appears to label points.
+      object->label ( object->name() );
+    }
+    else if ( "Polygon" == name )
+    {
+      object->addGeometry ( this->createPolygon ( *child ) );
+    }
+    else if ( "LineString" == name )
+    {
+      object->addGeometry ( this->createLine ( *child ) );
+    }
+    else if ( "LineRing" == name )
+    {
+      object->addGeometry ( this->createLine ( *child ) );
+    }
+    else if ( "MultiGeometry" == name )
+    {
+      this->createMultiGeometry ( *child, *object );
+    }
+  }
+
+  Extents extents;
+
+  PlaceMark::Geometries geometries ( object->geometries() );
+  for ( PlaceMark::Geometries::iterator iter = geometries.begin(); iter != geometries.end(); ++iter )
+  {
+    Geometry::RefPtr geometry ( *iter );
+    if ( geometry.valid() )
+    {
+      geometry->style ( style );
+      extents.expand ( geometry->extents() );
+    }
+  }
+
+  object->extents ( extents );
+
   Helper::setObjectDataMembers ( object.get(), node );
   
   // Set the data object members.
@@ -678,7 +775,7 @@ Minerva::Core::Data::DataObject* Factory::createPlaceMark ( const XmlTree::Node&
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Link* Factory::createLink ( const XmlTree::Node& node ) const
+Factory::Link* Factory::createLink ( const XmlTree::Node& node ) const
 {
   Link::RefPtr link ( new Link );
   
@@ -731,9 +828,10 @@ NetworkLink* Factory::createNetworkLink ( const XmlTree::Node& node ) const
     {
       networkLink->link ( Factory::instance().createLink ( *child ) );
     }
+
+    Helper::setFeatureDataMembers ( *networkLink, *child );
   }
   
-  Helper::setFeatureDataMembers ( networkLink.get(), children );
   Helper::setObjectDataMembers ( networkLink.get(), node );
   return networkLink.release();
 }

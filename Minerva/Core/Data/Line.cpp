@@ -44,7 +44,6 @@ USUL_IMPLEMENT_TYPE_ID ( Line );
 Line::Line() : BaseClass(),
   _line(),
   _tessellate ( false ),
-  _lineStyle ( 0x0 ),
   _useShader ( false )
 {
   // Default render bin.
@@ -339,8 +338,14 @@ bool Line::tessellate() const
 
 void Line::lineStyle ( LineStyle * lineStyle )
 {
-  Guard guard ( this->mutex() );
-  _lineStyle = lineStyle;
+  Style::RefPtr style ( this->style() );
+  if ( false == style.valid() )
+  {
+    style = new Style;
+    this->style ( style );
+  }
+
+  style->linestyle ( lineStyle );
 }
 
 
@@ -352,8 +357,8 @@ void Line::lineStyle ( LineStyle * lineStyle )
 
 LineStyle* Line::lineStyle() const
 {
-  Guard guard ( this->mutex() );
-  return _lineStyle.get();
+  Style::RefPtr style ( this->style() );
+  return style.valid() ? style->linestyle() : 0x0;
 }
 
 

@@ -239,14 +239,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Link.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Link.h"
-				>
-			</File>
-			<File
 				RelativePath=".\LoadModel.cpp"
 				>
 			</File>

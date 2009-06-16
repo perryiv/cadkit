@@ -14,6 +14,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Data/Object.h"
+#include "Minerva/Core/Data/Style.h"
 #include "Minerva/Interfaces/IIntersectNotify.h"
 
 #include "Usul/Base/Object.h"
@@ -93,6 +94,10 @@ public:
   /// Is this geometry transparent?
   virtual bool          isSemiTransparent() const;
 
+  /// Set/get the style.
+  void                  style ( Style::RefPtr style );
+  Style::RefPtr         style() const;
+
   Point                 spatialOffset () const;
   void                  spatialOffset ( const Point& );
 
@@ -130,6 +135,7 @@ private:
   bool         _extrude;
   unsigned int _renderBin;
   Extents      _extents;
+  Style::RefPtr _style;
 };
 
 }

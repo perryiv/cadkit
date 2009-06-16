@@ -37,8 +37,7 @@ using namespace Minerva::Core::Data;
 
 Polygon::Polygon ( ) :
   BaseClass(),
-  _boundaries(),
-  _polyStyle ( 0x0 )
+  _boundaries()
 {
 }
 
@@ -454,9 +453,14 @@ PolyStyle::Color Polygon::borderColor() const
 
 void Polygon::polyStyle ( PolyStyle * polyStyle )
 {
-  Guard guard ( this );
-  _polyStyle = polyStyle;
-  this->dirty ( true );
+  Style::RefPtr style ( this->style() );
+  if ( false == style.valid() )
+  {
+    style = new Style;
+    this->style ( style );
+  }
+
+  style->polystyle ( polyStyle );
 }
 
 
@@ -468,8 +472,8 @@ void Polygon::polyStyle ( PolyStyle * polyStyle )
 
 PolyStyle* Polygon::polyStyle() const
 {
-  Guard guard ( this );
-  return _polyStyle.get();
+  Style::RefPtr style ( this->style() );
+  return style.valid() ? style->polystyle() : 0x0;
 }
 
 

@@ -79,7 +79,6 @@ private:
 
   Vertices   _line;
   bool       _tessellate;
-  LineStyle::RefPtr _lineStyle;
   bool _useShader;
 };
 

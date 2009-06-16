@@ -11,10 +11,9 @@
 #ifndef __MINERVA_LAYERS_KML_H__
 #define __MINERVA_LAYERS_KML_H__
 
-#include "Minerva/Layers/Kml/Link.h"
-
 #include "Minerva/Core/Data/Container.h"
 #include "Minerva/Core/Data/Geometry.h"
+#include "Minerva/Core/Data/Link.h"
 #include "Minerva/Core/Data/Style.h"
 #include "Minerva/Interfaces/IRefreshData.h"
 
@@ -23,7 +22,7 @@
 
 #include <vector>
 
-namespace Minerva { namespace Core { namespace Data { class DataObject; class ModelCache; } } }
+namespace Minerva { namespace Core { namespace Data { class DataObject; class ModelCache; class Model; } } }
 namespace XmlTree { class Node; }
 
 namespace Minerva {
@@ -43,10 +42,11 @@ public:
   /// Typedefs.
   typedef Minerva::Core::Data::Container             BaseClass;
   typedef Minerva::Core::Data::DataObject            DataObject;
-  typedef Minerva::Core::Data::Geometry              Geometry;
+  typedef Minerva::Core::Data::Model                 Model;
   typedef Minerva::Core::Data::ModelCache            ModelCache;
   typedef Minerva::Core::Data::Style                 Style;
   typedef std::map<std::string,Style::RefPtr>        Styles;
+  typedef Minerva::Core::Data::Link Link;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( KmlLayer );
@@ -102,6 +102,8 @@ protected:
   // Launch a job to update link.
   void                        _launchUpdateLinkJob();
   
+  void                        _loadModel ( Minerva::Core::Data::Model* ) const;
+
   // Read.
   void                        _read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
   
@@ -113,12 +115,6 @@ protected:
   void                        _parseNode         ( const XmlTree::Node& node );
   void                        _parseStyle        ( const XmlTree::Node& node );
   void                        _parsePlacemark    ( const XmlTree::Node& node );
-  Geometry*                   _parseModel        ( const XmlTree::Node& node, Style *style );
-  Geometry*                   _parsePoint        ( const XmlTree::Node& node, Style *style );
-  Geometry*                   _parsePolygon      ( const XmlTree::Node& node, Style *style );
-  Geometry*                   _parseLineString   ( const XmlTree::Node& node, Style *style );
-  Geometry*                   _parseLineRing     ( const XmlTree::Node& node, Style *style );
-  void                        _parseMultiGeometry ( const XmlTree::Node& node, Style *style, DataObject& object );
 
 	Style*                      _style ( const std::string& name ) const;
   

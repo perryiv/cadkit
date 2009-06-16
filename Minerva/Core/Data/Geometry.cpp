@@ -37,7 +37,8 @@ Geometry::Geometry() :
   _dirty ( false ),
   _extrude ( false ),
   _renderBin ( osg::StateSet::DEFAULT_BIN ),
-  _extents()
+  _extents(),
+  _style ( 0x0 )
 {
 }
 
@@ -382,4 +383,32 @@ void Geometry::intersectNotify ( double x, double y, double z, double lon, doubl
                                  Unknown::RefPtr tile, Unknown::RefPtr body, Unknown::RefPtr caller, Closest & )
 {
   USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the style.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Geometry::style ( Style::RefPtr style )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _style = style;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the style.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Style::RefPtr Geometry::style() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _style;
 }

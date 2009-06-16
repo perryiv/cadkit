@@ -83,7 +83,6 @@ protected:
 private:
 
   Boundaries _boundaries;
-  PolyStyle::RefPtr _polyStyle;
 };
 
 }

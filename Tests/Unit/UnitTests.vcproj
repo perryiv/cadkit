@@ -230,6 +230,10 @@
 						Name="Kml"
 						>
 						<File
+							RelativePath=".\Minerva\Layers\Kml\ParseMultiGeometryTest.cpp"
+							>
+						</File>
+						<File
 							RelativePath=".\Minerva\Layers\Kml\ParseTest.cpp"
 							>
 						</File>

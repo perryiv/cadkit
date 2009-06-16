@@ -8,19 +8,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_LAYERS_KML_LINK_H__
-#define __MINERVA_LAYERS_KML_LINK_H__
+#ifndef __MINERVA_CORE_DATA_LINK_H__
+#define __MINERVA_CORE_DATA_LINK_H__
 
 #include "Minerva/Core/Data/Object.h"
 
 #include <string>
 
 namespace Minerva {
-namespace Layers {
-namespace Kml {
-      
-      
-class Link : public Minerva::Core::Data::Object
+namespace Core {
+namespace Data {
+
+
+class MINERVA_EXPORT Link : public Minerva::Core::Data::Object
 {
 public:
   // Typedefs.
@@ -60,11 +60,11 @@ private:
   double _refreshInterval;
   RefreshMode _refreshMode;
 };
-      
-      
+
+
 }
 }
 }
 
 
-#endif // __MINERVA_LAYERS_KML_LINK_H__
+#endif // __MINERVA_CORE_DATA_LINK_H__

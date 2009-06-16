@@ -41,7 +41,7 @@ NetworkLink::~NetworkLink()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Link* NetworkLink::link() const
+NetworkLink::Link* NetworkLink::link() const
 {
   Guard guard ( this->mutex() );
   return _link.get();

@@ -18,6 +18,7 @@
 #define __MINERVA_CORE_DATA_OBJECTS_MODEL_H__
 
 #include "Minerva/Core/Data/Geometry.h"
+#include "Minerva/Core/Data/Link.h"
 
 #include "osg/Vec3"
 #include "osg/Node"
@@ -39,6 +40,10 @@ public:
   USUL_DECLARE_REF_POINTERS ( Model );
   
   Model();
+
+  /// Set/get the link to load the model.
+  void                  link ( Link::RefPtr );
+  Link::RefPtr          link() const;
   
   /// Get/Set the location.
   void                  location ( const osg::Vec3d& );
@@ -83,6 +88,7 @@ private:
   osg::Vec3d _scale;
   osg::ref_ptr<osg::Node> _model;
   bool _optimize;
+  Link::RefPtr _link;
 };
 
 

@@ -37,7 +37,8 @@ Model::Model() :
   _toMeters ( 0.0254 ),
   _scale ( 1.0, 1.0, 1.0 ),
   _model ( 0x0 ),
-  _optimize ( true )
+  _optimize ( true ),
+  _link ( 0x0 )
 {
 }
 
@@ -295,4 +296,30 @@ bool Model::_hasScale() const
 {
   Guard guard ( this->mutex() );
   return ( 1.0 != _toMeters || 1.0 != _scale[0] || 1.0 != _scale[1] || 1.0 != _scale[2] ); 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the link to load the model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Model::link ( Link::RefPtr link )
+{
+  Guard guard ( this->mutex() );
+  _link = link;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the link to load the model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Link::RefPtr Model::link() const
+{
+  Guard guard ( this->mutex() );
+  return _link;
 }

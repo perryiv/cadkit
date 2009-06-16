@@ -12,7 +12,7 @@
 #define __MINERVA_LAYERS_KML_NETWORK_LINK_H__
 
 #include "Minerva/Core/Data/Feature.h"
-#include "Minerva/Layers/Kml/Link.h"
+#include "Minerva/Core/Data/Link.h"
 
 namespace Minerva {
 namespace Layers {
@@ -24,6 +24,7 @@ class NetworkLink : public Minerva::Core::Data::Feature
 public:
   // Typedefs.
   typedef Feature BaseClass;
+  typedef Minerva::Core::Data::Link Link;
   
   // Declare pointers.
   USUL_DECLARE_REF_POINTERS ( NetworkLink );

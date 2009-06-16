@@ -547,45 +547,27 @@ void KmlLayer::parseFolder ( const XmlTree::Node& node )
 
 void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
 {
-	// Look for the geometry.
-  Children multiGeometry ( node.find ( "MultiGeometry", false ) );
-  Children polygon ( node.find ( "Polygon", false ) );
-  Children point   ( node.find ( "Point", false ) );
-  Children linestring ( node.find ( "LineString", false ) );
-  Children linering ( node.find ( "LineRing", false ) );
-  Children model ( node.find ( "Model", false ) );
-
   // Make the data object.
   DataObject::RefPtr object ( Factory::instance().createPlaceMark ( node ) );
   
   // Get the style, if any.
 	Style::RefPtr style ( this->_style ( object->styleUrl() ) );
-  
-  Geometry::RefPtr geometry ( 0x0 );
-  
-  // Pick which function to redirect to.
-  if ( false == model.empty() )
-    geometry = this->_parseModel ( *model.front(), style.get() );
-  else if ( false == point.empty() )
-  {
-    geometry = this->_parsePoint( *point.front(), style.get() );
-    
-    // Google Earth only appears to label points.
-    object->label ( object->name() );
-  }
-  else if ( false == polygon.empty() )
-    geometry = this->_parsePolygon( *polygon.front(), style.get() );
-  else if ( false == linestring.empty() )
-    geometry = this->_parseLineString( *linestring.front(), style.get() );
-  else if ( false == linering.empty() )
-    geometry = this->_parseLineRing( *linering.front(), style.get() );
-  else if ( false == multiGeometry.empty() )
-    this->_parseMultiGeometry ( *multiGeometry.back(), style.get(), *object );
 
-  if ( geometry.valid() )
+  DataObject::Geometries geometries ( object->geometries() );
+  for ( DataObject::Geometries::iterator iter = geometries.begin(); iter != geometries.end(); ++iter )
   {
-    object->addGeometry ( geometry );
-    object->extents ( geometry->extents() );
+    Minerva::Core::Data::Geometry::RefPtr geometry ( *iter );
+    if ( geometry.valid() )
+    {
+      // Set the style from the styleUrl if we have one.
+      // TODO: Find out the precedence between styleUrl and a Style element in the PlaceMark
+      if ( style.valid() )
+        geometry->style ( style );
+    }
+    if ( Minerva::Core::Data::Model* model = dynamic_cast<Minerva::Core::Data::Model*> ( geometry.get() ) )
+    {
+      this->_loadModel ( model );
+    }
   }
 
   // Add the data object.
@@ -595,111 +577,17 @@ void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Parse a point.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-KmlLayer::Geometry* KmlLayer::_parsePoint ( const XmlTree::Node& node, Style *style )
-{
-  return Factory::instance().createPoint ( node );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parse a polygon.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-KmlLayer::Geometry* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style *style )
-{
-  typedef Minerva::Core::Data::LineStyle LineStyle;
-  typedef Minerva::Core::Data::PolyStyle PolyStyle;
-  
-  PolyStyle::RefPtr polyStyle ( ( 0x0 != style ) && ( 0x0 != style->polystyle() ) ? style->polystyle() : 0x0 );
-  LineStyle::RefPtr lineStyle ( ( 0x0 != style ) && ( 0x0 != style->linestyle() ) ? style->linestyle() : 0x0 );
-
-  // Make the data object.
-  Minerva::Core::Data::Polygon::RefPtr polygon ( Factory::instance().createPolygon ( node ) );
-
-  if ( polygon.valid() )
-  {
-    if ( polyStyle.valid() )
-      polygon->polyStyle ( polyStyle );
-    if ( lineStyle.valid() )
-      polygon->lineStyle ( lineStyle );
-  }
-
-  return polygon.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parse a line string.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-KmlLayer::Geometry* KmlLayer::_parseLineString ( const XmlTree::Node& node, Style *style )
-{
-  typedef Minerva::Core::Data::LineStyle LineStyle;
-  
-  LineStyle::RefPtr lineStyle ( ( 0x0 != style ) && ( 0x0 != style->linestyle() ) ? style->linestyle() : 0x0 );
-  
-  Minerva::Core::Data::Line::RefPtr line ( Factory::instance().createLine ( node ) );
-  
-  if ( line.valid() && lineStyle.valid() )
-  {
-    line->lineStyle ( lineStyle );
-  }
-  
-  return line.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parse a line ring.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-KmlLayer::Geometry* KmlLayer::_parseLineRing ( const XmlTree::Node& node, Style *style )
-{
-  return this->_parseLineString( node, style );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parse a multi-geometry.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void KmlLayer::_parseMultiGeometry ( const XmlTree::Node& node, Style *style, DataObject& object )
-{
-  Children polygon ( node.find ( "Polygon", false ) );
-  for ( Children::iterator iter = polygon.begin(); iter != polygon.end(); ++iter )
-  {
-    object.addGeometry ( this->_parsePolygon ( *(*iter), style ) );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Parse a model.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::Geometry* KmlLayer::_parseModel ( const XmlTree::Node& node, Style * )
+void KmlLayer::_loadModel ( Minerva::Core::Data::Model* modelPtr ) const
 {
-  Minerva::Core::Data::Model::RefPtr model ( Factory::instance().createModel ( node ) );
+  Minerva::Core::Data::Model::RefPtr model ( modelPtr );
   
   if ( model.valid() )
   {
-    // Make the link
-    Children links ( node.find ( "Link", true ) );
-    Link::RefPtr link ( false == links.empty() ? Factory::instance().createLink ( *links.front() ) : 0x0 );
+    Link::RefPtr link ( model->link() );
     
     // Make the filename.
     std::string filename ( this->_buildFilename ( link ) );
@@ -715,8 +603,6 @@ KmlLayer::Geometry* KmlLayer::_parseModel ( const XmlTree::Node& node, Style * )
       }
     }
   }
-
-  return model.release();
 }
 
 

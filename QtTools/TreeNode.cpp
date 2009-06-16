@@ -58,24 +58,11 @@ TreeNode::~TreeNode()
   Usul::Interfaces::IDataChangedNotify::QueryPtr notify ( _node );
   if ( notify.valid() )
     notify->removeDataChangedListener ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-  
-  // I'm not sure that this is needed.  The intended functionality (removing node from parent) happens with out this code.  Qt must be doing something under the hood similar to this.
-  // This causes a crash in debug and probably leads to memory corruption in release.
-#if 0
-  TreeNode *parent ( this->parent() );
-  if ( 0x0 != parent )
-  {
-    const int myIndex ( parent->indexOfChild ( this ) );
-    if ( myIndex >= 0 && 0x0 != _model )
-    {
-      _model->beginRemoveRows ( parent, myIndex, 1 );
-      parent->takeChild ( myIndex );
-      _model->endRemoveRows();
-    }
-  }
-#endif
-  
-  this->_clear();
+
+  // We only need to delete the children.  See the example at: http://doc.qtsoftware.com/4.5/itemviews-editabletreemodel.html
+  qDeleteAll ( _children );
+  _children.clear();
+
   _model = 0x0;
   
   // Better be zero
@@ -386,6 +373,9 @@ TreeNode* TreeNode::takeChild ( int index )
       _model->beginRemoveRows ( this, index, 1 );
 
     TreeNode *node ( _children.takeAt ( index ) );
+
+    if ( 0x0 != node )
+      node->_parent = 0x0;
     
     if ( 0x0 != _model ) 
       _model->endRemoveRows();

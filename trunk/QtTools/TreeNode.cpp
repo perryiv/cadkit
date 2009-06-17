@@ -498,12 +498,7 @@ Usul::Interfaces::IUnknown* TreeNode::queryInterface ( unsigned long iid )
 
 void TreeNode::dataChangedNotify ( Usul::Interfaces::IUnknown *caller )
 {
-  Usul::Pointers::reference ( caller );
-  
-  // Need to reinterpret_cast to get Qt to pass the pointer to the slot.
-  // Qt mechanism for passing custom types, but I have had mixed results in the past (See DocumentProxy).
-  QMetaObject::invokeMethod ( this, "_onDataChanged", Qt::QueuedConnection, 
-                             Q_ARG ( unsigned long, reinterpret_cast<unsigned long> ( caller ) ) );
+  QMetaObject::invokeMethod ( this, "_onDataChanged", Qt::QueuedConnection );
 }
 
 
@@ -513,14 +508,10 @@ void TreeNode::dataChangedNotify ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TreeNode::_onDataChanged ( unsigned long pointer )
+void TreeNode::_onDataChanged()
 {
-  Usul::Interfaces::IUnknown* caller ( reinterpret_cast<Usul::Interfaces::IUnknown*> ( pointer ) );
-  
   // Rebuild the tree.
-  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &TreeNode::_rebuildTree ), caller, "1646245025" );
-  
-  Usul::Pointers::unreference ( caller );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &TreeNode::_rebuildTree ), "1646245025" );
 }
 
 
@@ -530,7 +521,7 @@ void TreeNode::_onDataChanged ( unsigned long pointer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TreeNode::_rebuildTree ( Usul::Interfaces::IUnknown* unknown )
+void TreeNode::_rebuildTree()
 {
   this->_clear();
   this->_addChildren();

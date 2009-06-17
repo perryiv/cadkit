@@ -80,7 +80,7 @@ public:
   
 protected slots:
   
-  void              _onDataChanged ( unsigned long );
+  void              _onDataChanged();
   
 private:
   
@@ -91,7 +91,7 @@ private:
   void              _clear();
   
   // Rebuild the tree.
-  void              _rebuildTree ( Usul::Interfaces::IUnknown* );
+  void              _rebuildTree();
   
   // Called when data has changed.
   virtual void      dataChangedNotify ( Usul::Interfaces::IUnknown *caller );

@@ -89,6 +89,7 @@ SET ( HEADERS
 	./Data/Geometry.h
 	./Data/IconStyle.h
 	./Data/Line.h
+	./Data/Link.h
 	./Data/LineStyle.h
 	./Data/LookAt.h
 	./Data/Model.h
@@ -182,6 +183,7 @@ SET (SOURCES
 ./Data/IconStyle.cpp
 ./Data/Geometry.cpp
 ./Data/Line.cpp
+./Data/Link.cpp
 ./Data/LineStyle.cpp
 ./Data/LookAt.cpp
 ./Data/Model.cpp

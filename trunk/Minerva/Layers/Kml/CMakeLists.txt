@@ -48,7 +48,6 @@ INCLUDE_DIRECTORIES(
 SET ( HEADERS
 	./Factory.h
 	./KmlLayer.h
-	./Link.h
 	./LoadModel.h
 	./NetworkLink.h
 	./ModelPostProcess.h
@@ -58,7 +57,6 @@ SET ( HEADERS
 SET (SOURCES
 	./Factory.cpp
 	./KmlLayer.cpp
-	./Link.cpp
 	./LoadModel.cpp
 	./NetworkLink.cpp
 	./ModelPostProcess.cpp

@@ -98,6 +98,8 @@
 #include "QtCore/QMetaType"
 #include "QtCore/QUrl"
 
+#include "boost/bind.hpp"
+
 #include <algorithm>
 #include <fstream>
 

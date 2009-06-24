@@ -30,12 +30,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Initialize Gdal.
-//  On Linux each dynamic library that uses GDAL, has to initialize GDAL.  
-//  Need to find out why.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef __linux
 
 namespace Detail
 {
@@ -43,7 +40,11 @@ namespace Detail
   {
     Init()
     {
-      GDALAllRegister();
+      /// If there are no drivers for gdal, assume that it hasn't been initialized yet.
+      if ( 0 == ::GDALGetDriverCount() )
+      {
+        ::GDALAllRegister();
+      }
     }
     ~Init()
     {
@@ -52,7 +53,6 @@ namespace Detail
   } _init;
 }
 
-#endif
 
 #include <algorithm>
 

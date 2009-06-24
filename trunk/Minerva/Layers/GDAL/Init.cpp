@@ -40,7 +40,12 @@ namespace
     ///  Constructor.
     Init() : _filenames(), _mutex()
     {
-      ::GDALAllRegister();
+      /// If there are no drivers for gdal, assume that it hasn't been initialized yet.
+      if ( 0 == ::GDALGetDriverCount() )
+      {
+        ::GDALAllRegister();
+      }
+
       ::OGRRegisterAll();
       
       // Set the callback to create a full path for given filename.

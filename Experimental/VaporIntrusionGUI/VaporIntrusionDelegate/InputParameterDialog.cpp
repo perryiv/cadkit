@@ -121,7 +121,7 @@ void InputParameterDialog::_initializeList ()
             // stop checking
             break;
           }
-        }
+        }// end sizeof_equal check
       }
     }
 

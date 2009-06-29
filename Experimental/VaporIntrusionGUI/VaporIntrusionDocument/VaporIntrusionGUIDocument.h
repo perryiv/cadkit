@@ -71,7 +71,8 @@ public:
   typedef IVaporIntrusionGUI::MaterialsMap                      MaterialsMap;
   typedef IVaporIntrusionGUI::GridMaterial                      GridMaterial;
   typedef IVaporIntrusionGUI::GridMaterials                     GridMaterials; 
-  typedef std::vector< std::string > StringVec;
+  typedef IVaporIntrusionGUI::Building                          Building;
+  typedef std::vector< std::string >                            StringVec;
 
   
   // structs and typedefs for structs
@@ -194,6 +195,11 @@ public:
   virtual GridMaterials       gridMaterials();
   virtual void                gridMaterials( GridMaterials gm );
 
+  virtual void                building( const std::string& length, const std::string& width, const std::string& height,
+                                        const std::string& xpos, const std::string& ypos, const std::string& zpos5 );
+  virtual void                useBuilding( bool value );
+  virtual bool                useBuilding();
+
 protected:
 
   /// Do not copy.
@@ -211,6 +217,7 @@ protected:
 
   // Test method for multiview verification
   osg::Node*                  _buildTestCube( osg::Vec3Array* points, Color c, Usul::Math::Vec3ui location );
+  void                        _makeBuilding();
 
   void                        _initCubes();
 
@@ -250,7 +257,8 @@ private:
     Categories                _categories;
     bool                      _draggerState;
     GridMaterials             _gridMaterials;
-
+    Building                  _building;
+    bool                      _useBuilding;
   
 };
 

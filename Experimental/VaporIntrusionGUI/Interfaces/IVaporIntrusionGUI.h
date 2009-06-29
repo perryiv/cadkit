@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2007, Jeff Conner
+//  Copyright (c) 2008, Jeff Conner
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -47,6 +47,21 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   };
 
   // structs
+  struct Building
+  {
+    std::string l,w,h;
+    std::string x,y,z;
+
+    Building( const std::string& length, const std::string& width, const std::string& height,
+              const std::string& xpos, const std::string& ypos, const std::string& zpos ):
+    l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos )
+    {};
+
+    Building():
+    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" )
+    {};
+  };
+
   struct InputColumn
   {
     // #Name,Value,Description,Type,Activators
@@ -185,6 +200,11 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual GridMaterials         gridMaterials() = 0;
   virtual void                  gridMaterials( GridMaterials gm ) = 0;
+
+  virtual void                  building( const std::string& length, const std::string& width, const std::string& height,
+                                          const std::string& xpos, const std::string& ypos, const std::string& zpos ) = 0;
+  virtual void                  useBuilding( bool value ) = 0;
+  virtual bool                  useBuilding() = 0;
   
     
 }; // struct IVaporIntrusionGUI

@@ -414,6 +414,25 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
   // Remove all the children
   _root->removeChildren( 0, _root->getNumChildren() );
 
+  // build the Grid 3D element
+  this->_makeGrid();
+
+  // build the building 3D element
+  this->_makeBuilding();
+
+  // build the contaminant 3D element
+  this->_makeContaminants();   
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Create the grid and add it to the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_makeGrid( )
+{
   // get the size of the x domain
   unsigned int xsize ( _xValues.size() );
 
@@ -475,13 +494,6 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
     }
 
   }
-
-  // build the building 3D element
-  this->_makeBuilding();
-
-  // build the contaminant 3D element
-  this->_makeContaminants();
-   
 }
 
 

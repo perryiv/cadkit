@@ -3256,7 +3256,7 @@ void MinervaDocument::_setLog()
     if ( body.valid() )
     {
       // Set the log.
-      body->logSet ( logFile );
+      body->logSet ( Usul::Interfaces::ILog::QueryPtr ( logFile ) );
     }
   }
 }

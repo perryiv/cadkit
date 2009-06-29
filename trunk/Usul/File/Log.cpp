@@ -24,7 +24,7 @@
 
 using namespace Usul::File;
 
-USUL_IMPLEMENT_TYPE_ID ( Log );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Log, Log::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -70,6 +70,25 @@ void Log::_destroy()
 
   _file.clear();
   _out.close();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Log::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::ILog::IID:
+    return static_cast<Usul::Interfaces::ILog*> ( this );
+  default:
+    return 0x0;
+  }
 }
 
 

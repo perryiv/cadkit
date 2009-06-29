@@ -29,8 +29,8 @@
 #include "Minerva/Core/Utilities/SkyDome.h"
 
 #include "Usul/Containers/Unknowns.h"
-#include "Usul/File/Log.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
+#include "Usul/Interfaces/ILog.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Interfaces/IRasterAlphas.h"
 #include "Usul/Interfaces/IUpdateListener.h"
@@ -79,7 +79,7 @@ public:
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef std::list<Tile::RefPtr> Tiles;
   typedef Minerva::Core::Jobs::BuildRaster BuildRaster;
-  typedef Usul::File::Log::RefPtr LogPtr;
+  typedef Usul::Interfaces::ILog::RefPtr LogPtr;
   typedef Usul::Math::Vec2ui ImageSize;
 
   // Helper macro for repeated code.

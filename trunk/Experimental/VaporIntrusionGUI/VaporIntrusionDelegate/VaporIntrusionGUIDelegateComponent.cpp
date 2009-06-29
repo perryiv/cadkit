@@ -347,6 +347,9 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
       doc->useBuilding( false );
     }
 
+    // set the contaminant information in the document
+    doc->contaminants( cd.contaminants() );
+
   }
   
 }

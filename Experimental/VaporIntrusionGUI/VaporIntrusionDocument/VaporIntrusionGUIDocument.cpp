@@ -78,7 +78,8 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _draggerState( false ),
   _gridMaterials(),
   _building( "1", "1", "1", "0", "0", "0" ),
-  _useBuilding( true )
+  _useBuilding( true ),
+  _contaminants()
 {
   USUL_TRACE_SCOPE;
 
@@ -477,6 +478,9 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
 
   // build the building 3D element
   this->_makeBuilding();
+
+  // build the contaminant 3D element
+  this->_makeContaminants();
    
 }
 
@@ -564,6 +568,68 @@ void VaporIntrusionGUIDocument::_makeBuilding( )
   // Add the cubre to the scene
   _root->addChild( group.get() );
  
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Add the contaminant 3D objects to the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_makeContaminants()
+{
+  Guard guard ( this );
+
+  // useful typedefs
+  typedef Usul::Convert::Type< std::string, float > StrToFloat;
+
+  for( unsigned int i = 0; i < _contaminants.size(); ++i )
+  {
+    // get the contaminant
+    Contaminant cont ( _contaminants.at( i ) );
+
+    // color for the contaminant
+    Color c ( 1.0, 0.0, 0.0, 1.0 );
+   
+    // Material for the cube
+    osg::ref_ptr< osg::Material > material ( new osg::Material );
+    material->setAmbient( osg::Material::FRONT_AND_BACK, c );
+    material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
+
+    // get the lower left corner of the contaminant
+    osg::Vec3f ll  ( StrToFloat::convert( cont.x ), StrToFloat::convert( cont.y ), StrToFloat::convert( cont.z ) );
+
+    // get the length, width, and height of the contaminant
+    osg::Vec3f lwh ( StrToFloat::convert( cont.l ), StrToFloat::convert( cont.w ), StrToFloat::convert( cont.h ) );
+
+    // create the points for the contaminant
+    osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
+    p->push_back( osg::Vec3f ( ll.x()          , ll.y()          , ll.z()           ) );
+    p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y()          , ll.z()           ) );
+    p->push_back( osg::Vec3f ( ll.x()          , ll.y() + lwh.y(), ll.z()           ) );
+    p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y() + lwh.y(), ll.z()           ) );  
+    p->push_back( osg::Vec3f ( ll.x()          , ll.y()          , ll.z() + lwh.z() ) );
+    p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y()          , ll.z() + lwh.z() ) );
+    p->push_back( osg::Vec3f ( ll.x()          , ll.y() + lwh.y(), ll.z() + lwh.z() ) );
+    p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y() + lwh.y(), ll.z() + lwh.z() ) );
+
+    // location (not used in this context)
+    Usul::Math::Vec3ui location( 0, 0, 0 );
+
+    // group
+    osg::ref_ptr< osg::Group > group ( new osg::Group );
+
+    // build the cuve
+    group->addChild( this->_buildTestCube( p.get(), c, location ) );
+
+    // set the material of the cube
+    OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
+    OsgTools::State::StateSet::setAlpha( group.get(), c.a() );
+
+    // Add the cubre to the scene
+    _root->addChild( group.get() );
+
+  }
 }
 
 
@@ -1985,4 +2051,32 @@ bool VaporIntrusionGUIDocument::useBuilding()
   Guard guard ( this );
 
   return _useBuilding;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the contaminants
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::contaminants( Contaminants c )
+{
+  Guard guard ( this );
+
+  _contaminants = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the contaminants
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::Contaminants VaporIntrusionGUIDocument::contaminants()
+{
+  Guard guard ( this );
+
+  return _contaminants;
 }

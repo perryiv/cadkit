@@ -72,6 +72,8 @@ public:
   typedef IVaporIntrusionGUI::GridMaterial                      GridMaterial;
   typedef IVaporIntrusionGUI::GridMaterials                     GridMaterials; 
   typedef IVaporIntrusionGUI::Building                          Building;
+  typedef IVaporIntrusionGUI::Contaminant                       Contaminant;
+  typedef IVaporIntrusionGUI::Contaminants                      Contaminants;
   typedef std::vector< std::string >                            StringVec;
 
   
@@ -200,6 +202,9 @@ public:
   virtual void                useBuilding( bool value );
   virtual bool                useBuilding();
 
+  virtual void                  contaminants( Contaminants c );
+  virtual Contaminants          contaminants();
+
 protected:
 
   /// Do not copy.
@@ -218,6 +223,7 @@ protected:
   // Test method for multiview verification
   osg::Node*                  _buildTestCube( osg::Vec3Array* points, Color c, Usul::Math::Vec3ui location );
   void                        _makeBuilding();
+  void                        _makeContaminants();
 
   void                        _initCubes();
 
@@ -259,6 +265,7 @@ private:
     GridMaterials             _gridMaterials;
     Building                  _building;
     bool                      _useBuilding;
+    Contaminants              _contaminants;
   
 };
 

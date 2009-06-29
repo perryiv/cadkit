@@ -62,6 +62,25 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     {};
   };
 
+  struct Contaminant
+  {
+    std::string l,w,h;
+    std::string x,y,z;
+    std::string chemical;
+    std::string concentration;
+
+    Contaminant():
+    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" ), chemical(), concentration( "0" )
+    {};
+
+    Contaminant( const std::string& length, const std::string& width, const std::string& height,
+                 const std::string& xpos, const std::string& ypos, const std::string& zpos,
+                 const std::string& chem, const std::string conc ):
+    l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ), chemical( chem), concentration( conc )
+    {};
+  };
+  typedef std::vector< Contaminant > Contaminants;
+
   struct InputColumn
   {
     // #Name,Value,Description,Type,Activators
@@ -205,6 +224,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
                                           const std::string& xpos, const std::string& ypos, const std::string& zpos ) = 0;
   virtual void                  useBuilding( bool value ) = 0;
   virtual bool                  useBuilding() = 0;
+
+  virtual void                  contaminants( Contaminants c ) = 0;
+  virtual Contaminants          contaminants() = 0;
   
     
 }; // struct IVaporIntrusionGUI

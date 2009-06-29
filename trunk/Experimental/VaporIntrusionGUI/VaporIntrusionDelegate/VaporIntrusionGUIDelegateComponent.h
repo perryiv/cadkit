@@ -109,6 +109,12 @@ public:
   // edit the scalar values
   void                        editScalar();
 
+  // edit the Building values
+  void                        editBuilding();
+
+  // edit the Contaminant values
+  void                        editContaminants();
+
   // edit the input parameters
   void                        editInputParameters( const std::string& menuName );
 

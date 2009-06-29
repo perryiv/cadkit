@@ -682,12 +682,6 @@ void RasterLayer::_logEvent ( const std::string &s )
   {
     file->write ( message );
   }
-
-  // Otherwise, print to stdout.
-  else
-  {
-    std::cout << Usul::Strings::format ( "Warning 3604300631: layer '", this->name(), "' has a null log file", '\n', message, '\n' ) << std::flush;
-  }
 }
 
 

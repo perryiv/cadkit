@@ -18,6 +18,8 @@
 
 #include "Usul/Base/Object.h"
 
+#include "Usul/Interfaces/ILog.h"
+
 #include <fstream>
 #include <string>
 
@@ -26,18 +28,17 @@ namespace Usul {
 namespace File {
 
 
-class USUL_EXPORT Log : public Usul::Base::Object
+class USUL_EXPORT Log : public Usul::Base::Object,
+                        public Usul::Interfaces::ILog
 {
 public:
 
   // Typedefs.
   typedef Usul::Base::Object BaseClass;
 
-  // Type information.
-  USUL_DECLARE_TYPE_ID ( Log );
-
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Log );
+  USUL_DECLARE_QUERY_POINTERS ( Log );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Construction.
   Log ( const std::string &file, bool lazyOpen );
@@ -46,7 +47,7 @@ public:
   std::string               file() const;
 
   // Write the string.
-  void                      write ( const std::string &s, bool appendNewLine = true, bool prependEventCount = true );
+  virtual void              write ( const std::string &s, bool appendNewLine = true, bool prependEventCount = true );
 
 protected:
 

@@ -19,10 +19,10 @@
 #include "Serialize/XML/Macros.h"
 
 #include "Usul/Base/Object.h"
-#include "Usul/File/Log.h"
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IClonable.h"
 #include "Usul/Interfaces/ILayer.h"
+#include "Usul/Interfaces/ILog.h"
 #include "Usul/Interfaces/IRasterAlphas.h"
 #include "Usul/Interfaces/IRasterLayer.h"
 #include "Usul/Interfaces/IReadImageFile.h"
@@ -63,7 +63,7 @@ public:
   typedef Usul::Interfaces::IRasterAlphas::Alphas Alphas;
   typedef Usul::Interfaces::IReadImageFile IReadImageFile;
   typedef IReadImageFile::RefPtr ReaderPtr;
-  typedef Usul::File::Log::RefPtr LogPtr;
+  typedef Usul::Interfaces::ILog::RefPtr LogPtr;
   typedef Minerva::Interfaces::IElevationData IElevationData;
 
   USUL_DECLARE_QUERY_POINTERS ( RasterLayer );

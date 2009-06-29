@@ -40,6 +40,8 @@
 
 #include "boost/algorithm/string/trim.hpp"
 
+#include <fstream>
+
 using namespace Minerva::Core::Layers;
 
 

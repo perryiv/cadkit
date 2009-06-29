@@ -241,13 +241,13 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
 void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller)
 {
   // Make the menu.
-  MenuKit::Menu::RefPtr variableMenu ( new MenuKit::Menu ( "Parameters" ) );
+  MenuKit::Menu::RefPtr variableMenu ( new MenuKit::Menu ( "Edit" ) );
   
   // Add Window arrange button
   variableMenu->append ( MenuKit::Button::create ( "Grid", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid ) ) );
  
   // Add Scalar Editor button
-  variableMenu->append ( MenuKit::Button::create ( "Scalar Editor", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editScalar ) ) );
+  variableMenu->append ( MenuKit::Button::create ( "Scalar", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editScalar ) ) );
 
    // Query the active document for IVaporIntrusionGUI
   VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
@@ -299,6 +299,20 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
   QWidget *parent ( mainWindow.valid() ? mainWindow->mainWindow() : 0x0 );
 
+  // Make the building dialog
+  BuildingDialog bd ( parent );
+
+  // Show the dialog.
+  if ( QDialog::Accepted != bd.exec() )
+    throw Usul::Exceptions::Canceled();
+
+  // Make the contaminant dialog
+  ContaminantDialog cd ( parent );
+
+  // Show the dialog.
+  if ( QDialog::Accepted != cd.exec() )
+    throw Usul::Exceptions::Canceled();
+
   // Make the dialog.
   NewVaporIntrusion dialog ( parent );
 
@@ -320,6 +334,19 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
 
     // initialize the document
     doc->initialize();
+
+    // get the user selected building parameters.
+    if( true == bd.useBuilding() )
+    {
+      Building b ( bd.building() );
+      doc->building( b.l, b.w, b.h, b.x, b.y, b.z );
+      doc->useBuilding( true );
+    }
+    else
+    {
+      doc->useBuilding( false );
+    }
+
   }
   
 }

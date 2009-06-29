@@ -21,6 +21,7 @@
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Split.h"
+#include "Usul/Strings/Trim.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/File/Path.h"
@@ -75,7 +76,9 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _zValues(),
   _inputParameters(),
   _draggerState( false ),
-  _gridMaterials()
+  _gridMaterials(),
+  _building( "1", "1", "1", "0", "0", "0" ),
+  _useBuilding( true )
 {
   USUL_TRACE_SCOPE;
 
@@ -347,7 +350,7 @@ void VaporIntrusionGUIDocument::_initCubes()
   _xValues.resize( _dimensions[0] );
 
   // set the initial value and width
-  _xValues.at( 0 ).first = 0.0f;
+  _xValues.at( 0 ).first = 0.0f - ( static_cast< double > ( _dimensions[0] ) / 2 );
   _xValues.at( 0 ).second = 1.0f;
 
   // set the x values to defaults
@@ -362,7 +365,7 @@ void VaporIntrusionGUIDocument::_initCubes()
   _yValues.resize( _dimensions[1] );
 
   // set the initial value and width
-  _yValues.at( 0 ).first = 0.0f;
+  _yValues.at( 0 ).first = 0.0f - ( static_cast< double > ( _dimensions[1] ) / 2 );
   _yValues.at( 0 ).second = 1.0f;
 
   // set the x values to defaults
@@ -377,7 +380,7 @@ void VaporIntrusionGUIDocument::_initCubes()
   _zValues.resize( _dimensions[2] );
 
   // set the initial value and width
-  _zValues.at( 0 ).first = 0.0f;
+  _zValues.at( 0 ).first = 0.0f - ( static_cast< double > ( _dimensions[2] ) / 2 );
   _zValues.at( 0 ).second = 1.0f;
 
   // set the x values to defaults
@@ -472,9 +475,103 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
 
   }
 
-  
+  // build the building 3D element
+  this->_makeBuilding();
    
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Create the building and add it to the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_makeBuilding( )
+{
+  // useful typedefs
+  typedef Usul::Convert::Type< std::string, float > StrToFloat;
+
+  // calculate the x index value 
+  unsigned int xi ( 0 );
+  if( _xValues.size() > 0 )
+  {
+    xi = ( _xValues.size() ) / 2;
+
+    if( xi >= _xValues.size() )
+    {
+      xi = _xValues.size() - 1;
+    }
+  }
+
+  // calculate the z index value 
+  unsigned int zi ( 0 );
+  if( _zValues.size() > 0 )
+  {
+    zi = ( _zValues.size() ) / 2;
+
+    if( zi >= _zValues.size() )
+    {
+      zi = _zValues.size() - 1;
+    }
+  }
+
+  // update the building based on the grid
+  std::string newX ( Usul::Convert::Type< double, std::string >::convert( _xValues.at( xi ).first ) );
+  std::string newY ( Usul::Convert::Type< double, std::string >::convert( _yValues.at( _yValues.size() - 1 ).first + _yValues.at( _yValues.size() - 1 ).second ) );
+  std::string newZ ( Usul::Convert::Type< double, std::string >::convert( _zValues.at( zi ).first ) );
+  Building newB ( _building.l, _building.w, _building.h, newX, newY, newZ );
+  _building = newB;
+
+  // color for the building
+  Color c ( 0.0, 0.0, 1.0, 1.0 );
+ 
+  // Material for the cube
+  osg::ref_ptr< osg::Material > material ( new osg::Material );
+  material->setAmbient( osg::Material::FRONT_AND_BACK, c );
+  material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
+
+  // get the lower left corner of the building
+  osg::Vec3f ll  ( StrToFloat::convert( _building.x ), StrToFloat::convert( _building.y ), StrToFloat::convert( _building.z ) );
+
+  // get the length, width, and height of the building
+  osg::Vec3f lwh ( StrToFloat::convert( _building.l ), StrToFloat::convert( _building.w ), StrToFloat::convert( _building.h ) );
+
+  // create the points for the building
+  osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
+  p->push_back( osg::Vec3f ( ll.x()          , ll.y()          , ll.z()           ) );
+  p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y()          , ll.z()           ) );
+  p->push_back( osg::Vec3f ( ll.x()          , ll.y() + lwh.y(), ll.z()           ) );
+  p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y() + lwh.y(), ll.z()           ) );  
+  p->push_back( osg::Vec3f ( ll.x()          , ll.y()          , ll.z() + lwh.z() ) );
+  p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y()          , ll.z() + lwh.z() ) );
+  p->push_back( osg::Vec3f ( ll.x()          , ll.y() + lwh.y(), ll.z() + lwh.z() ) );
+  p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y() + lwh.y(), ll.z() + lwh.z() ) );
+
+  // location (not used in this context)
+  Usul::Math::Vec3ui location( 0, 0, 0 );
+
+  // group
+  osg::ref_ptr< osg::Group > group ( new osg::Group );
+
+  // build the cuve
+  group->addChild( this->_buildTestCube( p.get(), c, location ) );
+
+  // set the material of the cube
+  OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
+  OsgTools::State::StateSet::setAlpha( group.get(), c.a() );
+
+  // Add the cubre to the scene
+  _root->addChild( group.get() );
+ 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Rebuild the scene
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void VaporIntrusionGUIDocument::rebuildScene()
 {
@@ -484,6 +581,7 @@ void VaporIntrusionGUIDocument::rebuildScene()
   // request a redraw
   this->requestRedraw();
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1119,6 +1217,10 @@ void VaporIntrusionGUIDocument::_readAllofValues( unsigned int& index, InputColu
         std::string aComp ( sv.at( index + 1 ) );
         std::string aValue ( sv.at( index + 2 ) );
 
+        // trim trailing and leading white space
+        Usul::Strings::trimLeft( aName, ' ' );
+        Usul::Strings::trimRight( aName, ' ' );
+
         // get the comparitor conversion
         int comparitor ( this->_getComparitor( aComp ) );
 
@@ -1173,6 +1275,10 @@ void VaporIntrusionGUIDocument::_readOneofValues( unsigned int& index, InputColu
         std::string aName ( keyword );
         std::string aComp ( sv.at( index + 1 ) );
         std::string aValue ( sv.at( index + 2 ) );
+
+        // trim trailing and leading white space
+        Usul::Strings::trimLeft( aName, ' ' );
+        Usul::Strings::trimRight( aName, ' ' );
 
         // get the comparitor conversion
         int comparitor ( this->_getComparitor( aComp ) );
@@ -1289,6 +1395,10 @@ void VaporIntrusionGUIDocument::_readConfigFile( const std::string& catName, con
         std::string value         ( sv.at( 1 ) );
         std::string description   ( sv.at( 2 ) );
         std::string type          ( sv.at( 3 ) );
+
+        // trim trailing and leading white space
+        Usul::Strings::trimLeft( name, ' ' );
+        Usul::Strings::trimRight( name, ' ' );
 
         // if the type is a scalar then add it to the dock instead of the dialog
         if( type == "scalar" )
@@ -1830,4 +1940,49 @@ void VaporIntrusionGUIDocument::_addMaterialToDock( const std::string& dock, con
   // add to the dock
   delegatePtr->addToDock( dock, name, value );
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Create the building from the given input parameters
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::building( const std::string& length, const std::string& width, const std::string& height,
+                                          const std::string& xpos, const std::string& ypos, const std::string& zpos )
+{
+  Guard guard ( this );
+
+  Building b ( length, width, height, xpos, ypos, zpos );
+
+  _building = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set whether or not there is a building present
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::useBuilding( bool value )
+{
+  Guard guard ( this );
+
+  _useBuilding = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get whether or not there is a building present
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::useBuilding()
+{
+  Guard guard ( this );
+
+  return _useBuilding;
 }

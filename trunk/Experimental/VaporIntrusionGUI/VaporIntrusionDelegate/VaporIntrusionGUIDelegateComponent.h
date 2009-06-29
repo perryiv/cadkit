@@ -24,6 +24,8 @@
 #include "GridEditorDialog.h"
 #include "InputParameterDialog.h"
 #include "ScalarEditorDialog.h"
+#include "BuildingDialog.h"
+#include "ContaminantDialog.h"
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 
 #include "Usul/Base/Referenced.h"
@@ -67,6 +69,7 @@ public:
   typedef IVaporIntrusionGUI::Category Category;
   typedef IVaporIntrusionGUI::Categories Categories;
   typedef IVaporIntrusionGUI::MaterialsMap MaterialsMap;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::Building Building;
 
   // useful typedefs
   typedef std::map< std::string, unsigned int > DockMap;

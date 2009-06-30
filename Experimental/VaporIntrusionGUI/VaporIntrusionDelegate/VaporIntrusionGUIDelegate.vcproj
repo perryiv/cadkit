@@ -294,6 +294,14 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\ContaminantDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ContaminantDialog.h"
+					>
+				</File>
+				<File
 					RelativePath=".\GridEditorDialog.cpp"
 					>
 				</File>
@@ -539,6 +547,10 @@
 				>
 				<File
 					RelativePath=".\generatedfiles\moc_BuildingDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_ContaminantDialog.cpp"
 					>
 				</File>
 				<File

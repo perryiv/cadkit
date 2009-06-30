@@ -1,0 +1,162 @@
+<ui version="4.0" >
+ <class>BuildingDialog</class>
+ <widget class="QDialog" name="BuildingDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Building Parameters</string>
+  </property>
+  <widget class="QDialogButtonBox" name="okCancelButtons" >
+   <property name="geometry" >
+    <rect>
+     <x>110</x>
+     <y>230</y>
+     <width>160</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label" >
+   <property name="geometry" >
+    <rect>
+     <x>130</x>
+     <y>40</y>
+     <width>121</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Building Parameters</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="_buildingExists" >
+   <property name="geometry" >
+    <rect>
+     <x>130</x>
+     <y>70</y>
+     <width>121</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Is there a Building?</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="_heightField" >
+   <property name="geometry" >
+    <rect>
+     <x>190</x>
+     <y>170</y>
+     <width>51</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4" >
+   <property name="geometry" >
+    <rect>
+     <x>130</x>
+     <y>170</y>
+     <width>53</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Height</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="_widthField" >
+   <property name="geometry" >
+    <rect>
+     <x>190</x>
+     <y>140</y>
+     <width>51</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3" >
+   <property name="geometry" >
+    <rect>
+     <x>130</x>
+     <y>140</y>
+     <width>53</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Width</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="_lengthField" >
+   <property name="geometry" >
+    <rect>
+     <x>190</x>
+     <y>110</y>
+     <width>51</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2" >
+   <property name="geometry" >
+    <rect>
+     <x>130</x>
+     <y>110</y>
+     <width>53</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Length</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>okCancelButtons</sender>
+   <signal>accepted()</signal>
+   <receiver>BuildingDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>okCancelButtons</sender>
+   <signal>rejected()</signal>
+   <receiver>BuildingDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

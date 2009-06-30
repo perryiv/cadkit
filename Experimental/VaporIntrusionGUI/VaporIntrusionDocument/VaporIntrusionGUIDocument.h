@@ -72,8 +72,8 @@ public:
   typedef IVaporIntrusionGUI::GridMaterial                      GridMaterial;
   typedef IVaporIntrusionGUI::GridMaterials                     GridMaterials; 
   typedef IVaporIntrusionGUI::Building                          Building;
-  typedef IVaporIntrusionGUI::Contaminant                       Contaminant;
-  typedef IVaporIntrusionGUI::Contaminants                      Contaminants;
+  typedef IVaporIntrusionGUI::Source                            Source;
+  typedef IVaporIntrusionGUI::Sources                           Sources;
   typedef std::vector< std::string >                            StringVec;
 
   
@@ -202,8 +202,8 @@ public:
   virtual void                useBuilding( bool value );
   virtual bool                useBuilding();
 
-  virtual void                  contaminants( Contaminants c );
-  virtual Contaminants          contaminants();
+  virtual void                sources( Sources c );
+  virtual Sources             sources();
 
 protected:
 
@@ -266,7 +266,7 @@ private:
     GridMaterials             _gridMaterials;
     Building                  _building;
     bool                      _useBuilding;
-    Contaminants              _contaminants;
+    Sources                   _sources;
   
 };
 

@@ -25,7 +25,7 @@
 #include "InputParameterDialog.h"
 #include "ScalarEditorDialog.h"
 #include "BuildingDialog.h"
-#include "ContaminantDialog.h"
+#include "SourceDialog.h"
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 
 #include "Usul/Base/Referenced.h"
@@ -113,7 +113,7 @@ public:
   void                        editBuilding();
 
   // edit the Contaminant values
-  void                        editContaminants();
+  void                        editSources();
 
   // edit the input parameters
   void                        editInputParameters( const std::string& menuName );

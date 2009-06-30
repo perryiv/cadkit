@@ -294,36 +294,6 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\ContaminantDialog.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ContaminantDialog.h"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Creating ui_ContaminantDialog.h..."
-							CommandLine="$(QTDIR)\bin\uic.exe .\ContaminantDialog.ui -o .\ui_ContaminantDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\ContaminantDialog.h&quot; -o &quot;.\GeneratedFiles\moc_ContaminantDialog.cpp&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ContaminantDialog.ui;$(QTDIR)\bin\moc.exe;.\ContaminantDialog.h"
-							Outputs=".\ui_ContaminantDialog.h;.\GeneratedFiles\moc_ContaminantDialog.cpp"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Creating ui_ContaminantDialog.h..."
-							CommandLine="$(QTDIR)\bin\uic.exe .\ContaminantDialog.ui -o .\ui_ContaminantDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\ContaminantDialog.h&quot; -o &quot;.\GeneratedFiles\moc_ContaminantDialog.cpp&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ContaminantDialog.ui;$(QTDIR)\bin\moc.exe;.\ContaminantDialog.h"
-							Outputs=".\ui_ContaminantDialog.h;.\GeneratedFiles\moc_ContaminantDialog.cpp"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath=".\GridEditorDialog.cpp"
 					>
 				</File>
@@ -533,16 +503,42 @@
 						/>
 					</FileConfiguration>
 				</File>
+				<File
+					RelativePath=".\SourceDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SourceDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_SourceDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\SourceDialog.ui -o .\ui_SourceDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\SourceDialog.h&quot; -o &quot;.\GeneratedFiles\moc_SourceDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\SourceDialog.ui;$(QTDIR)\bin\moc.exe;.\SourceDialog.h"
+							Outputs=".\ui_SourceDialog.h;.\GeneratedFiles\moc_SourceDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_SourceDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\SourceDialog.ui -o .\ui_SourceDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\SourceDialog.h&quot; -o &quot;.\GeneratedFiles\moc_SourceDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\SourceDialog.ui;$(QTDIR)\bin\moc.exe;.\SourceDialog.h"
+							Outputs=".\ui_SourceDialog.h;.\GeneratedFiles\moc_SourceDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
 			</Filter>
 			<Filter
 				Name="Generated"
 				>
 				<File
 					RelativePath=".\generatedfiles\moc_BuildingDialog.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\generatedfiles\moc_ContaminantDialog.cpp"
 					>
 				</File>
 				<File
@@ -571,6 +567,10 @@
 				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_ShowScalarDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_SourceDialog.cpp"
 					>
 				</File>
 			</Filter>

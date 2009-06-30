@@ -79,7 +79,7 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _gridMaterials(),
   _building( "1", "1", "1", "0", "0", "0" ),
   _useBuilding( true ),
-  _contaminants()
+  _sources()
 {
   USUL_TRACE_SCOPE;
 
@@ -595,10 +595,10 @@ void VaporIntrusionGUIDocument::_makeContaminants()
   // useful typedefs
   typedef Usul::Convert::Type< std::string, float > StrToFloat;
 
-  for( unsigned int i = 0; i < _contaminants.size(); ++i )
+  for( unsigned int i = 0; i < _sources.size(); ++i )
   {
     // get the contaminant
-    Contaminant cont ( _contaminants.at( i ) );
+    Source s ( _sources.at( i ) );
 
     // color for the contaminant
     Color c ( 1.0, 0.0, 0.0, 1.0 );
@@ -609,10 +609,10 @@ void VaporIntrusionGUIDocument::_makeContaminants()
     material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
 
     // get the lower left corner of the contaminant
-    osg::Vec3f ll  ( StrToFloat::convert( cont.x ), StrToFloat::convert( cont.y ), StrToFloat::convert( cont.z ) );
+    osg::Vec3f ll  ( StrToFloat::convert( s.x ), StrToFloat::convert( s.y ), StrToFloat::convert( s.z ) );
 
     // get the length, width, and height of the contaminant
-    osg::Vec3f lwh ( StrToFloat::convert( cont.l ), StrToFloat::convert( cont.w ), StrToFloat::convert( cont.h ) );
+    osg::Vec3f lwh ( StrToFloat::convert( s.l ), StrToFloat::convert( s.w ), StrToFloat::convert( s.h ) );
 
     // create the points for the contaminant
     osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
@@ -2072,11 +2072,11 @@ bool VaporIntrusionGUIDocument::useBuilding()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::contaminants( Contaminants c )
+void VaporIntrusionGUIDocument::sources( Sources s )
 {
   Guard guard ( this );
 
-  _contaminants = c;
+  _sources = s;
 }
 
 
@@ -2086,9 +2086,9 @@ void VaporIntrusionGUIDocument::contaminants( Contaminants c )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-VaporIntrusionGUIDocument::Contaminants VaporIntrusionGUIDocument::contaminants()
+VaporIntrusionGUIDocument::Sources VaporIntrusionGUIDocument::sources()
 {
   Guard guard ( this );
 
-  return _contaminants;
+  return _sources;
 }

@@ -64,22 +64,40 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   struct Contaminant
   {
-    std::string l,w,h;
-    std::string x,y,z;
-    std::string chemical;
-    std::string concentration;
-
+    unsigned int index;
+    std::string name, henry, koc, airDiff, waterDiff, atmoConc;
+    
     Contaminant():
-    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" ), chemical(), concentration( "0" )
+    index( 0 ), name(), henry(), koc(), airDiff(), waterDiff(), atmoConc()
     {};
 
-    Contaminant( const std::string& length, const std::string& width, const std::string& height,
-                 const std::string& xpos, const std::string& ypos, const std::string& zpos,
-                 const std::string& chem, const std::string conc ):
-    l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ), chemical( chem), concentration( conc )
+    Contaminant( unsigned int i, const std::string& n, const std::string& h, const std::string& k,
+                 const std::string& ad, const std::string& wd, const std::string& ac ):
+    index( i ), name( n ), henry( h ), koc( k ), airDiff( ad ), waterDiff( wd ), atmoConc( ac )
     {};
+
   };
   typedef std::vector< Contaminant > Contaminants;
+
+  struct Source
+  {
+    std::string l,w,h;
+    std::string x,y,z;
+    std::string name;
+    Contaminants contaminants;
+
+    Source():
+    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" ), name ( "" ), contaminants()
+    {};
+
+    Source( const std::string& length, const std::string& width, const std::string& height,
+                 const std::string& xpos, const std::string& ypos, const std::string& zpos,
+                 const std::string& n, std::vector< Contaminant > c ):
+    l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ), name( n ), contaminants( c )
+    {};
+
+  };
+  typedef std::vector< Source > Sources;
 
   struct InputColumn
   {
@@ -225,8 +243,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   virtual void                  useBuilding( bool value ) = 0;
   virtual bool                  useBuilding() = 0;
 
-  virtual void                  contaminants( Contaminants c ) = 0;
-  virtual Contaminants          contaminants() = 0;
+  virtual void                  sources( Sources s ) = 0;
+  virtual Sources               sources() = 0;
   
     
 }; // struct IVaporIntrusionGUI

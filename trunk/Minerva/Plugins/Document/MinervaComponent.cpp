@@ -80,6 +80,7 @@ Usul::Interfaces::IUnknown *MinervaComponent::queryInterface ( unsigned long iid
 
 Usul::Documents::Document *MinervaComponent::createDocument ( Unknown *caller )
 {
-  Minerva::Document::MinervaDocument::ValidRefPtr document ( new Minerva::Document::MinervaDocument ( _log ) );
+  Minerva::Document::MinervaDocument::ValidRefPtr document 
+    ( new Minerva::Document::MinervaDocument ( _log ) );
   return document.release();
 }

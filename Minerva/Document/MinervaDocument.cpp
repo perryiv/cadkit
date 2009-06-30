@@ -116,8 +116,8 @@ USUL_IMPLEMENT_TYPE_ID ( MinervaDocument );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MinervaDocument::MinervaDocument ( LogPtr log ) :
-  BaseClass( "Minerva Document" ),
+MinervaDocument::MinervaDocument ( LogPtr log, const std::string &typeName ) :
+  BaseClass ( typeName ),
 #if USE_DISTRIBUTED == 1
   _commandsSend ( false ),
   _commandsReceive ( false ),

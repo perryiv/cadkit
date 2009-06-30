@@ -108,7 +108,9 @@ public:
   /// Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  MinervaDocument ( LogPtr log = LogPtr ( 0x0 ) );
+  MinervaDocument ( 
+    LogPtr log = LogPtr ( 0x0 ),
+    const std::string &typeName = "Minerva Document" );
 
   /// Add the view to the document.
   virtual void                             addView ( Usul::Interfaces::IView *view );

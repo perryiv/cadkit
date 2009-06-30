@@ -51,7 +51,7 @@ public:
   virtual std::string         getPluginName() const { return "Minerva Document"; }
 
   /// Usul::Interfaces::IDocumentCreate
-  virtual Document *           createDocument ( Unknown *caller = 0x0 );
+  virtual Document *          createDocument ( Unknown *caller = 0x0 );
 
 protected: 
 

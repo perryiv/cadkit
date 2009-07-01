@@ -202,8 +202,11 @@ public:
   virtual void                useBuilding( bool value );
   virtual bool                useBuilding();
 
-  virtual void                sources( Sources c );
+  virtual void                sources( Sources s );
   virtual Sources             sources();
+
+  virtual void                contaminants( Contaminants c );
+  virtual Contaminants        contaminants();
 
 protected:
 
@@ -267,6 +270,7 @@ private:
     Building                  _building;
     bool                      _useBuilding;
     Sources                   _sources;
+    Contaminants              _contaminants;
   
 };
 

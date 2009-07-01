@@ -43,6 +43,8 @@ public:
   virtual ~ContaminantDialog();
 
   void                initialize();
+  Contaminants        contaminants();
+  void                contaminants( Contaminants c );
 
 protected:
 

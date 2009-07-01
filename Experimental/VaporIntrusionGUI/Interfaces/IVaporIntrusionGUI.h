@@ -245,6 +245,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual void                  sources( Sources s ) = 0;
   virtual Sources               sources() = 0;
+
+  virtual void                  contaminants( Contaminants c ) = 0;
+  virtual Contaminants          contaminants() = 0;
   
     
 }; // struct IVaporIntrusionGUI

@@ -79,7 +79,8 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _gridMaterials(),
   _building( "1", "1", "1", "0", "0", "0" ),
   _useBuilding( true ),
-  _sources()
+  _sources(),
+  _contaminants()
 {
   USUL_TRACE_SCOPE;
 
@@ -2068,7 +2069,7 @@ bool VaporIntrusionGUIDocument::useBuilding()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Set the contaminants
+// Set the sources
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -2082,7 +2083,7 @@ void VaporIntrusionGUIDocument::sources( Sources s )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Get the contaminants
+// Get the sources
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -2091,4 +2092,30 @@ VaporIntrusionGUIDocument::Sources VaporIntrusionGUIDocument::sources()
   Guard guard ( this );
 
   return _sources;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the contaminants
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::contaminants( Contaminants c )
+{
+  Guard guard ( this );
+  _contaminants = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the contaminants
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::Contaminants VaporIntrusionGUIDocument::contaminants()
+{
+  Guard guard ( this );
+  return _contaminants;
 }

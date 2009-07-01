@@ -35,6 +35,7 @@ BaseClass ( parent )
   titles.push_back( "Name" );
   titles.push_back( "Location" );
   titles.push_back( "Size" );
+  titles.push_back( "Contaminants" );
 
   _sourceTable->setHorizontalHeaderLabels( titles );
 
@@ -137,7 +138,7 @@ void SourceDialog::_initialize()
     // insert the columns
     _sourceTable->setItem( rowCount, 0, item0 );
     _sourceTable->setItem( rowCount, 1, item1 );
-    _sourceTable->setItem( rowCount, 2, item1 );
+    _sourceTable->setItem( rowCount, 2, item2 );
 
     // set the values of the row
     _sourceTable->item( rowCount, 0 )->setText( s.name.c_str() );

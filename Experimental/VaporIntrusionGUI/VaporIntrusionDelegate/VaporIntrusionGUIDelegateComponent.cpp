@@ -243,14 +243,17 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   // Make the menu.
   MenuKit::Menu::RefPtr variableMenu ( new MenuKit::Menu ( "Edit" ) );
   
-  // Add Window arrange button
+  // Add Window Grid button
   variableMenu->append ( MenuKit::Button::create ( "Grid", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid ) ) );
  
-   // Add Window arrange button
+  // Add Window Building button
   variableMenu->append ( MenuKit::Button::create ( "Building", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editBuilding) ) );
  
-   // Add Window arrange button
+  // Add Window Sources button
   variableMenu->append ( MenuKit::Button::create ( "Sources", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSources ) ) );
+  
+  // Add Window Contaminants button
+  variableMenu->append ( MenuKit::Button::create ( "Contaminants", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editContaminants ) ) );
  
   // Add Scalar Editor button
   // variableMenu->append ( MenuKit::Button::create ( "Scalar", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editScalar ) ) );
@@ -313,6 +316,13 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
     throw Usul::Exceptions::Canceled();
 
   // Make the contaminant dialog
+  ContaminantDialog cd ( parent );
+
+  // Show the dialog.
+  if ( QDialog::Accepted != cd.exec() )
+    throw Usul::Exceptions::Canceled();
+
+  // Make the Sources dialog
   SourceDialog sd ( parent );
 
   // Show the dialog.
@@ -353,8 +363,11 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
       doc->useBuilding( false );
     }
 
-    // set the contaminant information in the document
+    // set the source information in the document
     doc->sources( sd.sources() );
+
+    // set the contaminant information in the document
+    doc->contaminants( cd.contaminants() );
 
   }
   
@@ -391,6 +404,40 @@ void VaporIntrusionGUIDelegateComponent::editGrid()
   // Show the dialog.
   if ( QDialog::Accepted != gridEditor.exec() )
     throw Usul::Exceptions::Canceled();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Edit the Contaminant values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::editContaminants()
+{
+  // Make the dialog.
+  ContaminantDialog editor;
+
+  // Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+  // set the contaminants
+  editor.contaminants( document->contaminants() );
+
+  // populate the contaminant list
+  editor.initialize();
+
+  // Show the dialog.
+  if ( QDialog::Accepted != editor.exec() )
+    throw Usul::Exceptions::Canceled();
+
+  document->contaminants( editor.contaminants() );
+
+  document->rebuildScene();
 }
 
 

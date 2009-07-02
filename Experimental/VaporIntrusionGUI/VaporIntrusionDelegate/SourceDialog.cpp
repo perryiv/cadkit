@@ -126,6 +126,10 @@ void SourceDialog::_initialize()
     QTableWidgetItem *item2 = new QTableWidgetItem;
     item2->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
 
+    // create an item widget for the third column
+    QTableWidgetItem *item3 = new QTableWidgetItem;
+    item3->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+
     if( true == firstPass )
     {
       // set the current item
@@ -139,16 +143,48 @@ void SourceDialog::_initialize()
     _sourceTable->setItem( rowCount, 0, item0 );
     _sourceTable->setItem( rowCount, 1, item1 );
     _sourceTable->setItem( rowCount, 2, item2 );
+    _sourceTable->setItem( rowCount, 3, item3 );
+  
+    // get the source contaminants
+    Contaminants sc( _sources.at( i ).contaminants );
+
+   // string to hold the contaminant data
+    std::string scstr ("( ");
+
+    // loop through the already assigned contaminants
+    for( unsigned int j = 0; j < sc.size(); ++j )
+    {
+      // get the contaminant
+      std::string cname ( sc.at( j ).name );
+      
+      if( j < sc.size() - 1 )
+      {
+        // if this isn't the last element add a comma after the contaminant name
+        scstr = Usul::Strings::format( scstr, cname, ", " );
+      }
+      else
+      {
+        // omit comma if this is the last element
+        scstr = Usul::Strings::format( scstr, cname );
+      }
+    }
+
+    // closed the ()
+    scstr = Usul::Strings::format( scstr, " )" );
 
     // set the values of the row
     _sourceTable->item( rowCount, 0 )->setText( s.name.c_str() );
     _sourceTable->item( rowCount, 1 )->setText( Usul::Strings::format( "( ", s.x, ", ", s.y, ", ", s.z, " )" ).c_str() );
     _sourceTable->item( rowCount, 2 )->setText( Usul::Strings::format( "( ", s.l, ", ", s.w, ", ", s.h, " )" ).c_str() );
+    _sourceTable->item( rowCount, 3 )->setText( scstr.c_str() );
 
 
     ++rowCount;
   }
+  
+
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

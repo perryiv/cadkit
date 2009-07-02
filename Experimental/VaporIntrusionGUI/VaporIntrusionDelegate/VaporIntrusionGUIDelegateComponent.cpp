@@ -255,6 +255,9 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   // Add Window Contaminants button
   variableMenu->append ( MenuKit::Button::create ( "Contaminants", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editContaminants ) ) );
  
+  // add editAddContaminantsToSource button
+  variableMenu->append ( MenuKit::Button::create ( "Source Contaminats", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editAddContaminantsToSource ) ) );
+ 
   // Add Scalar Editor button
   // variableMenu->append ( MenuKit::Button::create ( "Scalar", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editScalar ) ) );
 
@@ -329,6 +332,20 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   if ( QDialog::Accepted != sd.exec() )
     throw Usul::Exceptions::Canceled();
 
+  // Make the AddContaminantsToSource dialog
+  AddContaminantsToSourceDialog actsd ( parent );
+
+  // set the sources and contaminants
+  actsd.sources( sd.sources() );
+  actsd.contaminants( cd.contaminants() );
+
+  // initialize the AddContaminantsToSource dialog
+  actsd.initialize();
+
+  // Show the dialog.
+  if ( QDialog::Accepted != actsd.exec() )
+    throw Usul::Exceptions::Canceled();
+
   // Make the dialog.
   NewVaporIntrusion dialog ( parent );
 
@@ -364,10 +381,10 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
     }
 
     // set the source information in the document
-    doc->sources( sd.sources() );
+    doc->sources( actsd.sources() );
 
     // set the contaminant information in the document
-    doc->contaminants( cd.contaminants() );
+    doc->contaminants( actsd.contaminants() );
 
   }
   
@@ -456,6 +473,42 @@ void VaporIntrusionGUIDelegateComponent::editBuilding()
   // Show the dialog.
   if ( QDialog::Accepted != editor.exec() )
     throw Usul::Exceptions::Canceled();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// edit the Contaminant values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::editAddContaminantsToSource()
+{
+  // Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+  // Make the AddContaminantsToSource dialog
+  AddContaminantsToSourceDialog dialog;
+
+  // set the sources and contaminants in the dialog
+  dialog.sources( document->sources() );
+  dialog.contaminants( document->contaminants() );
+
+  // initialize the AddContaminantsToSource dialog
+  dialog.initialize();
+
+  // Show the dialog.
+  if ( QDialog::Accepted != dialog.exec() )
+    throw Usul::Exceptions::Canceled();
+
+  // set the sources and contaminants in the document
+  document->sources( dialog.sources() );
+  document->contaminants( dialog.contaminants() );
+
 }
 
 

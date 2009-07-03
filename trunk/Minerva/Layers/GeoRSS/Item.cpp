@@ -147,9 +147,12 @@ namespace Helper
 OsgTools::Widgets::Item* Item::clicked ( Usul::Interfaces::IUnknown* caller ) const
 {
   Size size ( this->imageSize() );
+
+  const unsigned int width ( 350 );
   
   OsgTools::Widgets::Legend::RefPtr legend ( new OsgTools::Widgets::Legend );
-  legend->maximiumSize ( 350, 750 );
+  legend->maximiumSize ( width, 750 );
+  legend->size ( width, 750 );
   legend->position ( 20, 40 );
   legend->growDirection ( OsgTools::Widgets::Legend::GROW_DIRECTION_UP );
   legend->backgroundColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
@@ -159,6 +162,7 @@ OsgTools::Widgets::Item* Item::clicked ( Usul::Interfaces::IUnknown* caller ) co
   
   // Make some text.
   OsgTools::Widgets::Text::RefPtr text0 ( Helper::makeText ( this->name(), false, false ) );
+  text0->size ( width, 30 );
   
   // Add the items.
   row0->addItem ( text0.get() );
@@ -173,6 +177,7 @@ OsgTools::Widgets::Item* Item::clicked ( Usul::Interfaces::IUnknown* caller ) co
     
     // Make some text.
     OsgTools::Widgets::Text::RefPtr text ( Helper::makeText ( description, true, true ) );
+    text->size ( width, 30 );
     
     // Add the items.
     row1->addItem ( text.get() );
@@ -206,7 +211,9 @@ OsgTools::Widgets::Item* Item::clicked ( Usul::Interfaces::IUnknown* caller ) co
     OsgTools::Widgets::LegendObject::RefPtr row1 ( new OsgTools::Widgets::LegendObject );
     
     // Add the items.
-    row1->addItem ( Helper::makeText ( date, true, false ) );
+    OsgTools::Widgets::Text::RefPtr text ( Helper::makeText ( date, true, false ) );
+    text->size ( width, 30 );
+    row1->addItem ( text );
     
     // Set the percentage of the row.
     row1->percentage ( 0 ) = 1.00;

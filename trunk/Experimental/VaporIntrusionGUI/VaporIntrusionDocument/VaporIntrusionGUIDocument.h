@@ -199,8 +199,8 @@ public:
   virtual GridMaterials       gridMaterials();
   virtual void                gridMaterials( GridMaterials gm );
 
-  virtual void                building( const std::string& length, const std::string& width, const std::string& height,
-                                        const std::string& xpos, const std::string& ypos, const std::string& zpos5 );
+  virtual void                building( Building b );
+  virtual Building            building();
   virtual void                useBuilding( bool value );
   virtual bool                useBuilding();
 

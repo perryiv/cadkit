@@ -382,7 +382,7 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
     if( true == bd.useBuilding() )
     {
       Building b ( bd.building() );
-      doc->building( b.l, b.w, b.h, b.x, b.y, b.z );
+      doc->building( b );
       doc->useBuilding( true );
     }
     else
@@ -513,13 +513,34 @@ void VaporIntrusionGUIDelegateComponent::editContaminants()
 
 void VaporIntrusionGUIDelegateComponent::editBuilding()
 {
+  // Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
   
   // Make the dialog.
   BuildingDialog editor;
 
+  // set the building information
+  editor.building( document->building() );
+
+  // initialize
+  editor.initialize();
+
   // Show the dialog.
   if ( QDialog::Accepted != editor.exec() )
     throw Usul::Exceptions::Canceled();
+
+  // reset the building information
+  document->building( editor.building() );
+
+  // set the use building state
+  document->useBuilding( editor.useBuilding() );
+
+  // redraw
+  document->rebuildScene();
 }
 
 

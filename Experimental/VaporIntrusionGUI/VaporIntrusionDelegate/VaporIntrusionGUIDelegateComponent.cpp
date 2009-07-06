@@ -258,6 +258,9 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   // add editAddContaminantsToSource button
   variableMenu->append ( MenuKit::Button::create ( "Source Contaminats", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editAddContaminantsToSource ) ) );
  
+  // add editAddContaminantsToSource button
+  variableMenu->append ( MenuKit::Button::create ( "Soils", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSoils ) ) );
+ 
   // Add Scalar Editor button
   // variableMenu->append ( MenuKit::Button::create ( "Scalar", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editScalar ) ) );
 
@@ -346,6 +349,13 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   if ( QDialog::Accepted != actsd.exec() )
     throw Usul::Exceptions::Canceled();
 
+  // Make the Sources dialog
+  SoilDialog soilDialog ( parent );
+
+  // Show the dialog.
+  if ( QDialog::Accepted != soilDialog.exec() )
+    throw Usul::Exceptions::Canceled();
+
   // Make the dialog.
   NewVaporIntrusion dialog ( parent );
 
@@ -386,6 +396,9 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
     // set the contaminant information in the document
     doc->contaminants( actsd.contaminants() );
 
+    // set the soils
+    doc->soils( soilDialog.soils() );
+
   }
   
 }
@@ -421,6 +434,40 @@ void VaporIntrusionGUIDelegateComponent::editGrid()
   // Show the dialog.
   if ( QDialog::Accepted != gridEditor.exec() )
     throw Usul::Exceptions::Canceled();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// edit the Soil values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::editSoils()
+{
+   // Make the dialog.
+  SoilDialog editor;
+
+  // Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+  // set the contaminants
+  editor.soils( document->soils() );
+
+  // populate the contaminant list
+  editor.initialize();
+
+  // Show the dialog.
+  if ( QDialog::Accepted != editor.exec() )
+    throw Usul::Exceptions::Canceled();
+
+  document->soils( editor.soils() );
+
+  document->rebuildScene();
 }
 
 

@@ -80,7 +80,8 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _building( "1", "1", "1", "0", "0", "0" ),
   _useBuilding( true ),
   _sources(),
-  _contaminants()
+  _contaminants(),
+  _soils()
 {
   USUL_TRACE_SCOPE;
 
@@ -2118,4 +2119,30 @@ VaporIntrusionGUIDocument::Contaminants VaporIntrusionGUIDocument::contaminants(
 {
   Guard guard ( this );
   return _contaminants;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the soils
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::soils( Soils s )
+{
+  Guard guard ( this );
+  _soils = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the soils
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::Soils VaporIntrusionGUIDocument::soils()
+{
+  Guard guard ( this );
+  return _soils;
 }

@@ -61,6 +61,19 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" )
     {};
   };
+  
+  struct Soil
+  {
+    std::string name, porosity, waterPorosity, elevation, organicCarbon, permeability, viscosity;
+
+    Soil(): name(), porosity(), waterPorosity(), elevation(), organicCarbon(), permeability(), viscosity() {};
+
+    Soil( const std::string& n, const std::string& p, const std::string& wp, const std::string& e,
+      const std::string& oc, const std::string& perm, const std::string& v ):
+    name( n ), porosity( p ), waterPorosity( wp ), elevation( e ), organicCarbon( oc ), permeability( perm ), viscosity( v ) {};
+
+  };
+  typedef std::vector< Soil > Soils;
 
   struct Contaminant
   {
@@ -248,6 +261,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual void                  contaminants( Contaminants c ) = 0;
   virtual Contaminants          contaminants() = 0;
+
+  virtual void                  soils( Soils s ) = 0;
+  virtual Soils                 soils() = 0;
   
     
 }; // struct IVaporIntrusionGUI

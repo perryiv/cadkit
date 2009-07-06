@@ -74,6 +74,8 @@ public:
   typedef IVaporIntrusionGUI::Building                          Building;
   typedef IVaporIntrusionGUI::Source                            Source;
   typedef IVaporIntrusionGUI::Sources                           Sources;
+  typedef IVaporIntrusionGUI::Soil                              Soil;
+  typedef IVaporIntrusionGUI::Soils                             Soils;
   typedef std::vector< std::string >                            StringVec;
 
   
@@ -208,6 +210,9 @@ public:
   virtual void                contaminants( Contaminants c );
   virtual Contaminants        contaminants();
 
+  virtual void                soils( Soils s );
+  virtual Soils               soils();
+
 protected:
 
   /// Do not copy.
@@ -271,6 +276,7 @@ private:
     bool                      _useBuilding;
     Sources                   _sources;
     Contaminants              _contaminants;
+    Soils                     _soils;
   
 };
 

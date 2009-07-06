@@ -14,7 +14,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ContaminantDialog.h"
+#include "SoilDialog.h"
 
 #include "Usul/Strings/Format.h"
 
@@ -24,9 +24,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ContaminantDialog::ContaminantDialog ( QWidget *parent ) : 
+SoilDialog::SoilDialog ( QWidget *parent ) : 
 BaseClass ( parent ),
-_contaminants()
+_soils()
 {
   //// Initialize code from Designer.
   this->setupUi ( this );  
@@ -34,13 +34,14 @@ _contaminants()
   QStringList titles;
 
   titles.push_back( "Name" );
-  titles.push_back( "H. Law" );
-  titles.push_back( "Koc" );
-  titles.push_back( "Diff in Air" );
-  titles.push_back( "Diff in H2O" );
-  titles.push_back( "Atmo. Conc." );
+  titles.push_back( "Elevation" );
+  titles.push_back( "Porosity" );
+  titles.push_back( "H2O Porosity" );
+  titles.push_back( "Organic Carbon" );
+  titles.push_back( "Permeability" );
+  titles.push_back( "Viscosity" );
 
-  _contaminantTable->setHorizontalHeaderLabels( titles );
+  _soilTable->setHorizontalHeaderLabels( titles );
 
   //initialize the table view
   this->_initialize();
@@ -53,7 +54,7 @@ _contaminants()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ContaminantDialog::~ContaminantDialog()
+SoilDialog::~SoilDialog()
 {
   
 }
@@ -65,7 +66,7 @@ ContaminantDialog::~ContaminantDialog()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ContaminantDialog::initialize()
+void SoilDialog::initialize()
 {
   this->_initialize();
 }
@@ -77,7 +78,7 @@ void ContaminantDialog::initialize()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ContaminantDialog::_initialize()
+void SoilDialog::_initialize()
 {
   // first pass through Source values?
   bool firstPass( true );
@@ -85,13 +86,13 @@ void ContaminantDialog::_initialize()
   // the current number of rows
   unsigned int rowCount ( 0 );
 
-  for( unsigned int i = 0; i < _contaminants.size(); ++i )
+  for( unsigned int i = 0; i < _soils.size(); ++i )
   {
     // create a Source object
-    Contaminant c ( _contaminants.at( i ) );
+    Soil s ( _soils.at( i ) );
 
     // add a row
-    _contaminantTable->insertRow( rowCount );
+    _soilTable->insertRow( rowCount );
 
      // create an item widget for the first column
     QTableWidgetItem *item0 = new QTableWidgetItem;
@@ -117,30 +118,40 @@ void ContaminantDialog::_initialize()
     QTableWidgetItem *item5 = new QTableWidgetItem;
     item5->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
 
+    // create an item widget for the sixth column
+    QTableWidgetItem *item6 = new QTableWidgetItem;
+    item6->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+
+    // create an item widget for the sixth column
+    QTableWidgetItem *item7 = new QTableWidgetItem;
+    item7->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+
     if( true == firstPass )
     {
       // set the current item
-      _contaminantTable->setCurrentItem( item0 );
+      _soilTable->setCurrentItem( item0 );
 
       // no longer the first pass
       firstPass = false;
     }
 
     // insert the columns
-    _contaminantTable->setItem( rowCount, 0, item0 );
-    _contaminantTable->setItem( rowCount, 1, item1 );
-    _contaminantTable->setItem( rowCount, 2, item2 );
-    _contaminantTable->setItem( rowCount, 3, item3 );
-    _contaminantTable->setItem( rowCount, 4, item4 );
-    _contaminantTable->setItem( rowCount, 5, item5 ); 
+    _soilTable->setItem( rowCount, 0, item0 );
+    _soilTable->setItem( rowCount, 1, item1 );
+    _soilTable->setItem( rowCount, 2, item2 );
+    _soilTable->setItem( rowCount, 3, item3 );
+    _soilTable->setItem( rowCount, 4, item4 );
+    _soilTable->setItem( rowCount, 5, item5 ); 
+    _soilTable->setItem( rowCount, 6, item6 ); 
 
     // set the values of the row
-    _contaminantTable->item( rowCount, 0 )->setText( c.name.c_str()     );
-    _contaminantTable->item( rowCount, 1 )->setText( c.henry.c_str()     );
-    _contaminantTable->item( rowCount, 2 )->setText( c.koc.c_str()      );
-    _contaminantTable->item( rowCount, 3 )->setText( c.airDiff.c_str()  );
-    _contaminantTable->item( rowCount, 4 )->setText( c.waterDiff.c_str()  );
-    _contaminantTable->item( rowCount, 5 )->setText( c.atmoConc.c_str() );
+    _soilTable->item( rowCount, 0 )->setText( s.name.c_str()          );
+    _soilTable->item( rowCount, 1 )->setText( s.elevation.c_str()     );
+    _soilTable->item( rowCount, 2 )->setText( s.porosity.c_str()      );
+    _soilTable->item( rowCount, 3 )->setText( s.waterPorosity.c_str() );
+    _soilTable->item( rowCount, 4 )->setText( s.organicCarbon.c_str() );
+    _soilTable->item( rowCount, 5 )->setText( s.permeability.c_str()  );
+    _soilTable->item( rowCount, 6 )->setText( s.viscosity.c_str()     );
 
     ++rowCount;
   }
@@ -153,25 +164,27 @@ void ContaminantDialog::_initialize()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ContaminantDialog::on_addButton_clicked()
+void SoilDialog::on_addButton_clicked()
 {
   // get the parameters from the text boxes
-  std::string name        ( this->_name->text().toStdString()      );
-  std::string hlaw        ( this->_hlaw->text().toStdString()      );
-  std::string koc         ( this->_koc->text().toStdString()       );
-  std::string diffAir     ( this->_diffAir->text().toStdString()   );
-  std::string diffH2O     ( this->_diffWater->text().toStdString() );
-  std::string atmoConc    ( this->_atmoConc->text().toStdString()  );
+  std::string name        ( this->_name->text().toStdString()           );
+  std::string elevation   ( this->_elevation->text().toStdString()      );
+  std::string porosity    ( this->_totalPorosity->text().toStdString()  );
+  std::string h2oPorosity ( this->_waterPorosity->text().toStdString()  );
+  std::string organicC    ( this->_organicCarbon->text().toStdString()  );
+  std::string perm        ( this->_permeability->text().toStdString()   );
+  std::string viscosity   ( this->_viscosity->text().toStdString()      );
 
-  Contaminant c ( _contaminants.size(), name, hlaw, koc, diffAir, diffH2O, atmoConc );
+  Soil c ( name, elevation, porosity, h2oPorosity, organicC, perm, viscosity );
 
   // add the Source to the list of contamimants
-  _contaminants.push_back( c );
+  _soils.push_back( c );
 
-  int rowCount ( _contaminantTable->rowCount() );
+  // increment the row count
+  int rowCount ( _soilTable->rowCount() );
 
   // add a row
-  _contaminantTable->insertRow( rowCount );
+  _soilTable->insertRow( rowCount );
 
   // create an item widget for the first column
   QTableWidgetItem *item0 = new QTableWidgetItem;
@@ -191,30 +204,36 @@ void ContaminantDialog::on_addButton_clicked()
 
   // create an item widget for the fifth column
   QTableWidgetItem *item4 = new QTableWidgetItem;
-  item3->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+  item4->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
 
   // create an item widget for the sixth column
   QTableWidgetItem *item5 = new QTableWidgetItem;
-  item3->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+  item5->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+
+  // create an item widget for the sixth column
+  QTableWidgetItem *item6 = new QTableWidgetItem;
+  item6->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
 
   // set the current item
-  _contaminantTable->setCurrentItem( item0 );
+  _soilTable->setCurrentItem( item0 );
 
   // insert the columns
-  _contaminantTable->setItem( rowCount, 0, item0 );
-  _contaminantTable->setItem( rowCount, 1, item1 );
-  _contaminantTable->setItem( rowCount, 2, item2 );
-  _contaminantTable->setItem( rowCount, 3, item3 );
-  _contaminantTable->setItem( rowCount, 4, item4 );
-  _contaminantTable->setItem( rowCount, 5, item5 ); 
+  _soilTable->setItem( rowCount, 0, item0 );
+  _soilTable->setItem( rowCount, 1, item1 );
+  _soilTable->setItem( rowCount, 2, item2 );
+  _soilTable->setItem( rowCount, 3, item3 );
+  _soilTable->setItem( rowCount, 4, item4 );
+  _soilTable->setItem( rowCount, 5, item5 ); 
+  _soilTable->setItem( rowCount, 6, item6 ); 
 
   // set the values of the row
-  _contaminantTable->item( rowCount, 0 )->setText( name.c_str()     );
-  _contaminantTable->item( rowCount, 1 )->setText( hlaw.c_str()     );
-  _contaminantTable->item( rowCount, 2 )->setText( koc.c_str()      );
-  _contaminantTable->item( rowCount, 3 )->setText( diffAir.c_str()  );
-  _contaminantTable->item( rowCount, 4 )->setText( diffH2O.c_str()  );
-  _contaminantTable->item( rowCount, 5 )->setText( atmoConc.c_str() );
+  _soilTable->item( rowCount, 0 )->setText( name.c_str()        );
+  _soilTable->item( rowCount, 1 )->setText( elevation.c_str()   );
+  _soilTable->item( rowCount, 2 )->setText( porosity.c_str()    );
+  _soilTable->item( rowCount, 3 )->setText( h2oPorosity.c_str() );
+  _soilTable->item( rowCount, 4 )->setText( organicC.c_str()    );
+  _soilTable->item( rowCount, 5 )->setText( perm.c_str()        );
+  _soilTable->item( rowCount, 6 )->setText( viscosity.c_str()   );
  
 }
 
@@ -225,7 +244,7 @@ void ContaminantDialog::on_addButton_clicked()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ContaminantDialog::on_removeButton_clicked()
+void SoilDialog::on_removeButton_clicked()
 {
 
 }
@@ -233,23 +252,23 @@ void ContaminantDialog::on_removeButton_clicked()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the contaminants
+//  Get the Soils
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ContaminantDialog::Contaminants ContaminantDialog::contaminants()
+SoilDialog::Soils SoilDialog::soils()
 {
-  return _contaminants;
+  return _soils;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the contaminants
+//  Set the Soils
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ContaminantDialog::contaminants( Contaminants c )
+void SoilDialog::soils( Soils s )
 {
-  _contaminants = c;
+  _soils = s;
 }

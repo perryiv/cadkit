@@ -47,18 +47,31 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   };
 
   // structs
+
+  struct Crack
+  {
+    std::string x1, x2, y1, y2, w;
+
+    Crack(): x1(), x2(), y1(), y2(), w() {};
+    Crack( const std::string& sx, const std::string& ex, const std::string& sy, const std::string& ey, const std::string& width ):
+    x1( sx ), x2( ex ), y1( sy ), y2( ey ), w( width ) {};
+  };
+  typedef std::vector< Crack > Cracks;
+
   struct Building
   {
     std::string l,w,h;
     std::string x,y,z;
+    std::string v;
+    Cracks cracks;
 
     Building( const std::string& length, const std::string& width, const std::string& height,
-              const std::string& xpos, const std::string& ypos, const std::string& zpos ):
-    l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos )
+              const std::string& xpos, const std::string& ypos, const std::string& zpos, const std::string& vol ):
+    l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ), v ( vol ), cracks()
     {};
 
     Building():
-    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" )
+    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" ), v(  "1" ), cracks()
     {};
   };
   
@@ -230,7 +243,6 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   typedef std::pair< unsigned int, Parameter > ParameterPair;
   typedef std::vector< ParameterPair > ParameterList;
 
-  //virtual void                  readParamaterFile( const std::string& filename ) = 0;
   virtual ParameterList         parameters() = 0;
   virtual void                  parameters( ParameterList plist ) = 0;
 
@@ -251,8 +263,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   virtual GridMaterials         gridMaterials() = 0;
   virtual void                  gridMaterials( GridMaterials gm ) = 0;
 
-  virtual void                  building( const std::string& length, const std::string& width, const std::string& height,
-                                          const std::string& xpos, const std::string& ypos, const std::string& zpos ) = 0;
+  virtual void                  building( Building b ) = 0;
+  virtual Building              building() = 0;
   virtual void                  useBuilding( bool value ) = 0;
   virtual bool                  useBuilding() = 0;
 

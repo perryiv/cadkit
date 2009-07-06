@@ -77,7 +77,7 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _inputParameters(),
   _draggerState( false ),
   _gridMaterials(),
-  _building( "1", "1", "1", "0", "0", "0" ),
+  _building( "1", "1", "1", "0", "0", "0", "0" ),
   _useBuilding( true ),
   _sources(),
   _contaminants(),
@@ -420,7 +420,10 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
   this->_makeGrid();
 
   // build the building 3D element
-  this->_makeBuilding();
+  if( true == _useBuilding )
+  {
+    this->_makeBuilding();
+  }
 
   // build the contaminant 3D element
   this->_makeContaminants();   
@@ -538,7 +541,8 @@ void VaporIntrusionGUIDocument::_makeBuilding( )
   std::string newX ( Usul::Convert::Type< double, std::string >::convert( _xValues.at( xi ).first ) );
   std::string newY ( Usul::Convert::Type< double, std::string >::convert( _yValues.at( _yValues.size() - 1 ).first + _yValues.at( _yValues.size() - 1 ).second ) );
   std::string newZ ( Usul::Convert::Type< double, std::string >::convert( _zValues.at( zi ).first ) );
-  Building newB ( _building.l, _building.w, _building.h, newX, newY, newZ );
+  std::string vol ( "1" );
+  Building newB ( _building.l, _building.w, _building.h, newX, newY, newZ, vol );
   _building = newB;
 
   // color for the building
@@ -2025,18 +2029,28 @@ void VaporIntrusionGUIDocument::_addMaterialToDock( const std::string& dock, con
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Create the building from the given input parameters
+// Set the building 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::building( const std::string& length, const std::string& width, const std::string& height,
-                                          const std::string& xpos, const std::string& ypos, const std::string& zpos )
+void VaporIntrusionGUIDocument::building( Building b )
 {
   Guard guard ( this );
-
-  Building b ( length, width, height, xpos, ypos, zpos );
-
   _building = b;
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the building
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::Building VaporIntrusionGUIDocument::building()
+{
+  Guard guard ( this );
+  return _building;
 }
 
 

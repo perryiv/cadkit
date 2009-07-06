@@ -35,21 +35,31 @@ public:
   typedef QDialog BaseClass;
 
   // Useful typedefs
-  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::Building Building;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI IVPI;
+  typedef IVPI::Building Building;
+  typedef IVPI::Crack Crack;
+  typedef IVPI::Cracks Cracks;
 
   BuildingDialog ( QWidget *parent = 0x0 );
   virtual ~BuildingDialog();
 
   Building building();
+  void     building( Building b );
   bool     useBuilding();
+
+  void     initialize();
 
 
 protected:
+  void        _initialize();
 
 private:
-  
+  Building    _building;
+  Cracks      _cracks;
 
 private slots:
+  void on_addButton_clicked();
+  void on_removeButton_clicked();
 
 };
 

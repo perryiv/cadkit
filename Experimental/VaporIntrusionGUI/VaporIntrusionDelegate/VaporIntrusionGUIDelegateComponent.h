@@ -29,6 +29,7 @@
 #include "ContaminantDialog.h"
 #include "AddContaminantsToSourceDialog.h"
 #include "SoilDialog.h"
+#include "SendDialog.h"
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 
 #include "Usul/Base/Referenced.h"
@@ -126,6 +127,9 @@ public:
 
   // edit the Soil values
   void                        editSoils();
+
+  // send the file to the server
+  void                        sendFile();
 
   // edit the input parameters
   void                        editInputParameters( const std::string& menuName );

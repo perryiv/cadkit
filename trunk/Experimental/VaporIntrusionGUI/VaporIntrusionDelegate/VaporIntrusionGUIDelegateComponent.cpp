@@ -270,6 +270,9 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   // Check for a valid document
   if( true == document.valid() )
   {
+    // Make the menu.
+    MenuKit::Menu::RefPtr paramMenu ( new MenuKit::Menu ( "Parameters" ) );
+
     // get the categories
     Categories categories = document->categories();
     
@@ -279,12 +282,23 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
       std::string menuName ( categories.at( i ).name );
 
       // add the sub menu to the main menu
-      variableMenu->append ( MenuKit::Button::create ( menuName, Usul::Adaptors::bind1<void> ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) ); 
+      paramMenu->append ( MenuKit::Button::create ( menuName, Usul::Adaptors::bind1<void> ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) ); 
     }
 
+    // Add the window menu to the main menu
+    menu.append( paramMenu.get() );
+
   }
+
+
+  // Make the run menu.
+  MenuKit::Menu::RefPtr runMenu ( new MenuKit::Menu ( "Run" ) );
+
+  // add send button
+  runMenu->append ( MenuKit::Button::create ( "Send to Server", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::sendFile ) ) );
+ 
   // Add the window menu to the main menu
-  menu.append( variableMenu.get() );
+  menu.append( runMenu.get() );
 }
 
 
@@ -502,6 +516,29 @@ void VaporIntrusionGUIDelegateComponent::editContaminants()
   document->contaminants( editor.contaminants() );
 
   document->rebuildScene();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Send the file to the server
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::sendFile()
+{
+  Guard guard ( this );
+
+  // Make the dialog.
+  SendDialog dialog;
+
+  // initialize
+  dialog.initialize();
+
+  // Show the dialog.
+  if ( QDialog::Accepted != dialog.exec() )
+    throw Usul::Exceptions::Canceled();
+
 }
 
 

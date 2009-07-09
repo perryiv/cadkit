@@ -1417,8 +1417,11 @@ void VaporIntrusionGUIDocument::_readConfigFile( const std::string& catName, con
   if( false == ifs.is_open() )
     throw std::runtime_error ( "Error 1188374386: Failed to open file: " + filename );
 
+  // feedback.
+  std::cout << "Reading parameter file: " << filename << std::endl;
+
   // create a dock for this category
-  this->_createDock( catName );
+  // this->_createDock( catName );
 
   // buffer size
   const unsigned long int bufSize ( 4095 );
@@ -1437,6 +1440,8 @@ void VaporIntrusionGUIDocument::_readConfigFile( const std::string& catName, con
       // get a line
       ifs.getline ( buffer, bufSize );
 
+      
+
       // grab the string
       tStr = buffer;
     }
@@ -1446,6 +1451,9 @@ void VaporIntrusionGUIDocument::_readConfigFile( const std::string& catName, con
     
     StringVec sv;
     Usul::Strings::split( tStr, ",", false, sv );
+
+    // debugging
+    //std::cout << "Column Names: " << tStr << std::endl;
 
     // assign the headers
     category.columnNames = sv;
@@ -1460,6 +1468,8 @@ void VaporIntrusionGUIDocument::_readConfigFile( const std::string& catName, con
     // get a line
     ifs.getline ( buffer, bufSize );
 
+    
+
     // create a string from the buffer
     std::string tStr ( buffer );
 
@@ -1469,6 +1479,9 @@ void VaporIntrusionGUIDocument::_readConfigFile( const std::string& catName, con
       // separate the strings
       StringVec sv;
       Usul::Strings::split( tStr, ",", false, sv );
+
+      // debugging
+      //std::cout << "Reading: " << tStr << std::endl;
       
       // make sure all the columns are there
       if( sv.size() >= 4 )
@@ -1536,6 +1549,8 @@ void VaporIntrusionGUIDocument::_readConfigFile( const std::string& catName, con
 
   // add the category to the list of categories
   _categories.push_back( category );
+
+  ifs.close();
 }
 
 
@@ -1657,6 +1672,9 @@ void VaporIntrusionGUIDocument::_readInitializationFile( const std::string& file
   // make sure the file was opened
   if( false == ifs.is_open() )
     throw std::runtime_error ( "Error 1188374386: Failed to open file: " + filename );
+
+  // Feedback
+  std::cout << "Reading Initialization file: " << filename << std::endl;
 
   // buffer size
   const unsigned long int bufSize ( 4095 );

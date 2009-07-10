@@ -28,7 +28,7 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit" >
+  <widget class="QLineEdit" name="_url" >
    <property name="geometry" >
     <rect>
      <x>30</x>

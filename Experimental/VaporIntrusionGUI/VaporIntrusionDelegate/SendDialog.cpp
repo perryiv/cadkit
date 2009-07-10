@@ -67,7 +67,8 @@ void SendDialog::initialize()
 
 void SendDialog::_initialize()
 {
- 
+  // set the default URL for the text box
+  _url->setText( QString( "http://vaporintrusion.asu.edu" ) );
 }
 
 

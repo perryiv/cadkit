@@ -267,6 +267,9 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
    // Query the active document for IVaporIntrusionGUI
   VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
+  // Add the window menu to the main menu
+  menu.append( variableMenu.get() );
+
   // Check for a valid document
   if( true == document.valid() )
   {

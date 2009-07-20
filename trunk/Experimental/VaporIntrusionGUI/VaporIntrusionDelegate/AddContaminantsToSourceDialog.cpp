@@ -375,8 +375,97 @@ void AddContaminantsToSourceDialog::on_addButton_clicked()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddContaminantsToSourceDialog::on_clearButton_clicked()
+void AddContaminantsToSourceDialog::on_removeButton_clicked()
 {
+ // get the currently selected Contaminants
+  QList<QTableWidgetItem*> selectedContaminants ( _contaminantTable->selectedItems() );
 
+  // temp value to hold the selected contaminants
+  Contaminants c;
+
+  // loop through the selected contaminants
+  for( int i = 0; i < selectedContaminants.size(); ++i )
+  {
+    // get the current item
+    QTableWidgetItem* item = selectedContaminants.at( i );
+
+    // get the row index
+    unsigned int row ( item->row() );
+
+    // get the contaminant
+    if( row < _contaminants.size() )
+    {
+      // temp value to hold the contaminant
+      Contaminant ctemp ( _contaminants.at( row ) );
+
+      // add to the temp list of selected contaminants
+      c.push_back( ctemp );
+    }
+  }
+    
+  // get the currently selected sources
+  QList<QTableWidgetItem*> selectedSources ( _sourceTable->selectedItems() );
+
+  // loop through the selected sources and add the selected contaminants
+  for( int i = 0; i < selectedSources.size(); ++i )
+  {
+    // get the current item
+    QTableWidgetItem* item = selectedSources.at( i );
+
+    // get the row index
+    unsigned int row ( item->row() );
+
+    if( row < _sources.size() )
+    {
+      // get the old source
+      Contaminants oldlist ( _sources.at( row ).contaminants );
+
+      // new source
+      Contaminants newlist;
+
+      // loop through and remove contaminants from the selected source
+      for( unsigned int j = 0; j < oldlist.size(); ++j )
+      {
+        // get the contaminant name from the old lise
+        std::string nameFromSource ( oldlist.at( j ).name );
+
+        // remove?
+        bool removeEntry ( false );
+
+        // loop through the contaminants to remove
+        for( unsigned int k = 0; k < c.size(); ++k )
+        {
+          // get the contaminant name from the list of those to be removed
+          std::string nameToRemove ( c.at( k ).name );
+
+          if( nameToRemove == nameFromSource )
+          {
+            removeEntry = true;
+            break;
+          }
+
+        }
+
+        if( false == removeEntry )
+        {
+          newlist.push_back( oldlist.at( j ) );
+        }
+
+      }
+      
+      // update the source contaminant list at i
+      _sources.at( row ).contaminants = newlist;
+      
+    }
+  }
+  
+   // remove all the rows
+  for( int i = _sourceTable->rowCount() - 1; i >= 0 ; --i )
+  {
+    _sourceTable->removeRow( i );
+  }
+
+  // reinitialize the sources list
+  this->_initSource();
 }
 

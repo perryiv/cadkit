@@ -52,6 +52,8 @@ public:
 protected:
 
   void                _initialize();
+  void                _clearTable();
+
 private:
   Sources _sources;
 

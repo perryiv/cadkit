@@ -227,7 +227,59 @@ void ContaminantDialog::on_addButton_clicked()
 
 void ContaminantDialog::on_removeButton_clicked()
 {
+   // get the currently selected Contaminants
+  QList<QTableWidgetItem*> selectedItems ( _contaminantTable->selectedItems() );
 
+  std::vector< unsigned int > rowsToRemove;
+
+  // loop through the selected contaminants
+  for( int i = 0; i < selectedItems.size(); ++i )
+  {
+    // get the current item
+    QTableWidgetItem* item = selectedItems.at( i );
+
+    // get the row index
+    unsigned int row ( item->row() );
+
+    // add to the rows to remove list
+    rowsToRemove.push_back( row );
+  }
+
+  // new building cracks
+  Contaminants newlist;
+
+  // old building cracks
+  Contaminants oldlist ( _contaminants );
+
+  for( unsigned int i = 0; i < oldlist.size(); ++i )
+  {
+    // remove the row or not
+    bool removeRow ( false );
+
+    for( unsigned int j = 0; j < rowsToRemove.size(); ++j )
+    {
+      if( i == rowsToRemove.at( j ) )
+      {
+        // this row is marked to be removed
+        removeRow = true;
+      }
+    }
+
+    // if the row is not to be removed then add it to the new cracks list
+    if( false == removeRow )
+    {
+      newlist.push_back( oldlist.at( i ) );
+    }
+  }
+
+  // update the building cracks
+  _contaminants = newlist;
+
+  // clear the cracks table
+  this->_clearTable();
+
+  // repopulate the table
+  this->_initialize();
 }
 
 
@@ -240,6 +292,22 @@ void ContaminantDialog::on_removeButton_clicked()
 ContaminantDialog::Contaminants ContaminantDialog::contaminants()
 {
   return _contaminants;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear out the contaminants table
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ContaminantDialog::_clearTable()
+{
+  // remove all the rows
+  for( int i = _contaminantTable->rowCount() - 1; i >= 0 ; --i )
+  {
+    _contaminantTable->removeRow( i );
+  }
 }
 
 

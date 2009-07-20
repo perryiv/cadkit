@@ -256,6 +256,74 @@ void SourceDialog::on_addButton_clicked()
 
 void SourceDialog::on_removeButton_clicked()
 {
+     // get the currently selected Contaminants
+  QList<QTableWidgetItem*> selectedItems ( _sourceTable->selectedItems() );
+
+  std::vector< unsigned int > rowsToRemove;
+
+  // loop through the selected contaminants
+  for( int i = 0; i < selectedItems.size(); ++i )
+  {
+    // get the current item
+    QTableWidgetItem* item = selectedItems.at( i );
+
+    // get the row index
+    unsigned int row ( item->row() );
+
+    // add to the rows to remove list
+    rowsToRemove.push_back( row );
+  }
+
+  // new building cracks
+  Sources newlist;
+
+  // old building cracks
+  Sources oldlist ( _sources );
+
+  for( unsigned int i = 0; i < oldlist.size(); ++i )
+  {
+    // remove the row or not
+    bool removeRow ( false );
+
+    for( unsigned int j = 0; j < rowsToRemove.size(); ++j )
+    {
+      if( i == rowsToRemove.at( j ) )
+      {
+        // this row is marked to be removed
+        removeRow = true;
+      }
+    }
+
+    // if the row is not to be removed then add it to the new cracks list
+    if( false == removeRow )
+    {
+      newlist.push_back( oldlist.at( i ) );
+    }
+  }
+
+  // update the building cracks
+  _sources = newlist;
+
+  // clear the cracks table
+  this->_clearTable();
+
+  // repopulate the table
+  this->_initialize();
 
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear out the sources table
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SourceDialog::_clearTable()
+{
+  // remove all the rows
+  for( int i = _sourceTable->rowCount() - 1; i >= 0 ; --i )
+  {
+    _sourceTable->removeRow( i );
+  }
+}

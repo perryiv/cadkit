@@ -63,7 +63,7 @@ private:
 
 private slots:
   void on_addButton_clicked();
-  void on_clearButton_clicked();
+  void on_removeButton_clicked();
 
 };
 

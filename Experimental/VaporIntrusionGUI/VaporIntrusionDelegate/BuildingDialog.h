@@ -52,10 +52,10 @@ public:
 
 protected:
   void        _initialize();
+  void        _clearTable();
 
 private:
   Building    _building;
-  Cracks      _cracks;
 
 private slots:
   void on_addButton_clicked();

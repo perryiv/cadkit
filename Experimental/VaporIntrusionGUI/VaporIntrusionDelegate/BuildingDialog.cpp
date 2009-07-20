@@ -26,8 +26,7 @@
 
 BuildingDialog::BuildingDialog ( QWidget *parent ) : 
 BaseClass ( parent ),
-_building(),
-_cracks()
+_building()
 {
   // Initialize code from Designer.
   this->setupUi ( this );
@@ -69,9 +68,10 @@ BuildingDialog::Building BuildingDialog::building()
   Building b( _lengthField->text().toStdString(), _widthField->text().toStdString(), _heightField->text().toStdString(), 
               "0", "0", "0", 
               _volume->text().toStdString() );
-  b.cracks = _cracks;  
+  b.cracks = _building.cracks;  
   _building = b;
-  return b;
+
+  return _building;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -118,7 +118,7 @@ void BuildingDialog::on_addButton_clicked()
   Crack c ( x1, x2, y1, y2, w );
 
   // add the Source to the list of contamimants
-  _cracks.push_back( c );
+  _building.cracks.push_back( c );
 
   // increment the row count
   int rowCount ( _cracksTable->rowCount() );
@@ -166,7 +166,76 @@ void BuildingDialog::on_addButton_clicked()
 
 void BuildingDialog::on_removeButton_clicked()
 {
+  // get the currently selected Contaminants
+  QList<QTableWidgetItem*> selectedItems ( _cracksTable->selectedItems() );
 
+  std::vector< unsigned int > rowsToRemove;
+
+  // loop through the selected contaminants
+  for( int i = 0; i < selectedItems.size(); ++i )
+  {
+    // get the current item
+    QTableWidgetItem* item = selectedItems.at( i );
+
+    // get the row index
+    unsigned int row ( item->row() );
+
+    // add to the rows to remove list
+    rowsToRemove.push_back( row );
+  }
+
+  // new building cracks
+  Cracks newCracks;
+
+  // old building cracks
+  Cracks oldCracks ( _building.cracks );
+
+  for( unsigned int i = 0; i < oldCracks.size(); ++i )
+  {
+    // remove the row or not
+    bool removeRow ( false );
+
+    for( unsigned int j = 0; j < rowsToRemove.size(); ++j )
+    {
+      if( i == rowsToRemove.at( j ) )
+      {
+        // this row is marked to be removed
+        removeRow = true;
+      }
+    }
+
+    // if the row is not to be removed then add it to the new cracks list
+    if( false == removeRow )
+    {
+      newCracks.push_back( oldCracks.at( i ) );
+    }
+  }
+
+  // update the building cracks
+  _building.cracks = newCracks;
+
+  // clear the cracks table
+  this->_clearTable();
+
+  // repopulate the table
+  this->_initialize();
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear out the cracks table
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BuildingDialog::_clearTable()
+{
+  // remove all the rows
+  for( int i = _cracksTable->rowCount() - 1; i >= 0 ; --i )
+  {
+    _cracksTable->removeRow( i );
+  }
 }
 
 

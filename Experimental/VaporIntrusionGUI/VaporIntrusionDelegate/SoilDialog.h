@@ -49,6 +49,7 @@ public:
 protected:
 
   void                _initialize();
+  void                _clearTable();
 
 private:
   Soils               _soils;

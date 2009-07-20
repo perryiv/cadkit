@@ -331,47 +331,47 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
   QWidget *parent ( mainWindow.valid() ? mainWindow->mainWindow() : 0x0 );
 
-  // Make the building dialog
-  BuildingDialog bd ( parent );
+  //// Make the building dialog
+  //BuildingDialog bd ( parent );
 
-  // Show the dialog.
-  if ( QDialog::Accepted != bd.exec() )
-    throw Usul::Exceptions::Canceled();
+  //// Show the dialog.
+  //if ( QDialog::Accepted != bd.exec() )
+  //  throw Usul::Exceptions::Canceled();
 
-  // Make the contaminant dialog
-  ContaminantDialog cd ( parent );
+  //// Make the contaminant dialog
+  //ContaminantDialog cd ( parent );
 
-  // Show the dialog.
-  if ( QDialog::Accepted != cd.exec() )
-    throw Usul::Exceptions::Canceled();
+  //// Show the dialog.
+  //if ( QDialog::Accepted != cd.exec() )
+  //  throw Usul::Exceptions::Canceled();
 
-  // Make the Sources dialog
-  SourceDialog sd ( parent );
+  //// Make the Sources dialog
+  //SourceDialog sd ( parent );
 
-  // Show the dialog.
-  if ( QDialog::Accepted != sd.exec() )
-    throw Usul::Exceptions::Canceled();
+  //// Show the dialog.
+  //if ( QDialog::Accepted != sd.exec() )
+  //  throw Usul::Exceptions::Canceled();
 
-  // Make the AddContaminantsToSource dialog
-  AddContaminantsToSourceDialog actsd ( parent );
+  //// Make the AddContaminantsToSource dialog
+  //AddContaminantsToSourceDialog actsd ( parent );
 
-  // set the sources and contaminants
-  actsd.sources( sd.sources() );
-  actsd.contaminants( cd.contaminants() );
+  //// set the sources and contaminants
+  //actsd.sources( sd.sources() );
+  //actsd.contaminants( cd.contaminants() );
 
-  // initialize the AddContaminantsToSource dialog
-  actsd.initialize();
+  //// initialize the AddContaminantsToSource dialog
+  //actsd.initialize();
 
-  // Show the dialog.
-  if ( QDialog::Accepted != actsd.exec() )
-    throw Usul::Exceptions::Canceled();
+  //// Show the dialog.
+  //if ( QDialog::Accepted != actsd.exec() )
+  //  throw Usul::Exceptions::Canceled();
 
-  // Make the Sources dialog
-  SoilDialog soilDialog ( parent );
+  //// Make the Sources dialog
+  //SoilDialog soilDialog ( parent );
 
-  // Show the dialog.
-  if ( QDialog::Accepted != soilDialog.exec() )
-    throw Usul::Exceptions::Canceled();
+  //// Show the dialog.
+  //if ( QDialog::Accepted != soilDialog.exec() )
+  //  throw Usul::Exceptions::Canceled();
 
   // Make the dialog.
   NewVaporIntrusion dialog ( parent );
@@ -395,26 +395,28 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
     // initialize the document
     doc->initialize();
 
-    // get the user selected building parameters.
-    if( true == bd.useBuilding() )
-    {
-      Building b ( bd.building() );
-      doc->building( b );
-      doc->useBuilding( true );
-    }
-    else
-    {
-      doc->useBuilding( false );
-    }
+    //// get the user selected building parameters.
+    //if( true == bd.useBuilding() )
+    //{
+    //  Building b ( bd.building() );
+    //  doc->building( b );
+    //  doc->useBuilding( true );
+    //}
+    //else
+    //{
+    //  doc->useBuilding( false );
+    //}
 
-    // set the source information in the document
-    doc->sources( actsd.sources() );
+    doc->useBuilding( false );
 
-    // set the contaminant information in the document
-    doc->contaminants( actsd.contaminants() );
+    //// set the source information in the document
+    //doc->sources( actsd.sources() );
 
-    // set the soils
-    doc->soils( soilDialog.soils() );
+    //// set the contaminant information in the document
+    //doc->contaminants( actsd.contaminants() );
+
+    //// set the soils
+    //doc->soils( soilDialog.soils() );
 
   }
   

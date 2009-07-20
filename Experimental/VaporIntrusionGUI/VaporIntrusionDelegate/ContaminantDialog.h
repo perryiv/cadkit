@@ -49,6 +49,7 @@ public:
 protected:
 
   void                _initialize();
+  void                _clearTable();
 
 private:
   Contaminants        _contaminants;

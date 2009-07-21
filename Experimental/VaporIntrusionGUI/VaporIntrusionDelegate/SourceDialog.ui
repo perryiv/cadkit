@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>775</width>
-    <height>418</height>
+    <width>860</width>
+    <height>424</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -15,7 +15,7 @@
   <widget class="QPushButton" name="removeButton" >
    <property name="geometry" >
     <rect>
-     <x>310</x>
+     <x>370</x>
      <y>350</y>
      <width>75</width>
      <height>27</height>
@@ -28,7 +28,7 @@
   <widget class="QPushButton" name="addButton" >
    <property name="geometry" >
     <rect>
-     <x>230</x>
+     <x>290</x>
      <y>350</y>
      <width>75</width>
      <height>27</height>
@@ -43,7 +43,7 @@
     <rect>
      <x>280</x>
      <y>40</y>
-     <width>451</width>
+     <width>541</width>
      <height>231</height>
     </rect>
    </property>
@@ -51,8 +51,9 @@
     <number>0</number>
    </property>
    <property name="columnCount" >
-    <number>4</number>
+    <number>5</number>
    </property>
+   <column/>
    <column/>
    <column/>
    <column/>
@@ -235,7 +236,7 @@
   <widget class="QDialogButtonBox" name="okCancelButton" >
    <property name="geometry" >
     <rect>
-     <x>390</x>
+     <x>530</x>
      <y>350</y>
      <width>156</width>
      <height>27</height>
@@ -248,8 +249,8 @@
   <widget class="QtTools::ColorButton" name="_color" >
    <property name="geometry" >
     <rect>
-     <x>150</x>
-     <y>280</y>
+     <x>120</x>
+     <y>260</y>
      <width>44</width>
      <height>29</height>
     </rect>
@@ -261,7 +262,7 @@
   <widget class="QLabel" name="label_15" >
    <property name="geometry" >
     <rect>
-     <x>150</x>
+     <x>70</x>
      <y>260</y>
      <width>31</width>
      <height>18</height>
@@ -269,6 +270,19 @@
    </property>
    <property name="text" >
     <string>Color</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="updateButton" >
+   <property name="geometry" >
+    <rect>
+     <x>450</x>
+     <y>350</y>
+     <width>75</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Update</string>
    </property>
   </widget>
  </widget>

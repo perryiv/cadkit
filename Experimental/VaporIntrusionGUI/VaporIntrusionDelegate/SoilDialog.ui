@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>802</width>
-    <height>642</height>
+    <width>835</width>
+    <height>643</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -15,7 +15,7 @@
   <widget class="QDialogButtonBox" name="buttonBox" >
    <property name="geometry" >
     <rect>
-     <x>420</x>
+     <x>500</x>
      <y>590</y>
      <width>160</width>
      <height>29</height>
@@ -59,16 +59,17 @@
     <rect>
      <x>10</x>
      <y>30</y>
-     <width>771</width>
-     <height>281</height>
+     <width>811</width>
+     <height>271</height>
     </rect>
    </property>
    <property name="rowCount" >
     <number>0</number>
    </property>
    <property name="columnCount" >
-    <number>7</number>
+    <number>8</number>
    </property>
+   <column/>
    <column/>
    <column/>
    <column/>
@@ -275,6 +276,19 @@
    </property>
    <property name="text" >
     <string>Color</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="updateButton" >
+   <property name="geometry" >
+    <rect>
+     <x>420</x>
+     <y>590</y>
+     <width>77</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Update</string>
    </property>
   </widget>
  </widget>

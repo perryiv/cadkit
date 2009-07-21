@@ -702,6 +702,7 @@ Minerva::Core::Data::TimeSpan* Factory::createTimeSpan ( const XmlTree::Node& no
 Minerva::Core::Data::DataObject* Factory::createPlaceMark ( const XmlTree::Node& node ) const
 {
   PlaceMark::RefPtr object ( new PlaceMark );
+  object->showLabel ( false );
  
   const Children& children ( node.children() );
   
@@ -727,7 +728,7 @@ Minerva::Core::Data::DataObject* Factory::createPlaceMark ( const XmlTree::Node&
       object->addGeometry ( this->createPoint ( *child ) );
 
       // Google Earth only appears to label points.
-      object->label ( object->name() );
+      object->showLabel ( true );
     }
     else if ( "Polygon" == name )
     {
@@ -746,6 +747,9 @@ Minerva::Core::Data::DataObject* Factory::createPlaceMark ( const XmlTree::Node&
       this->createMultiGeometry ( *child, *object );
     }
   }
+
+  // Set the label.
+  object->label ( object->name() );
 
   Extents extents;
 

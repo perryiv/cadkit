@@ -31,6 +31,7 @@
 #include "osg/BlendFunc"
 #include "osg/Geode"
 #include "osg/Group"
+#include "osg/MatrixTransform"
 #include "osgText/Text"
 
 #include <limits>
@@ -332,16 +333,18 @@ const DataObject::Unknown* DataObject::dataSource() const
 
 osg::Node* DataObject::_buildLabel ( const PositionType& position )
 {
-  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
   
   const std::string label ( this->label() );
 
   if ( this->showLabel () && false == label.empty() )
   {
+    osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+
     osg::ref_ptr < osgText::Text > text ( new osgText::Text );
     text->setFont( OsgTools::Font::defaultFont() );
     text->setColor( Usul::Convert::Type<ColorType,osg::Vec4f>::convert ( this->labelColor() ) );
-    text->setPosition ( Usul::Convert::Type<PositionType,osg::Vec3d>::convert ( position ) );
+    text->setPosition ( osg::Vec3f ( 0.0, 0.0, 0.0 ) );
     text->setAutoRotateToScreen( true );
     text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
     text->setCharacterSize( this->labelSize() );
@@ -349,9 +352,12 @@ osg::Node* DataObject::_buildLabel ( const PositionType& position )
     text->setText ( this->label() );
 
     geode->addDrawable( text.get() );
+
+    mt->setMatrix ( osg::Matrixd::translate ( Usul::Convert::Type<PositionType,osg::Vec3d>::convert ( position ) ) );
+    mt->addChild ( geode.get() );
   }
 
-  return geode.release();
+  return mt.release();
 }
 
 

@@ -703,6 +703,7 @@ Minerva::Core::Data::DataObject* Factory::createPlaceMark ( const XmlTree::Node&
 {
   PlaceMark::RefPtr object ( new PlaceMark );
   object->showLabel ( false );
+  object->labelPosition ( PlaceMark::PositionType ( 0.0, 0.0, 1.0 ) );
  
   const Children& children ( node.children() );
   

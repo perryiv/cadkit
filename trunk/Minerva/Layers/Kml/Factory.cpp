@@ -593,6 +593,9 @@ void Factory::createMultiGeometry ( const XmlTree::Node& node, PlaceMark& placeM
     else if ( "Point" == name )
     {
       geometry = this->createPoint ( *child );
+
+      // The PlaceMark has a point, turn on labels.
+      placeMark.showLabel ( true );
     }
     else if ( "Polygon" == name )
     {

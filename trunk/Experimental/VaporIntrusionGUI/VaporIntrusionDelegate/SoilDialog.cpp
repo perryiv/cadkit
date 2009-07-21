@@ -40,6 +40,7 @@ _soils()
   titles.push_back( "Organic Carbon" );
   titles.push_back( "Permeability" );
   titles.push_back( "Viscosity" );
+  titles.push_back( "Color" );
 
   _soilTable->setHorizontalHeaderLabels( titles );
 
@@ -340,4 +341,15 @@ SoilDialog::Soils SoilDialog::soils()
 void SoilDialog::soils( Soils s )
 {
   _soils = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update a Soil
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SoilDialog::on_updateButton_clicked()
+{
 }

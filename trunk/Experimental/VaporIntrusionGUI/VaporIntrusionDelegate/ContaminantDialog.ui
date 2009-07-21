@@ -214,7 +214,7 @@
   <widget class="QDialogButtonBox" name="okCancelButton" >
    <property name="geometry" >
     <rect>
-     <x>380</x>
+     <x>460</x>
      <y>500</y>
      <width>156</width>
      <height>27</height>
@@ -222,6 +222,19 @@
    </property>
    <property name="standardButtons" >
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="updateButton" >
+   <property name="geometry" >
+    <rect>
+     <x>380</x>
+     <y>500</y>
+     <width>75</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Update</string>
    </property>
   </widget>
  </widget>

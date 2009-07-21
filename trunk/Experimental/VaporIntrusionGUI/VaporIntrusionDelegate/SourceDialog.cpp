@@ -36,6 +36,7 @@ BaseClass ( parent )
   titles.push_back( "Location" );
   titles.push_back( "Size" );
   titles.push_back( "Contaminants" );
+  titles.push_back( "Color" );
 
   _sourceTable->setHorizontalHeaderLabels( titles );
 
@@ -326,4 +327,15 @@ void SourceDialog::_clearTable()
   {
     _sourceTable->removeRow( i );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update a Source
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SourceDialog::on_updateButton_clicked()
+{
 }

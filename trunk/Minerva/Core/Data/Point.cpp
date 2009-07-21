@@ -299,6 +299,10 @@ osg::Node* Point::_buildScene ( Usul::Interfaces::IUnknown * caller )
 osg::Node* Point::_buildScene ( const Vec3d& point, double height, Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
+
+  // Return an empty group if the primitive id is none.
+  if ( Point::NONE == this->primitiveId() )
+    return new osg::Group;
   
   // Make the group.
   osg::ref_ptr < osg::Group > group ( new osg::Group );

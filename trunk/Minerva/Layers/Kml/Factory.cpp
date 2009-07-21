@@ -395,7 +395,7 @@ Factory::Point* Factory::createPoint ( const XmlTree::Node& node ) const
   Minerva::Core::Data::Point::RefPtr point ( new Minerva::Core::Data::Point );
   point->autotransform ( true );
   point->size ( 5 );
-  point->primitiveId ( 2 );
+  point->primitiveId ( Minerva::Core::Data::Point::NONE );
   point->color ( Usul::Math::Vec4f ( 1.0, 0.0, 0.0, 1.0 ) );
   
   const Children& children ( node.children() );
@@ -771,7 +771,6 @@ Minerva::Core::Data::DataObject* Factory::createPlaceMark ( const XmlTree::Node&
   
   // Set the data object members.
   object->labelColor ( Minerva::Core::Data::DataObject::ColorType ( 1.0, 1.0, 1.0, 1.0 ) );
-  object->showLabel ( true );
   
   return object.release();
 }

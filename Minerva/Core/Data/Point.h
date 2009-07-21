@@ -38,6 +38,7 @@ public:
 
   enum PrimitiveTypes
   {
+    NONE = 0,
     POINT = 1,
     SPHERE,
     CONE,

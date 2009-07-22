@@ -247,7 +247,7 @@ void SoilDialog::on_addButton_clicked()
 
 void SoilDialog::on_removeButton_clicked()
 {
-     // get the currently selected Contaminants
+  // get the currently selected Contaminants
   QList<QTableWidgetItem*> selectedItems ( _soilTable->selectedItems() );
 
   std::vector< unsigned int > rowsToRemove;
@@ -352,4 +352,47 @@ void SoilDialog::soils( Soils s )
 
 void SoilDialog::on_updateButton_clicked()
 {
+  // get the parameters from the text boxes
+  std::string name        ( this->_name->text().toStdString()           );
+  std::string elevation   ( this->_elevation->text().toStdString()      );
+  std::string porosity    ( this->_totalPorosity->text().toStdString()  );
+  std::string h2oPorosity ( this->_waterPorosity->text().toStdString()  );
+  std::string organicC    ( this->_organicCarbon->text().toStdString()  );
+  std::string perm        ( this->_permeability->text().toStdString()   );
+  std::string viscosity   ( this->_viscosity->text().toStdString()      );
+
+  // Create a soil object from the user input
+  Soil s ( name, elevation, porosity, h2oPorosity, organicC, perm, viscosity );
+
+  // get the currently selected Contaminants
+  QList<QTableWidgetItem*> selectedItems ( _soilTable->selectedItems() );
+
+  // User selected rows
+  std::vector< unsigned int > selectedRows;
+
+  // loop through the selected contaminants
+  for( int i = 0; i < selectedItems.size(); ++i )
+  {
+    // get the current item
+    QTableWidgetItem* item = selectedItems.at( i );
+
+    // get the row index
+    unsigned int row ( item->row() );
+
+    // add to the rows to remove list
+    selectedRows.push_back( row );
+  }
+
+  for( unsigned int i = 0; i < selectedRows.size(); ++i )
+  {
+    // updated the selected rows
+    _soils.at( selectedRows.at( i ) ) = s;
+  }
+
+  // clear the cracks table
+  this->_clearTable();
+
+  // repopulate the table
+  this->_initialize();
+
 }

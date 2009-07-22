@@ -55,6 +55,8 @@ private:
     QLineEdit *name;
     */
 
+  unsigned int _defaultValue;
+
 
 private slots:
   

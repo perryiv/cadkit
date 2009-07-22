@@ -24,11 +24,21 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-NewVaporIntrusion::NewVaporIntrusion ( QWidget *parent ) : BaseClass ( parent )
+NewVaporIntrusion::NewVaporIntrusion ( QWidget *parent ) : BaseClass ( parent ),
+_defaultValue ( 5 )
 {
   // Initialize code from Designer.
   this->setupUi ( this );
 
+  std::string defaultValue( Usul::Convert::Type< unsigned int, std::string >::convert( _defaultValue ) );
+
+  // set the text fields with the default value
+  xValue->setText( defaultValue.c_str() );
+  yValue->setText( defaultValue.c_str() );
+  zValue->setText( defaultValue.c_str() );
+
+  // set the text field for the experiment name
+  spaceName->setText( "Untitled" );
  
 }
 
@@ -70,7 +80,7 @@ unsigned int NewVaporIntrusion::x()
   std::string value ( xValue->text().toStdString() );
 
   // x value
-  unsigned int x ( 5 );
+  unsigned int x ( _defaultValue );
 
   if( value.length() > 0 )
   {
@@ -92,7 +102,7 @@ unsigned int NewVaporIntrusion::y()
   std::string value ( yValue->text().toStdString() );
 
   // y value
-  unsigned int y ( 5 );
+  unsigned int y ( _defaultValue );
 
   if( value.length() > 0 )
   {
@@ -115,7 +125,7 @@ unsigned int NewVaporIntrusion::z()
   std::string value ( zValue->text().toStdString() );
 
   // z value
-  unsigned int z ( 5 );
+  unsigned int z ( _defaultValue );
 
   if( value.length() > 0 )
   {

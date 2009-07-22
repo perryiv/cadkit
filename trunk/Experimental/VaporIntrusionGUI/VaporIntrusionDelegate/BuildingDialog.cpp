@@ -247,6 +247,55 @@ void BuildingDialog::_clearTable()
 
 void BuildingDialog::on_updateButton_clicked()
 {
+  // get the parameters from the text boxes
+  std::string x1 ( this->_startX->text().toStdString()  );
+  std::string x2 ( this->_endX->text().toStdString()    );
+  std::string y1 ( this->_startY->text().toStdString()  );
+  std::string y2 ( this->_endY->text().toStdString()    );
+  std::string w  ( this->_width->text().toStdString()   );
+
+  // get the currently selected Contaminants
+  QList<QTableWidgetItem*> selectedItems ( _cracksTable->selectedItems() );
+
+  // selected rows
+  std::vector< unsigned int > selectedRows;
+
+  // new building cracks
+  Cracks newCracks;
+
+  // old building cracks
+  Cracks oldCracks ( _building.cracks );
+
+  // loop through the selected contaminants
+  for( int i = 0; i < selectedItems.size(); ++i )
+  {
+    // get the current item
+    QTableWidgetItem* item = selectedItems.at( i );
+
+    // get the row index
+    unsigned int row ( item->row() );
+
+    // add to the rows to remove list
+    selectedRows.push_back( row );
+  }
+
+  // make a crack entry for this update
+  Crack crack ( x1, x2, y1, y2, w );
+
+  for( unsigned int i = 0; i < selectedRows.size(); ++i )
+  {
+    // update the crack
+    _building.cracks.at( selectedRows.at( i ) ) = crack;
+
+  }
+
+  // clear the cracks table
+  this->_clearTable();
+
+  // repopulate the table
+  this->_initialize();
+
+    
 }
 
 

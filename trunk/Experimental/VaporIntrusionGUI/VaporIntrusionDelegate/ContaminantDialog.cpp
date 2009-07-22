@@ -331,4 +331,45 @@ void ContaminantDialog::contaminants( Contaminants c )
 
 void ContaminantDialog::on_updateButton_clicked()
 {
+  // get the parameters from the text boxes
+  std::string name        ( this->_name->text().toStdString()      );
+  std::string hlaw        ( this->_hlaw->text().toStdString()      );
+  std::string koc         ( this->_koc->text().toStdString()       );
+  std::string diffAir     ( this->_diffAir->text().toStdString()   );
+  std::string diffH2O     ( this->_diffWater->text().toStdString() );
+  std::string atmoConc    ( this->_atmoConc->text().toStdString()  );
+
+  Contaminant c ( _contaminants.size(), name, hlaw, koc, diffAir, diffH2O, atmoConc );
+
+  // get the currently selected Contaminants
+  QList<QTableWidgetItem*> selectedItems ( _contaminantTable->selectedItems() );
+
+  // User selected rows
+  std::vector< unsigned int > selectedRows;
+
+  // loop through the selected contaminants
+  for( int i = 0; i < selectedItems.size(); ++i )
+  {
+    // get the current item
+    QTableWidgetItem* item = selectedItems.at( i );
+
+    // get the row index
+    unsigned int row ( item->row() );
+
+    // add to the rows to remove list
+    selectedRows.push_back( row );
+  }
+
+  for( unsigned int i = 0; i < selectedRows.size(); ++i )
+  {
+    // updated the selected rows
+    _contaminants.at( selectedRows.at( i ) ) = c;
+  }
+
+  // clear the cracks table
+  this->_clearTable();
+
+  // repopulate the table
+  this->_initialize();
+
 }

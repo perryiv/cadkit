@@ -338,4 +338,52 @@ void SourceDialog::_clearTable()
 
 void SourceDialog::on_updateButton_clicked()
 {
+  // get the parameters from the text boxes
+  std::string l    ( this->_length->text().toStdString()        );
+  std::string w    ( this->_width->text().toStdString()         );
+  std::string h    ( this->_height->text().toStdString()        );
+  std::string x    ( this->_xpos->text().toStdString()          );
+  std::string y    ( this->_ypos->text().toStdString()          );
+  std::string z    ( this->_zpos->text().toStdString()          );
+  std::string name ( this->_name->text().toStdString()          );
+
+  Contaminants c;
+
+  // create a Source object
+  Source s ( l, w, h, x, y, z, name, c );
+
+  // get the currently selected Contaminants
+  QList<QTableWidgetItem*> selectedItems ( _sourceTable->selectedItems() );
+
+  // User selected rows
+  std::vector< unsigned int > selectedRows;
+
+  // loop through the selected contaminants
+  for( int i = 0; i < selectedItems.size(); ++i )
+  {
+    // get the current item
+    QTableWidgetItem* item = selectedItems.at( i );
+
+    // get the row index
+    unsigned int row ( item->row() );
+
+    // add to the rows to remove list
+    selectedRows.push_back( row );
+  }
+
+  for( unsigned int i = 0; i < selectedRows.size(); ++i )
+  {
+    // grab the current contaminants to copy to the new source values
+    s.contaminants = _sources.at( selectedRows.at( i ) ).contaminants;
+
+    // updated the selected rows
+    _sources.at( selectedRows.at( i ) ) = s;
+  }
+
+  // clear the cracks table
+  this->_clearTable();
+
+  // repopulate the table
+  this->_initialize();
+
 }

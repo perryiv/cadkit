@@ -77,13 +77,14 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   
   struct Soil
   {
-    std::string name, porosity, waterPorosity, elevation, organicCarbon, permeability, viscosity;
+    std::string name, elevation, porosity, waterPorosity, organicCarbon, permeability, viscosity;
 
-    Soil(): name(), porosity(), waterPorosity(), elevation(), organicCarbon(), permeability(), viscosity() {};
+    Soil(): name(), elevation(), porosity(), waterPorosity(), organicCarbon(), permeability(), viscosity() {};
 
-    Soil( const std::string& n, const std::string& p, const std::string& wp, const std::string& e,
+    // Soil c ( name, elevation, porosity, h2oPorosity, organicC, perm, viscosity );
+    Soil( const std::string& n, const std::string& elev, const std::string& p, const std::string& wp,
       const std::string& oc, const std::string& perm, const std::string& v ):
-    name( n ), porosity( p ), waterPorosity( wp ), elevation( e ), organicCarbon( oc ), permeability( perm ), viscosity( v ) {};
+    name( n ), elevation( elev ), porosity( p ), waterPorosity( wp ), organicCarbon( oc ), permeability( perm ), viscosity( v ) {};
 
   };
   typedef std::vector< Soil > Soils;

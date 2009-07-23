@@ -53,9 +53,13 @@ ENDIF ( POSTGRESQL_FOUND )
 
 # Build these projects if we found GDAL and libpq.
 IF(GDAL_FOUND AND POSTGRESQL_FOUND)
-	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Layers/PostGIS
-			  ${CADKIT_INC_DIR}/Minerva/Layers/GDAL )
+	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Layers/PostGIS )
 ENDIF(GDAL_FOUND AND POSTGRESQL_FOUND)
+
+IF(GDAL_FOUND)
+	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Layers/GDAL )
+ENDIF(GDAL_FOUND)
+
 
 # Build these projects if we found Ossim
 IF(OSSIM_FOUND)

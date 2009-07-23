@@ -46,5 +46,5 @@ TARGET_LINK_LIBRARIES(MinervaPostgres
 )
 
 IF(WIN32)
-	TARGET_LINK_LIBRARIES(MinervaPostgres wsock32)
+	TARGET_LINK_LIBRARIES(MinervaPostgres wsock32 Secur32)
 ENDIF(WIN32)

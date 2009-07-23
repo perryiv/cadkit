@@ -53,7 +53,7 @@ namespace
   MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_ArcBinary ( "Arc Binary (*.adf)", "*.adf" );
   MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_DEM       ( "Digital Elevation Model (*.dem)", "*.dem" );
   MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_SRTM      ( "NASA SRTM (*.hgt)", "*.hgt" );
-  //MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_TIFF      ( "TIFF (*.tiff *.tif)", "*.tiff,*.tif" );
+  MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_TIFF      ( "TIFF (*.tiff *.tif)", "*.tiff,*.tif" );
   MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_VRT       ( "GDAL Virtual Format (*.vrt)", ".vrt" );
 }
 

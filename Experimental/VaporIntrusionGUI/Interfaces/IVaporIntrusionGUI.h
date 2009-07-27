@@ -78,6 +78,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   struct Soil
   {
     std::string name, elevation, porosity, waterPorosity, organicCarbon, permeability, viscosity;
+    Usul::Math::Vec4f color;
 
     Soil(): name(), elevation(), porosity(), waterPorosity(), organicCarbon(), permeability(), viscosity() {};
 
@@ -112,6 +113,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     std::string x,y,z;
     std::string name;
     Contaminants contaminants;
+    Usul::Math::Vec4f color;
 
     Source():
     l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" ), name ( "" ), contaminants()

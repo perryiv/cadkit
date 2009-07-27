@@ -203,12 +203,18 @@ void SourceDialog::on_addButton_clicked()
   std::string y    ( this->_ypos->text().toStdString()          );
   std::string z    ( this->_zpos->text().toStdString()          );
   std::string name ( this->_name->text().toStdString()          );
+  QColor qc ( _color->color() );
+  Usul::Math::Vec4f color ( static_cast< float > ( qc.redF() ), 
+                            static_cast< float > ( qc.greenF() ),
+                            static_cast< float > ( qc.blueF() ),
+                            static_cast< float > ( qc.alphaF() ) );
 
   Contaminants c;
 
   // create a Source object
   Source s ( l, w, h, x, y, z, name, c );
-  
+  s.color = color;
+
   // add the Source to the list of contamimants
   _sources.push_back( s );
 
@@ -346,11 +352,18 @@ void SourceDialog::on_updateButton_clicked()
   std::string y    ( this->_ypos->text().toStdString()          );
   std::string z    ( this->_zpos->text().toStdString()          );
   std::string name ( this->_name->text().toStdString()          );
+  QColor qc ( _color->color() );
+  Usul::Math::Vec4f color ( static_cast< float > ( qc.redF() ), 
+                            static_cast< float > ( qc.greenF() ),
+                            static_cast< float > ( qc.blueF() ),
+                            static_cast< float > ( qc.alphaF() ) );
+
 
   Contaminants c;
 
   // create a Source object
   Source s ( l, w, h, x, y, z, name, c );
+  s.color = color;
 
   // get the currently selected Contaminants
   QList<QTableWidgetItem*> selectedItems ( _sourceTable->selectedItems() );

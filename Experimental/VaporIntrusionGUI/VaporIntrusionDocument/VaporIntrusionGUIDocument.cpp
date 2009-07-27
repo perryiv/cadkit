@@ -607,7 +607,7 @@ void VaporIntrusionGUIDocument::_makeContaminants()
     Source s ( _sources.at( i ) );
 
     // color for the contaminant
-    Color c ( 1.0, 0.0, 0.0, 1.0 );
+    Color c ( s.color[0], s.color[1], s.color[2], 1.0 );
    
     // Material for the cube
     osg::ref_ptr< osg::Material > material ( new osg::Material );
@@ -1622,6 +1622,388 @@ void VaporIntrusionGUIDocument::initialize()
   // set up the input variables
   _configFileName = Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "vpi_config.vpi";
   this->_readInitializationFile( _configFileName );
+
+  // read the contaminants file
+  std::string contamintantFilename ( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "contaminants.vpi" );
+  this->_readContaminants( contamintantFilename );
+
+  // read the sources file
+  std::string sourceFilename ( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "sources.vpi" );
+  this->_readSources( sourceFilename );
+
+  // read the soils file
+  std::string soilFilename ( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "soils.vpi" );
+  this->_readSoils( soilFilename );
+
+  // read the cracks file
+  std::string cracksFilename ( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "cracks.vpi" );
+  this->_readCracks( cracksFilename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the Sources file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readSources( const std::string& filename )
+{
+ Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No Presets loaded for Sources" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading Sources file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  // parse the file
+  while( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    if( tStr.at( 0 ) != '#' )
+    {
+
+      // separate the strings
+      StringVec sv;
+      Usul::Strings::split( tStr, ",", false, sv );
+
+      // debugging
+      //std::cout << "Reading: " << tStr << std::endl;
+      
+      // make sure all the columns are there
+      if( sv.size() == 7 )
+      {
+        // temp column to hold the input line
+        std::string name    ( sv.at( 0 ) );
+        std::string xpos    ( sv.at( 1 ) );
+        std::string ypos    ( sv.at( 2 ) );
+        std::string zpos    ( sv.at( 3 ) );
+        std::string l       ( sv.at( 4 ) );
+        std::string w       ( sv.at( 5 ) );
+        std::string h       ( sv.at( 6 ) );
+
+        // trim trailing and leading white space
+        Usul::Strings::trimLeft( name, ' ' );
+        Usul::Strings::trimRight( name, ' ' );
+
+        // create a temp contaminant
+        Contaminants c;
+        Source s ( l, w, h, xpos, ypos, zpos, name, c );
+
+        // add to the list of contaminants
+        _sources.push_back( s );
+
+        // increment the number of contaminants read
+        ++lineNumber;
+
+      }// end for for activators read   
+
+    }// end if for valid entry found
+
+  }// end while read for file parsing
+
+  ifs.close();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the Soils file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readSoils( const std::string& filename )
+{
+ Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No Presets loaded for Soils" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading Soils file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  // parse the file
+  while( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    if( tStr.at( 0 ) != '#' )
+    {
+
+      // separate the strings
+      StringVec sv;
+      Usul::Strings::split( tStr, ",", false, sv );
+
+      // debugging
+      //std::cout << "Reading: " << tStr << std::endl;
+      
+      // make sure all the columns are there
+      if( sv.size() == 7 )
+      {
+        // temp column to hold the input line
+        // #Name,Value,Description,Type,Activators
+        std::string name          ( sv.at( 0 ) );
+        std::string elevation     ( sv.at( 1 ) );
+        std::string porosity      ( sv.at( 2 ) );
+        std::string H2OPorosity   ( sv.at( 3 ) );
+        std::string carbon        ( sv.at( 4 ) );
+        std::string permability   ( sv.at( 5 ) );
+        std::string viscosity     ( sv.at( 6 ) );
+
+        // trim trailing and leading white space
+        Usul::Strings::trimLeft( name, ' ' );
+        Usul::Strings::trimRight( name, ' ' );
+
+        // create a temp contaminant
+        Soil s ( name, elevation, porosity, H2OPorosity, carbon, permability, viscosity );
+
+        // add to the list of contaminants
+        _soils.push_back( s );
+
+        // increment the number of contaminants read
+        ++lineNumber;
+
+      }// end for for activators read   
+
+    }// end if for valid entry found
+
+  }// end while read for file parsing
+
+  ifs.close();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the Cracks file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readCracks( const std::string& filename )
+{
+ Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  /// make sure the file was opened
+  if( false == ifs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No Presets loaded for Cracks" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading Cracks file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  // parse the file
+  while( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    if( tStr.at( 0 ) != '#' )
+    {
+
+      // separate the strings
+      StringVec sv;
+      Usul::Strings::split( tStr, ",", false, sv );
+
+      // debugging
+      //std::cout << "Reading: " << tStr << std::endl;
+      
+      // make sure all the columns are there
+      if( sv.size() == 5 )
+      {
+        // temp column to hold the input line
+        // #Name,Value,Description,Type,Activators
+        std::string sx    ( sv.at( 0 ) );
+        std::string sy    ( sv.at( 1 ) );
+        std::string ex    ( sv.at( 2 ) );
+        std::string ey    ( sv.at( 3 ) );
+        std::string w     ( sv.at( 4 ) );
+
+        // create a temp contaminant
+        Crack c ( sx, sy, ex, ey, w );
+
+        // add to the list of contaminants
+        _building.cracks.push_back( c );
+
+        // increment the number of contaminants read
+        ++lineNumber;
+
+      }// end for for activators read   
+
+    }// end if for valid entry found
+
+  }// end while read for file parsing
+
+  ifs.close();
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the contaminants file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readContaminants( const std::string& filename )
+{
+  Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No Presets loaded for Contaminants" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading Contaminants file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  // parse the file
+  while( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    if( tStr.at( 0 ) != '#' )
+    {
+
+      // separate the strings
+      StringVec sv;
+      Usul::Strings::split( tStr, ",", false, sv );
+
+      // debugging
+      //std::cout << "Reading: " << tStr << std::endl;
+      
+      // make sure all the columns are there
+      if( sv.size() == 6 )
+      {
+        // temp column to hold the input line
+        // #Name,Value,Description,Type,Activators
+        std::string name      ( sv.at( 0 ) );
+        std::string henry     ( sv.at( 1 ) );
+        std::string koc       ( sv.at( 2 ) );
+        std::string diffair   ( sv.at( 3 ) );
+        std::string diffh2o   ( sv.at( 4 ) );
+        std::string atmoconc  ( sv.at( 5 ) );
+
+        // trim trailing and leading white space
+        Usul::Strings::trimLeft( name, ' ' );
+        Usul::Strings::trimRight( name, ' ' );
+
+        // create a temp contaminant
+        Contaminant c ( lineNumber, name, henry, koc, diffair, diffh2o, atmoconc );
+
+        // add to the list of contaminants
+        _contaminants.push_back( c );
+
+        // increment the number of contaminants read
+        ++lineNumber;
+
+      }// end for for activators read   
+
+    }// end if for valid entry found
+
+  }// end while read for file parsing
+
+  ifs.close();
 }
 
 
@@ -1663,7 +2045,7 @@ void VaporIntrusionGUIDocument::_initializeGridMaterials()
 
 void VaporIntrusionGUIDocument::_readInitializationFile( const std::string& filename )
 {
-    // create a file handle
+  // create a file handle
   std::ifstream ifs;
 
   // open the file

@@ -175,9 +175,14 @@ void SoilDialog::on_addButton_clicked()
   std::string organicC    ( this->_organicCarbon->text().toStdString()  );
   std::string perm        ( this->_permeability->text().toStdString()   );
   std::string viscosity   ( this->_viscosity->text().toStdString()      );
+  QColor qc ( _color->color() );
+  Usul::Math::Vec4f color ( static_cast< float > ( qc.redF() ), 
+                            static_cast< float > ( qc.greenF() ),
+                            static_cast< float > ( qc.blueF() ),
+                            static_cast< float > ( qc.alphaF() ) );
 
   Soil c ( name, elevation, porosity, h2oPorosity, organicC, perm, viscosity );
-
+  c.color = color;
   // add the Source to the list of contamimants
   _soils.push_back( c );
 
@@ -360,9 +365,16 @@ void SoilDialog::on_updateButton_clicked()
   std::string organicC    ( this->_organicCarbon->text().toStdString()  );
   std::string perm        ( this->_permeability->text().toStdString()   );
   std::string viscosity   ( this->_viscosity->text().toStdString()      );
+  QColor qc ( _color->color() );
+  Usul::Math::Vec4f color ( static_cast< float > ( qc.redF() ), 
+                            static_cast< float > ( qc.greenF() ),
+                            static_cast< float > ( qc.blueF() ),
+                            static_cast< float > ( qc.alphaF() ) );
+
 
   // Create a soil object from the user input
   Soil s ( name, elevation, porosity, h2oPorosity, organicC, perm, viscosity );
+  s.color = color;
 
   // get the currently selected Contaminants
   QList<QTableWidgetItem*> selectedItems ( _soilTable->selectedItems() );

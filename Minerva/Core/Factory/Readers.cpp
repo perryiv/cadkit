@@ -71,7 +71,7 @@ Readers::~Readers()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Readers::add ( const std::string &filter, const std::string& extension, BaseCreator *creator )
+void Readers::add ( const std::string &filter, const std::string& extension, CreatorPtr creator )
 {
   Guard guard ( *_mutex );
   _filters.push_back ( Filter ( filter, extension ) );

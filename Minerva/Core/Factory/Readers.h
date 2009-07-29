@@ -59,12 +59,13 @@ public:
   typedef std::vector<Filter> Filters;
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
+  typedef BaseCreator::ValidRefPtr CreatorPtr;
   
   /// Get the instance.
   static Readers& instance();
 
   /// Add a creator.
-  void                              add ( const std::string &filter, const std::string& extension, BaseCreator *creator );
+  void                              add ( const std::string &filter, const std::string& extension, CreatorPtr creator );
   
   /// Remove a creator.
   void                              remove ( const std::string &filter, const std::string& extension );
@@ -78,7 +79,7 @@ private:
   Readers();
   ~Readers();
 
-  typedef std::map < std::string, BaseCreator::ValidRefPtr > Creators;
+  typedef std::map < std::string, CreatorPtr > Creators;
 
   static Readers *_instance;
   mutable Mutex *_mutex;
@@ -127,7 +128,7 @@ private:
   {
     RegisterReader ( const std::string &filter, const std::string& extension ) : _filter ( filter ), _extension ( extension )
     {
-      Readers::instance().add ( filter, extension, new ReaderType );
+      Readers::instance().add ( filter, extension, Readers::CreatorPtr ( new ReaderType ) );
     }
     ~RegisterReader()
     {

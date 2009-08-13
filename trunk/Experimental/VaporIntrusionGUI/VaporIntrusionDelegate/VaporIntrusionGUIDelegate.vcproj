@@ -384,6 +384,36 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\GridSpaceDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\GridSpaceDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_GridSpaceDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\GridSpaceDialog.ui -o .\ui_GridSpaceDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\GridSpaceDialog.h&quot; -o &quot;.\GeneratedFiles\moc_GridSpaceDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\GridSpaceDialog.ui;$(QTDIR)\bin\moc.exe;.\GridSpaceDialog.h"
+							Outputs=".\ui_GridSpaceDialog.h;.\GeneratedFiles\moc_GridSpaceDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_GridSpaceDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\GridSpaceDialog.ui -o .\ui_GridSpaceDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\GridSpaceDialog.h&quot; -o &quot;.\GeneratedFiles\moc_GridSpaceDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\GridSpaceDialog.ui;$(QTDIR)\bin\moc.exe;.\GridSpaceDialog.h"
+							Outputs=".\ui_GridSpaceDialog.h;.\GeneratedFiles\moc_GridSpaceDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\InputParameterDialog.cpp"
 					>
 				</File>
@@ -500,6 +530,36 @@
 							CommandLine="$(QTDIR)\bin\uic.exe .\NewVaporIntrusion.ui -o .\ui_NewVaporIntrusion.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\NewVaporIntrusion.h&quot; -o &quot;.\GeneratedFiles\moc_NewVaporIntrusion.cpp&#x0D;&#x0A;"
 							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\NewVaporIntrusion.ui;$(QTDIR)\bin\moc.exe;.\NewVaporIntrusion.h"
 							Outputs=".\ui_NewVaporIntrusion.h;.\GeneratedFiles\moc_NewVaporIntrusion.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\RefineGridDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\RefineGridDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_RefineGridDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\RefineGridDialog.ui -o .\ui_RefineGridDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\RefineGridDialog.h&quot; -o &quot;.\GeneratedFiles\moc_RefineGridDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\RefineGridDialog.ui;$(QTDIR)\bin\moc.exe;.\RefineGridDialog.h"
+							Outputs=".\ui_RefineGridDialog.h;.\GeneratedFiles\moc_RefineGridDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_RefineGridDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\RefineGridDialog.ui -o .\ui_RefineGridDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\RefineGridDialog.h&quot; -o &quot;.\GeneratedFiles\moc_RefineGridDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\RefineGridDialog.ui;$(QTDIR)\bin\moc.exe;.\RefineGridDialog.h"
+							Outputs=".\ui_RefineGridDialog.h;.\GeneratedFiles\moc_RefineGridDialog.cpp"
 						/>
 					</FileConfiguration>
 				</File>
@@ -674,6 +734,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\generatedfiles\moc_GridSpaceDialog.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\generatedfiles\moc_InputParameterDialog.cpp"
 					>
 				</File>
@@ -687,6 +751,10 @@
 				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_NewVaporIntrusion.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_RefineGridDialog.cpp"
 					>
 				</File>
 				<File

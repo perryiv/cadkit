@@ -48,6 +48,16 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   // structs
 
+  struct GridRefinement
+  {
+    std::string axis, start, end, value;
+
+    GridRefinement(): axis( "x" ), start( "0" ), end( "0" ), value( "1" ) {};
+    GridRefinement( const std::string& a, const std::string& s, const std::string& e, const std::string& v ): 
+    axis( a ), start( s ), end( e ), value( v ) {};
+  };
+  typedef std::vector< GridRefinement > GridRefinements;
+
   struct Crack
   {
     std::string x1, x2, y1, y2, w;
@@ -63,15 +73,14 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     std::string l,w,h;
     std::string x,y,z;
     std::string v;
-    Cracks cracks;
 
     Building( const std::string& length, const std::string& width, const std::string& height,
               const std::string& xpos, const std::string& ypos, const std::string& zpos, const std::string& vol ):
-    l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ), v ( vol ), cracks()
+    l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ), v ( vol )
     {};
 
     Building():
-    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" ), v(  "1" ), cracks()
+    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" ), v(  "1" )
     {};
   };
   
@@ -279,7 +288,12 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual void                  soils( Soils s ) = 0;
   virtual Soils                 soils() = 0;
+
+  virtual void                  cracks( Cracks c ) = 0;
+  virtual Cracks                cracks() = 0;
   
+  virtual void                  refinements( GridRefinements gr ) = 0;
+  virtual GridRefinements       refinements() = 0;
     
 }; // struct IVaporIntrusionGUI
 

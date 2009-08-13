@@ -14,49 +14,55 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __VAPORINTRUSION_BUILDING_DIALOG_H__
-#define __VAPORINTRUSION_BUILDING_DIALOG_H__
+#ifndef __VAPORINTRUSION_REFINE_GRID_DIALOG_H__
+#define __VAPORINTRUSION_REFINE_GRID_DIALOG_H__
 
 #include "VaporIntrusionGUI/Interfaces/IVaporIntrusionGUI.h"
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/Math/Vector3.h"
 
-#include "ui_BuildingDialog.h"
+#include "ui_RefineGridDialog.h"
 
 #include "QtGui/QDialog"
 
 
-class BuildingDialog : public QDialog,
-                             private Ui::BuildingDialog
+class RefineGridDialog : public QDialog,
+                             private Ui::RefineGridDialog
 {
   Q_OBJECT;
 public:
   typedef QDialog BaseClass;
-
-  // Useful typedefs
   typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI IVPI;
-  typedef IVPI::Building Building;
+  typedef IVPI::GridRefinement GridRefinement;
+  typedef IVPI::GridRefinements GridRefinements;
 
-  BuildingDialog ( QWidget *parent = 0x0 );
-  virtual ~BuildingDialog();
+  // Useful typedefs  
 
-  Building building();
-  void     building( Building b );
-  bool     useBuilding();
+  RefineGridDialog ( QWidget *parent = 0x0 );
+  virtual ~RefineGridDialog();
 
-  void     initialize();
+  void                initialize();
 
+  void                refinements( GridRefinements g );
+  GridRefinements     refinements();
 
 protected:
 
+  void                _initialize();
+  void                _clearTable();
+  std::string         _getAxis();
+
 private:
-  Building    _building;
+  GridRefinements     _refinements;
 
 private slots:
+  void on_addButton_clicked();
+  void on_removeButton_clicked();
+  void on_updateButton_clicked();
 
 };
 
 
 
-#endif // __VAPORINTRUSION_BUILDING_DIALOG_H__
+#endif // __VAPORINTRUSION_REFINE_GRID_DIALOG_H__

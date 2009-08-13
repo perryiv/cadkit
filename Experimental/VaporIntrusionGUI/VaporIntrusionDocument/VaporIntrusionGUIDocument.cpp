@@ -81,7 +81,8 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _useBuilding( true ),
   _sources(),
   _contaminants(),
-  _soils()
+  _soils(),
+  _cracks()
 {
   USUL_TRACE_SCOPE;
 
@@ -1899,7 +1900,7 @@ void VaporIntrusionGUIDocument::_readCracks( const std::string& filename )
         Crack c ( sx, sy, ex, ey, w );
 
         // add to the list of contaminants
-        _building.cracks.push_back( c );
+        _cracks.push_back( c );
 
         // increment the number of contaminants read
         ++lineNumber;
@@ -1913,6 +1914,7 @@ void VaporIntrusionGUIDocument::_readCracks( const std::string& filename )
   ifs.close();
 
 }
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2559,4 +2561,56 @@ VaporIntrusionGUIDocument::Soils VaporIntrusionGUIDocument::soils()
 {
   Guard guard ( this );
   return _soils;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the cracks
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::cracks( Cracks c )
+{
+  Guard guard ( this );
+  _cracks = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the cracks
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::Cracks VaporIntrusionGUIDocument::cracks()
+{
+  Guard guard ( this );
+  return _cracks;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the grid refinements
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::refinements( GridRefinements gr )
+{
+  Guard guard ( this );
+  _refinements = gr;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the grid refinements
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::GridRefinements VaporIntrusionGUIDocument::refinements()
+{
+  Guard guard ( this );
+  return _refinements;
 }

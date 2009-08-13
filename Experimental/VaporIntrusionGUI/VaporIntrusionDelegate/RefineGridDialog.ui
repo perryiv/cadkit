@@ -1,0 +1,260 @@
+<ui version="4.0" >
+ <class>RefineGridDialog</class>
+ <widget class="QDialog" name="RefineGridDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>881</width>
+    <height>501</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Grid Spacing Refinement</string>
+  </property>
+  <widget class="QDialogButtonBox" name="okCancelButtons" >
+   <property name="geometry" >
+    <rect>
+     <x>320</x>
+     <y>450</y>
+     <width>160</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="_gridTable" >
+   <property name="geometry" >
+    <rect>
+     <x>390</x>
+     <y>30</y>
+     <width>441</width>
+     <height>351</height>
+    </rect>
+   </property>
+   <property name="rowCount" >
+    <number>0</number>
+   </property>
+   <property name="columnCount" >
+    <number>4</number>
+   </property>
+   <column/>
+   <column/>
+   <column/>
+   <column/>
+  </widget>
+  <widget class="QGroupBox" name="groupBox" >
+   <property name="geometry" >
+    <rect>
+     <x>50</x>
+     <y>30</y>
+     <width>311</width>
+     <height>351</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>Grid Refinement</string>
+   </property>
+   <widget class="QPushButton" name="addButton" >
+    <property name="geometry" >
+     <rect>
+      <x>30</x>
+      <y>300</y>
+      <width>77</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Add</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="removeButton" >
+    <property name="geometry" >
+     <rect>
+      <x>110</x>
+      <y>300</y>
+      <width>77</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Remove</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="updateButton" >
+    <property name="geometry" >
+     <rect>
+      <x>190</x>
+      <y>300</y>
+      <width>77</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Update</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="_x" >
+    <property name="geometry" >
+     <rect>
+      <x>130</x>
+      <y>180</y>
+      <width>31</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>X</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="_y" >
+    <property name="geometry" >
+     <rect>
+      <x>130</x>
+      <y>200</y>
+      <width>31</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Y</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="_z" >
+    <property name="geometry" >
+     <rect>
+      <x>130</x>
+      <y>220</y>
+      <width>31</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Z</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label" >
+    <property name="geometry" >
+     <rect>
+      <x>30</x>
+      <y>40</y>
+      <width>104</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Starting Grid Point</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2" >
+    <property name="geometry" >
+     <rect>
+      <x>30</x>
+      <y>70</y>
+      <width>104</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Ending Grid Point</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3" >
+    <property name="geometry" >
+     <rect>
+      <x>30</x>
+      <y>100</y>
+      <width>104</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Unit Division Point</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="_start" >
+    <property name="geometry" >
+     <rect>
+      <x>150</x>
+      <y>40</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="_end" >
+    <property name="geometry" >
+     <rect>
+      <x>150</x>
+      <y>70</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="_value" >
+    <property name="geometry" >
+     <rect>
+      <x>150</x>
+      <y>100</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4" >
+    <property name="geometry" >
+     <rect>
+      <x>120</x>
+      <y>160</y>
+      <width>53</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Grid Axis</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>okCancelButtons</sender>
+   <signal>accepted()</signal>
+   <receiver>RefineGridDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>okCancelButtons</sender>
+   <signal>rejected()</signal>
+   <receiver>RefineGridDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

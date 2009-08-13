@@ -30,6 +30,9 @@
 #include "AddContaminantsToSourceDialog.h"
 #include "SoilDialog.h"
 #include "SendDialog.h"
+#include "GridSpaceDialog.h"
+#include "RefineGridDialog.h"
+
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 
 #include "Usul/Base/Referenced.h"

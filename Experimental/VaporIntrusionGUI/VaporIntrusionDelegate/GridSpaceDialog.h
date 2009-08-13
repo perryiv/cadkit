@@ -14,10 +14,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __VAPOR_INTRUSION_NEW_DIALOG_H__
-#define __VAPOR_INTRUSION_NEW_DIALOG_H__
+#ifndef __VAPOR_INTRUSION_GRID_SPACE_DIALOG_H__
+#define __VAPOR_INTRUSION_GRID_SPACE_DIALOG_H__
 
-#include "ui_NewVaporIntrusion.h"
+#include "ui_GridSpaceDialog.h"
 
 #include "QtGui/QWidget"
 
@@ -25,19 +25,27 @@
 
 #include <string>
 
-class NewVaporIntrusion : public QDialog,
-                       private Ui::NewVaporIntrusion
+class GridSpaceDialog : public QDialog,
+                       private Ui::GridSpaceDialog
 {
   Q_OBJECT;
 public:
   typedef QDialog BaseClass;
   
 
-  NewVaporIntrusion ( QWidget *parent = 0x0 );
-  virtual ~NewVaporIntrusion();
+  GridSpaceDialog ( QWidget *parent = 0x0 );
+  virtual ~GridSpaceDialog();
 
+  std::string         name();
+  unsigned int        x();
+  unsigned int        y();
+  unsigned int        z();
 
 private:
+ 
+
+  unsigned int _defaultValue;
+
 
 private slots:
   
@@ -45,4 +53,4 @@ private slots:
 
 
 
-#endif // __VAPOR_INTRUSION_NEW_DIALOG_H__
+#endif // __VAPOR_INTRUSION_GRID_SPACE_DIALOG_H__

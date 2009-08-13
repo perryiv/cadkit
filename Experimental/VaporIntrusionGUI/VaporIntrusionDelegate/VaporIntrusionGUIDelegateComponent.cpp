@@ -374,7 +374,14 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   //  throw Usul::Exceptions::Canceled();
 
   // Make the dialog.
-  NewVaporIntrusion dialog ( parent );
+  NewVaporIntrusion nd ( parent );
+
+  // Show the dialog.
+  if ( QDialog::Accepted != nd.exec() )
+    throw Usul::Exceptions::Canceled();
+
+  // Make the dialog.
+  GridSpaceDialog dialog ( parent );
 
   // Show the dialog.
   if ( QDialog::Accepted != dialog.exec() )
@@ -383,11 +390,27 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   // Get and store the dimensions
   Usul::Math::Vec3ui d ( dialog.x(), dialog.y(), dialog.z() );
 
+  // Make the dialog.
+  RefineGridDialog rd ( parent );
+
+  // Show the dialog.
+  if ( QDialog::Accepted != rd.exec() )
+    throw Usul::Exceptions::Canceled();
+
+  // Make the dialog.
+  BuildingDialog bd ( parent );
+
+  // Show the dialog.
+  if ( QDialog::Accepted != bd.exec() )
+    throw Usul::Exceptions::Canceled();
+
   // get the document
   VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr doc ( document );
 
   if( true == doc.valid() )
-  {
+  {    
+    // set the grid refinements
+    doc->refinements( rd.refinements() );
 
     // set the dimensions
     doc->dimensions( d );
@@ -395,28 +418,8 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
     // initialize the document
     doc->initialize();
 
-    //// get the user selected building parameters.
-    //if( true == bd.useBuilding() )
-    //{
-    //  Building b ( bd.building() );
-    //  doc->building( b );
-    //  doc->useBuilding( true );
-    //}
-    //else
-    //{
-    //  doc->useBuilding( false );
-    //}
-
-    doc->useBuilding( false );
-
-    //// set the source information in the document
-    //doc->sources( actsd.sources() );
-
-    //// set the contaminant information in the document
-    //doc->contaminants( actsd.contaminants() );
-
-    //// set the soils
-    //doc->soils( soilDialog.soils() );
+    // set to use buildings or not
+    doc->useBuilding( bd.useBuilding() );
 
   }
   

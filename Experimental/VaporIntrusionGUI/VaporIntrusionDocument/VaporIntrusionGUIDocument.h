@@ -72,10 +72,14 @@ public:
   typedef IVaporIntrusionGUI::GridMaterial                      GridMaterial;
   typedef IVaporIntrusionGUI::GridMaterials                     GridMaterials; 
   typedef IVaporIntrusionGUI::Building                          Building;
+  typedef IVaporIntrusionGUI::Crack                             Crack;
+  typedef IVaporIntrusionGUI::Cracks                            Cracks;
   typedef IVaporIntrusionGUI::Source                            Source;
   typedef IVaporIntrusionGUI::Sources                           Sources;
   typedef IVaporIntrusionGUI::Soil                              Soil;
   typedef IVaporIntrusionGUI::Soils                             Soils;
+  typedef IVaporIntrusionGUI::GridRefinement                    GridRefinement;
+  typedef IVaporIntrusionGUI::GridRefinements                   GridRefinements;
   typedef std::vector< std::string >                            StringVec;
 
   
@@ -213,6 +217,12 @@ public:
   virtual void                soils( Soils s );
   virtual Soils               soils();
 
+  virtual void                cracks( Cracks c );
+  virtual Cracks              cracks();
+  
+  virtual void                refinements( GridRefinements gr );
+  virtual GridRefinements     refinements();
+
 protected:
 
   /// Do not copy.
@@ -281,6 +291,8 @@ private:
     Sources                   _sources;
     Contaminants              _contaminants;
     Soils                     _soils;
+    Cracks                    _cracks;
+    GridRefinements           _refinements;
   
 };
 

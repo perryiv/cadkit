@@ -420,7 +420,6 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
 
     // set to use buildings or not
     doc->useBuilding( bd.useBuilding() );
-
   }
   
 }

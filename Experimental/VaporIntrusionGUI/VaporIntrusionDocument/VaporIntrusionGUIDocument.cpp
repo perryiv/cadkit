@@ -82,7 +82,8 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _sources(),
   _contaminants(),
   _soils(),
-  _cracks()
+  _cracks(),
+  _originalToCurrentIndex()
 {
   USUL_TRACE_SCOPE;
 
@@ -357,12 +358,21 @@ void VaporIntrusionGUIDocument::_initCubes()
   _xValues.at( 0 ).first = 0.0f - ( static_cast< double > ( _dimensions[0] ) / 2 );
   _xValues.at( 0 ).second = 1.0f;
 
+  // add to the map
+  _originalToCurrentIndex[ "X0" ] = 0;
+
   // set the x values to defaults
   for( unsigned int i = 1; i < _dimensions[0]; ++i )
   {
     double position ( _xValues.at( i - 1 ).first + _xValues.at( i - 1 ).second );
     _xValues.at( i ).first = position;
     _xValues.at( i ).second = 1.0f;
+
+    // key value for map
+    std::string key ( Usul::Strings::format( "X", i ) );
+
+    // add to the map
+    _originalToCurrentIndex[ key ] = i;
   }
 
   // size the y values
@@ -372,12 +382,21 @@ void VaporIntrusionGUIDocument::_initCubes()
   _yValues.at( 0 ).first = 0.0f - ( static_cast< double > ( _dimensions[1] ) / 2 );
   _yValues.at( 0 ).second = 1.0f;
 
+  // add to the map
+  _originalToCurrentIndex[ "Y0" ] = 0;
+
   // set the x values to defaults
   for( unsigned int j = 1; j < _dimensions[1]; ++j )
   {
     double position ( _yValues.at( j - 1 ).first + _xValues.at( j - 1 ).second );
     _yValues.at( j ).first = position;
     _yValues.at( j ).second = 1.0f;
+    
+    // key value for map
+    std::string key ( Usul::Strings::format( "Y", j ) );
+
+    // add to the map
+    _originalToCurrentIndex[ key ] = j;
   }
 
    // size the x values
@@ -387,12 +406,21 @@ void VaporIntrusionGUIDocument::_initCubes()
   _zValues.at( 0 ).first = 0.0f - ( static_cast< double > ( _dimensions[2] ) / 2 );
   _zValues.at( 0 ).second = 1.0f;
 
+  // add to the map
+  _originalToCurrentIndex[ "Z0" ] = 0;
+
   // set the x values to defaults
   for( unsigned int k = 1; k < _dimensions[2]; ++k )
   {
     double position ( _zValues.at( k - 1 ).first + _zValues.at( k - 1 ).second );
     _zValues.at( k ).first = position;
     _zValues.at( k ).second = 1.0f;
+    
+    // key value for map
+    std::string key ( Usul::Strings::format( "Z", k ) );
+
+    // add to the map
+    _originalToCurrentIndex[ key ] = k;
   }
 
 #endif
@@ -800,7 +828,13 @@ void VaporIntrusionGUIDocument::dimensions( Usul::Math::Vec3ui d )
 {
   Guard guard( this );
   _dimensions = d;
+
+  // build the cubes based on the current dimensions
   this->_initCubes();
+
+  // Adjust the grid spacing and rebuild the cubes
+  this->_adjustGridSpacing();
+
 }
 
 
@@ -2613,4 +2647,176 @@ VaporIntrusionGUIDocument::GridRefinements VaporIntrusionGUIDocument::refinement
 {
   Guard guard ( this );
   return _refinements;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Insert <numToAdd> number of gridPoints from <startPoint> until <endPoint>
+// for axis <axis>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_insertGridSpacing( const std::string& axis, unsigned int startPoint, unsigned int endPoint, unsigned int numToAdd )
+{
+  Guard guard ( this );
+
+  GridPoints axisGrid ( this->_getGridFromAxis( axis ) );
+  GridPoints grid;
+
+  float distance ( ( static_cast< float > ( endPoint ) - static_cast< float > ( startPoint ) ) / numToAdd );
+
+  std::string key( Usul::Strings::format( axis, startPoint ) );
+  unsigned int index ( _originalToCurrentIndex[ key ] );
+
+  for( unsigned int i = 0; i < index; ++i )
+  {
+    grid.push_back( axisGrid.at( i ) );
+  }
+
+  float position ( axisGrid.at( index ).first );
+  for( unsigned int i = 0; i < numToAdd; ++i )
+  {
+    grid.push_back( GridPoint( static_cast< double > ( position ), static_cast< double > ( distance ) ) );
+  
+    position += distance;
+  }
+  
+  for( unsigned int i = index + 1; i < axisGrid.size(); ++i )
+  {
+    grid.push_back( axisGrid.at( i ) );
+  }
+
+  this->_setGridFromAxis( axis, grid );
+
+  for( GridMap::iterator iter = _originalToCurrentIndex.begin(); iter != _originalToCurrentIndex.end(); ++iter )
+  {
+    std::string iterKey ( iter->first );
+    std::string iterAxis ( iterKey.substr( 0, 1 ) );
+
+    if( iterAxis == axis )
+    {
+      unsigned int iterKeyIndex ( Usul::Convert::Type< std::string, unsigned int >::convert( iterKey.substr( 1, iterKey.length() ) ) );
+      unsigned int keyIndex ( Usul::Convert::Type< std::string, unsigned int >::convert( key.substr( 1, key.length() ) ) );
+
+      if( iterKeyIndex > keyIndex  )
+      {
+        unsigned int newValue ( iter->second + numToAdd );
+        
+        _originalToCurrentIndex[ iterKey ] = newValue;
+        
+      }
+    }
+  }
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Return the grid points for the specified axis
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::GridPoints VaporIntrusionGUIDocument::_getGridFromAxis( const std::string& axis )
+{
+  GridPoints grid;
+
+  if( axis == "X" )
+    grid = _xValues;
+
+  if( axis == "Y" )
+    grid = _yValues;
+
+  if( axis == "Z" )
+    grid = _zValues;
+
+  return grid;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the grid points for the specified axis
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_setGridFromAxis( const std::string& axis, GridPoints grid )
+{
+  
+  if( axis == "X" )
+  {
+    _xValues = grid;
+  }
+
+  if( axis == "Y" )
+  {
+    _yValues = grid;
+  }
+
+  if( axis == "Z" )
+  {
+    _zValues = grid;
+  }
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Adjust the grid spacing based on the grid dimensions and the grid
+// refinement options specified by the user.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_adjustGridSpacing()
+{
+  Guard guard ( this );
+
+  // get the dimensions
+  unsigned int xmax ( _dimensions[0] );
+  unsigned int ymax ( _dimensions[1] );
+  unsigned int zmax ( _dimensions[2] );
+
+  // parse the refinements for changes that need to be made to the
+  // grid spacing and dimensions
+
+  for( unsigned int i = 0; i < _refinements.size(); ++i )
+  {
+    // get the refinement
+    GridRefinement gr ( _refinements.at( i ) );
+  
+    // get the start and end values
+    unsigned int start ( Usul::Convert::Type< std::string, unsigned int >::convert ( gr.start ) );
+    unsigned int end   ( Usul::Convert::Type< std::string, unsigned int >::convert ( gr.end   ) );
+
+    // get the difference and calculate the number of grid points to add
+    float value ( Usul::Convert::Type< std::string, float >::convert ( gr.value ) );
+    float diff ( 1.0 / value );
+    int numToAdd ( static_cast< int > ( diff ) - 1 );
+
+    // insert between start and end
+    this->_insertGridSpacing( gr.axis, start, end, numToAdd );
+
+    // add to the xmax axis
+    if( gr.axis == "X" )
+    {
+      xmax += numToAdd;
+    }
+
+    // add to the ymax axis
+    if( gr.axis == "Y" )
+    {
+      ymax += numToAdd;
+    }
+
+    // add to the xmax axis
+    if( gr.axis == "Z" )
+    {
+      zmax += numToAdd;
+    }
+  }
+
+  // adjust the dimensions
+  _dimensions = Usul::Math::Vec3ui( xmax, ymax, zmax );
+
 }

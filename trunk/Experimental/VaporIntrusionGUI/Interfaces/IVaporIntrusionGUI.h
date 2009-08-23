@@ -52,7 +52,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   {
     std::string axis, start, end, value;
 
-    GridRefinement(): axis( "x" ), start( "0" ), end( "0" ), value( "1" ) {};
+    GridRefinement(): axis( "x" ), start( "0" ), end( "0" ), value( "0" ) {};
     GridRefinement( const std::string& a, const std::string& s, const std::string& e, const std::string& v ): 
     axis( a ), start( s ), end( e ), value( v ) {};
   };

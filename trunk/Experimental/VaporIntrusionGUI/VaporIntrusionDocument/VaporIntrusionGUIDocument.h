@@ -62,7 +62,8 @@ public:
   typedef DocManager::DocumentInfo                              Info;
   typedef osg::ref_ptr< osg::Group >                            GroupPtr;
   typedef osg::Vec4                                             Color;
-  typedef std::vector< std::pair< double, double > >            GridPoints;
+  typedef std::pair< double, double >                           GridPoint;
+  typedef std::vector< GridPoint >                              GridPoints;
   typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::ParameterList   ParameterList;
   typedef IVaporIntrusionGUI::InputColumns                      InputColumns;
   typedef IVaporIntrusionGUI::InputColumn                       InputColumn;
@@ -81,6 +82,7 @@ public:
   typedef IVaporIntrusionGUI::GridRefinement                    GridRefinement;
   typedef IVaporIntrusionGUI::GridRefinements                   GridRefinements;
   typedef std::vector< std::string >                            StringVec;
+  typedef std::map< std::string, unsigned int >                 GridMap;
 
   
   // structs and typedefs for structs
@@ -274,6 +276,12 @@ protected:
   void                        _readAllofValues( unsigned int& index, InputColumn& column, const StringVec& sv );
   void                        _readOneofValues( unsigned int& index, InputColumn& column, const StringVec& sv );
 
+  void                        _adjustGridSpacing();
+  void                        _insertGridSpacing( const std::string& axis, unsigned int startPoint, unsigned int endPoint, unsigned int numToAdd );
+
+  GridPoints                  _getGridFromAxis( const std::string& axis );
+  void                        _setGridFromAxis( const std::string& axis, GridPoints grid );
+
 private:
     GroupPtr                  _root;
     Usul::Math::Vec3ui        _dimensions;
@@ -293,6 +301,7 @@ private:
     Soils                     _soils;
     Cracks                    _cracks;
     GridRefinements           _refinements;
+    GridMap                   _originalToCurrentIndex;
   
 };
 

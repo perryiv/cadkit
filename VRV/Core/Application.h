@@ -69,8 +69,12 @@
 #include "MenuKit/OSG/Menu.h"
 #include "MenuKit/CommandVisitor.h"
 
-#include "vrj/Draw/OGL/GlApp.h"
+#if __VJ_version < 2003018
 #include "vrj/Draw/OGL/GlContextData.h"
+#else
+#include "vrj/Draw/OpenGL/ContextData.h"
+#endif
+
 #include "plugins/ApplicationDataManager/UserData.h"
 
 #include "osg/Referenced"
@@ -168,6 +172,14 @@ public:
   typedef std::map < std::string, TransformFunctor::RefPtr > TransformFunctors;
   typedef std::map < std::string, FavoriteFunctor::RefPtr >  FavoriteFunctors;
   typedef FavoriteFunctors::iterator                         FavoriteIterator;
+
+#if __VJ_version < 2003018
+  typedef vrj::GLDrawManager GlDrawManager;
+  typedef vrj::GlContextData<RendererPtr> PerContextRenderer;
+#else
+  typedef vrj::opengl::DrawManager GlDrawManager;
+  typedef vrj::opengl::ContextData<RendererPtr> PerContextRenderer;
+#endif
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -331,7 +343,7 @@ protected:
   virtual void                  _postDraw ( OsgTools::Render::Renderer *renderer );
 
   /// Set the viewport.
-  virtual void                  _setViewport ( osg::Viewport*, vrj::GlDrawManager* );
+  virtual void                  _setViewport ( osg::Viewport*, GlDrawManager* );
 
   void                          _construct();
 
@@ -656,7 +668,7 @@ private:
   cluster::UserData < SharedDouble >     _sharedReferenceTime;
   cluster::UserData < SharedMatrix >     _sharedMatrix;
   mutable cluster::UserData < SharedString >     _sharedScreenShotDirectory;
-  vrj::GlContextData< RendererPtr >      _renderer;
+  PerContextRenderer                     _renderer;
   Renderers                              _renderers;
   OsgTools::Render::SceneManager::RefPtr _sceneManager;
   ProgressBars::RefPtr                   _progressBars;

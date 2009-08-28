@@ -22,7 +22,12 @@
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
+#include "vrj/vrjParam.h"
+#if __VJ_version < 2003018
 #include "vrj/Draw/OGL/GlApp.h"
+#else
+#include "vrj/Draw/OpenGL/App.h"
+#endif
 
 #include <string>
 
@@ -30,12 +35,21 @@ namespace VRV {
 namespace Core {
 
 
+#if __VJ_version < 2003018
 class VRV_EXPORT BaseApplication : public vrj::GlApp
+#else
+class VRV_EXPORT BaseApplication : public vrj::opengl::App
+#endif
 {
 public:
 
   // Typedefs.
+#if __VJ_version < 2003018
   typedef vrj::GlApp                           BaseClass;
+#else
+  typedef vrj::opengl::App                     BaseClass;
+#endif
+  
   typedef Usul::Threads::RecursiveMutex        Mutex;
   typedef Usul::Threads::Guard<Mutex>          Guard;
   typedef VRV::Devices::ButtonGroup            ButtonGroup;

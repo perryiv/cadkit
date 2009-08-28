@@ -89,7 +89,12 @@
 #include "osg/Material"
 
 #include "vrj/Kernel/Kernel.h"
+
+#if __VJ_version < 2003018
 #include "vrj/Draw/OGL/GlWindow.h"
+#else
+#include "vrj/Draw/OpenGL/Window.h"
+#endif
 
 #include "boost/filesystem/operations.hpp"
 #include "boost/bind.hpp"
@@ -173,7 +178,7 @@ Application::Application() :
   _selectButtonID     ( VRV::BUTTON_TRIGGER ),
   _menuButtonID       ( VRV::BUTTON_JOYSTICK ),
   _menuNavigationAnalogID ( "Joystick" ),
-	_bodyCenteredRotation ( false ),
+  _bodyCenteredRotation ( false ),
   _buttons           ( new VRV::Devices::ButtonGroup ),
   _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
   _analogs           (),
@@ -582,7 +587,7 @@ void Application::contextInit()
   // Initialize the renderer.
   renderer->init();
 
-  const unsigned int uniqueContextId ( vrj::GlDrawManager::instance()->getCurrentContext() );
+  const unsigned int uniqueContextId ( GlDrawManager::instance()->getCurrentContext() );
 
   renderer->uniqueID( uniqueContextId );
 
@@ -781,7 +786,7 @@ void Application::_draw ( OsgTools::Render::Renderer *renderer )
   // Make sure we always use one until multipass is fixed (It would probably be better to use multi-sampling instead).
   renderer->setNumRenderPasses ( 1 );
 
-  vrj::GlDrawManager* mgr ( vrj::GlDrawManager::instance() );
+  GlDrawManager* mgr ( GlDrawManager::instance() );
   USUL_ASSERT ( 0x0 != mgr );
 
   // ? constantly adjust the viewport ?
@@ -789,8 +794,14 @@ void Application::_draw ( OsgTools::Render::Renderer *renderer )
   this->_setViewport ( vp, mgr );
 
   // constantly update the projection matrix
-  vrj::GlUserData* userData    ( mgr->currentUserData() );
+#if __VJ_version < 2003018
+  vrj::GlUserData* userData ( mgr->currentUserData() );
   vrj::Projection* projection  ( userData->getProjection() );
+#else
+  vrj::opengl::UserData* userData ( mgr->currentUserData() );
+  vrj::ProjectionPtr projection  ( userData->getProjection() );
+#endif
+  
   vrj::Frustum frustum         ( projection->getFrustum() );
   
   // We need to set this every frame to account for stereo.
@@ -987,6 +998,26 @@ double Application::getTimeSinceStart()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper to account for api differences.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template<class UserData>
+  inline void initUserData ( UserData& data, const vpr::GUID& guid, const std::string& address )
+  {
+#if __VJ_version < 2003018
+    data.init ( guid, address );
+#else
+    data.init ( guid );
+#endif
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Initialize the application.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1005,29 +1036,28 @@ void Application::_init()
   _initialTime = _timer.tick();
 
   const std::string head ( this->preferences()->headNodeMachineName() );
-  std::cout << "Head: " << head << std::endl;
   
   // Initialize the shared frame time data.
   {
     vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
-    _sharedFrameTime.init ( guid, head );
+    ::Helper::initUserData ( _sharedFrameTime, guid, head );
   }
 
   // Initialize the shared frame start data.
   {
     vpr::GUID guid ( "2E3E374B-B232-476f-A870-F854E717F61A" );
-    _sharedReferenceTime.init ( guid, head );
+    ::Helper::initUserData ( _sharedReferenceTime, guid, head );
   }
 
   // Initialize the shared navigation matrix.
   {
     vpr::GUID guid ( "FEFB5D44-9EC3-4fe3-B2C7-43C394A49848" );
-    _sharedMatrix.init ( guid, head );
+    ::Helper::initUserData ( _sharedMatrix, guid, head );
   }
 
   {
     vpr::GUID guid ( "edfcdb08-eece-45f5-b9d7-174bba164a41" );
-    _sharedScreenShotDirectory.init ( guid, head );
+    ::Helper::initUserData ( _sharedScreenShotDirectory, guid, head );
   }
   
 
@@ -1319,7 +1349,7 @@ void Application::_postFrame()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_setViewport( osg::Viewport* vp, vrj::GlDrawManager* mgr )
+void Application::_setViewport( osg::Viewport* vp, GlDrawManager* mgr )
 {
   USUL_TRACE_SCOPE;
 

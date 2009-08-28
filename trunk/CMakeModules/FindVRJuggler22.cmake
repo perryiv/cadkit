@@ -8,25 +8,64 @@
 
 
 # Look for a root installation
-FIND_PATH(VRJ_BASE_DIR include/vrjuggler-2.2/vrj/vrjConfig.h
-	/usr
-	/usr/local
-	"$ENV{VJ_BASE_DIR}"
+FIND_PATH(VRJ_BASE_DIR 
+	NAMES vrj/vrjConfig.h
+	PATHS /usr
+	      /usr/local
+	      "$ENV{VJ_BASE_DIR}"
+	PATH_SUFFIXES include/vrjuggler-2.2
+		      include/vrjuggler-2.3.18
 	DOC "The root of an installed vr-juggler installation"
 )
 
-IF(VRJ_BASE_DIR)
 
-  SET(VRJ_INC_DIR ${VRJ_BASE_DIR}/include/vrjuggler-2.2)
-  SET(VPR_INC_DIR ${VRJ_BASE_DIR}/include/vpr-2.0)
-  SET(GADGET_INC_DIR ${VRJ_BASE_DIR}/include/gadgeteer-1.2)
-  SET(TWEEK_INC_DIR ${VRJ_BASE_DIR}/include/tweek-1.2)
-  SET(SONIX_INC_DIR ${VRJ_BASE_DIR}/include/sonix-1.2)
-  SET(JCCL_INC_DIR ${VRJ_BASE_DIR}/include/jccl-1.2)
+FIND_PATH(VRJ_INC_DIR
+        NAMES vrj/vrjConfig.h
+        PATHS /usr/include
+              /usr/local/include
+              ${VRJ_BASE_DIR}/include
+        PATH_SUFFIXES vrjuggler-2.2
+                      vrjuggler-2.3.18
+        DOC "VR-Juggler include path"
+)
+
+
+FIND_PATH(VPR_INC_DIR
+        NAMES vpr/vprConfig.h
+        PATHS /usr/include
+              /usr/local/include
+              ${VRJ_BASE_DIR}/include
+        PATH_SUFFIXES vpr-2.0
+                      vpr-2.1.14
+        DOC "Vapor include path"
+)
+
+FIND_PATH(GADGET_INC_DIR
+        NAMES gadget/gadgetConfig.h
+        PATHS /usr/include
+              /usr/local/include
+              ${VRJ_BASE_DIR}/include
+        PATH_SUFFIXES gadgeteer-1.2
+                      gadgeteer-1.3.23
+        DOC "Gadgeteer include path"
+)
+
+FIND_PATH(JCCL_INC_DIR
+        NAMES jccl/jcclConfig.h
+        PATHS /usr/include
+              /usr/local/include
+              ${VRJ_BASE_DIR}/include
+        PATH_SUFFIXES jccl-1.2                                                    
+                      jccl-1.3.5 
+        DOC "Jackel include path" 
+)
+
+
+SET(TWEEK_INC_DIR ${VRJ_BASE_DIR}/include/tweek-1.2)
+SET(SONIX_INC_DIR ${VRJ_BASE_DIR}/include/sonix-1.2)
   
-  SET(VR_JUGGLER_INCLUDES ${VRJ_INC_DIR} ${VPR_INC_DIR} ${GADGET_INC_DIR} ${TWEEK_INC_DIR} ${SONIX_INC_DIR} ${JCCL_INC_DIR} )
+SET(VR_JUGGLER_INCLUDES ${VRJ_INC_DIR} ${VPR_INC_DIR} ${GADGET_INC_DIR} ${TWEEK_INC_DIR} ${SONIX_INC_DIR} ${JCCL_INC_DIR} )
 
-ENDIF(VRJ_BASE_DIR)
 
 ################################################################
 #

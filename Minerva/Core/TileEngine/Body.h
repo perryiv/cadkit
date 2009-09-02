@@ -17,11 +17,11 @@
 #ifndef _MINERVA_CORE_TILE_ENGINE_BODY_CLASS_H_
 #define _MINERVA_CORE_TILE_ENGINE_BODY_CLASS_H_
 
-#include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Macros.h"
 #include "Minerva/Core/TileEngine/LandModel.h"
 #include "Minerva/Core/TileEngine/SplitCallbacks.h"
 #include "Minerva/Core/TileEngine/Tile.h"
+#include "Minerva/Core/TileEngine/Typedefs.h"
 #include "Minerva/Core/Jobs/BuildRaster.h"
 #include "Minerva/Core/Layers/ElevationGroup.h"
 #include "Minerva/Core/Layers/RasterGroup.h"
@@ -39,9 +39,6 @@
 #include "Usul/Math/Vector3.h"
 #include "Usul/Threads/Variable.h"
 
-#include "boost/shared_ptr.hpp"
-
-#include "osg/Vec2d"
 #include "osg/MatrixTransform"
 #include "osg/Texture"
 
@@ -66,8 +63,6 @@ public:
   typedef Usul::Base::Object BaseClass;
   typedef Usul::Math::Vec2d Vec2d;
   typedef Usul::Math::Vec3d Vec3d;
-  typedef Minerva::Core::Extents < osg::Vec2d > Extents;
-  typedef Usul::Math::Vec2ui MeshSize;
   typedef Minerva::Core::TileEngine::Callbacks::SplitCallback SplitCallback;
   typedef osg::ref_ptr<osg::MatrixTransform> MatrixTransformPtr;
   typedef Usul::Pointers::WeakPointer < Body > WeakPtr;
@@ -79,8 +74,7 @@ public:
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef std::list<Tile::RefPtr> Tiles;
   typedef Minerva::Core::Jobs::BuildRaster BuildRaster;
-  typedef Usul::Interfaces::ILog::RefPtr LogPtr;
-  typedef Usul::Math::Vec2ui ImageSize;
+  typedef Usul::Interfaces::ILog::RefPtr LogPtr;  
 
   // Helper macro for repeated code.
   MINERVA_DEFINE_NODE_CLASS ( Body );
@@ -89,7 +83,12 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
   
   // Constructors
-  Body ( LandModel *land = 0x0, Usul::Jobs::Manager *manager = 0x0, const MeshSize &ms = MeshSize ( 17, 17 ), double splitDistance = 1 );
+  Body ( 
+    LandModel *land = 0x0, 
+    Usul::Jobs::Manager *manager = 0x0, 
+    const MeshSize &ms = MeshSize ( 17, 17 ), 
+    const ImageSize &is = ImageSize ( 256, 256 ),
+    double splitDistance = 1 );
 
   // Add a tile for the given extents.
   void                      addTile ( const Extents & );

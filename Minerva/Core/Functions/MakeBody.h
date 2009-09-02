@@ -17,6 +17,7 @@
 #define __MINERVA_CORE_FUNCTIONS_MAKE_BODY_H__
 
 #include "Minerva/Core/Export.h"
+#include "Minerva/Core/TileEngine/Typedefs.h"
 
 // Forward declarations.
 namespace Usul { namespace Jobs { class Manager; } }
@@ -28,6 +29,11 @@ namespace Functions {
   
 
   MINERVA_EXPORT Minerva::Core::TileEngine::Body* makeEarth ( Usul::Jobs::Manager * );
+  MINERVA_EXPORT Minerva::Core::TileEngine::Body* makeEarth ( 
+    Usul::Jobs::Manager *, 
+    const Minerva::Core::TileEngine::MeshSize&, 
+    const Minerva::Core::TileEngine::ImageSize&,
+    double splitDistance );
 
   
 }

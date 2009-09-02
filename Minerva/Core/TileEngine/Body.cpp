@@ -76,7 +76,7 @@ const int VECTOR_RENDER_BIN_NUMBER ( 10000 );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, double splitDistance ) : BaseClass(),
+Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, const ImageSize &is, double splitDistance ) : BaseClass(),
   _transform ( new osg::MatrixTransform ),
   _graphic ( new VectorGroup ),
   _landModel ( land ),
@@ -100,7 +100,7 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _needsRedraw ( false ),
   _log ( 0x0 ),
   _name( "Body" ),
-  _imageSize ( 256, 256 ),
+  _imageSize ( is ),
   _alpha ( 1.0f ),
   _maxAnisotropy ( Usul::Registry::Database::instance()["default_max_anisotropy"].get<float> ( 16.0f, true ) ),
   SERIALIZE_XML_INITIALIZER_LIST
@@ -741,7 +741,7 @@ void Body::cacheTiles ( bool state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Body::MeshSize Body::meshSize ( const Body::Extents &extents )
+MeshSize Body::meshSize ( const Extents &extents )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -919,7 +919,7 @@ void Body::serialize ( XmlTree::Node &parent ) const
     if ( true == tile.valid() )
     {
       // Add the extents.
-      const Tile::Extents e ( tile->extents() );
+      const Extents e ( tile->extents() );
       tiles.push_back ( Usul::Math::Vec4d ( e.minimum()[0], e.minimum()[1], e.maximum()[0], e.maximum()[1] ) );
     }
   }
@@ -961,7 +961,7 @@ void Body::deserialize ( const XmlTree::Node &node )
   {
     // Add the tile.
     const Tiles::value_type e ( *i );
-    this->addTile ( Tile::Extents ( e[0], e[1], e[2], e[3] ) );
+    this->addTile ( Extents ( e[0], e[1], e[2], e[3] ) );
   }
   
   // Re-add these scenes to the transform because a new one was just created.
@@ -1020,7 +1020,7 @@ double Body::splitDistance() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Body::Extents Body::_buildExtents ( Usul::Interfaces::IUnknown* unknown )
+Extents Body::_buildExtents ( Usul::Interfaces::IUnknown* unknown )
 {
   Usul::Interfaces::ILayerExtents::QueryPtr le ( unknown );
   
@@ -1041,12 +1041,10 @@ Body::Extents Body::_buildExtents ( Usul::Interfaces::IUnknown* unknown )
 
 namespace Detail
 {
-  bool elevationFromTile ( Tile::RefPtr tile, const Body::Extents::Vertex& p, double& elevation )
+  bool elevationFromTile ( Tile::RefPtr tile, const Extents::Vertex& p, double& elevation )
   {
     if ( false == tile.valid() )
       return false;
-
-    typedef Tile::Extents Extents;
 
     Extents e ( tile->extents() );
 
@@ -1564,7 +1562,7 @@ Body::Alphas Body::alphas() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Body::Extents Body::extents() const
+Extents Body::extents() const
 {
   USUL_TRACE_SCOPE;
   Extents e ( 0, 0, 0, 0 );

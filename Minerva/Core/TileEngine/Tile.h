@@ -21,6 +21,7 @@
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Data/Container.h"
 #include "Minerva/Core/TileEngine/Mesh.h"
+#include "Minerva/Core/TileEngine/Typedefs.h"
 #include "Minerva/Interfaces/IElevationData.h"
 #include "Minerva/Interfaces/IIntersectNotify.h"
 #include "Minerva/Interfaces/ITile.h"
@@ -100,9 +101,6 @@ public:
   typedef osg::observer_ptr<Tile> WeakPtr;
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
-  typedef Minerva::Core::Extents < osg::Vec2d > Extents;
-  typedef Usul::Math::Vec2ui MeshSize;
-  typedef MeshSize ImageSize;
   typedef std::vector < Tile::RefPtr > Tiles;
   typedef Tiles Children;
   typedef osg::ref_ptr<osg::Image> ImagePtr;

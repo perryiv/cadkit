@@ -40,7 +40,7 @@ BuildRaster::BuildRaster ( Tile::RefPtr tile ) : BaseClass ( 0x0, false ),
     const unsigned int level ( _tile->level() );
     this->priority ( -1 * static_cast<int> ( level ) );
   
-    const Tile::Extents extents ( _tile->extents() );
+    const Minerva::Core::TileEngine::Extents extents ( _tile->extents() );
     this->name ( Usul::Strings::format ( "BuildRaster, Extents: [", extents.minimum()[0], ", ", extents.minimum()[1], ", ", extents.maximum()[0], ", ", extents.maximum()[1], "], level: ", level ) );
   }
 }

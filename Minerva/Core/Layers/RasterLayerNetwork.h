@@ -99,6 +99,8 @@ private:
 
   void                  _registerMembers();
 
+  void                  _setJobName ( Usul::Jobs::Job* job, const Extents& extents, const std::string& url, unsigned int level );
+
   void                  _downloadFailed ( const std::string &file, const std::string &url );
 
   std::string _url;

@@ -21,10 +21,12 @@ Minerva::Interfaces::IElevationData* Minerva::Core::Algorithms::resampleElevatio
 {
   if ( false == tile.valid() )
     return 0x0;
+
+  using Minerva::Core::TileEngine::MeshSize;
   
-  const Tile::MeshSize meshSize ( tile->meshSize() );
-  const Tile::MeshSize::value_type rows ( meshSize[0] );
-  const Tile::MeshSize::value_type columns ( meshSize[1] );
+  const MeshSize meshSize ( tile->meshSize() );
+  const MeshSize::value_type rows ( meshSize[0] );
+  const MeshSize::value_type columns ( meshSize[1] );
   
   Minerva::Core::ElevationData::RefPtr answer ( new Minerva::Core::ElevationData ( rows, columns ) );
   
@@ -36,7 +38,7 @@ Minerva::Interfaces::IElevationData* Minerva::Core::Algorithms::resampleElevatio
   {
     const double u ( 1.0 - static_cast<double> ( i ) / ( rows - 1 ) );
     
-    for ( Tile::MeshSize::value_type j = 0; j < columns; ++j )
+    for ( MeshSize::value_type j = 0; j < columns; ++j )
     {
       const double v ( static_cast<double> ( j ) / ( columns - 1 ) );
       

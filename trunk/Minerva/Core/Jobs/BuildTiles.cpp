@@ -43,7 +43,7 @@ BuildTiles::BuildTiles ( Tile::RefPtr tile ) : BaseClass ( 0x0, false ),
     const unsigned int level ( _tile->level() );
     this->priority ( -1 * static_cast<int> ( level ) );
   
-    const Tile::Extents extents ( _tile->extents() );
+    const Minerva::Core::TileEngine::Extents extents ( _tile->extents() );
     typedef Usul::Convert::Type<float,std::string> Converter;
     this->name ( Usul::Strings::format ( 
       "BuildTiles, Extents: [", 

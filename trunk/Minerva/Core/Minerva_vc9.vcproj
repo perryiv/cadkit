@@ -821,6 +821,10 @@
 						RelativePath=".\TileEngine\Tile.h"
 						>
 					</File>
+					<File
+						RelativePath=".\TileEngine\Typedefs.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Utilities"

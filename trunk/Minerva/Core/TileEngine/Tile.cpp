@@ -918,11 +918,10 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
 
 namespace Helper
 {
-  inline Usul::Math::Vec2d degreesPerPixel ( const Tile::Extents& extents, const Tile::ImageSize& size )
+  inline Usul::Math::Vec2d degreesPerPixel ( const Extents& extents, const ImageSize& size )
   {
     USUL_TRACE_SCOPE_STATIC;
-    typedef Tile::Extents Extents;
-    
+
     const Extents::Vertex &mn ( extents.minimum() );
     const Extents::Vertex &mx ( extents.maximum() );
 
@@ -939,10 +938,9 @@ namespace Helper
 
 namespace Helper
 {
-  inline Tile::Extents expandExtents ( const Tile::Extents& extents, const Usul::Math::Vec2d& amount )
+  inline Extents expandExtents ( const Extents& extents, const Usul::Math::Vec2d& amount )
   {
     USUL_TRACE_SCOPE_STATIC;
-    typedef Tile::Extents Extents;
     const Extents::Vertex &mn ( extents.minimum() );
     const Extents::Vertex &mx ( extents.maximum() );
 
@@ -1468,7 +1466,7 @@ void Tile::clear ( bool children )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Tile::Extents Tile::extents() const
+Extents Tile::extents() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -1692,7 +1690,7 @@ void Tile::_setTexCoords ( const Usul::Math::Vec4d& t )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Tile::MeshSize Tile::meshSize() const
+MeshSize Tile::meshSize() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

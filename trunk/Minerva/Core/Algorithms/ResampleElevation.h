@@ -24,7 +24,7 @@ namespace Core {
 namespace Algorithms {
 
   typedef Minerva::Core::TileEngine::Tile Tile;
-  typedef Tile::Extents Extents;
+  typedef Minerva::Core::TileEngine::Extents Extents;
 
   MINERVA_EXPORT Minerva::Interfaces::IElevationData* resampleElevation ( Tile::RefPtr tile, const Extents& request );
 

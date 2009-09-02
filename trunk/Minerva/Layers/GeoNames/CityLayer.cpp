@@ -123,7 +123,7 @@ void CityLayer::tileAddNotify ( Usul::Interfaces::IUnknown::RefPtr child, Usul::
   if ( false == tile.valid() )
     return;
 
-  Minerva::Core::TileEngine::Tile::Extents extents ( tile->extents() );
+  Minerva::Core::TileEngine::Extents extents ( tile->extents() );
 
   // Get the cities that lay within this tile.
   Cities cities ( this->citiesGet ( extents, tile->level(), 10 ) );

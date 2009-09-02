@@ -52,10 +52,10 @@ protected:
     _extents = Extents ( minLon, minLat, maxLon, maxLat );
 
     // Mesh size.
-    Tile::MeshSize meshSize ( rows, columns );
+    Minerva::Core::TileEngine::MeshSize meshSize ( rows, columns );
 
     // Image size.
-    Tile::ImageSize imageSize ( 256, 256 );
+    Minerva::Core::TileEngine::ImageSize imageSize ( 256, 256 );
 
     // Make the elevation with a constant value.
     std::vector<float> data ( meshSize[0] * meshSize[1], 100.0 );
@@ -70,7 +70,7 @@ protected:
 
   typedef Minerva::Core::TileEngine::Body Body;
   typedef Minerva::Core::TileEngine::Tile Tile;
-  typedef Tile::Extents Extents;
+  typedef Minerva::Core::TileEngine::Extents Extents;
 
   Body::RefPtr _body;
   Tile::RefPtr _tile;

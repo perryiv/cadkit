@@ -15,9 +15,11 @@
 
 #include "Minerva/Core/TileEngine/Mesh.h"
 #include "Minerva/Core/TileEngine/Body.h"
+#include "Minerva/Core/TileEngine/LandModelEllipsoid.h"
 
 #include "Usul/Algorithms/TriStrip.h"
 #include "Usul/Math/Barycentric.h"
+#include "Usul/Math/MinMax.h"
 #include "Usul/Predicates/Tolerance.h"
 
 #include "OsgTools/Convert.h"
@@ -25,6 +27,7 @@
 #include "OsgTools/State/StateSet.h"
 
 #include "osg/BlendFunc"
+#include "osg/ClusterCullingCallback"
 #include "osg/Geode"
 #include "osg/Depth"
 #include "osg/Hint"
@@ -257,6 +260,64 @@ void Mesh::_buildGeometry ( osg::Geode& mesh, osg::Geode& skirts ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Callback to cull entire mesh at once.
+//  Adapted from Clustered Backface Culling on page 361 of Real-Time Rendering.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  class ClusterCulling : public osg::NodeCallback
+  {
+  public:
+
+    ClusterCulling ( const osg::Vec3d& normal, const osg::Vec3d& anchor, double halfAngle ) :
+      _normal ( normal ),
+      _anchorPoint ( anchor ),
+      _halfAngle ( halfAngle )
+    {
+    }
+    virtual ~ClusterCulling()
+    {
+    }
+
+    virtual void operator() ( osg::Node* node, osg::NodeVisitor* nv )
+    {
+      if ( false == this->_cull ( nv ) )
+      {
+        this->traverse ( node, nv );
+      }
+    }
+
+  private:
+
+    bool _cull ( osg::NodeVisitor* nv )
+    {
+      osg::CullSettings* cs = dynamic_cast<osg::CullSettings*>(nv);
+      if ( cs && !( cs->getCullingMode() & osg::CullSettings::CLUSTER_CULLING ) )
+      {
+        return false;
+      }
+
+      osg::Vec3d eye ( nv->getEyePoint() );
+
+      osg::Vec3d v ( eye - _anchorPoint );
+      osg::Vec3d temp ( v / ( v.length() ) );
+
+      bool result ( ( _normal * temp  ) >= ::cos ( ( osg::PI_2 - _halfAngle ) ) );
+
+      return result;
+    }
+
+    osg::Vec3d _normal;
+    osg::Vec3d _anchorPoint;
+    double _halfAngle;
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the mesh.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -304,6 +365,49 @@ osg::Node* Mesh::buildMesh ( const Body& body,
     }
   }
 
+  osg::ref_ptr<osg::NodeCallback> callback ( 0x0 );
+
+  // Only create a ClusterCullingCallback if we have an ellipsoid.
+  if ( LandModelEllipsoid* model = dynamic_cast<LandModelEllipsoid*> ( body.landModel() ) )
+  {
+    const double midLon ( _extents.center()[0] );
+    const double midLat ( _extents.center()[1] );
+    const double height ( _latLonPoints[0][2] );
+
+    Vectors::value_type centerPosition;
+    model->latLonHeightToXYZ ( midLat, midLon, height, centerPosition[0], centerPosition[1], centerPosition[2] );
+    Vectors::value_type centerNormal ( centerPosition );
+    centerNormal.normalize();
+    
+    double maxAngle ( 0.0 );
+    double maxClusterCullingHeight ( 0.0f );
+
+    bool valid ( true );
+
+    const Vectors::size_type numVertices ( _rows * _columns );
+    for ( Vectors::size_type i = 0; i < numVertices; ++i )
+    {
+      osg::Vec3d v0 ( _points[i] );
+      v0.normalize();
+
+      const double angle ( ::acos ( v0 * centerNormal ) );
+      maxAngle = Usul::Math::maximum ( maxAngle, angle );
+
+      const LatLonPoints::value_type& llh ( _latLonPoints[i] );
+      maxClusterCullingHeight = Usul::Math::maximum ( maxClusterCullingHeight, llh[2] );
+    }
+
+    // Make sure we don't cull large top-level tiles.
+    if ( maxAngle < osg::DegreesToRadians ( 90.0 ) ) 
+    {
+      Vectors::value_type anchorPoint;
+      model->latLonHeightToXYZ ( midLat, midLon, -maxClusterCullingHeight, anchorPoint[0], anchorPoint[1], anchorPoint[2] );
+      anchorPoint -= _points.at ( rows * columns );
+
+      callback = new Detail::ClusterCulling ( -centerNormal, anchorPoint, maxAngle  );
+    }
+  }
+
   // Move mesh vertices to local origin.
   // The offset is the first point of the skirts.
   Vector offset ( _points.at ( rows * columns ) );
@@ -336,6 +440,11 @@ osg::Node* Mesh::buildMesh ( const Body& body,
   _skirts = skirts.get();
   _ground = ground.get();
   _boundingSphere = boundingSphere;
+
+  if ( callback.valid() )
+  {
+    mt->setCullCallback ( callback.get() );
+  }
 
   // Return the MatrixTransform.
   return mt.release();

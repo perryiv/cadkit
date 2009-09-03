@@ -176,7 +176,7 @@ public:
   unsigned int              maxLevel() const;
 
   // Return the mesh size for the extents.
-  MeshSize                  meshSize ( const Body::Extents &extents );
+  MeshSize                  meshSize ( const Extents &extents );
   
   // Set/get the needs redraw state.
   void                      needsRedraw ( bool b );

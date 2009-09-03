@@ -38,6 +38,7 @@
 #include <algorithm>
 #include <limits>
 #include <ctime>
+#include <cstring>
 
 using namespace Minerva::Core::Layers;
 

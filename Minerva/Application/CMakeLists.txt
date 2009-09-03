@@ -8,10 +8,8 @@
 # Set the target name.
 SET ( TARGET_NAME MinervaQt )
 
-SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.cmake)
-
-INCLUDE ( ${CMakeModules}/FindOSG.cmake)
+INCLUDE ( Cadkit )
+INCLUDE ( FindOSG )
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 

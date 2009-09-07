@@ -12,6 +12,7 @@
 #include "Minerva/Layers/GDAL/Convert.h"
 #include "Minerva/Layers/GDAL/Common.h"
 #include "Minerva/Layers/GDAL/MakeImage.h"
+#include "Minerva/Layers/GDAL/WarpOptions.h"
 
 #include "Minerva/Core/Factory/Readers.h"
 
@@ -171,7 +172,7 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   Usul::Scope::RemoveFile removeFile ( tempFilename );
 
   // Create the dataset.
-  Dataset::RefPtr tile ( this->_createTile ( tempFilename, extents, width, height, level, job, caller ) );
+  Dataset::RefPtr tile ( this->_createTile ( tempFilename, extents, width, height, level, job, caller, true, true, 0.0 ) );
   if ( false == tile.valid() )
     return 0x0;
 
@@ -220,7 +221,8 @@ RasterLayerGDAL::IElevationData::RefPtr RasterLayerGDAL::elevationData (
   Usul::Scope::RemoveFile removeFile ( tempFilename );
 
   // Create the dataset.
-  Dataset::RefPtr tile ( this->_createTile ( tempFilename, extents, width, height, level, job, caller ) );
+  const double defaultNoDataValue ( -6666.0 ); // Don't make this value too big (like the biggest negative float).  Odd things happen (Does gdal truncate?).
+  Dataset::RefPtr tile ( this->_createTile ( tempFilename, extents, width, height, level, job, caller, false, false, defaultNoDataValue ) );
   if ( false == tile.valid() )
     return 0x0;
 
@@ -243,7 +245,17 @@ RasterLayerGDAL::IElevationData::RefPtr RasterLayerGDAL::elevationData (
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Dataset::RefPtr RasterLayerGDAL::_createTile ( const std::string& filename, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job, IUnknown *caller )
+Dataset::RefPtr RasterLayerGDAL::_createTile ( 
+  const std::string& filename, 
+  const Extents& extents, 
+  unsigned int width, 
+  unsigned int height, 
+  unsigned int level, 
+  Usul::Jobs::Job *job, 
+  IUnknown *caller,
+  bool addDstAlpha,
+  bool useAlpha,
+  double defaultNoDataValue )
 {
   Minerva::Detail::PushPopErrorHandler error;
   
@@ -267,16 +279,24 @@ Dataset::RefPtr RasterLayerGDAL::_createTile ( const std::string& filename, cons
   // Get the data type.  Assume that all bands have the same type.
   GDALDataType type ( data->GetRasterBand ( 1 )->GetRasterDataType() );
   
+  // Add an alpha channel if we should.
+  const int numDestinationBands ( addDstAlpha ? bands + 1 : bands );
+
   // Create the dataset.
-  Dataset::RefPtr dataset ( new Dataset ( filename, extents, width, height, bands, type ) );
+  Dataset::RefPtr dataset ( new Dataset ( filename, extents, width, height, numDestinationBands, type ) );
   GDALDataset *tile ( dataset->dataset() );
   
   if ( 0x0 == tile )
     return 0x0;
 
+  // Set the color interpretation.
+  if ( addDstAlpha )
+  {
+    tile->GetRasterBand ( numDestinationBands )->SetColorInterpretation ( GCI_AlphaBand );
+  }
+
   // Create the options.  Make sure the options are destroyed.
-  GDALWarpOptions *options ( RasterLayerGDAL::_createWarpOptions ( data, tile, bands ) );
-  Usul::Scope::Caller::RefPtr destroyOptions ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( options, ::GDALDestroyWarpOptions ) ) );
+  WarpOptions options ( data, tile, useAlpha, defaultNoDataValue );
 
   // Return if we don't have valid options.
   if ( 0x0 == options )
@@ -485,88 +505,4 @@ std::string RasterLayerGDAL::_cacheFileExtension() const
 
   // Always save as tiff.
   return "tif";
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create options for warping to destination dataset.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-GDALWarpOptions* RasterLayerGDAL::_createWarpOptions ( GDALDataset* src, GDALDataset* dst, int bands )
-{
-  if ( 0x0 == src || 0x0 == dst )
-    return 0x0;
-
-  // Create the options.
-  GDALWarpOptions *options ( ::GDALCreateWarpOptions() );
-
-  try
-  {
-    int hasNoData ( FALSE );
-
-    // Get the no data value.
-    const double noDataValue ( src->GetRasterBand ( 1 )->GetNoDataValue( &hasNoData ) );
-
-    if ( TRUE == hasNoData )
-    {
-      // Set the no data value.
-      for ( int i = 1; i <= bands; ++i )
-      {
-        GDALRasterBand* band1 ( dst->GetRasterBand ( i ) );
-        band1->SetNoDataValue( noDataValue );
-      }
-
-      // Initialize with no data.
-      char ** warpOptions = 0x0;
-      warpOptions = ::CSLSetNameValue ( warpOptions, "INIT_DEST", "NO_DATA" );
-      warpOptions = ::CSLSetNameValue ( warpOptions, "UNIFIED_SRC_NODATA", "YES" );
-      options->papszWarpOptions = warpOptions;
-
-      options->padfDstNoDataReal = (double*) ( CPLMalloc(sizeof(double) * bands ) );
-      options->padfDstNoDataImag = (double*) ( CPLMalloc(sizeof(double) * bands ) );
-      options->padfSrcNoDataReal = (double*) ( CPLMalloc(sizeof(double) * bands ) );
-      options->padfSrcNoDataImag = (double*) ( CPLMalloc(sizeof(double) * bands ) );
-    }
-
-    // We want cubic B-spline interpolation.
-    options->eResampleAlg = GRA_Bilinear;
-
-    options->hSrcDS = src;
-    options->hDstDS = dst;
-
-    options->nBandCount = bands;
-    options->panSrcBands = (int *) CPLMalloc(sizeof(int) * options->nBandCount );
-    options->panDstBands = (int *) CPLMalloc(sizeof(int) * options->nBandCount );
-
-    for ( int i = 0; i < bands; ++i )
-    {
-      options->panSrcBands[i] = i + 1;
-      options->panDstBands[i] = i + 1;
-
-      if ( TRUE == hasNoData )
-      {
-        // Setting the imaginary no data value causes the warping to create bad images.
-        options->padfSrcNoDataReal[i] = noDataValue;
-        options->padfDstNoDataImag[i] = 0.0; //noDataValue;
-        options->padfDstNoDataReal[i] = noDataValue;
-        options->padfSrcNoDataImag[i] = 0.0; //noDataValue;
-      }
-    }
-  }
-  catch ( const std::exception& e )
-  {
-    // Destroy options and re-throw;
-    ::GDALDestroyWarpOptions ( options );
-    throw e;
-  }
-  catch ( ... )
-  {
-    // Destroy options and re-throw;
-    ::GDALDestroyWarpOptions ( options );
-    throw;
-  }
-
-  return options;
 }

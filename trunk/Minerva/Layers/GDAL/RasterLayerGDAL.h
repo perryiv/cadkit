@@ -70,13 +70,27 @@ protected:
   
   RasterLayerGDAL ( const RasterLayerGDAL& );
 
-  static GDALWarpOptions* _createWarpOptions ( GDALDataset* src, GDALDataset* dst, int numBands );
-
   virtual std::string   _cacheDirectory() const;
   virtual std::string   _cacheFileExtension() const;
 
+  enum TileSemantics
+  {
+    TILE_RASTER_DATA,
+    TILE_ELEVATION_DATA
+  };
+
   /// Create dataset for the given extents.
-  Dataset::RefPtr _createTile ( const std::string& filename, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
+  Dataset::RefPtr _createTile ( 
+    const std::string& filename, 
+    const Extents& extents, 
+    unsigned int width, 
+    unsigned int height, 
+    unsigned int level, 
+    Usul::Jobs::Job *, 
+    IUnknown *caller,
+    bool addDstAlpha,
+    bool useAlpha,
+    double defaultNoDataValue );
 
   void                  _print ( GDALDataset * data );
 

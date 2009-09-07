@@ -30,6 +30,7 @@ SET (SOURCES
 ./Init.cpp
 ./RasterLayerGDAL.cpp
 ./OGRVectorLayer.cpp
+./WarpOptions.cpp
 )
 
 IF(POSTGRESQL_FOUND)

@@ -699,29 +699,6 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   Mesh &mesh ( *mesh_ );
   const osg::Vec3f &eye ( cv.getViewPointLocal() );
 
-  // Do not bother traversing tiles that are facing away.
-#if 0
-  const osg::Vec3f look ( cv.getLookVectorLocal() );
-  
-  // Get the normals.
-  const Mesh::Vector &n0 ( mesh.normal ( 0, 0 ) );
-  const Mesh::Vector &n1 ( mesh.normal ( 0, mesh.columns() - 1 ) );
-  const Mesh::Vector &n2 ( mesh.normal ( mesh.rows() - 1, 0 ) );
-  const Mesh::Vector &n3 ( mesh.normal ( mesh.rows() - 1, mesh.columns() - 1 ) );
-  const Mesh::Vector &n4 ( mesh.normal ( mesh.rows() / 2, mesh.columns() / 2 ) );
-
-  // Get the dot product.  A positive number is facing towards the viewer.
-  const double d0 ( n0 * look );
-  const double d1 ( n1 * look );
-  const double d2 ( n2 * look );
-  const double d3 ( n3 * look );
-  const double d4 ( n4 * look );
-  
-  const bool back ( d0 > 0.0 && d1 > 0.0 && d2 > 0.0 && d3 > 0.0 && d4 > 0.0 );
-#else
-  const bool back ( false );
-#endif
-
   // Check with smallest distance.
   const double dist ( mesh.getSmallestDistanceSquared ( eye ) );
   const bool farAway ( ( dist > ( splitDistance * splitDistance ) ) );
@@ -735,7 +712,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   const bool tooDeep ( this->level() >= body->maxLevel() );
 
   // Should we traverse the low lod?
-  bool low ( farAway || eyeIsNan || tooDeep || back );
+  bool low ( farAway || eyeIsNan || tooDeep );
 
   // Finally, ask the callback.
   low = !( body->shouldSplit ( !low, this ) );

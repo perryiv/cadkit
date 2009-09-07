@@ -112,7 +112,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(PROJ_LIB)\* $(CADKIT_BIN_DIR)\proj4 /f /i /k /y /c /d&#x0D;&#x0A;xcopy $(GDAL_DATA)\* $(CADKIT_BIN_DIR)\proj4 /f /i /k /y /c /d&#x0D;&#x0A;"
+				CommandLine="xcopy $(GDAL_DATA)\* $(CADKIT_BIN_DIR)\proj4 /f /i /k /y /c /d&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -209,7 +209,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(PROJ_LIB)\* $(CADKIT_BIN_DIR)\proj4 /f /i /k /y /c /d&#x0D;&#x0A;xcopy $(GDAL_DATA)\* $(CADKIT_BIN_DIR)\proj4 /f /i /k /y /c /d&#x0D;&#x0A;"
+				CommandLine="xcopy $(GDAL_DATA)\* $(CADKIT_BIN_DIR)\proj4 /f /i /k /y /c /d&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -269,6 +269,14 @@
 			</File>
 			<File
 				RelativePath=".\RasterPolygonLayer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WarpOptions.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WarpOptions.h"
 				>
 			</File>
 		</Filter>

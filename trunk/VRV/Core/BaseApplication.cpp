@@ -38,6 +38,7 @@ BaseApplication::BaseApplication() :
 {
   // Add the timer server as a plugin.
   Usul::Components::Manager::instance().addPlugin ( Usul::Interfaces::IUnknown::QueryPtr ( _timerServer ) );
+
 }
 
 

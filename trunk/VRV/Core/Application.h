@@ -174,7 +174,7 @@ public:
   typedef FavoriteFunctors::iterator                         FavoriteIterator;
 
 #if __VJ_version < 2003018
-  typedef vrj::GLDrawManager GlDrawManager;
+  typedef vrj::GlDrawManager GlDrawManager;
   typedef vrj::GlContextData<RendererPtr> PerContextRenderer;
 #else
   typedef vrj::opengl::DrawManager GlDrawManager;

@@ -1189,7 +1189,11 @@ void Application::_preFrame()
 
   // Update these input devices.
   _buttons->notify();
-  _tracker->update();
+  
+  if ( _tracker.valid() )
+  {
+    _tracker->update();
+  }
 
   // Update all the analog inputs.
   for( Analogs::iterator iter = _analogs.begin(); iter != _analogs.end(); ++iter )

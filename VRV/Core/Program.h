@@ -45,6 +45,8 @@
 #include "XmlTree/Document.h"
 #include "XmlTree/RegistryIO.h"
 
+#include "vrj/Kernel/Kernel.h"
+
 #include <fstream>
 
 namespace VRV {
@@ -182,6 +184,12 @@ protected:
 
   int _run ( int argc, char ** argv )
   {
+#if __VJ_version >= 2003018
+      // Initialize the kernel.
+    vrj::Kernel* kernel ( vrj::Kernel::instance() );
+    kernel->init ( argc, argv );
+#endif
+
     // Set the arguments.
     Usul::CommandLine::Arguments::instance().set ( argc, argv );
 

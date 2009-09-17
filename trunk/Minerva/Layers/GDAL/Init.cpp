@@ -8,9 +8,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "Minerva/Config.h"
+
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/System/Environment.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Guard.h"
 
@@ -72,18 +75,31 @@ namespace
       Filenames::iterator iter ( _filenames.begin() );
       if ( iter == _filenames.end() )
       {
+        String filename;
+
+        if ( Usul::System::Environment::has ( MINERVA_DATA_DIR_VARIABLE ) )
+        {
+          const std::string dataDir ( Usul::System::Environment::get ( MINERVA_DATA_DIR_VARIABLE ) );
+          const std::string path ( dataDir + base );
+          std::copy ( path.begin(), path.end(), std::back_inserter ( filename ) );
+        }
+        else
+        {
         // Build the filename.
 #if __APPLE__
-        const std::string path ( "/../Frameworks/GDAL.framework/Resources/gdal/" );
+          const std::string path ( "/../Frameworks/GDAL.framework/Resources/gdal/" );
 #elif _MSC_VER
-        const std::string path ( "/proj4/" );
+          const std::string path ( "/proj4/" );
 #else 
-        const std::string path ( "/" );
+          const std::string path ( "/" );
 #endif
-        const std::string directory ( Usul::Strings::format ( Usul::CommandLine::Arguments::instance().directory(), path, base ) );
-        String filename ( directory.begin(), directory.end() );
-        filename.push_back ( '\0' );
+          const std::string directory ( Usul::Strings::format ( Usul::CommandLine::Arguments::instance().directory(), path, base ) );
+          
+          std::copy ( directory.begin(), directory.end(), std::back_inserter ( filename ) );
+        }
         
+        filename.push_back ( '\0' );
+
         // Insert the result into the map.
         typedef std::pair<Filenames::iterator, bool> Result;
         Result result ( _filenames.insert ( std::make_pair ( base, filename ) ) );

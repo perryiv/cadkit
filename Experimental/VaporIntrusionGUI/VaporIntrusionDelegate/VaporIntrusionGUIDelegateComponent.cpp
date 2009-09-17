@@ -424,6 +424,9 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
     // set to use buildings or not
     doc->useBuilding( bd.useBuilding() );
 
+    // set the building 
+    doc->building( bd.building() );
+
     // set the grid symmetry
     doc->symmetricalGrid( symmetrical );
   }

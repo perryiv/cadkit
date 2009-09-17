@@ -249,6 +249,7 @@ protected:
   void                        _makeSymmetricalBuilding();
   void                        _makeBuilding();
   void                        _makeContaminants();
+  void                        _makeFoundation( osg::Vec3f ll );
 
   void                        _initCubes();
 

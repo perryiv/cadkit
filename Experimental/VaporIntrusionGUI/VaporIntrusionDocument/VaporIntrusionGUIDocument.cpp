@@ -541,6 +541,62 @@ void VaporIntrusionGUIDocument::_makeGrid( )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Create the building foundation and add it to the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_makeFoundation( osg::Vec3f ll )
+{
+  Guard guard ( this );
+
+    // useful typedefs
+  typedef Usul::Convert::Type< std::string, float > StrToFloat;
+
+   // color for the building
+  Color c ( 1.0, 0.0, 1.0, 1.0 );
+ 
+  // Material for the cube
+  osg::ref_ptr< osg::Material > material ( new osg::Material );
+  material->setAmbient( osg::Material::FRONT_AND_BACK, c );
+  material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
+
+  // Building initial y position
+  float ypos ( _yValues.at( _yValues.size() - 1 ).first + StrToFloat::convert( _building.h ) );
+
+  // get the length, width, and height of the building
+  osg::Vec3f lhw ( StrToFloat::convert( _building.l ), -1 * StrToFloat::convert( _building.h ), StrToFloat::convert( _building.w ) );
+
+  // create the points for the building
+  osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
+  p->push_back( osg::Vec3f ( ll.x()          , ll.y()          , ll.z()           ) );
+  p->push_back( osg::Vec3f ( ll.x() + lhw.x(), ll.y()          , ll.z()           ) );
+  p->push_back( osg::Vec3f ( ll.x()          , ll.y() + lhw.y(), ll.z()           ) );
+  p->push_back( osg::Vec3f ( ll.x() + lhw.x(), ll.y() + lhw.y(), ll.z()           ) );  
+  p->push_back( osg::Vec3f ( ll.x()          , ll.y()          , ll.z() + lhw.z() ) );
+  p->push_back( osg::Vec3f ( ll.x() + lhw.x(), ll.y()          , ll.z() + lhw.z() ) );
+  p->push_back( osg::Vec3f ( ll.x()          , ll.y() + lhw.y(), ll.z() + lhw.z() ) );
+  p->push_back( osg::Vec3f ( ll.x() + lhw.x(), ll.y() + lhw.y(), ll.z() + lhw.z() ) );
+
+  // location (not used in this context)
+  Usul::Math::Vec3ui location( 0, 0, 0 );
+
+  // group
+  osg::ref_ptr< osg::Group > group ( new osg::Group );
+
+  // build the cuve
+  group->addChild( this->_buildTestCube( p.get(), c, location ) );
+
+  // set the material of the cube
+  OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
+  OsgTools::State::StateSet::setAlpha( group.get(), c.a() );
+
+  // Add the cubre to the scene
+  _root->addChild( group.get() );
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // Create the building and add it to the scene
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -560,22 +616,25 @@ void VaporIntrusionGUIDocument::_makeBuilding()
   material->setAmbient( osg::Material::FRONT_AND_BACK, c );
   material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
 
+  // Building initial y position
+  float ypos ( _yValues.at( _yValues.size() - 1 ).first + StrToFloat::convert( _building.h ) );
+
   // get the lower left corner of the building
-  osg::Vec3f ll  ( StrToFloat::convert( _building.x ), StrToFloat::convert( _building.y ), StrToFloat::convert( _building.z ) );
+  osg::Vec3f ll  ( StrToFloat::convert( _building.x ), ypos, StrToFloat::convert( _building.z ) );
 
   // get the length, width, and height of the building
-  osg::Vec3f lwh ( StrToFloat::convert( _building.l ), StrToFloat::convert( _building.w ), StrToFloat::convert( _building.h ) );
+  osg::Vec3f lhw ( StrToFloat::convert( _building.l ), StrToFloat::convert( _building.h ), StrToFloat::convert( _building.w ) );
 
   // create the points for the building
   osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
   p->push_back( osg::Vec3f ( ll.x()          , ll.y()          , ll.z()           ) );
-  p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y()          , ll.z()           ) );
-  p->push_back( osg::Vec3f ( ll.x()          , ll.y() + lwh.y(), ll.z()           ) );
-  p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y() + lwh.y(), ll.z()           ) );  
-  p->push_back( osg::Vec3f ( ll.x()          , ll.y()          , ll.z() + lwh.z() ) );
-  p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y()          , ll.z() + lwh.z() ) );
-  p->push_back( osg::Vec3f ( ll.x()          , ll.y() + lwh.y(), ll.z() + lwh.z() ) );
-  p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y() + lwh.y(), ll.z() + lwh.z() ) );
+  p->push_back( osg::Vec3f ( ll.x() + lhw.x(), ll.y()          , ll.z()           ) );
+  p->push_back( osg::Vec3f ( ll.x()          , ll.y() + lhw.y(), ll.z()           ) );
+  p->push_back( osg::Vec3f ( ll.x() + lhw.x(), ll.y() + lhw.y(), ll.z()           ) );  
+  p->push_back( osg::Vec3f ( ll.x()          , ll.y()          , ll.z() + lhw.z() ) );
+  p->push_back( osg::Vec3f ( ll.x() + lhw.x(), ll.y()          , ll.z() + lhw.z() ) );
+  p->push_back( osg::Vec3f ( ll.x()          , ll.y() + lhw.y(), ll.z() + lhw.z() ) );
+  p->push_back( osg::Vec3f ( ll.x() + lhw.x(), ll.y() + lhw.y(), ll.z() + lhw.z() ) );
 
   // location (not used in this context)
   Usul::Math::Vec3ui location( 0, 0, 0 );
@@ -592,6 +651,9 @@ void VaporIntrusionGUIDocument::_makeBuilding()
 
   // Add the cubre to the scene
   _root->addChild( group.get() );
+
+  // make the foundation
+  this->_makeFoundation( ll );
 
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -677,6 +739,9 @@ void VaporIntrusionGUIDocument::_makeSymmetricalBuilding( )
 
   // Add the cubre to the scene
   _root->addChild( group.get() );
+
+  // make the foundation
+  this->_makeFoundation( ll );
  
 }
 

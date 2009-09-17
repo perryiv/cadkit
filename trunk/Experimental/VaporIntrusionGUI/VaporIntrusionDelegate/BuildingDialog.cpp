@@ -65,9 +65,9 @@ BuildingDialog::~BuildingDialog()
 
 BuildingDialog::Building BuildingDialog::building()
 {
-  Building b( _lengthField->text().toStdString(), _widthField->text().toStdString(), _heightField->text().toStdString(), 
+  Building b( _lengthField->text().toStdString(), _widthField->text().toStdString(), _depth->text().toStdString(), 
               "0", "0", "0", 
-              _volume->text().toStdString() );
+              _volume->text().toStdString(), _exchangeRate->text().toStdString(), _thickness->text().toStdString() );
   //b.cracks = _building.cracks;  
   _building = b;
 

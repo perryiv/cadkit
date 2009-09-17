@@ -77,13 +77,14 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _inputParameters(),
   _draggerState( false ),
   _gridMaterials(),
-  _building( "1", "1", "1", "0", "0", "0", "0" ),
+  _building( "1", "1", "1", "0", "0", "0", "0", "", "" ),
   _useBuilding( true ),
   _sources(),
   _contaminants(),
   _soils(),
   _cracks(),
-  _originalToCurrentIndex()
+  _originalToCurrentIndex(),
+  _symmetricalGrid( false )
 {
   USUL_TRACE_SCOPE;
 
@@ -451,7 +452,14 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
   // build the building 3D element
   if( true == _useBuilding )
   {
-    this->_makeBuilding();
+    if( true == this->symmetricalGrid() )
+    {
+      this->_makeSymmetricalBuilding();
+    }
+    else
+    {
+      this->_makeBuilding();
+    }
   }
 
   // build the contaminant 3D element
@@ -537,7 +545,62 @@ void VaporIntrusionGUIDocument::_makeGrid( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_makeBuilding( )
+void VaporIntrusionGUIDocument::_makeBuilding()
+{
+  Guard guard ( this );
+
+  // useful typedefs
+  typedef Usul::Convert::Type< std::string, float > StrToFloat;
+
+   // color for the building
+  Color c ( 0.0, 0.0, 1.0, 1.0 );
+ 
+  // Material for the cube
+  osg::ref_ptr< osg::Material > material ( new osg::Material );
+  material->setAmbient( osg::Material::FRONT_AND_BACK, c );
+  material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
+
+  // get the lower left corner of the building
+  osg::Vec3f ll  ( StrToFloat::convert( _building.x ), StrToFloat::convert( _building.y ), StrToFloat::convert( _building.z ) );
+
+  // get the length, width, and height of the building
+  osg::Vec3f lwh ( StrToFloat::convert( _building.l ), StrToFloat::convert( _building.w ), StrToFloat::convert( _building.h ) );
+
+  // create the points for the building
+  osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
+  p->push_back( osg::Vec3f ( ll.x()          , ll.y()          , ll.z()           ) );
+  p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y()          , ll.z()           ) );
+  p->push_back( osg::Vec3f ( ll.x()          , ll.y() + lwh.y(), ll.z()           ) );
+  p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y() + lwh.y(), ll.z()           ) );  
+  p->push_back( osg::Vec3f ( ll.x()          , ll.y()          , ll.z() + lwh.z() ) );
+  p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y()          , ll.z() + lwh.z() ) );
+  p->push_back( osg::Vec3f ( ll.x()          , ll.y() + lwh.y(), ll.z() + lwh.z() ) );
+  p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y() + lwh.y(), ll.z() + lwh.z() ) );
+
+  // location (not used in this context)
+  Usul::Math::Vec3ui location( 0, 0, 0 );
+
+  // group
+  osg::ref_ptr< osg::Group > group ( new osg::Group );
+
+  // build the cuve
+  group->addChild( this->_buildTestCube( p.get(), c, location ) );
+
+  // set the material of the cube
+  OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
+  OsgTools::State::StateSet::setAlpha( group.get(), c.a() );
+
+  // Add the cubre to the scene
+  _root->addChild( group.get() );
+
+}
+///////////////////////////////////////////////////////////////////////////////
+//
+// Create the building and add it to the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_makeSymmetricalBuilding( )
 {
   // useful typedefs
   typedef Usul::Convert::Type< std::string, float > StrToFloat;
@@ -571,7 +634,7 @@ void VaporIntrusionGUIDocument::_makeBuilding( )
   std::string newY ( Usul::Convert::Type< double, std::string >::convert( _yValues.at( _yValues.size() - 1 ).first + _yValues.at( _yValues.size() - 1 ).second ) );
   std::string newZ ( Usul::Convert::Type< double, std::string >::convert( _zValues.at( zi ).first ) );
   std::string vol ( "1" );
-  Building newB ( _building.l, _building.w, _building.h, newX, newY, newZ, vol );
+  Building newB ( _building.l, _building.w, _building.h, newX, newY, newZ, vol, _building.xrate, _building.thickness );
   _building = newB;
 
   // color for the building
@@ -2819,4 +2882,31 @@ void VaporIntrusionGUIDocument::_adjustGridSpacing()
   // adjust the dimensions
   _dimensions = Usul::Math::Vec3ui( xmax, ymax, zmax );
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the grid symmetry
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::symmetricalGrid()
+{
+  Guard guard ( this );
+  return _symmetricalGrid;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the grid symmetry
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::symmetricalGrid( bool value )
+{
+  Guard guard ( this );
+
+  _symmetricalGrid = value;
 }

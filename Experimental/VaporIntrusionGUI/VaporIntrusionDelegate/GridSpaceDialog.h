@@ -40,6 +40,7 @@ public:
   unsigned int        x();
   unsigned int        y();
   unsigned int        z();
+  bool                symmetricGrid();
 
 private:
  

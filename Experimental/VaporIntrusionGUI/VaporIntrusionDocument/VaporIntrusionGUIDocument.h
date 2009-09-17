@@ -225,6 +225,9 @@ public:
   virtual void                refinements( GridRefinements gr );
   virtual GridRefinements     refinements();
 
+  virtual bool                symmetricalGrid();
+  virtual void                symmetricalGrid( bool value );
+
 protected:
 
   /// Do not copy.
@@ -243,6 +246,7 @@ protected:
   // Test method for multiview verification
   osg::Node*                  _buildTestCube( osg::Vec3Array* points, Color c, Usul::Math::Vec3ui location );
   void                        _makeGrid();
+  void                        _makeSymmetricalBuilding();
   void                        _makeBuilding();
   void                        _makeContaminants();
 
@@ -302,6 +306,7 @@ private:
     Cracks                    _cracks;
     GridRefinements           _refinements;
     GridMap                   _originalToCurrentIndex;
+    bool                      _symmetricalGrid;
   
 };
 

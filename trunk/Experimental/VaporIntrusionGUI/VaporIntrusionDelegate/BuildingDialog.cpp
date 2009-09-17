@@ -65,8 +65,8 @@ BuildingDialog::~BuildingDialog()
 
 BuildingDialog::Building BuildingDialog::building()
 {
-  Building b( _lengthField->text().toStdString(), _widthField->text().toStdString(), _depth->text().toStdString(), 
-              "0", "0", "0", 
+  Building b( _lengthField->text().toStdString(), _depth->text().toStdString(), _widthField->text().toStdString(), 
+              _x->text().toStdString(), "0", _y->text().toStdString(), 
               _volume->text().toStdString(), _exchangeRate->text().toStdString(), _thickness->text().toStdString() );
   //b.cracks = _building.cracks;  
   _building = b;
@@ -109,7 +109,14 @@ bool BuildingDialog::useBuilding()
 
 void BuildingDialog::initialize()
 {
-  //this->_initialize();
+  _x->setText( "0" );
+  _y->setText( "0" );
+  _depth->setText( "1" );
+  _lengthField->setText( "1" );
+  _widthField->setText( "1" );
+  _exchangeRate->setText( "0" );
+  _thickness->setText( "0" );
+  _volume->setText( "1" );
 }
 
 

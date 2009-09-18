@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2008, Jeff Conner
+//  Copyright (c) 2008,2009 Jeff Conner
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -72,15 +72,17 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   {
     std::string l,w,h;
     std::string x,y,z;
-    std::string v;
+    std::string v, xrate, thickness;
 
     Building( const std::string& length, const std::string& width, const std::string& height,
-              const std::string& xpos, const std::string& ypos, const std::string& zpos, const std::string& vol ):
-    l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ), v ( vol )
+              const std::string& xpos, const std::string& ypos, const std::string& zpos, const std::string& vol,
+              const std::string& xr, const std::string& th ):
+    l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ),
+    v ( vol ), xrate ( xr ), thickness( th )
     {};
 
     Building():
-    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" ), v(  "1" )
+    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" ), v(  "1" ), xrate ( "" ), thickness( "" )
     {};
   };
   
@@ -294,6 +296,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   
   virtual void                  refinements( GridRefinements gr ) = 0;
   virtual GridRefinements       refinements() = 0;
+
+  virtual bool                  symmetricalGrid() = 0;
+  virtual void                  symmetricalGrid( bool value ) = 0;
     
 }; // struct IVaporIntrusionGUI
 

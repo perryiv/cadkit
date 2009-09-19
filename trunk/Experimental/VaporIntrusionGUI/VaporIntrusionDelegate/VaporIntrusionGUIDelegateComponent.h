@@ -32,6 +32,7 @@
 #include "SendDialog.h"
 #include "GridSpaceDialog.h"
 #include "RefineGridDialog.h"
+#include "CracksDialog.h"
 
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 
@@ -130,6 +131,9 @@ public:
 
   // edit the Soil values
   void                        editSoils();
+
+  // edit the Soil values
+  void                        editCracks();
 
   // send the file to the server
   void                        sendFile();

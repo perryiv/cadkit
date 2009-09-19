@@ -261,6 +261,9 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   // add editAddContaminantsToSource button
   variableMenu->append ( MenuKit::Button::create ( "Soils", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSoils ) ) );
  
+   // add editAddContaminantsToSource button
+  variableMenu->append ( MenuKit::Button::create ( "Cracks", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editCracks ) ) );
+ 
   // Add Scalar Editor button
   // variableMenu->append ( MenuKit::Button::create ( "Scalar", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editScalar ) ) );
 
@@ -501,6 +504,38 @@ void VaporIntrusionGUIDelegateComponent::editSoils()
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// edit the Soil values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::editCracks()
+{
+   // Make the dialog.
+  CracksDialog editor;
+
+  // Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+  // set the contaminants
+  editor.cracks( document->cracks() );
+
+  // populate the contaminant list
+  editor.initialize();
+
+  // Show the dialog.
+  if ( QDialog::Accepted != editor.exec() )
+    throw Usul::Exceptions::Canceled();
+
+  document->cracks( editor.cracks() );
+
+  document->rebuildScene();
+}
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Edit the Contaminant values

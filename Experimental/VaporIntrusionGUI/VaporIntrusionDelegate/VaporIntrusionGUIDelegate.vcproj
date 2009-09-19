@@ -354,6 +354,36 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\CracksDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CracksDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_CracksDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\CracksDialog.ui -o .\ui_CracksDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\CracksDialog.h&quot; -o &quot;.\GeneratedFiles\moc_CracksDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\CracksDialog.ui;$(QTDIR)\bin\moc.exe;.\CracksDialog.h"
+							Outputs=".\ui_CracksDialog.h;.\GeneratedFiles\moc_CracksDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_CracksDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\CracksDialog.ui -o .\ui_CracksDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\CracksDialog.h&quot; -o &quot;.\GeneratedFiles\moc_CracksDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\CracksDialog.ui;$(QTDIR)\bin\moc.exe;.\CracksDialog.h"
+							Outputs=".\ui_CracksDialog.h;.\GeneratedFiles\moc_CracksDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\GridEditorDialog.cpp"
 					>
 				</File>
@@ -727,6 +757,10 @@
 				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_ContaminantDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_CracksDialog.cpp"
 					>
 				</File>
 				<File

@@ -538,6 +538,34 @@ void VaporIntrusionGUIDocument::_makeGrid( )
   }
 }
 
+osg::Node*	VaporIntrusionGUIDocument::_buildPlane ( float sx, float sy, float ex, float ey, osg::Vec4f color )
+{
+	Guard guard ( this );
+
+	// create a group to hold the plane
+	GroupPtr group ( new osg::Group );
+
+
+	// return the group
+	return group.release();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Create the cracks in the foundation and add it to the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_makeCracks()
+{
+	Guard guard ( this );
+
+	for( unsigned int i = 0; i < _cracks.size(); ++ i )
+	{
+		
+	}
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

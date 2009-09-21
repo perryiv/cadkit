@@ -245,11 +245,14 @@ protected:
 
   // Test method for multiview verification
   osg::Node*                  _buildTestCube( osg::Vec3Array* points, Color c, Usul::Math::Vec3ui location );
+  osg::Node*				  _buildPlane ( float sx, float sy, float ex, float ey, osg::Vec4f color );
+
   void                        _makeGrid();
   void                        _makeSymmetricalBuilding();
   void                        _makeBuilding();
   void                        _makeContaminants();
   void                        _makeFoundation( osg::Vec3f ll );
+  void						  _makeCracks();
 
   void                        _initCubes();
 

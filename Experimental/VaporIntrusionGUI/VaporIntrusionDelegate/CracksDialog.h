@@ -38,29 +38,35 @@ public:
   typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI IVPI;
   typedef IVPI::Crack Crack;
   typedef IVPI::Cracks Cracks;
+  typedef IVPI::CracksPair CracksPair;
 
   CracksDialog ( QWidget *parent = 0x0 );
   virtual ~CracksDialog();
 
-  Cracks cracks();
-  void     cracks( Cracks c );
+  CracksPair cracks();
+  void     cracks( CracksPair c );
 
   void     initialize();
 
 
 protected:
-	void	_initialize();
-	void	_clearTable();
+	void	_xInitialize();
+	void	_xClearTable();
+  void	_yInitialize();
+	void	_yClearTable();
 
 private:
   
-	Cracks _cracks;
+	CracksPair _cracks;
 
 
 private slots:
-	void on_addButton_clicked();
-	void on_removeButton_clicked();
-	void on_updateButton_clicked();
+	void on_xAddButton_clicked();
+	void on_xRemoveButton_clicked();
+	void on_xUpdateButton_clicked();
+  void on_yAddButton_clicked();
+	void on_yRemoveButton_clicked();
+	void on_yUpdateButton_clicked();
 };
 
 

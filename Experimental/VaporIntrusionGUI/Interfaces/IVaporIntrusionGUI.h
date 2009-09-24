@@ -60,13 +60,14 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   struct Crack
   {
-    std::string x1, x2, y1, y2, w;
+    std::string start, end, value;
 
-    Crack(): x1(), x2(), y1(), y2(), w() {};
-    Crack( const std::string& sx, const std::string& ex, const std::string& sy, const std::string& ey, const std::string& width ):
-    x1( sx ), x2( ex ), y1( sy ), y2( ey ), w( width ) {};
+    Crack(): start(), end(), value(){};
+    Crack( const std::string& s, const std::string& e, const std::string& v ):
+    start( s ), end( e ), value( v ){};
   };
   typedef std::vector< Crack > Cracks;
+  typedef std::pair< Cracks, Cracks > CracksPair;
 
   struct Building
   {
@@ -291,8 +292,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   virtual void                  soils( Soils s ) = 0;
   virtual Soils                 soils() = 0;
 
-  virtual void                  cracks( Cracks c ) = 0;
-  virtual Cracks                cracks() = 0;
+  virtual void                  cracks( CracksPair c ) = 0;
+  virtual CracksPair            cracks() = 0;
   
   virtual void                  refinements( GridRefinements gr ) = 0;
   virtual GridRefinements       refinements() = 0;

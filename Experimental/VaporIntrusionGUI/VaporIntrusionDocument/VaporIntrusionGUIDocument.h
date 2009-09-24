@@ -75,6 +75,7 @@ public:
   typedef IVaporIntrusionGUI::Building                          Building;
   typedef IVaporIntrusionGUI::Crack                             Crack;
   typedef IVaporIntrusionGUI::Cracks                            Cracks;
+  typedef IVaporIntrusionGUI::CracksPair                        CracksPair;
   typedef IVaporIntrusionGUI::Source                            Source;
   typedef IVaporIntrusionGUI::Sources                           Sources;
   typedef IVaporIntrusionGUI::Soil                              Soil;
@@ -219,8 +220,8 @@ public:
   virtual void                soils( Soils s );
   virtual Soils               soils();
 
-  virtual void                cracks( Cracks c );
-  virtual Cracks              cracks();
+  virtual void                cracks( CracksPair c );
+  virtual CracksPair          cracks();
   
   virtual void                refinements( GridRefinements gr );
   virtual GridRefinements     refinements();
@@ -252,7 +253,7 @@ protected:
   void                        _makeBuilding();
   void                        _makeContaminants();
   void                        _makeFoundation( osg::Vec3f ll );
-  void						  _makeCracks();
+  void						            _makeCracks();
 
   void                        _initCubes();
 
@@ -290,6 +291,9 @@ protected:
   GridPoints                  _getGridFromAxis( const std::string& axis );
   void                        _setGridFromAxis( const std::string& axis, GridPoints grid );
 
+  osg::Vec2f                  _snapToGrid2D( osg::Vec2f corner );
+  osg::Vec3f                  _snapToGrid3D( osg::Vec3f corner );
+
 private:
     GroupPtr                  _root;
     Usul::Math::Vec3ui        _dimensions;
@@ -307,7 +311,7 @@ private:
     Sources                   _sources;
     Contaminants              _contaminants;
     Soils                     _soils;
-    Cracks                    _cracks;
+    CracksPair                _cracks;
     GridRefinements           _refinements;
     GridMap                   _originalToCurrentIndex;
     bool                      _symmetricalGrid;

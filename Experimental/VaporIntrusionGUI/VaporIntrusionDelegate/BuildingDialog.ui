@@ -43,8 +43,8 @@
    <widget class="QCheckBox" name="_buildingExists" >
     <property name="geometry" >
      <rect>
-      <x>129</x>
-      <y>20</y>
+      <x>69</x>
+      <y>40</y>
       <width>121</width>
       <height>22</height>
      </rect>
@@ -53,33 +53,10 @@
      <string>Is there a Building?</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_11" >
-    <property name="geometry" >
-     <rect>
-      <x>129</x>
-      <y>50</y>
-      <width>84</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text" >
-     <string>Exchange Rate</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="_exchangeRate" >
-    <property name="geometry" >
-     <rect>
-      <x>220</x>
-      <y>50</y>
-      <width>51</width>
-      <height>23</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QGroupBox" name="groupBox" >
     <property name="geometry" >
      <rect>
-      <x>70</x>
+      <x>60</x>
       <y>90</y>
       <width>231</width>
       <height>141</height>
@@ -207,7 +184,7 @@
    <widget class="QGroupBox" name="groupBox_3" >
     <property name="geometry" >
      <rect>
-      <x>70</x>
+      <x>60</x>
       <y>240</y>
       <width>231</width>
       <height>131</height>
@@ -220,7 +197,7 @@
      <property name="geometry" >
       <rect>
        <x>140</x>
-       <y>40</y>
+       <y>30</y>
        <width>51</width>
        <height>23</height>
       </rect>
@@ -230,7 +207,7 @@
      <property name="geometry" >
       <rect>
        <x>140</x>
-       <y>70</y>
+       <y>60</y>
        <width>51</width>
        <height>23</height>
       </rect>
@@ -240,7 +217,7 @@
      <property name="geometry" >
       <rect>
        <x>10</x>
-       <y>70</y>
+       <y>60</y>
        <width>122</width>
        <height>20</height>
       </rect>
@@ -253,7 +230,7 @@
      <property name="geometry" >
       <rect>
        <x>20</x>
-       <y>40</y>
+       <y>30</y>
        <width>109</width>
        <height>20</height>
       </rect>
@@ -262,6 +239,42 @@
       <string>Depth Below Grade</string>
      </property>
     </widget>
+    <widget class="QLabel" name="label_11" >
+     <property name="geometry" >
+      <rect>
+       <x>50</x>
+       <y>90</y>
+       <width>84</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text" >
+      <string>Exchange Rate</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="_exchangeRate" >
+     <property name="geometry" >
+      <rect>
+       <x>141</x>
+       <y>90</y>
+       <width>51</width>
+       <height>23</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QCheckBox" name="_symmetricalCheckBox" >
+    <property name="geometry" >
+     <rect>
+      <x>70</x>
+      <y>60</y>
+      <width>161</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Symmetrical Grid Space</string>
+    </property>
    </widget>
   </widget>
  </widget>

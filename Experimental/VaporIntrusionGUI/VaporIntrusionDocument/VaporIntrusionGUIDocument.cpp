@@ -560,10 +560,10 @@ void VaporIntrusionGUIDocument::_makeCracks()
 {
 	Guard guard ( this );
 
-	for( unsigned int i = 0; i < _cracks.size(); ++ i )
-	{
-		
-	}
+	//for( unsigned int i = 0; i < _cracks.size(); ++ i )
+	//{
+	//	
+	//}
 }
 
 
@@ -576,12 +576,15 @@ void VaporIntrusionGUIDocument::_makeCracks()
 void VaporIntrusionGUIDocument::_makeFoundation( osg::Vec3f ll )
 {
   Guard guard ( this );
-
-    // useful typedefs
+ 
+  // useful typedefs
   typedef Usul::Convert::Type< std::string, float > StrToFloat;
 
+  // slightly shorten ll
+  ll = osg::Vec3f( ll.x() - 0.00001f, ll.y() - 0.00001f, ll.z() - 0.00001f );
+
    // color for the building
-  Color c ( 1.0, 0.0, 1.0, 1.0 );
+  Color c ( 1.0, 0.0, 1.0, 0.5 );
  
   // Material for the cube
   osg::ref_ptr< osg::Material > material ( new osg::Material );
@@ -649,6 +652,12 @@ void VaporIntrusionGUIDocument::_makeBuilding()
 
   // get the lower left corner of the building
   osg::Vec3f ll  ( StrToFloat::convert( _building.x ), ypos, StrToFloat::convert( _building.z ) );
+
+  // snap the lower left to the grid
+  osg::Vec2f corner ( ll.x(), ll.z() );
+  corner = this->_snapToGrid2D( corner );
+  ll.x() = corner.x();
+  ll.z() = corner.y();
 
   // get the length, width, and height of the building
   osg::Vec3f lhw ( StrToFloat::convert( _building.l ), StrToFloat::convert( _building.h ), StrToFloat::convert( _building.w ) );
@@ -2026,82 +2035,82 @@ void VaporIntrusionGUIDocument::_readSoils( const std::string& filename )
 
 void VaporIntrusionGUIDocument::_readCracks( const std::string& filename )
 {
- Guard guard ( this );
+ //Guard guard ( this );
 
-  // useful typedef
-  typedef std::vector< std::string > StringVec;
+ // // useful typedef
+ // typedef std::vector< std::string > StringVec;
 
-  // create a file handle
-  std::ifstream ifs;
+ // // create a file handle
+ // std::ifstream ifs;
 
-  // open the file
-  ifs.open( filename.c_str() );
+ // // open the file
+ // ifs.open( filename.c_str() );
 
-  /// make sure the file was opened
-  if( false == ifs.is_open() )
-  {
-    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No Presets loaded for Cracks" ) << std::endl;
-    return;
-  }
+ // /// make sure the file was opened
+ // if( false == ifs.is_open() )
+ // {
+ //   std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No Presets loaded for Cracks" ) << std::endl;
+ //   return;
+ // }
 
-  // feedback.
-  std::cout << "Reading Cracks file: " << filename << std::endl;
+ // // feedback.
+ // std::cout << "Reading Cracks file: " << filename << std::endl;
 
-  // buffer size
-  const unsigned long int bufSize ( 4095 );
+ // // buffer size
+ // const unsigned long int bufSize ( 4095 );
 
-  // line number
-  unsigned int lineNumber ( 0 );
+ // // line number
+ // unsigned int lineNumber ( 0 );
 
-  // parse the file
-  while( EOF != ifs.peek() )
-  {
-    // create a buffer
-    char buffer[bufSize+1];
+ // // parse the file
+ // while( EOF != ifs.peek() )
+ // {
+ //   // create a buffer
+ //   char buffer[bufSize+1];
 
-    // get a line
-    ifs.getline ( buffer, bufSize );
+ //   // get a line
+ //   ifs.getline ( buffer, bufSize );
 
-    // create a string from the buffer
-    std::string tStr ( buffer );
+ //   // create a string from the buffer
+ //   std::string tStr ( buffer );
 
-    if( tStr.at( 0 ) != '#' )
-    {
+ //   if( tStr.at( 0 ) != '#' )
+ //   {
 
-      // separate the strings
-      StringVec sv;
-      Usul::Strings::split( tStr, ",", false, sv );
+ //     // separate the strings
+ //     StringVec sv;
+ //     Usul::Strings::split( tStr, ",", false, sv );
 
-      // debugging
-      //std::cout << "Reading: " << tStr << std::endl;
-      
-      // make sure all the columns are there
-      if( sv.size() == 5 )
-      {
-        // temp column to hold the input line
-        // #Name,Value,Description,Type,Activators
-        std::string sx    ( sv.at( 0 ) );
-        std::string sy    ( sv.at( 1 ) );
-        std::string ex    ( sv.at( 2 ) );
-        std::string ey    ( sv.at( 3 ) );
-        std::string w     ( sv.at( 4 ) );
+ //     // debugging
+ //     //std::cout << "Reading: " << tStr << std::endl;
+ //     
+ //     // make sure all the columns are there
+ //     if( sv.size() == 5 )
+ //     {
+ //       // temp column to hold the input line
+ //       // #Name,Value,Description,Type,Activators
+ //       std::string sx    ( sv.at( 0 ) );
+ //       std::string sy    ( sv.at( 1 ) );
+ //       std::string ex    ( sv.at( 2 ) );
+ //       std::string ey    ( sv.at( 3 ) );
+ //       std::string w     ( sv.at( 4 ) );
 
-        // create a temp contaminant
-        Crack c ( sx, sy, ex, ey, w );
+ //       // create a temp contaminant
+ //       Crack c ( sx, sy, ex, ey, w );
 
-        // add to the list of contaminants
-        _cracks.push_back( c );
+ //       // add to the list of contaminants
+ //       _cracks.push_back( c );
 
-        // increment the number of contaminants read
-        ++lineNumber;
+ //       // increment the number of contaminants read
+ //       ++lineNumber;
 
-      }// end for for activators read   
+ //     }// end for for activators read   
 
-    }// end if for valid entry found
+ //   }// end if for valid entry found
 
-  }// end while read for file parsing
+ // }// end while read for file parsing
 
-  ifs.close();
+ // ifs.close();
 
 }
 
@@ -2760,7 +2769,7 @@ VaporIntrusionGUIDocument::Soils VaporIntrusionGUIDocument::soils()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::cracks( Cracks c )
+void VaporIntrusionGUIDocument::cracks( CracksPair c )
 {
   Guard guard ( this );
   _cracks = c;
@@ -2773,7 +2782,7 @@ void VaporIntrusionGUIDocument::cracks( Cracks c )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-VaporIntrusionGUIDocument::Cracks VaporIntrusionGUIDocument::cracks()
+VaporIntrusionGUIDocument::CracksPair VaporIntrusionGUIDocument::cracks()
 {
   Guard guard ( this );
   return _cracks;
@@ -3002,4 +3011,68 @@ void VaporIntrusionGUIDocument::symmetricalGrid( bool value )
   Guard guard ( this );
 
   _symmetricalGrid = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Find the closest xy grid point to the given input corner
+// TODO: Improve search speed by using better search algorithm
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec2f VaporIntrusionGUIDocument::_snapToGrid2D( osg::Vec2f corner )
+{
+  // get the starting value for the x values
+  float minXDistance ( abs ( _xValues.at( 0 ).first - corner.x() ) );
+  int currXIndex ( 0 );
+
+  // check the rest of the x values to find the closest point to the corner
+  for( unsigned int i = 1; i < _xValues.size(); ++i )
+  {
+    float temp ( abs ( _xValues.at( i ).first - corner.x() ) ); 
+
+    if( temp < minXDistance )
+    {
+      minXDistance = temp;
+      currXIndex = i;
+    }
+
+  }
+  
+  // get the starting value for the x values
+  float minYDistance ( abs ( _yValues.at( 0 ).first - corner.y() ) );
+  int currYIndex ( 0 );
+
+  for( unsigned int j = 0; j < _yValues.size(); ++j )
+  {
+    float temp ( abs ( _yValues.at( j ).first - corner.y() ) ); 
+
+    if( temp < minYDistance )
+    {
+      minYDistance = temp;
+      currYIndex = j;
+    }
+  }
+
+  osg::Vec2f value ( _xValues.at( currXIndex ).first, _yValues.at( currYIndex ).first );
+
+  // feedback
+  std::cout << "Corner fit to: ( " << value.x() << ", " << value.y() << " )." << std::endl;
+
+  return value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Find the closest xyz grid point to the given input corner
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec3f VaporIntrusionGUIDocument::_snapToGrid3D( osg::Vec3f corner )
+{
+  osg::Vec3f result ( corner );
+
+  return result;
 }

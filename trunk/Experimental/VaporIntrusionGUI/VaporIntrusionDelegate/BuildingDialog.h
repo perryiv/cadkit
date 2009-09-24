@@ -46,6 +46,7 @@ public:
   bool     useBuilding();
 
   void     initialize();
+  bool     symmetricGrid();
 
 
 protected:

@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>539</width>
-    <height>546</height>
+    <width>849</width>
+    <height>614</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -15,8 +15,8 @@
   <widget class="QDialogButtonBox" name="buttonBox" >
    <property name="geometry" >
     <rect>
-     <x>0</x>
-     <y>500</y>
+     <x>130</x>
+     <y>520</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -28,12 +28,12 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QTableWidget" name="_cracksTable" >
+  <widget class="QTableWidget" name="_xCracksTable" >
    <property name="geometry" >
     <rect>
      <x>40</x>
      <y>280</y>
-     <width>451</width>
+     <width>311</width>
      <height>181</height>
     </rect>
    </property>
@@ -50,20 +50,20 @@
   <widget class="QGroupBox" name="_cracksGroup" >
    <property name="geometry" >
     <rect>
-     <x>90</x>
+     <x>20</x>
      <y>20</y>
      <width>321</width>
      <height>221</height>
     </rect>
    </property>
    <property name="title" >
-    <string>Cracks</string>
+    <string>X Direction Cracks</string>
    </property>
-   <widget class="QPushButton" name="addButton" >
+   <widget class="QPushButton" name="xAddButton" >
     <property name="geometry" >
      <rect>
-      <x>50</x>
-      <y>180</y>
+      <x>40</x>
+      <y>150</y>
       <width>77</width>
       <height>29</height>
      </rect>
@@ -72,11 +72,11 @@
      <string>Add</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="removeButton" >
+   <widget class="QPushButton" name="xRemoveButton" >
     <property name="geometry" >
      <rect>
-      <x>130</x>
-      <y>180</y>
+      <x>120</x>
+      <y>150</y>
       <width>77</width>
       <height>29</height>
      </rect>
@@ -88,8 +88,8 @@
    <widget class="QLabel" name="label_5" >
     <property name="geometry" >
      <rect>
-      <x>50</x>
-      <y>20</y>
+      <x>70</x>
+      <y>40</y>
       <width>53</width>
       <height>18</height>
      </rect>
@@ -101,18 +101,18 @@
    <widget class="QLineEdit" name="_startX" >
     <property name="geometry" >
      <rect>
-      <x>110</x>
-      <y>20</y>
+      <x>130</x>
+      <y>40</y>
       <width>113</width>
       <height>23</height>
      </rect>
     </property>
    </widget>
-   <widget class="QLineEdit" name="_startY" >
+   <widget class="QLineEdit" name="_endX" >
     <property name="geometry" >
      <rect>
-      <x>110</x>
-      <y>50</y>
+      <x>130</x>
+      <y>70</y>
       <width>113</width>
       <height>23</height>
      </rect>
@@ -121,31 +121,8 @@
    <widget class="QLabel" name="label_6" >
     <property name="geometry" >
      <rect>
-      <x>50</x>
-      <y>50</y>
-      <width>53</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text" >
-     <string>Start Y</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="_endX" >
-    <property name="geometry" >
-     <rect>
-      <x>110</x>
-      <y>80</y>
-      <width>113</width>
-      <height>23</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_8" >
-    <property name="geometry" >
-     <rect>
-      <x>50</x>
-      <y>80</y>
+      <x>70</x>
+      <y>70</y>
       <width>53</width>
       <height>18</height>
      </rect>
@@ -154,57 +131,34 @@
      <string>End X</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_7" >
+   <widget class="QLineEdit" name="_yValue" >
     <property name="geometry" >
      <rect>
-      <x>50</x>
-      <y>110</y>
-      <width>53</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text" >
-     <string>End Y</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="_endY" >
-    <property name="geometry" >
-     <rect>
-      <x>110</x>
-      <y>110</y>
+      <x>130</x>
+      <y>100</y>
       <width>113</width>
       <height>23</height>
      </rect>
     </property>
    </widget>
-   <widget class="QLineEdit" name="_width" >
+   <widget class="QLabel" name="label_8" >
     <property name="geometry" >
      <rect>
-      <x>110</x>
-      <y>140</y>
-      <width>113</width>
-      <height>23</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_9" >
-    <property name="geometry" >
-     <rect>
-      <x>50</x>
-      <y>140</y>
+      <x>70</x>
+      <y>100</y>
       <width>53</width>
       <height>18</height>
      </rect>
     </property>
     <property name="text" >
-     <string>Width</string>
+     <string>Y Value</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="updateButton" >
+   <widget class="QPushButton" name="xUpdateButton" >
     <property name="geometry" >
      <rect>
-      <x>210</x>
-      <y>180</y>
+      <x>200</x>
+      <y>150</y>
       <width>77</width>
       <height>29</height>
      </rect>
@@ -217,7 +171,160 @@
   <widget class="QLabel" name="label" >
    <property name="geometry" >
     <rect>
-     <x>240</x>
+     <x>160</x>
+     <y>250</y>
+     <width>53</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Cracks</string>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="_cracksGroup_2" >
+   <property name="geometry" >
+    <rect>
+     <x>430</x>
+     <y>20</y>
+     <width>321</width>
+     <height>221</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>Y Direction Cracks</string>
+   </property>
+   <widget class="QPushButton" name="yAddButton" >
+    <property name="geometry" >
+     <rect>
+      <x>30</x>
+      <y>150</y>
+      <width>77</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Add</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="yRemoveButton" >
+    <property name="geometry" >
+     <rect>
+      <x>110</x>
+      <y>150</y>
+      <width>77</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Remove</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="_startY" >
+    <property name="geometry" >
+     <rect>
+      <x>110</x>
+      <y>40</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_11" >
+    <property name="geometry" >
+     <rect>
+      <x>50</x>
+      <y>40</y>
+      <width>53</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Start Y</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_13" >
+    <property name="geometry" >
+     <rect>
+      <x>50</x>
+      <y>70</y>
+      <width>53</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>End Y</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="_endY" >
+    <property name="geometry" >
+     <rect>
+      <x>110</x>
+      <y>70</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="_xValue" >
+    <property name="geometry" >
+     <rect>
+      <x>110</x>
+      <y>100</y>
+      <width>113</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_14" >
+    <property name="geometry" >
+     <rect>
+      <x>50</x>
+      <y>100</y>
+      <width>53</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>X Value</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="yUpdateButton" >
+    <property name="geometry" >
+     <rect>
+      <x>190</x>
+      <y>150</y>
+      <width>77</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Update</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QTableWidget" name="_yCracksTable" >
+   <property name="geometry" >
+    <rect>
+     <x>430</x>
+     <y>280</y>
+     <width>311</width>
+     <height>181</height>
+    </rect>
+   </property>
+   <property name="rowCount" >
+    <number>0</number>
+   </property>
+   <property name="columnCount" >
+    <number>3</number>
+   </property>
+   <column/>
+   <column/>
+   <column/>
+  </widget>
+  <widget class="QLabel" name="label_2" >
+   <property name="geometry" >
+    <rect>
+     <x>570</x>
      <y>250</y>
      <width>53</width>
      <height>18</height>

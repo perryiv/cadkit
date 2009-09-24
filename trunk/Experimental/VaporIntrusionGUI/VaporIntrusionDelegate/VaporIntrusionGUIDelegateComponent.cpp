@@ -393,9 +393,6 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   // Get and store the dimensions
   Usul::Math::Vec3ui d ( dialog.x(), dialog.y(), dialog.z() );
 
-  // get the symmetry information
-  bool symmetrical ( dialog.symmetricGrid() );
-
   // Make the dialog.
   RefineGridDialog rd ( parent );
 
@@ -409,6 +406,9 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   // Show the dialog.
   if ( QDialog::Accepted != bd.exec() )
     throw Usul::Exceptions::Canceled();
+
+  // get the symmetry information
+  bool symmetrical ( bd.symmetricGrid() );
 
   // get the document
   VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr doc ( document );
@@ -620,6 +620,9 @@ void VaporIntrusionGUIDelegateComponent::editBuilding()
   // Show the dialog.
   if ( QDialog::Accepted != editor.exec() )
     throw Usul::Exceptions::Canceled();
+
+  // set the grid symmetry
+  document->symmetricalGrid( editor.symmetricGrid() );
 
   // reset the building information
   document->building( editor.building() );

@@ -801,7 +801,7 @@ void VaporIntrusionGUIDocument::_makeContaminants()
     Source s ( _sources.at( i ) );
 
     // color for the contaminant
-    Color c ( s.color[0], s.color[1], s.color[2], 1.0 );
+    Color c ( s.color[0], s.color[1], s.color[2], 0.8 );
    
     // Material for the cube
     osg::ref_ptr< osg::Material > material ( new osg::Material );
@@ -810,6 +810,12 @@ void VaporIntrusionGUIDocument::_makeContaminants()
 
     // get the lower left corner of the contaminant
     osg::Vec3f ll  ( StrToFloat::convert( s.x ), StrToFloat::convert( s.y ), StrToFloat::convert( s.z ) );
+
+    // snap to the grid
+    ll = this->_snapToGrid3D( ll );
+
+    // shrink
+    ll = osg::Vec3f ( ll.x() - 0.00001, ll.y() - 0.00001, ll.z() - 0.00001 );
 
     // get the length, width, and height of the contaminant
     osg::Vec3f lwh ( StrToFloat::convert( s.l ), StrToFloat::convert( s.w ), StrToFloat::convert( s.h ) );
@@ -3072,7 +3078,57 @@ osg::Vec2f VaporIntrusionGUIDocument::_snapToGrid2D( osg::Vec2f corner )
 
 osg::Vec3f VaporIntrusionGUIDocument::_snapToGrid3D( osg::Vec3f corner )
 {
-  osg::Vec3f result ( corner );
+  // get the starting value for the x values
+  float minXDistance ( abs ( _xValues.at( 0 ).first - corner.x() ) );
+  int currXIndex ( 0 );
 
-  return result;
+  // check the rest of the x values to find the closest point to the corner
+  for( unsigned int i = 1; i < _xValues.size(); ++i )
+  {
+    float temp ( abs ( _xValues.at( i ).first - corner.x() ) ); 
+
+    if( temp < minXDistance )
+    {
+      minXDistance = temp;
+      currXIndex = i;
+    }
+
+  }
+  
+  // get the starting value for the x values
+  float minYDistance ( abs ( _yValues.at( 0 ).first - corner.y() ) );
+  int currYIndex ( 0 );
+
+  for( unsigned int j = 0; j < _yValues.size(); ++j )
+  {
+    float temp ( abs ( _yValues.at( j ).first - corner.y() ) ); 
+
+    if( temp < minYDistance )
+    {
+      minYDistance = temp;
+      currYIndex = j;
+    }
+  }
+
+  // get the starting value for the x values
+  float minZDistance ( abs ( _zValues.at( 0 ).first - corner.z() ) );
+  int currZIndex ( 0 );
+
+  for( unsigned int k = 0; k < _zValues.size(); ++k )
+  {
+    float temp ( abs ( _zValues.at( k ).first - corner.z() ) ); 
+
+    if( temp < minZDistance )
+    {
+      minZDistance = temp;
+      currZIndex = k;
+    }
+  }
+
+  osg::Vec3f value ( _xValues.at( currXIndex ).first, _yValues.at( currYIndex ).first, _zValues.at( currZIndex ).first );
+
+  // feedback
+  std::cout << "Corner fit to: ( " << value.x() << ", " << value.y() << ", " << value.z() << " )." << std::endl;
+
+  return value;
 }

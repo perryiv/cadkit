@@ -462,8 +462,11 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
     }
   }
 
+  // make the cracks
+  this->_makeCracks();
+
   // build the contaminant 3D element
-  this->_makeContaminants();   
+  this->_makeSource3D();   
 }
 
 
@@ -520,7 +523,7 @@ void VaporIntrusionGUIDocument::_makeGrid( )
         
         // Set the location of the cube
         Usul::Math::Vec3ui location( x, y, z );
-        group->addChild( this->_buildTestCube( p.get(), c, location ) );
+        group->addChild( this->_buildCube( p.get(), c, location ) );
 
         // set the material of the cube
         OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
@@ -538,13 +541,60 @@ void VaporIntrusionGUIDocument::_makeGrid( )
   }
 }
 
-osg::Node*	VaporIntrusionGUIDocument::_buildPlane ( float sx, float sy, float ex, float ey, osg::Vec4f color )
+///////////////////////////////////////////////////////////////////////////////
+//
+// Build a plane from the given points
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node*	VaporIntrusionGUIDocument::_buildPlane ( osg::Vec3Array* points, osg::Vec4f color )
 {
 	Guard guard ( this );
 
 	// create a group to hold the plane
 	GroupPtr group ( new osg::Group );
 
+   // Create the vertices
+  osg::ref_ptr< osg::Vec3Array > vertices ( points );
+  osg::ref_ptr< osg::Vec3Array > normals ( new osg::Vec3Array );
+  osg::ref_ptr< osg::Vec4Array > colors ( new osg::Vec4Array );
+
+  if( points->size() != 4 )
+  {
+    std::cout << "Invalid number of points passed to _buildPlane!" << std::endl;
+    return group.release();
+  }
+    
+  // Normals for each face n ( p3 - p2 ) ^ ( p1 - p2 )
+  osg::Vec3 n( ( vertices->at( 3 ) - vertices->at( 1 ) ) ^ ( vertices->at( 0 ) - vertices->at( 1 ) ) );
+  normals->push_back( n );normals->push_back( n );normals->push_back( n );normals->push_back( n );
+  
+  // Geometry
+  osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
+  
+  // Set the vertices
+  geometry->setVertexArray( vertices.get() );
+
+  // set the normals and set binding to per vertex
+  geometry->setNormalArray( normals.get() );
+  geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
+
+  // Colors
+  colors->push_back( color );
+
+  // set the colors and set binding to per vertex
+  geometry->setColorArray( colors.get() );
+  geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+  
+  // Add the primitive
+  geometry->addPrimitiveSet( new osg::DrawArrays ( osg::PrimitiveSet::QUADS, 0, vertices->size() ) );
+  
+  // Create the geode and add the geometry
+  osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+  geode->addDrawable( geometry.get() );
+
+  // Add the geode to the group
+  group->addChild( geode.get() );
 
 	// return the group
 	return group.release();
@@ -560,10 +610,68 @@ void VaporIntrusionGUIDocument::_makeCracks()
 {
 	Guard guard ( this );
 
-	//for( unsigned int i = 0; i < _cracks.size(); ++ i )
-	//{
-	//	
-	//}
+  // useful typedefs
+  typedef Usul::Convert::Type< std::string, float > StrToFloat;
+
+  // create the visuals for the x direction cracks first
+	for( unsigned int i = 0; i < _cracks.first.size(); ++ i )
+	{
+    // get the crack
+    Crack c ( _cracks.first.at( i ) );
+
+    // set the corners
+    float sy( StrToFloat::convert( _building.z ) + StrToFloat::convert( c.value ) );
+    float ey ( sy );
+
+    // set the "z" corners
+    float sx ( StrToFloat::convert( _building.x ) + StrToFloat::convert( c.start ) );
+    float ex ( StrToFloat::convert( _building.x ) + StrToFloat::convert( c.end ) );
+
+    // points of the plane
+    osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+
+    //set the points
+    float sd ( StrToFloat::convert( _building.y  ) );
+    float ed ( StrToFloat::convert( _building.y  ) + -1 * StrToFloat::convert( _building.h ) );
+
+    points->push_back( osg::Vec3f ( sx, sd, sy ) );
+    points->push_back( osg::Vec3f ( ex, sd, sy ) );
+    points->push_back( osg::Vec3f ( sx, ed, ey ) );
+    points->push_back( osg::Vec3f ( ex, ed, ey ) );
+
+    this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) );
+  }
+
+  // create the visuals for the y direction cracks first
+	for( unsigned int i = 0; i < _cracks.second.size(); ++ i )
+	{
+    // get the crack
+    Crack c ( _cracks.second.at( i ) );
+
+    // set the corners
+    float sy( StrToFloat::convert( _building.x ) + StrToFloat::convert( c.value ) );
+    float ey ( sy );
+
+    // set the "z" corners
+    float sx ( StrToFloat::convert( _building.z ) + StrToFloat::convert( c.start ) );
+    float ex ( StrToFloat::convert( _building.z ) + StrToFloat::convert( c.end ) );
+
+    // points of the plane
+    osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+
+    //set the points
+    float sd ( StrToFloat::convert( _building.y  ) );
+    float ed ( StrToFloat::convert( _building.y  ) + -1 * StrToFloat::convert( _building.h ) );
+
+    points->push_back( osg::Vec3f ( sx, sd, sy ) );
+    points->push_back( osg::Vec3f ( ex, sd, sy ) );
+    points->push_back( osg::Vec3f ( sx, ed, ey ) );
+    points->push_back( osg::Vec3f ( ex, ed, ey ) );
+
+    this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) );
+  }
+
+	
 }
 
 
@@ -615,7 +723,7 @@ void VaporIntrusionGUIDocument::_makeFoundation( osg::Vec3f ll )
   osg::ref_ptr< osg::Group > group ( new osg::Group );
 
   // build the cuve
-  group->addChild( this->_buildTestCube( p.get(), c, location ) );
+  group->addChild( this->_buildCube( p.get(), c, location ) );
 
   // set the material of the cube
   OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
@@ -659,6 +767,10 @@ void VaporIntrusionGUIDocument::_makeBuilding()
   ll.x() = corner.x();
   ll.z() = corner.y();
 
+  // update the building
+  _building.x = ll.x();
+  _building.z = ll.z();
+
   // get the length, width, and height of the building
   osg::Vec3f lhw ( StrToFloat::convert( _building.l ), StrToFloat::convert( _building.h ), StrToFloat::convert( _building.w ) );
 
@@ -680,7 +792,7 @@ void VaporIntrusionGUIDocument::_makeBuilding()
   osg::ref_ptr< osg::Group > group ( new osg::Group );
 
   // build the cuve
-  group->addChild( this->_buildTestCube( p.get(), c, location ) );
+  group->addChild( this->_buildCube( p.get(), c, location ) );
 
   // set the material of the cube
   OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
@@ -768,7 +880,7 @@ void VaporIntrusionGUIDocument::_makeSymmetricalBuilding( )
   osg::ref_ptr< osg::Group > group ( new osg::Group );
 
   // build the cuve
-  group->addChild( this->_buildTestCube( p.get(), c, location ) );
+  group->addChild( this->_buildCube( p.get(), c, location ) );
 
   // set the material of the cube
   OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
@@ -788,7 +900,7 @@ void VaporIntrusionGUIDocument::_makeSymmetricalBuilding( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_makeContaminants()
+void VaporIntrusionGUIDocument::_makeSource3D()
 {
   Guard guard ( this );
 
@@ -814,6 +926,11 @@ void VaporIntrusionGUIDocument::_makeContaminants()
     // snap to the grid
     ll = this->_snapToGrid3D( ll );
 
+    // update the source
+    _sources.at( i ).x = ll.x();
+    _sources.at( i ).y = ll.y();
+    _sources.at( i ).z = ll.z();
+
     // shrink
     ll = osg::Vec3f ( ll.x() - 0.00001, ll.y() - 0.00001, ll.z() - 0.00001 );
 
@@ -838,7 +955,7 @@ void VaporIntrusionGUIDocument::_makeContaminants()
     osg::ref_ptr< osg::Group > group ( new osg::Group );
 
     // build the cuve
-    group->addChild( this->_buildTestCube( p.get(), c, location ) );
+    group->addChild( this->_buildCube( p.get(), c, location ) );
 
     // set the material of the cube
     OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
@@ -873,7 +990,7 @@ void VaporIntrusionGUIDocument::rebuildScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* VaporIntrusionGUIDocument::_buildTestCube( osg::Vec3Array* points, Color c, Usul::Math::Vec3ui location )
+osg::Node* VaporIntrusionGUIDocument::_buildCube( osg::Vec3Array* points, Color c, Usul::Math::Vec3ui location )
 {
   Guard guard( this );
   GroupPtr group ( new osg::Group );

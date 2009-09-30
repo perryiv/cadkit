@@ -636,10 +636,10 @@ void VaporIntrusionGUIDocument::_makeCracks()
 
     points->push_back( osg::Vec3f ( sx, sd, sy ) );
     points->push_back( osg::Vec3f ( ex, sd, sy ) );
-    points->push_back( osg::Vec3f ( sx, ed, ey ) );
     points->push_back( osg::Vec3f ( ex, ed, ey ) );
+    points->push_back( osg::Vec3f ( sx, ed, ey ) );
 
-    this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) );
+    _root->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
   }
 
   // create the visuals for the y direction cracks first
@@ -663,12 +663,12 @@ void VaporIntrusionGUIDocument::_makeCracks()
     float sd ( StrToFloat::convert( _building.y  ) );
     float ed ( StrToFloat::convert( _building.y  ) + -1 * StrToFloat::convert( _building.h ) );
 
-    points->push_back( osg::Vec3f ( sx, sd, sy ) );
-    points->push_back( osg::Vec3f ( ex, sd, sy ) );
-    points->push_back( osg::Vec3f ( sx, ed, ey ) );
-    points->push_back( osg::Vec3f ( ex, ed, ey ) );
+    points->push_back( osg::Vec3f ( sy, sd, sx ) );
+    points->push_back( osg::Vec3f ( sy, sd, ex ) );
+    points->push_back( osg::Vec3f ( ey, ed, ex ) );
+    points->push_back( osg::Vec3f ( ey, ed, sx ) );
 
-    this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) );
+    _root->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
   }
 
 	
@@ -768,8 +768,9 @@ void VaporIntrusionGUIDocument::_makeBuilding()
   ll.z() = corner.y();
 
   // update the building
-  _building.x = ll.x();
-  _building.z = ll.z();
+  _building.x = Usul::Strings::format ( ll.x() );
+  _building.z = Usul::Strings::format ( ll.z() );
+  _building.y = Usul::Strings::format ( ypos );
 
   // get the length, width, and height of the building
   osg::Vec3f lhw ( StrToFloat::convert( _building.l ), StrToFloat::convert( _building.h ), StrToFloat::convert( _building.w ) );

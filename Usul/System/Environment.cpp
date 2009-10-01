@@ -75,3 +75,19 @@ bool Usul::System::Environment::has ( const std::string &name )
   const std::string value ( Usul::System::Environment::get ( name ) );
   return ( false == value.empty() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the environment variable.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Usul::System::Environment::set ( const std::string &name, const std::string &value )
+{
+#if ( defined ( _MSC_VER ) && ( _MSC_VER >= 1400 ) )
+  ::_putenv_s ( name.c_str(), value.c_str() );
+#else
+  ::setenv ( name.c_str(), value.c_str(), 0 );
+#endif
+}

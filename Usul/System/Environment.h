@@ -29,6 +29,7 @@ struct USUL_EXPORT Environment
 {
   static std::string      get ( const std::string &name );
   static bool             has ( const std::string &name );
+  static void             set ( const std::string &name, const std::string &value );
 };
 
 

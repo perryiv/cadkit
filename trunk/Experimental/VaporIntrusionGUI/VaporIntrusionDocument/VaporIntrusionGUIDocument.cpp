@@ -426,6 +426,11 @@ void VaporIntrusionGUIDocument::_initCubes()
 
 #endif
 
+  // save the original state
+  _originalXValues = _xValues;
+  _originalYValues = _yValues;
+  _originalZValues = _zValues;
+
 }
 
 
@@ -444,10 +449,7 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
   }
 
   // Remove all the children
-  _root->removeChildren( 0, _root->getNumChildren() );
-
-  // build the Grid 3D element
-  this->_makeGrid();
+  _root->removeChildren( 0, _root->getNumChildren() );  
 
   // build the building 3D element
   if( true == _useBuilding )
@@ -466,7 +468,10 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
   this->_makeCracks();
 
   // build the contaminant 3D element
-  this->_makeSource3D();   
+  this->_makeSource3D();  
+
+  // build the Grid 3D element
+  this->_makeGrid();
 }
 
 
@@ -610,22 +615,36 @@ void VaporIntrusionGUIDocument::_makeCracks()
 {
 	Guard guard ( this );
 
+  // reset values to the original state
+  _xValues = _originalXValues;
+  _yValues = _originalYValues;
+  _zValues = _originalZValues;
+
+  // Adjust the grid spacing and rebuild the cubes
+  this->_adjustGridSpacing();
+
   // useful typedefs
   typedef Usul::Convert::Type< std::string, float > StrToFloat;
 
+  // get the z axis grid
+  GridPoints zgrid ( this->_getGridFromAxis( "Z" ) );
   // create the visuals for the x direction cracks first
 	for( unsigned int i = 0; i < _cracks.first.size(); ++ i )
 	{
     // get the crack
     Crack c ( _cracks.first.at( i ) );
 
+    // convert the crack values
+    float value ( StrToFloat::convert( c.value ) );
+    float start ( StrToFloat::convert( c.start ) );
+    float end   ( StrToFloat::convert( c.end   ) );
+
     // set the corners
-    float sy( StrToFloat::convert( _building.z ) + StrToFloat::convert( c.value ) );
-    float ey ( sy );
+    float y( StrToFloat::convert( _building.z ) + value );
 
     // set the "z" corners
-    float sx ( StrToFloat::convert( _building.x ) + StrToFloat::convert( c.start ) );
-    float ex ( StrToFloat::convert( _building.x ) + StrToFloat::convert( c.end ) );
+    float sx ( StrToFloat::convert( _building.x ) + start );
+    float ex ( StrToFloat::convert( _building.x ) + end );
 
     // points of the plane
     osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
@@ -634,27 +653,49 @@ void VaporIntrusionGUIDocument::_makeCracks()
     float sd ( StrToFloat::convert( _building.y  ) );
     float ed ( StrToFloat::convert( _building.y  ) + -1 * StrToFloat::convert( _building.h ) );
 
-    points->push_back( osg::Vec3f ( sx, sd, sy ) );
-    points->push_back( osg::Vec3f ( ex, sd, sy ) );
-    points->push_back( osg::Vec3f ( ex, ed, ey ) );
-    points->push_back( osg::Vec3f ( sx, ed, ey ) );
+    points->push_back( osg::Vec3f ( sx, sd, y ) );
+    points->push_back( osg::Vec3f ( ex, sd, y ) );
+    points->push_back( osg::Vec3f ( ex, ed, y ) );
+    points->push_back( osg::Vec3f ( sx, ed, y ) );
 
     _root->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
+
+    // get the nearest grid point to the crack
+    Usul::Math::Vec2ui ind ( this->_snapToGrid( y, zgrid ) );
+
+    // calculate the positions and distances
+    float p1 ( y );
+    float d1 ( sqrt ( ( y - zgrid.at( ind[0] ).first ) * ( y - zgrid.at( ind[0] ).first ) ) );
+
+    float p2 ( p1 + d1 );
+    float d2 ( sqrt ( ( zgrid.at( ind[1] ).first - p2 ) * ( zgrid.at( ind[1] ).first - p2 ) ) );
+
+    // add a grid point on the crack and sam distance from the crack and nearest point to the next
+    // nearest point and the crack on the Y axis
+    this->_insertGridPoint( "Z", p1 );
+    this->_insertGridPoint( "Z", p2 );
+
   }
 
+  // get the x axis grid
+  GridPoints xgrid ( this->_getGridFromAxis( "X" ) );
   // create the visuals for the y direction cracks first
 	for( unsigned int i = 0; i < _cracks.second.size(); ++ i )
 	{
     // get the crack
     Crack c ( _cracks.second.at( i ) );
 
+    // convert the crack values
+    float value ( StrToFloat::convert( c.value ) );
+    float start ( StrToFloat::convert( c.start ) );
+    float end   ( StrToFloat::convert( c.end   ) );
+
     // set the corners
-    float sy( StrToFloat::convert( _building.x ) + StrToFloat::convert( c.value ) );
-    float ey ( sy );
+    float y( StrToFloat::convert( _building.x ) + value );
 
     // set the "z" corners
-    float sx ( StrToFloat::convert( _building.z ) + StrToFloat::convert( c.start ) );
-    float ex ( StrToFloat::convert( _building.z ) + StrToFloat::convert( c.end ) );
+    float sx ( StrToFloat::convert( _building.z ) + start );
+    float ex ( StrToFloat::convert( _building.z ) + end );
 
     // points of the plane
     osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
@@ -663,12 +704,27 @@ void VaporIntrusionGUIDocument::_makeCracks()
     float sd ( StrToFloat::convert( _building.y  ) );
     float ed ( StrToFloat::convert( _building.y  ) + -1 * StrToFloat::convert( _building.h ) );
 
-    points->push_back( osg::Vec3f ( sy, sd, sx ) );
-    points->push_back( osg::Vec3f ( sy, sd, ex ) );
-    points->push_back( osg::Vec3f ( ey, ed, ex ) );
-    points->push_back( osg::Vec3f ( ey, ed, sx ) );
+    points->push_back( osg::Vec3f ( y, sd, sx ) );
+    points->push_back( osg::Vec3f ( y, sd, ex ) );
+    points->push_back( osg::Vec3f ( y, ed, ex ) );
+    points->push_back( osg::Vec3f ( y, ed, sx ) );
 
     _root->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
+
+    // get the nearest grid point to the crack    
+    Usul::Math::Vec2ui ind ( this->_snapToGrid( y, xgrid ) );
+
+    // calculate the new distances
+    float p1 ( y );
+    float d1 ( sqrt ( ( y - xgrid.at( ind[0] ).first ) * ( y - xgrid.at( ind[0] ).first ) ) );
+
+    float p2 ( p1 + d1 );
+    float d2 ( sqrt ( ( xgrid.at( ind[1] ).first - p2 ) * ( xgrid.at( ind[1] ).first - p2 ) ) );
+
+    // add a grid point on the crack and sam distance from the crack and nearest point to the next
+    // nearest point and the crack on the Y axis
+    this->_insertGridPoint( "X", p1 );
+    this->_insertGridPoint( "X", p2 );
   }
 
 	
@@ -2941,6 +2997,103 @@ VaporIntrusionGUIDocument::GridRefinements VaporIntrusionGUIDocument::refinement
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Insert a grid point into the given axis
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_insertGridPoint( const std::string& axis, float pos )
+{
+  Guard guard ( this );
+
+  // get the grid points
+  GridPoints axisGrid ( this->_getGridFromAxis( axis ) );
+
+  // the new grid for this axis
+  GridPoints grid;
+
+  // make sure there are points
+  if( axisGrid.size() == 0 )
+  {
+    std::cout << "No points found for axis: " << axis << std::endl;
+    return;
+  }
+
+  // get the indices of the point before and after value
+  Usul::Math::Vec2ui indices ( this->_snapToGrid( pos, axisGrid ) );
+
+  for( unsigned int i = 0; i < indices[0]; ++i )
+  {
+    grid.push_back( axisGrid.at( i ) );
+  }
+
+  // get the position and distance of the first index
+  float p1 ( axisGrid.at( indices[0] ).first );
+  float d1 ( sqrt ( ( pos - p1 ) * ( pos - p1 ) ) );
+
+  // get the position and distance of the second index
+  float p2 ( axisGrid.at( indices[1] ).first );
+  float d2 ( sqrt ( ( p2 - pos ) * ( p2 - pos ) ) );
+
+  // update the distance on the point before the new entry
+  grid.push_back( GridPoint( static_cast< double > ( p1 ), static_cast< double > ( d1 ) ) );
+
+  // add the new point
+  grid.push_back( GridPoint( static_cast< double > ( pos ), static_cast< double > ( static_cast< double > ( d2 ) ) ) );
+ 
+  for( unsigned int i = indices[1]; i < axisGrid.size(); ++i )
+  {
+    grid.push_back( axisGrid.at( i ) );
+  }
+
+  this->_setGridFromAxis( axis, grid );
+
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Insert a new grid space at between <startPoint> and <endPoint> at 
+// <startPoint> + <value> for axis <axis>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_insertSingleGridSpace( const std::string& axis, unsigned int startPoint, unsigned int endPoint, float value )
+{
+  Guard guard ( this );
+
+  GridPoints axisGrid ( this->_getGridFromAxis( axis ) );
+  GridPoints grid;
+
+  std::string key( Usul::Strings::format( axis, startPoint ) );
+  unsigned int index ( _originalToCurrentIndex[ key ] );
+
+  for( unsigned int i = 0; i < index; ++i )
+  {
+    grid.push_back( axisGrid.at( i ) );
+  }
+
+  float position ( axisGrid.at( index ).first );
+  float distance ( axisGrid.at( index ).second );
+
+  // update the distance on the point before the new entry
+  grid.push_back( GridPoint( static_cast< double > ( position ), static_cast< double > ( value ) ) );
+
+  // add the new point
+  grid.push_back( GridPoint( static_cast< double > ( position + value ), static_cast< double > ( distance - value ) ) );
+ 
+  for( unsigned int i = index + 1; i < axisGrid.size(); ++i )
+  {
+    grid.push_back( axisGrid.at( i ) );
+  }
+
+  this->_setGridFromAxis( axis, grid );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // Insert <numToAdd> number of gridPoints from <startPoint> until <endPoint>
 // for axis <axis>
 //
@@ -3135,6 +3288,48 @@ void VaporIntrusionGUIDocument::symmetricalGrid( bool value )
   Guard guard ( this );
 
   _symmetricalGrid = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Find indices that the grid point lies between
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec2ui VaporIntrusionGUIDocument::_snapToGrid( float value, GridPoints grid )
+{
+  Guard guard ( this );
+
+  // the indices
+  Usul::Math::Vec2ui indices ( 0, 0 );
+
+  // get the starting value for the x values
+  float minDistance ( abs ( grid.at( 0 ).first - value ) );
+  unsigned int currIndex ( 0 );
+
+  // check the rest of the x values to find the closest point to the corner
+  for( unsigned int i = 1; i < grid.size(); ++i )
+  {
+    float temp ( abs ( grid.at( i ).first - value ) ); 
+
+    if( temp < minDistance )
+    {
+      minDistance = temp;
+      currIndex = i;
+    }
+
+  }
+
+  indices[0] = currIndex;
+  indices[1] = currIndex;
+
+  if( currIndex < grid.size() - 1 )
+  {
+    indices[1] = currIndex + 1;
+  }
+    
+  return indices;  
 }
 
 

@@ -287,10 +287,13 @@ protected:
 
   void                        _adjustGridSpacing();
   void                        _insertGridSpacing( const std::string& axis, unsigned int startPoint, unsigned int endPoint, unsigned int numToAdd );
+  void                        _insertSingleGridSpace( const std::string& axis, unsigned int startPoint, unsigned int endPoint, float value );
+  void                        _insertGridPoint( const std::string& axis, float pos );
 
   GridPoints                  _getGridFromAxis( const std::string& axis );
   void                        _setGridFromAxis( const std::string& axis, GridPoints grid );
 
+  Usul::Math::Vec2ui          _snapToGrid( float value, GridPoints grid );
   osg::Vec2f                  _snapToGrid2D( osg::Vec2f corner );
   osg::Vec3f                  _snapToGrid3D( osg::Vec3f corner );
 
@@ -315,6 +318,10 @@ private:
     GridRefinements           _refinements;
     GridMap                   _originalToCurrentIndex;
     bool                      _symmetricalGrid;
+
+    GridPoints                _originalXValues;
+    GridPoints                _originalYValues;
+    GridPoints                _originalZValues;
   
 };
 

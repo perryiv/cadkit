@@ -41,7 +41,7 @@ ADD_LIBRARY( MinervaDocument SHARED ${SOURCES} )
 CADKIT_ADD_LIBRARY ( MinervaDocument )
 			
 # Link the Library	
-LINK_CADKIT( MinervaDocument Usul OsgTools SerializeXML XmlTree MenuKit Minerva )
+ADD_DEPENDENCIES( MinervaDocument Usul CadKitOsgTools SerializeXML XmlTree MenuKit Minerva )
 TARGET_LINK_LIBRARIES( MinervaDocument
 	${Boost_LIBRARIES}
 	${OPENTHREADS_LIB}

@@ -24,7 +24,7 @@ SET ( SOURCES
 # Set variables that the CADKIT_ADD_PLUGIN macro uses.
 SET ( PLUGIN_NAME "SceneModel" )
 SET ( COMPILE_GUARD "_COMPILING_SCENE_MODEL" )
-SET ( CADKIT_LIBRARIES Usul OsgTools )
+SET ( CADKIT_LIBRARIES Usul CadKitOsgTools )
 SET ( OTHER_LIBRARIES ${OPENTHREADS_LIB} ${OSG_LIB}	${OSG_DB_LIB} )
 
 # Add the plugin.

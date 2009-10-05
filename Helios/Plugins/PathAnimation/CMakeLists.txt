@@ -30,7 +30,7 @@ SET (SOURCES
 # Set variables that the CADKIT_ADD_PLUGIN macro uses.
 SET ( PLUGIN_NAME "PathAnimation" )
 SET ( COMPILE_GUARD "_COMPILING_PATH_ANIMATION" )
-SET ( CADKIT_LIBRARIES Usul OsgTools SerializeXML XmlTree MenuKit )
+SET ( CADKIT_LIBRARIES Usul CadKitOsgTools SerializeXML XmlTree MenuKit )
 SET ( OTHER_LIBRARIES ${OSG_LIB} ${OPENTHREADS_LIB} )
 
 # Add the plugin.

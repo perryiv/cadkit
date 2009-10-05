@@ -242,7 +242,7 @@ SOURCE_GROUP ( Widgets   REGULAR_EXPRESSION ${PROJECT_SOURCE_DIR}/Widgets/* )
 SOURCE_GROUP ( Volume    REGULAR_EXPRESSION ${PROJECT_SOURCE_DIR}/Volume/* )
 
 # Set the target name.
-SET ( TARGET_NAME OsgTools )
+SET ( TARGET_NAME CadKitOsgTools )
 SET ( TARGET_FILES ${HEADERS} ${SOURCES} )
 
 # Create a Shared Library

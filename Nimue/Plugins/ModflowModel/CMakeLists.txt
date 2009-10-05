@@ -40,7 +40,7 @@ SET (SOURCES
 # Set variables that the CADKIT_ADD_PLUGIN macro uses.
 SET ( PLUGIN_NAME "ModflowModel" )
 SET ( COMPILE_GUARD "_COMPILING_MODFLOW_MODEL" )
-SET ( CADKIT_LIBRARIES Usul OsgTools XmlTree SerializeXML )
+SET ( CADKIT_LIBRARIES Usul CadKitOsgTools XmlTree SerializeXML )
 SET ( OTHER_LIBRARIES ${OPENTHREADS_LIB} ${OSG_LIB} ${OSG_DB_LIB} ${GDAL_LIBRARY} )
 
 # Add the plugin.

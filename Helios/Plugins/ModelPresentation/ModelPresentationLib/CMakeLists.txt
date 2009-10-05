@@ -36,7 +36,7 @@ ADD_LIBRARY( ModelPresentationLib SHARED ${SOURCES} )
 CADKIT_ADD_LIBRARY ( ModelPresentationLib )
 
 # Link the Library	
-LINK_CADKIT( ModelPresentationLib Usul OsgTools )
+ADD_DEPENDENCIES( ModelPresentationLib Usul CadKitOsgTools )
 
 TARGET_LINK_LIBRARIES( ModelPresentationLib
    ${OSG_LIB}

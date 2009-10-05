@@ -45,7 +45,7 @@ set (SOURCES
 # Set variables that the CADKIT_ADD_PLUGIN macro uses.
 SET ( PLUGIN_NAME "ModelPresentation" )
 SET ( COMPILE_GUARD "_COMPILING_DYNAMIC_LAND_MODEL" )
-SET ( CADKIT_LIBRARIES Usul OsgTools XmlTree ModelPresentationLib MenuKit )
+SET ( CADKIT_LIBRARIES Usul CadKitOsgTools XmlTree ModelPresentationLib MenuKit )
 SET ( OTHER_LIBRARIES ${OPENTHREADS_LIB} ${OSG_LIB}	${OSG_UTIL_LIB} )
 
 IF( NOT WIN32 )

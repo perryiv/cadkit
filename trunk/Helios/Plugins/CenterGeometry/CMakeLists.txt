@@ -25,7 +25,7 @@ set (SOURCES
 # Set variables that the CADKIT_ADD_PLUGIN macro uses.
 SET ( PLUGIN_NAME "CenterGeometry" )
 SET ( COMPILE_GUARD "_COMPILING_CENTER_GEOMETRY" )
-SET ( CADKIT_LIBRARIES Usul OsgTools MenuKit )
+SET ( CADKIT_LIBRARIES Usul CadKitOsgTools MenuKit )
 SET ( OTHER_LIBRARIES ${OPENTHREADS_LIB} ${OSG_LIB}	${OSG_UTIL_LIB} )
 
 # Add the plugin.

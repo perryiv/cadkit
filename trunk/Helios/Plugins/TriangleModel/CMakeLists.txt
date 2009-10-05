@@ -31,7 +31,7 @@ set (SOURCES
 # Set variables that the CADKIT_ADD_PLUGIN macro uses.
 SET ( PLUGIN_NAME "TriangleModel" )
 SET ( COMPILE_GUARD "_COMPILING_TRIANGLE_MODEL" )
-SET ( CADKIT_LIBRARIES Usul OsgTools XmlTree )
+SET ( CADKIT_LIBRARIES Usul CadKitOsgTools XmlTree )
 SET ( OTHER_LIBRARIES ${OSG_LIB} ${OPENTHREADS_LIB} )
 
 # Add the plugin.

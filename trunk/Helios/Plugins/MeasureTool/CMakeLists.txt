@@ -25,7 +25,7 @@ SET (SOURCES
 # Set variables that the CADKIT_ADD_PLUGIN macro uses.
 SET ( PLUGIN_NAME "MeasureTool" )
 SET ( COMPILE_GUARD "_COMPILING_MEASURE_TOOL" )
-SET ( CADKIT_LIBRARIES Usul OsgTools MenuKit )
+SET ( CADKIT_LIBRARIES Usul CadKitOsgTools MenuKit )
 SET ( OTHER_LIBRARIES ${OSG_LIB}
 					  ${OSG_UTIL_LIB}
 					  ${OSG_TEXT_LIB}

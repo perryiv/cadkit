@@ -254,7 +254,7 @@ FILE( GLOB HEADERS_TO_INSTALL ${CMAKE_CURRENT_SOURCE_DIR}/../Interfaces/*.h )
 INSTALL(FILES ${HEADERS_TO_INSTALL} DESTINATION include/cadkit/Minerva/Interfaces)
 	
 # Link the Library	
-LINK_CADKIT( Minerva Usul OsgTools SerializeXML XmlTree )
+ADD_DEPENDENCIES ( Minerva Usul CadKitOsgTools SerializeXML XmlTree )
 TARGET_LINK_LIBRARIES(Minerva
 	${Boost_DATE_TIME_LIBRARY}
 	${Boost_FILESYSTEM_LIBRARY}

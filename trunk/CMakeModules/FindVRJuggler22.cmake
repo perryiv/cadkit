@@ -210,3 +210,15 @@ if(TWEEK_LIB)
 endif(TWEEK_LIB)
 
 
+FIND_LIBRARY(SONIX_LIBRARY sonix 
+  "$ENV{VJ_BASE_DIR}/lib64"
+  "$ENV{VJ_BASE_DIR}/lib"
+  /usr/local/lib64
+  /usr/local/lib
+  /usr/lib64
+  /usr/lib
+)
+
+if(SONIX_LIBRARY)
+  SET(VR_JUGGLER_LIBS ${VR_JUGGLER_LIBS} ${SONIX_LIBRARY})
+endif(SONIX_LIBRARY)

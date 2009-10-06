@@ -444,14 +444,14 @@ void Application::cleanup()
   _buttonMap.clear();
   _buttonCommandsMap.clear();
 
-	// Clear the progress bars.
+  // Clear the progress bars.
   if ( _progressBars.valid() )
     _progressBars->removeFinishedProgressBars();
 
-	_progressBars = 0x0;
+  _progressBars = 0x0;
 
-	// Clear the intersector.
-	_intersector = 0x0;
+  // Clear the intersector.
+  _intersector = 0x0;
 
   if ( 0x0 != _deleteHandler )
   {
@@ -2920,8 +2920,8 @@ void Application::_readDevicesFile()
   {
     XmlTree::Node::RefPtr node ( *iter );
     if ( "Analog" == node->name() )
-		{
-			const std::string name    ( node->attributes()["name"] );
+    {
+      const std::string name    ( node->attributes()["name"] );
       const std::string analog0 ( node->attributes()["horizontal_name"] ); 
       const std::string analog1 ( node->attributes()["vertical_name"] );
       const std::string hm ( node->attributes()["h_modifier"] );
@@ -2930,15 +2930,14 @@ void Application::_readDevicesFile()
       float hModifier = Usul::Convert::Type< std::string, float >::convert( hm );
       float vModifier = Usul::Convert::Type< std::string, float >::convert( vm );
 
-			if ( false == name.empty() && false == analog0.empty() && false == analog1.empty() )
-			{
-				_analogs[name] = new VRV::Devices::JoystickDevice ( analog0, analog1 );
+      if ( false == name.empty() && false == analog0.empty() && false == analog1.empty() )
+      {
+	_analogs[name] = new VRV::Devices::JoystickDevice ( analog0, analog1 );
         _analogs[name]->name( name );
         _analogs[name]->horizontalModifier( hModifier );
-        _analogs[name]->verticalModifier( vModifier );
-        
-			}
-		}
+        _analogs[name]->verticalModifier( vModifier );  
+      }
+    }
   }
   if( _analogs.size() == 0 )
   {

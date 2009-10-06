@@ -11,7 +11,7 @@ IF(QT_FOUND AND BUILD_HELIOS_QT)
 	SUBDIRS( ${CADKIT_INC_DIR}/Minerva/Plugins/LayerManager
 			 ${CADKIT_INC_DIR}/Minerva/Plugins/QtArcIMS
 			 ${CADKIT_INC_DIR}/Minerva/Plugins/WmsLayerQt
-			 #${CADKIT_INC_DIR}/Minerva/Plugins/OssimLayerQt
+			 ${CADKIT_INC_DIR}/Minerva/Plugins/OssimLayerQt
 			 ${CADKIT_INC_DIR}/Minerva/Plugins/QtCustomGeometry )
 			 
 	# Build this project if pqxx is found.

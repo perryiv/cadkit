@@ -92,7 +92,8 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _showBuilding( true ),
   _showFoundation( true ),
   _showSources( true ),
-  _showCracks( true )
+  _showCracks( true ),
+  _maxCrackGridDistance( 0.2f )
 {
   USUL_TRACE_SCOPE;
 
@@ -488,6 +489,9 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
 
   if( true == _showGrid )
   {
+    // add the additional points
+    this->_addPoints();
+
     // build the Grid 3D element
     this->_makeGrid();
   }
@@ -684,30 +688,41 @@ void VaporIntrusionGUIDocument::_makeCracks()
 
     unsigned int nearIndex ( ind[0] );
     unsigned int farIndex ( ind[1] );
-  /*  if( ind[0] > ind[1] )
-    {
-      nearIndex = ind[1];
-      farIndex = ind[0];
-    }*/
 
-    // calculate the positions and distances
-    float p1 ( y );
-    //float d1 ( sqrt ( ( y - zgrid.at( nearIndex ).first ) * ( y - zgrid.at( nearIndex ).first ) ) );
-    float d1 ( y - zgrid.at( nearIndex ).first );
+    // the point where the crack is
+    float p ( y );
+    float d ( Usul::Math::minimum<float>( abs ( y - zgrid.at( nearIndex ).first ), _maxCrackGridDistance ) );
 
-    float p2 ( p1 + d1 );
-    //float d2 ( sqrt ( ( zgrid.at( farIndex ).first - p2 ) * ( zgrid.at( farIndex ).first - p2 ) ) );
-    float d2 ( zgrid.at( farIndex ).first - p2 );
+    // p1 will be 2 grid units away from p toward the nearest grid point
+    float p1 ( p + d );
+
+    // P2 is 2 grid units away from p toward the farthest grid point
+    float p2 ( p - d );
+
+    //float d2 ( Usul::Math::minimum<float> ( zgrid.at( farIndex ).first - p2, _maxCrackGridDistance ) );  
+    
+    // half of the distance d
+    float hd ( d / 2 );
+
+    // p3 is halfway between p and p1
+    float p3 ( p + hd );
+
+    // p4 is halfway between p and p2
+    float p4 ( p - hd );
 
     // add a grid point on the crack and sam distance from the crack and nearest point to the next
     // nearest point and the crack on the Y axis
+    this->_insertGridPoint( "Z", p );
     this->_insertGridPoint( "Z", p1 );
     this->_insertGridPoint( "Z", p2 );
+    this->_insertGridPoint( "Z", p3 );
+    this->_insertGridPoint( "Z", p4 );
 
   }
 
   // get the x axis grid
   GridPoints xgrid ( this->_getGridFromAxis( "X" ) );
+
   // create the visuals for the y direction cracks first
 	for( unsigned int i = 0; i < _cracks.second.size(); ++ i )
 	{
@@ -744,24 +759,34 @@ void VaporIntrusionGUIDocument::_makeCracks()
     Usul::Math::Vec2ui ind ( this->_snapToGrid( y, xgrid ) );
 
     unsigned int nearIndex ( ind[0] );
-    unsigned int farIndex ( ind[1] );
-    if( ind[0] > ind[1] )
-    {
-      nearIndex = ind[1];
-      farIndex = ind[0];
-    }
+    unsigned int farIndex  ( ind[1] );
 
-    // calculate the new distances
-    float p1 ( y );
-    float d1 ( sqrt ( ( y - xgrid.at( nearIndex ).first ) * ( y - xgrid.at( nearIndex ).first ) ) );
+     // the point where the crack is
+    float p ( y );
+    float d ( Usul::Math::minimum<float>( abs ( y - xgrid.at( nearIndex ).first ), _maxCrackGridDistance ) );
 
-    float p2 ( p1 + d1 );
-    float d2 ( sqrt ( ( xgrid.at( farIndex ).first - p2 ) * ( xgrid.at( farIndex ).first - p2 ) ) );
+    // p1 will be 2 grid units away from p toward the nearest grid point
+    float p1 ( p + d );
+
+    // P2 is 2 grid units away from p toward the farthest grid point
+    float p2 ( p - d );
+    
+    // half of the distance d
+    float hd ( d / 2 );
+
+    // p3 is halfway between p and p1
+    float p3 ( p + hd );
+
+    // p4 is halfway between p and p2
+    float p4 ( p - hd );
 
     // add a grid point on the crack and sam distance from the crack and nearest point to the next
     // nearest point and the crack on the Y axis
+    this->_insertGridPoint( "X", p );
     this->_insertGridPoint( "X", p1 );
     this->_insertGridPoint( "X", p2 );
+    this->_insertGridPoint( "X", p3 );
+    this->_insertGridPoint( "X", p4 );
   }
 
 	
@@ -3046,10 +3071,16 @@ VaporIntrusionGUIDocument::GridRefinements VaporIntrusionGUIDocument::refinement
 
 void VaporIntrusionGUIDocument::_insertGridPoint( const std::string& axis, float pos )
 {
-  Guard guard ( this );
+  Guard guard ( this ); 
 
   // get the grid points
   GridPoints axisGrid ( this->_getGridFromAxis( axis ) );
+
+  // check for the existance of the point already
+  if( true == this->_gridHasPoint( axis, pos ) )
+  {
+    return;
+  }
 
   // the new grid for this axis
   GridPoints grid;
@@ -3063,6 +3094,16 @@ void VaporIntrusionGUIDocument::_insertGridPoint( const std::string& axis, float
 
   // get the indices of the point before and after value
   Usul::Math::Vec2ui indices ( this->_snapToGrid( pos, axisGrid ) );
+
+  // get the lesser index
+  
+
+  if( indices[0] > indices[1] )
+  {
+    unsigned int index ( indices[0] );
+    indices[0] = indices[1];
+    indices[1] = index;
+  }
 
   for( unsigned int i = 0; i < indices[0]; ++i )
   {
@@ -3088,6 +3129,114 @@ void VaporIntrusionGUIDocument::_insertGridPoint( const std::string& axis, float
     grid.push_back( axisGrid.at( i ) );
   }
 
+  this->_setGridFromAxis( axis, grid );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Check the axis for the point at <pos>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::_gridHasPoint( const std::string& axis, float pos )
+{
+  Guard guard ( this );
+
+   // get the grid points
+  GridPoints axisGrid ( this->_getGridFromAxis( axis ) );
+
+  // make sure there are points
+  if( axisGrid.size() == 0 )
+  {
+    std::cout << "No points found for axis: " << axis << std::endl;
+    return false;
+  }
+
+  unsigned int index ( 0 );
+
+  while( index < axisGrid.size() )
+  {
+    GridPoint p ( axisGrid.at( index ) );
+
+    if( p.first == pos )
+    {
+      return true;
+    }
+    ++ index;
+  }
+
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Insert a grid point into the given axis
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_removeGridPoint( const std::string& axis, float pos )
+{
+  Guard guard ( this );
+
+  // get the grid points
+  GridPoints axisGrid ( this->_getGridFromAxis( axis ) );
+
+  // the new grid for this axis
+  GridPoints grid;
+
+  // make sure there are points
+  if( axisGrid.size() == 0 )
+  {
+    std::cout << "No points found for axis: " << axis << std::endl;
+    return;
+  }
+
+  unsigned int index ( 0 );
+
+  while( index < axisGrid.size() )
+  {
+    GridPoint p ( axisGrid.at( index ) );
+
+    GridPoint p0, p1;
+
+    // found a match
+    if( p.first == pos )
+    {
+      if( index > 0 )
+      {
+        // get the previous position
+        p0 = axisGrid.at( index - 1 );
+
+        // make sure there is a next position
+        if( index < axisGrid.size() )
+        {
+          // get the next position
+          p1 = axisGrid.at( index + 1 );
+
+          // update the previous size with the next position
+          p0.second = p1.first - p0.first;
+
+          // update the previous position in the grid
+          grid.at( index - 1) = p0;
+        }
+      }
+    }
+
+    // match not found
+    else
+    {
+      // add to the temp grid list
+      grid.push_back( axisGrid.at( index ) );
+    }
+
+    // increment the index
+    ++index;
+  }
+
+  // set the new grid for this axis
   this->_setGridFromAxis( axis, grid );
 
 
@@ -3706,3 +3855,30 @@ void VaporIntrusionGUIDocument::gridAxisPoints( GridAxisPoints ap )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add additional points to the grid
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_addPoints()
+{
+  Guard guard ( this );
+
+  for( unsigned int i = 0; i < _axisPoints.size(); ++i )
+  {
+    // get the point
+    GridAxisPoint p ( _axisPoints.at( i ) );
+
+    // convert the value to a float
+    float value ( Usul::Convert::Type< std::string, float >::convert( p.value ) );
+
+    // check for existance of the point first
+    if( false == this->_gridHasPoint( p.axis, value ) )
+    {
+      // add the point
+      this->_insertGridPoint( p.axis, value );
+    }
+      
+  }
+}

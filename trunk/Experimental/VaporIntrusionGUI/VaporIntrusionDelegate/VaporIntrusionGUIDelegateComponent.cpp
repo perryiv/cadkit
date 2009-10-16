@@ -628,6 +628,9 @@ void VaporIntrusionGUIDelegateComponent::editGridAxisPoints()
   // set the points back in the document
   document->gridAxisPoints( dialog.gridAxisPoints() );
 
+  // tell the document's scene to rebuild to reflect the changes
+  document->rebuildScene();
+
 }
 
 

@@ -84,7 +84,6 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _contaminants(),
   _soils(),
   _cracks(),
-  _refinements(),
   _axisPoints(),
   _originalToCurrentIndex(),
   _symmetricalGrid( false ),
@@ -642,9 +641,6 @@ void VaporIntrusionGUIDocument::_makeCracks()
   _xValues = _originalXValues;
   _yValues = _originalYValues;
   _zValues = _originalZValues;
-
-  // Adjust the grid spacing and rebuild the cubes
-  this->_adjustGridSpacing();
 
   // useful typedefs
   typedef Usul::Convert::Type< std::string, float > StrToFloat;
@@ -1244,9 +1240,6 @@ void VaporIntrusionGUIDocument::dimensions( Usul::Math::Vec3ui d )
 
   // build the cubes based on the current dimensions
   this->_initCubes();
-
-  // Adjust the grid spacing and rebuild the cubes
-  this->_adjustGridSpacing();
 
 }
 
@@ -1886,9 +1879,7 @@ void VaporIntrusionGUIDocument::_readConfigFile( const std::string& catName, con
     do
     {
       // get a line
-      ifs.getline ( buffer, bufSize );
-
-      
+      ifs.getline ( buffer, bufSize );      
 
       // grab the string
       tStr = buffer;
@@ -1914,9 +1905,7 @@ void VaporIntrusionGUIDocument::_readConfigFile( const std::string& catName, con
     char buffer[bufSize+1];
 
     // get a line
-    ifs.getline ( buffer, bufSize );
-
-    
+    ifs.getline ( buffer, bufSize );    
 
     // create a string from the buffer
     std::string tStr ( buffer );
@@ -3039,32 +3028,6 @@ VaporIntrusionGUIDocument::CracksPair VaporIntrusionGUIDocument::cracks()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Set the grid refinements
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void VaporIntrusionGUIDocument::refinements( GridRefinements gr )
-{
-  Guard guard ( this );
-  _refinements = gr;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Get the grid refinements
-//
-///////////////////////////////////////////////////////////////////////////////
-
-VaporIntrusionGUIDocument::GridRefinements VaporIntrusionGUIDocument::refinements()
-{
-  Guard guard ( this );
-  return _refinements;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 // Insert a grid point into the given axis
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -3131,6 +3094,20 @@ void VaporIntrusionGUIDocument::_insertGridPoint( const std::string& axis, float
 
   this->_setGridFromAxis( axis, grid );
 
+  this->_fixDimensions();
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  reset the dimensions
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_fixDimensions()
+{
+  _dimensions = Usul::Math::Vec3ui ( _xValues.size(), _yValues.size(), _zValues.size() );
 }
 
 
@@ -3238,6 +3215,9 @@ void VaporIntrusionGUIDocument::_removeGridPoint( const std::string& axis, float
 
   // set the new grid for this axis
   this->_setGridFromAxis( axis, grid );
+
+  // fix the dimensions
+  this->_fixDimensions();
 
 
 }
@@ -3392,66 +3372,6 @@ void VaporIntrusionGUIDocument::_setGridFromAxis( const std::string& axis, GridP
   {
     _zValues = grid;
   }
-
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Adjust the grid spacing based on the grid dimensions and the grid
-// refinement options specified by the user.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void VaporIntrusionGUIDocument::_adjustGridSpacing()
-{
-  Guard guard ( this );
-
-  // get the dimensions
-  unsigned int xmax ( _dimensions[0] );
-  unsigned int ymax ( _dimensions[1] );
-  unsigned int zmax ( _dimensions[2] );
-
-  // parse the refinements for changes that need to be made to the
-  // grid spacing and dimensions
-
-  for( unsigned int i = 0; i < _refinements.size(); ++i )
-  {
-    // get the refinement
-    GridRefinement gr ( _refinements.at( i ) );
-  
-    // get the start and end values
-    unsigned int start ( Usul::Convert::Type< std::string, unsigned int >::convert ( gr.start ) );
-    unsigned int end   ( Usul::Convert::Type< std::string, unsigned int >::convert ( gr.end   ) );
-
-    // get the difference and calculate the number of grid points to add
-    float value ( Usul::Convert::Type< std::string, float >::convert ( gr.value ) );
-    float diff ( 1.0 / value );
-    int numToAdd ( static_cast< int > ( diff ) - 1 );
-
-    // insert between start and end
-    this->_insertGridSpacing( gr.axis, start, end, numToAdd );
-
-    // add to the xmax axis
-    if( gr.axis == "X" )
-    {
-      xmax += numToAdd;
-    }
-
-    // add to the ymax axis
-    if( gr.axis == "Y" )
-    {
-      ymax += numToAdd;
-    }
-
-    // add to the xmax axis
-    if( gr.axis == "Z" )
-    {
-      zmax += numToAdd;
-    }
-  }
-
-  // adjust the dimensions
-  _dimensions = Usul::Math::Vec3ui( xmax, ymax, zmax );
 
 }
 

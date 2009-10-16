@@ -47,17 +47,6 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   };
 
   // structs
-
-  struct GridRefinement
-  {
-    std::string axis, start, end, value;
-
-    GridRefinement(): axis( "x" ), start( "0" ), end( "0" ), value( "0" ) {};
-    GridRefinement( const std::string& a, const std::string& s, const std::string& e, const std::string& v ): 
-    axis( a ), start( s ), end( e ), value( v ) {};
-  };
-  typedef std::vector< GridRefinement > GridRefinements;
-
   struct GridAxisPoint
   {
     std::string axis, value;
@@ -302,9 +291,6 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual void                  cracks( CracksPair c ) = 0;
   virtual CracksPair            cracks() = 0;
-  
-  virtual void                  refinements( GridRefinements gr ) = 0;
-  virtual GridRefinements       refinements() = 0;
 
   virtual bool                  symmetricalGrid() = 0;
   virtual void                  symmetricalGrid( bool value ) = 0;

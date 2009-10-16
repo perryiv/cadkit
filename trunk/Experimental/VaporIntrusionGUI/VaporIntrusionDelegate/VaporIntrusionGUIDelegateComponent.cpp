@@ -245,6 +245,9 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   
   // Add Window Grid button
   variableMenu->append ( MenuKit::Button::create ( "Grid", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid ) ) );
+
+  // Add Window Grid button
+  variableMenu->append ( MenuKit::Button::create ( "Grid/Axis Points", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGridAxisPoints ) ) );
  
   // Add Window Building button
   variableMenu->append ( MenuKit::Button::create ( "Building", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editBuilding) ) );
@@ -261,7 +264,7 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   // add editAddContaminantsToSource button
   variableMenu->append ( MenuKit::Button::create ( "Soils", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSoils ) ) );
  
-   // add editAddContaminantsToSource button
+  // add editAddContaminantsToSource button
   variableMenu->append ( MenuKit::Button::create ( "Cracks", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editCracks ) ) );
  
   // Add Scalar Editor button
@@ -394,10 +397,10 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   Usul::Math::Vec3ui d ( dialog.x(), dialog.y(), dialog.z() );
 
   // Make the dialog.
-  RefineGridDialog rd ( parent );
+  ModifyGridPointsDlg modify ( parent );
 
   // Show the dialog.
-  if ( QDialog::Accepted != rd.exec() )
+  if ( QDialog::Accepted != modify.exec() )
     throw Usul::Exceptions::Canceled();
 
   // Make the dialog.
@@ -416,7 +419,7 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   if( true == doc.valid() )
   {    
     // set the grid refinements
-    doc->refinements( rd.refinements() );
+    doc->gridAxisPoints( modify.gridAxisPoints() );
 
     // set the dimensions
     doc->dimensions( d );
@@ -589,6 +592,41 @@ void VaporIntrusionGUIDelegateComponent::sendFile()
   // Show the dialog.
   if ( QDialog::Accepted != dialog.exec() )
     throw Usul::Exceptions::Canceled();
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add/Remove/Modify points on the grid
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::editGridAxisPoints()
+{
+  Guard guard ( this );
+
+   // Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )    return;
+
+  // Make the dialog.
+  ModifyGridPointsDlg dialog;
+
+  // set the grid axis points
+  dialog.gridAxisPoints( document->gridAxisPoints() );
+
+  // initialize
+  dialog.initialize();
+
+  // Show the dialog.
+  if ( QDialog::Accepted != dialog.exec() )
+    throw Usul::Exceptions::Canceled();
+
+  // set the points back in the document
+  document->gridAxisPoints( dialog.gridAxisPoints() );
 
 }
 

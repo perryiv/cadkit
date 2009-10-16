@@ -33,6 +33,7 @@
 #include "GridSpaceDialog.h"
 #include "RefineGridDialog.h"
 #include "CracksDialog.h"
+#include "ModifyGridPointsDlg.h"
 
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 
@@ -137,6 +138,9 @@ public:
 
   // send the file to the server
   void                        sendFile();
+
+  // end the grid axis points
+  void                        editGridAxisPoints();
 
   // edit the input parameters
   void                        editInputParameters( const std::string& menuName );

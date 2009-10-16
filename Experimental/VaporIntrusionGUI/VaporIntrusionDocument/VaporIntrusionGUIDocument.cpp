@@ -1,4 +1,5 @@
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2008, Arizona State University
@@ -83,8 +84,15 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _contaminants(),
   _soils(),
   _cracks(),
+  _refinements(),
+  _axisPoints(),
   _originalToCurrentIndex(),
-  _symmetricalGrid( false )
+  _symmetricalGrid( false ),
+  _showGrid( true ),
+  _showBuilding( true ),
+  _showFoundation( true ),
+  _showSources( true ),
+  _showCracks( true )
 {
   USUL_TRACE_SCOPE;
 
@@ -123,6 +131,8 @@ Usul::Interfaces::IUnknown *VaporIntrusionGUIDocument::queryInterface ( unsigned
     return static_cast < Usul::Interfaces::IUpdateListener* > ( this );
   case VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::IID:
     return static_cast < VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI* > ( this );
+  case Usul::Interfaces::IMenuAdd::IID:
+    return static_cast<Usul::Interfaces::IMenuAdd*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -452,7 +462,7 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
   _root->removeChildren( 0, _root->getNumChildren() );  
 
   // build the building 3D element
-  if( true == _useBuilding )
+  if( true == _useBuilding && true == _showBuilding )
   {
     if( true == this->symmetricalGrid() )
     {
@@ -464,14 +474,23 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
     }
   }
 
-  // make the cracks
-  this->_makeCracks();
+  if( true == _showCracks )
+  {
+    // make the cracks
+    this->_makeCracks();
+  }
 
-  // build the contaminant 3D element
-  this->_makeSource3D();  
+  if( true == _showSources )
+  {
+    // build the contaminant 3D element
+    this->_makeSource3D();  
+  }
 
-  // build the Grid 3D element
-  this->_makeGrid();
+  if( true == _showGrid )
+  {
+    // build the Grid 3D element
+    this->_makeGrid();
+  }
 }
 
 
@@ -663,12 +682,22 @@ void VaporIntrusionGUIDocument::_makeCracks()
     // get the nearest grid point to the crack
     Usul::Math::Vec2ui ind ( this->_snapToGrid( y, zgrid ) );
 
+    unsigned int nearIndex ( ind[0] );
+    unsigned int farIndex ( ind[1] );
+  /*  if( ind[0] > ind[1] )
+    {
+      nearIndex = ind[1];
+      farIndex = ind[0];
+    }*/
+
     // calculate the positions and distances
     float p1 ( y );
-    float d1 ( sqrt ( ( y - zgrid.at( ind[0] ).first ) * ( y - zgrid.at( ind[0] ).first ) ) );
+    //float d1 ( sqrt ( ( y - zgrid.at( nearIndex ).first ) * ( y - zgrid.at( nearIndex ).first ) ) );
+    float d1 ( y - zgrid.at( nearIndex ).first );
 
     float p2 ( p1 + d1 );
-    float d2 ( sqrt ( ( zgrid.at( ind[1] ).first - p2 ) * ( zgrid.at( ind[1] ).first - p2 ) ) );
+    //float d2 ( sqrt ( ( zgrid.at( farIndex ).first - p2 ) * ( zgrid.at( farIndex ).first - p2 ) ) );
+    float d2 ( zgrid.at( farIndex ).first - p2 );
 
     // add a grid point on the crack and sam distance from the crack and nearest point to the next
     // nearest point and the crack on the Y axis
@@ -714,12 +743,20 @@ void VaporIntrusionGUIDocument::_makeCracks()
     // get the nearest grid point to the crack    
     Usul::Math::Vec2ui ind ( this->_snapToGrid( y, xgrid ) );
 
+    unsigned int nearIndex ( ind[0] );
+    unsigned int farIndex ( ind[1] );
+    if( ind[0] > ind[1] )
+    {
+      nearIndex = ind[1];
+      farIndex = ind[0];
+    }
+
     // calculate the new distances
     float p1 ( y );
-    float d1 ( sqrt ( ( y - xgrid.at( ind[0] ).first ) * ( y - xgrid.at( ind[0] ).first ) ) );
+    float d1 ( sqrt ( ( y - xgrid.at( nearIndex ).first ) * ( y - xgrid.at( nearIndex ).first ) ) );
 
     float p2 ( p1 + d1 );
-    float d2 ( sqrt ( ( xgrid.at( ind[1] ).first - p2 ) * ( xgrid.at( ind[1] ).first - p2 ) ) );
+    float d2 ( sqrt ( ( xgrid.at( farIndex ).first - p2 ) * ( xgrid.at( farIndex ).first - p2 ) ) );
 
     // add a grid point on the crack and sam distance from the crack and nearest point to the next
     // nearest point and the crack on the Y axis
@@ -858,8 +895,11 @@ void VaporIntrusionGUIDocument::_makeBuilding()
   // Add the cubre to the scene
   _root->addChild( group.get() );
 
-  // make the foundation
-  this->_makeFoundation( ll );
+  if( true == _showFoundation )
+  {
+    // make the foundation
+    this->_makeFoundation( ll );
+  }
 
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -946,8 +986,11 @@ void VaporIntrusionGUIDocument::_makeSymmetricalBuilding( )
   // Add the cubre to the scene
   _root->addChild( group.get() );
 
-  // make the foundation
-  this->_makeFoundation( ll );
+  if( true == _showFoundation )
+  {
+    // make the foundation
+    this->_makeFoundation( ll );
+  }
  
 }
 
@@ -3324,9 +3367,13 @@ Usul::Math::Vec2ui VaporIntrusionGUIDocument::_snapToGrid( float value, GridPoin
   indices[0] = currIndex;
   indices[1] = currIndex;
 
-  if( currIndex < grid.size() - 1 )
+  if( currIndex < grid.size() - 1 && value > grid.at( currIndex ).first )
   {
     indices[1] = currIndex + 1;
+  }
+  if( currIndex > 0 && value < grid.at( currIndex ).first ) 
+  {
+    indices[1] = currIndex - 1;
   }
     
   return indices;  
@@ -3445,3 +3492,217 @@ osg::Vec3f VaporIntrusionGUIDocument::_snapToGrid3D( osg::Vec3f corner )
 
   return value;
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Add to the menu
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller)
+{
+  typedef MenuKit::ToggleButton ToggleButton;
+  
+  namespace UA = Usul::Adaptors;
+  namespace UC = Usul::Commands;
+
+  // Make the menu.
+  MenuKit::Menu::RefPtr view ( menu.find ( "&View", true ) );
+
+  view->append ( ToggleButton::create ( "Show Building", boost::bind ( &VaporIntrusionGUIDocument::showBuilding, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowBuilding, this ) ) );
+  view->append ( ToggleButton::create ( "Show Grid", boost::bind ( &VaporIntrusionGUIDocument::showGrid, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowGrid, this ) ) );
+  view->append ( ToggleButton::create ( "Show Cracks", boost::bind ( &VaporIntrusionGUIDocument::showCracks, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowCracks, this ) ) );
+  view->append ( ToggleButton::create ( "Show Foundation", boost::bind ( &VaporIntrusionGUIDocument::showFoundation, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowFoundation, this ) ) );
+  view->append ( ToggleButton::create ( "Show Sources", boost::bind ( &VaporIntrusionGUIDocument::showSources, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowSources, this ) ) );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw the building
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::showBuilding ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( b != _showBuilding )
+  {
+    _showBuilding = b;
+
+    this->_buildScene();
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show building flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::isShowBuilding() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _showBuilding;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw the grid
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::showGrid ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( b != _showGrid )
+  {
+    _showGrid = b;
+
+    this->_buildScene();
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show grid flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::isShowGrid() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _showGrid;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw the cracks
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::showCracks ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( b != _showCracks )
+  {
+    _showCracks = b;
+
+    this->_buildScene();
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show cracks flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::isShowCracks() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _showCracks;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw the foundation
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::showFoundation ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( b != _showFoundation )
+  {
+    _showFoundation = b;
+
+    this->_buildScene();
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show foundation flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::isShowFoundation() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _showFoundation;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw the sources
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::showSources ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( b != _showSources )
+  {
+    _showSources = b;
+
+    this->_buildScene();
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show Sources flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::isShowSources() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _showSources;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the additional grid axis points
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::GridAxisPoints VaporIntrusionGUIDocument::gridAxisPoints()
+{
+  Guard guard ( this );
+
+  return _axisPoints;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the additional grid axis points
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::gridAxisPoints( GridAxisPoints ap )
+{
+  Guard guard ( this );
+
+  _axisPoints = ap;
+}
+
+

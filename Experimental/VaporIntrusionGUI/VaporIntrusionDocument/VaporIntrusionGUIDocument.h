@@ -50,7 +50,8 @@ namespace osg { class Node; }
 class VaporIntrusionGUIDocument : public Usul::Documents::Document,
                                   public Usul::Interfaces::IBuildScene,
                                   public Usul::Interfaces::IUpdateListener,
-                                  public VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI
+                                  public VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI,
+                                  public Usul::Interfaces::IMenuAdd
                                   
 {
 public:
@@ -160,6 +161,9 @@ public:
   virtual Filters             filtersSave()   const;
   virtual Filters             filtersInsert() const;
   virtual Filters             filtersExport() const;
+
+  //Usul::Interfaces::IMenuAdd
+  virtual void                menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
   
   /// Read the document.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
@@ -229,6 +233,27 @@ public:
   virtual bool                symmetricalGrid();
   virtual void                symmetricalGrid( bool value );
 
+  virtual GridAxisPoints      gridAxisPoints();
+  virtual void                gridAxisPoints( GridAxisPoints ap );
+
+
+  // Show/Hide functions
+  void                        showBuilding ( bool b );
+  bool                        isShowBuilding () const;
+
+  void                        showGrid( bool b );
+  bool                        isShowGrid () const;
+
+  void                        showCracks( bool b );
+  bool                        isShowCracks () const;
+
+  void                        showFoundation( bool b );
+  bool                        isShowFoundation () const;
+
+  void                        showSources ( bool b );
+  bool                        isShowSources () const;
+
+
 protected:
 
   /// Do not copy.
@@ -297,6 +322,8 @@ protected:
   osg::Vec2f                  _snapToGrid2D( osg::Vec2f corner );
   osg::Vec3f                  _snapToGrid3D( osg::Vec3f corner );
 
+  
+
 private:
     GroupPtr                  _root;
     Usul::Math::Vec3ui        _dimensions;
@@ -316,12 +343,19 @@ private:
     Soils                     _soils;
     CracksPair                _cracks;
     GridRefinements           _refinements;
+    GridAxisPoints            _axisPoints;
     GridMap                   _originalToCurrentIndex;
     bool                      _symmetricalGrid;
 
     GridPoints                _originalXValues;
     GridPoints                _originalYValues;
     GridPoints                _originalZValues;
+
+    bool                      _showGrid;
+    bool                      _showBuilding;
+    bool                      _showFoundation;
+    bool                      _showSources;
+    bool                      _showCracks;
   
 };
 

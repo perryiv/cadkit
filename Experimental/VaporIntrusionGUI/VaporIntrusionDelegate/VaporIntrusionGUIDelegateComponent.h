@@ -31,7 +31,6 @@
 #include "SoilDialog.h"
 #include "SendDialog.h"
 #include "GridSpaceDialog.h"
-#include "RefineGridDialog.h"
 #include "CracksDialog.h"
 #include "ModifyGridPointsDlg.h"
 

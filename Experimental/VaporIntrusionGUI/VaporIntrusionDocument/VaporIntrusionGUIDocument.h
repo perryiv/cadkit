@@ -81,8 +81,6 @@ public:
   typedef IVaporIntrusionGUI::Sources                           Sources;
   typedef IVaporIntrusionGUI::Soil                              Soil;
   typedef IVaporIntrusionGUI::Soils                             Soils;
-  typedef IVaporIntrusionGUI::GridRefinement                    GridRefinement;
-  typedef IVaporIntrusionGUI::GridRefinements                   GridRefinements;
   typedef std::vector< std::string >                            StringVec;
   typedef std::map< std::string, unsigned int >                 GridMap;
 
@@ -226,9 +224,6 @@ public:
 
   virtual void                cracks( CracksPair c );
   virtual CracksPair          cracks();
-  
-  virtual void                refinements( GridRefinements gr );
-  virtual GridRefinements     refinements();
 
   virtual bool                symmetricalGrid();
   virtual void                symmetricalGrid( bool value );
@@ -310,11 +305,11 @@ protected:
   void                        _readAllofValues( unsigned int& index, InputColumn& column, const StringVec& sv );
   void                        _readOneofValues( unsigned int& index, InputColumn& column, const StringVec& sv );
 
-  void                        _adjustGridSpacing();
   void                        _insertGridSpacing( const std::string& axis, unsigned int startPoint, unsigned int endPoint, unsigned int numToAdd );
   void                        _insertSingleGridSpace( const std::string& axis, unsigned int startPoint, unsigned int endPoint, float value );
   void                        _insertGridPoint( const std::string& axis, float pos );
   void                        _removeGridPoint( const std::string& axis, float pos );
+  void                        _fixDimensions();
 
   GridPoints                  _getGridFromAxis( const std::string& axis );
   void                        _setGridFromAxis( const std::string& axis, GridPoints grid );
@@ -346,7 +341,6 @@ private:
     Contaminants              _contaminants;
     Soils                     _soils;
     CracksPair                _cracks;
-    GridRefinements           _refinements;
     GridAxisPoints            _axisPoints;
     GridMap                   _originalToCurrentIndex;
     bool                      _symmetricalGrid;

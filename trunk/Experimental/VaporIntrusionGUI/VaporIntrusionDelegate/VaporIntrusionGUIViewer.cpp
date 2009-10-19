@@ -68,7 +68,7 @@ void VaporIntrusionGUIViewer::mouseMoveEvent ( QMouseEvent * event )
   if( true == viewer->picking() )
     return;
 
-  BaseClass::mouseMoveEvent( event );
+  //BaseClass::mouseMoveEvent( event );
 }
 
 
@@ -83,7 +83,56 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
   if ( 0x0 == event )
     return;
 
-  BaseClass::mousePressEvent( event );
+  typedef OsgTools::Render::EventAdapter EventAdapter;
+  typedef osgUtil::LineSegmentIntersector::Intersections Intersections;
+
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  if ( false == viewer.valid() )
+    return;
+
+  // Declare the event adapter.
+  EventAdapter::Ptr ea ( new EventAdapter );
+  ea->setWindowSize ( Usul::Math::Vec2ui( static_cast < unsigned int > ( this->width() ), static_cast < unsigned int > ( this->height() ) ) );
+  
+  // Get the necessary coordinates.
+  const double x ( event->x() );
+  const double y ( this->height() - event->y() );
+
+  ea->setMouse ( Usul::Math::Vec2f( x, y ) );
+
+  // Query for ISceneIntersect
+  Usul::Interfaces::ISceneIntersect::QueryPtr intersector ( this->viewer() );
+
+  // Check for a valid pointer
+  if( false == intersector.valid() )
+    return;
+
+  // Create an intersections list
+  Intersections hits;
+
+  // Grab all the intersections
+  intersector->intersect( float( x ), float( y ), hits );
+
+  // get the first hit
+  osgUtil::LineSegmentIntersector::Intersection hit ( *hits.begin() );
+
+  // Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument()->queryInterface( VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::IID ) );
+   
+  // Check for a valid pointer
+  if( false == document.valid() )
+    return;
+
+  // get the point on the model where the intersection occured
+  osg::Vec3d p ( hit.getLocalIntersectPoint() );
+
+  // add the new grid point
+  document->addGridPointFromViewer( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
+
+  // rebuild the scene
+  document->rebuildScene();
+
+  //BaseClass::mousePressEvent( event );
 }
 
 
@@ -102,7 +151,7 @@ void VaporIntrusionGUIViewer::mouseReleaseEvent ( QMouseEvent * event )
   if ( 0x0 == event )
     return;
 
-  BaseClass::mouseReleaseEvent( event );
+  //BaseClass::mouseReleaseEvent( event );
 }
 
 

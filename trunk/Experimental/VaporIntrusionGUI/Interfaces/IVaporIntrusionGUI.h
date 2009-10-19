@@ -297,6 +297,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual GridAxisPoints        gridAxisPoints() = 0;
   virtual void                  gridAxisPoints( GridAxisPoints ap ) = 0;
+
+  virtual void                  addGridPointFromViewer( Usul::Math::Vec3f point ) = 0;
     
 }; // struct IVaporIntrusionGUI
 

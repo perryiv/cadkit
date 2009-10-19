@@ -54,7 +54,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VaporIntrusionGUIDelegateComponent, VaporIntru
 
 VaporIntrusionGUIDelegateComponent::VaporIntrusionGUIDelegateComponent() : BaseClass(),
 _xyzView( 0x0 ),
-//_xyView ( 0x0 ),
+_xyView ( 0x0 ),
 //_xzView ( 0x0 ),
 //_yzView ( 0x0 ),
 _dockMap   (),
@@ -161,12 +161,12 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     QWorkspace *parent ( workspace->workspace() );
 
     // Add XYZ window
-    _xyzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainers );
+    _xyzView = new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
     parent->addWindow ( _xyzView.get() );
 
-    //// Add XY window
-    //_xyView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainer  );
-    //parent->addWindow ( _xyView.get() );
+    // Add XY window
+    _xyView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainers  );
+    parent->addWindow ( _xyView.get() );
 
     //// Add XZ window
     //_xzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainer  );
@@ -180,19 +180,26 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     Usul::Interfaces::IBuildScene::QueryPtr build ( document );
     if ( build.valid () )
     {
-      _xyzView->viewer()->scene ( build->buildScene ( document->options(), caller ) );
-      //_xyView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
+      // create and set the 3D widow build options
+      Usul::Interfaces::IBuildScene::Options options3D;
+      options3D["Dimension"] = "3D";
+      _xyzView->viewer()->scene ( build->buildScene ( options3D, caller ) );
+
+      // create and set the 2D window options
+      Usul::Interfaces::IBuildScene::Options options2D;
+      options3D["Dimension"] = "2D";
+      _xyView->viewer()->scene  ( build->buildScene ( options2D, caller ) );
+
+
       //_xzView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
       //_yzView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
     }
 
     // Set the titles
-    _xyzView->setTitle( "XYZ -- 3D View" );
+    _xyzView->setTitle( "3D Scene View" );
 
-    //_xyView->setTitle ( "XY -- Front View" );
-    //_xyView->camera( OsgTools::Render::Viewer::FRONT );
-    //_xyView->set( Usul::Math::Vec3ui( 1, 1, 0 ) );
-    //_xyView->id( 1 );
+    _xyView->setTitle ( "2D Grid View" );
+    _xyView->viewer()->camera( OsgTools::Render::Viewer::TOP );
 
     //_xzView->setTitle ( "XZ -- Top View" );
     //_xzView->camera( OsgTools::Render::Viewer::TOP );
@@ -211,8 +218,8 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     //// XYZ window is the top left window
     //_xyzView->resize ( w, h );
 
-    //// XY window is the bottom right window
-    //_xyView->resize  ( w, h );
+    // XY window is the bottom right window
+    _xyView->resize  ( w, h );
 
     //// XZ window is the bottom left window
     //_xzView->resize  ( w, h );
@@ -222,7 +229,7 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
 
     // Show the windows
     _xyzView->show();
-    //_xyView->show();
+    _xyView->show();
     //_xzView->show();
     //_yzView->show();
 
@@ -277,27 +284,27 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   menu.append( variableMenu.get() );
 
   // Check for a valid document
-  if( true == document.valid() )
-  {
-    // Make the menu.
-    MenuKit::Menu::RefPtr paramMenu ( new MenuKit::Menu ( "Parameters" ) );
+  //if( true == document.valid() )
+  //{
+  //  // Make the menu.
+  //  MenuKit::Menu::RefPtr paramMenu ( new MenuKit::Menu ( "Parameters" ) );
 
-    // get the categories
-    Categories categories = document->categories();
-    
-    for( unsigned int i = 0; i < categories.size(); ++i )
-    {
-      // get the menu name
-      std::string menuName ( categories.at( i ).name );
+  //  // get the categories
+  //  Categories categories = document->categories();
+  //  
+  //  for( unsigned int i = 0; i < categories.size(); ++i )
+  //  {
+  //    // get the menu name
+  //    std::string menuName ( categories.at( i ).name );
 
-      // add the sub menu to the main menu
-      paramMenu->append ( MenuKit::Button::create ( menuName, Usul::Adaptors::bind1<void> ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) ); 
-    }
+  //    // add the sub menu to the main menu
+  //    paramMenu->append ( MenuKit::Button::create ( menuName, Usul::Adaptors::bind1<void> ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) ); 
+  //  }
 
     // Add the window menu to the main menu
-    menu.append( paramMenu.get() );
+  //  menu.append( paramMenu.get() );
 
-  }
+  //}
 
 
   // Make the run menu.

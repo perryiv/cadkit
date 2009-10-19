@@ -231,6 +231,8 @@ public:
   virtual GridAxisPoints      gridAxisPoints();
   virtual void                gridAxisPoints( GridAxisPoints ap );
 
+  virtual void                addGridPointFromViewer( Usul::Math::Vec3f point );
+
 
   // Show/Hide functions
   void                        showBuilding ( bool b );
@@ -247,6 +249,8 @@ public:
 
   void                        showSources ( bool b );
   bool                        isShowSources () const;
+
+
 
 
 protected:

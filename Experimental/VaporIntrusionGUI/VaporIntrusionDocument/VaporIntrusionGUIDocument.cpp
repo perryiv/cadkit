@@ -3802,3 +3802,34 @@ void VaporIntrusionGUIDocument::_addPoints()
       
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called from the viewer to add a grid point where the user clicked in the 
+//  window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::addGridPointFromViewer( Usul::Math::Vec3f point )
+{
+  Guard guard ( this );
+
+  // get the x axis grid
+  GridPoints xgrid ( this->_getGridFromAxis( "X" ) );
+
+  // get the nearest grid point to the crack
+  Usul::Math::Vec2ui ind ( this->_snapToGrid( point[0], xgrid ) );
+
+  // get the near and far index
+  unsigned int nearIndex ( ind[0] );
+  unsigned int farIndex ( ind[1] );  
+
+  // get the half way point
+  float p ( ( xgrid.at( nearIndex ).first + xgrid.at( farIndex ).first ) / 2.0f );
+
+  // insert the new grid point
+  GridAxisPoint gap ( "X", Usul::Convert::Type< float, std::string >::convert( p ) );
+  _axisPoints.push_back( gap );
+
+}

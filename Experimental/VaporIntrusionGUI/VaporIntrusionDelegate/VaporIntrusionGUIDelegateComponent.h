@@ -159,6 +159,7 @@ protected:
 
 private:
   QtViewerPtr                         _xyzView;
+  VIGUIViewerPtr                      _xyView;
   DockMap                             _dockMap;
   DockList                            _dockList;
   MaterialContainers                  _materialContainers;

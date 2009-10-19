@@ -160,13 +160,13 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
   {
     QWorkspace *parent ( workspace->workspace() );
 
-    // Add XYZ window
-    _xyzView = new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
-    parent->addWindow ( _xyzView.get() );
-
     // Add XY window
     _xyView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainers  );
     parent->addWindow ( _xyView.get() );
+
+     // Add XYZ window
+    _xyzView = new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
+    parent->addWindow ( _xyzView.get() );
 
     //// Add XZ window
     //_xzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainer  );
@@ -219,7 +219,7 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     //_xyzView->resize ( w, h );
 
     // XY window is the bottom right window
-    _xyView->resize  ( w, h );
+    //_xyView->resize  ( w, h );
 
     //// XZ window is the bottom left window
     //_xzView->resize  ( w, h );

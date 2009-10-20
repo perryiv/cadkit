@@ -197,24 +197,113 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
   if( false == document.valid() )
     return;
 
-  // Process the key.
-  switch ( event->key() )
+  // get the key pressed
+  int key ( event->key() );
+
+  if( key == Qt::Key_Left || key == Qt::Key_Right || key == Qt::Key_Up || key == Qt::Key_Down )
   {
-    case Qt::Key_X:
+    this->_handleArrowKeys( key, document );
+  }
+  else
+  {
+
+    // Process the key.
+    switch ( key )
     {
-      document->setEditMode2D( IVPI::EDIT_X_GRID_2D );
-      std::cout << "Setting 2D Grid Edit Mode to the X axis" << std::endl;
-    }
-      break;
-    case Qt::Key_Y:
+      case Qt::Key_X:
+      {
+        document->setEditMode2D( IVPI::EDIT_X_GRID_2D );
+        std::cout << "Setting 2D Grid Edit Mode to the X axis" << std::endl;
+      }
+        break;
+      case Qt::Key_Y:
+      {
+        document->setEditMode2D( IVPI::EDIT_Y_GRID_2D );
+        std::cout << "Setting 2D Grid Edit Mode to the Y axis" << std::endl;
+      }
+        break;
+
+      case Qt::Key_G:
+      {
+        document->setBuildMode2D( IVPI::BUILD_MODE_2D_XY );
+        std::cout << "Setting 2D Grid Domain to the XY Grid" << std::endl;
+      }
+        break;
+
+      case Qt::Key_B:
+      {
+        document->setBuildMode2D( IVPI::BUILD_MODE_2D_Z );
+        std::cout << "Setting 2D Grid Domain Mode to the Z (Basement/Soil) Grid" << std::endl;
+      }
+        break;
+
+      case Qt::Key_Enter:
+      {
+        // get the current mode
+        int currentMode ( document->getEditMode2D() );
+
+        // toggle the mode
+        if( currentMode == IVPI::OBJECT_PLACEMENT_2D )
+        {
+          document->setEditMode2D( IVPI::OBJECT_SIZE_2D );
+        }
+        
+        std::cout << "Setting 2D Grid Size Object Mode" << std::endl;
+      }
+        break;
+    };
+  }
+
+  // only let the base class handle certain key presses
+  if( key == Qt::Key_F || key == Qt::Key_W )
+  {
+    BaseClass::keyPressEvent( event );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Handle arrow key pressed events
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIViewer::_handleArrowKeys( int key, IVPI::QueryPtr document )
+{
+  // initial movement values
+  int x ( 0 );
+  int y ( 0 );
+
+  switch( key )
+  {
+    case Qt::Key_Up :
     {
-      document->setEditMode2D( IVPI::EDIT_Y_GRID_2D );
-      std::cout << "Setting 2D Grid Edit Mode to the Y axis" << std::endl;
+      y = -1;
     }
-      break;
+    break;
+
+    case Qt::Key_Down :
+    {
+      y = 1;
+    }
+    break;
+
+    case Qt::Key_Left :
+    {
+      x = -1;
+    }
+    break;
+
+    case Qt::Key_Right :
+    {
+      x = 1;
+    }
+    break;
+
   };
 
-  BaseClass::keyPressEvent( event );
+  // set the change in the document
+  document->keyMovementChange( x, y );
 }
 
 

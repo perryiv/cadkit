@@ -49,13 +49,37 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   // 2D build modes
   enum
   {
-    XY_BUILD_MODE_2D,
-    Z_BUILD_MODE_2D,
+    BUILD_MODE_2D_XY,
+    BUILD_MODE_2D_Z,
     EDIT_X_GRID_2D,
-    EDIT_Y_GRID_2D
+    EDIT_Y_GRID_2D,
+    OBJECT_PLACEMENT_2D,
+    OBJECT_SIZE_2D
   };
 
+  // Objects
+  enum
+  {
+    OBJECT_NOTHING,
+    OBJECT_BUILDING,
+    OBJECT_SOIL,
+    OBJECT_SOURCE,
+    OBJECT_FOUNDATION
+  };
+
+
   // structs
+
+  struct Object2D
+  {
+    int sx, sy, sz, ex, ey, ez;
+
+    Object2D() : sx ( 0 ), sy ( 0 ), sz ( 0 ), ex ( 0 ), ey ( 0 ), ez ( 0 ) {};
+    Object2D( int sxi, int syi, int szi, int exi, int eyi, int ezi ) : 
+    sx ( sxi ), sy ( syi ), sz ( szi ), ex ( exi ), ey ( eyi ), ez ( ezi ) {};
+
+  };
+
   struct GridAxisPoint
   {
     std::string axis, value;
@@ -313,7 +337,15 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   // edit modes for the 2D grid
   virtual void                  setEditMode2D( int mode ) = 0;
+  virtual int                   getEditMode2D() = 0;
+
   virtual void                  setBuildMode2D( int mode ) = 0;
+  virtual int                   getBuildMode2D() = 0;
+
+  virtual void                  setObjectMode( int mode ) = 0;
+  virtual int                   getObjectMode() = 0;
+
+  virtual void                  keyMovementChange( int x, int y ) = 0;
     
 }; // struct IVaporIntrusionGUI
 

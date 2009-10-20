@@ -191,7 +191,7 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
     return;
 
    // Query the active document for IVaporIntrusionGUI
-  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  IVPI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   // Check for a valid document
   if( false == document.valid() )
@@ -200,18 +200,18 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
   // Process the key.
   switch ( event->key() )
   {
-    case Qt::Key_Escape:
-      {
-        if( false == document->draggerActive() )
-        {
-          document->draggerActive( true );
-        }
-        else
-        {
-          document->draggerActive( false );
-        }
-      }
-        break;
+    case Qt::Key_X:
+    {
+      document->setEditMode2D( IVPI::EDIT_X_GRID_2D );
+      std::cout << "Setting 2D Grid Edit Mode to the X axis" << std::endl;
+    }
+      break;
+    case Qt::Key_Y:
+    {
+      document->setEditMode2D( IVPI::EDIT_Y_GRID_2D );
+      std::cout << "Setting 2D Grid Edit Mode to the Y axis" << std::endl;
+    }
+      break;
   };
 
   BaseClass::keyPressEvent( event );

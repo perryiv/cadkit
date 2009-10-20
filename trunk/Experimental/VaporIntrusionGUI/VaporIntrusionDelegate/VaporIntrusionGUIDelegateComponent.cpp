@@ -181,13 +181,13 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     if ( build.valid () )
     {
       // create and set the 3D widow build options
-      Usul::Interfaces::IBuildScene::Options options3D;
+      Usul::Documents::Document::Options options3D;
       options3D["Dimension"] = "3D";
       _xyzView->viewer()->scene ( build->buildScene ( options3D, caller ) );
 
       // create and set the 2D window options
-      Usul::Interfaces::IBuildScene::Options options2D;
-      options3D["Dimension"] = "2D";
+      Usul::Documents::Document::Options options2D;
+      options2D["Dimension"] = "2D";
       _xyView->viewer()->scene  ( build->buildScene ( options2D, caller ) );
 
 
@@ -402,6 +402,7 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   
   // Get and store the dimensions
   Usul::Math::Vec3ui d ( dialog.x(), dialog.y(), dialog.z() );
+  Usul::Math::Vec3f spacing( dialog.s(), dialog.t(), dialog.u() );
 
   // Make the dialog.
   ModifyGridPointsDlg modify ( parent );
@@ -428,8 +429,11 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
     // set the grid refinements
     doc->gridAxisPoints( modify.gridAxisPoints() );
 
+    // set the initial grid spacing
+    doc->setInitialSpacing( spacing );
+
     // set the dimensions
-    doc->dimensions( d );
+    doc->dimensions( d );    
 
     // initialize the document
     doc->initialize();

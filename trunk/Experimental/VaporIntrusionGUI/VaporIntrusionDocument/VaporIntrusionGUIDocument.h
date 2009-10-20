@@ -63,9 +63,10 @@ public:
   typedef DocManager::DocumentInfo                              Info;
   typedef osg::ref_ptr< osg::Group >                            GroupPtr;
   typedef osg::Vec4                                             Color;
-  typedef std::pair< double, double >                           GridPoint;
-  typedef std::vector< GridPoint >                              GridPoints;
-  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::ParameterList   ParameterList;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI     IVPI;
+  typedef IVPI::GridPoint                                       GridPoint;
+  typedef IVPI::GridPoints                                      GridPoints;
+  typedef IVPI::ParameterList                                   ParameterList;
   typedef IVaporIntrusionGUI::InputColumns                      InputColumns;
   typedef IVaporIntrusionGUI::InputColumn                       InputColumn;
   typedef IVaporIntrusionGUI::Category                          Category;
@@ -178,6 +179,7 @@ public:
   virtual void                setAlpha( float alpha );
   virtual Usul::Math::Vec3ui  dimensions();
   virtual void                dimensions( Usul::Math::Vec3ui d );
+  virtual void                setInitialSpacing( Usul::Math::Vec3f spacing );
   virtual void                setMaterial( unsigned int x, unsigned int y, unsigned int z, Usul::Math::Vec4f c );
   virtual Usul::Math::Vec4f   getMaterial( unsigned int x, unsigned int y, unsigned int z );
   virtual void                requestRedraw();
@@ -266,11 +268,16 @@ protected:
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
   // Build the scene in the read
-  void                        _buildScene( Usul::Interfaces::IUnknown *caller = 0x0 );
+  void                        _build3DScene( Usul::Interfaces::IUnknown *caller = 0x0 );
+  void                        _build2DScene( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   // Test method for multiview verification
   osg::Node*                  _buildCube( osg::Vec3Array* points, Color c, Usul::Math::Vec3ui location );
   osg::Node*				          _buildPlane ( osg::Vec3Array* points, osg::Vec4f color );
+
+  // 2d build methods
+  osg::Node*                  _buildXYScene();
+  osg::Node*                  _buildZScene();
 
   void                        _makeGrid();
   void                        _makeSymmetricalBuilding();
@@ -325,11 +332,15 @@ protected:
   void                        _addPoints();
   bool                        _gridHasPoint( const std::string& axis, float pos );
 
+  void                        _restoreGrid();
+
   
 
 private:
     GroupPtr                  _root;
+    GroupPtr                  _root2D;
     Usul::Math::Vec3ui        _dimensions;
+    Usul::Math::Vec3f         _initialSpacing;
     Cubes                     _cubes;
     GridPoints                _xValues;
     GridPoints                _yValues;
@@ -360,6 +371,7 @@ private:
     bool                      _showCracks;
 
     float                     _maxCrackGridDistance;
+    int                       _buildMode2D;
   
 };
 

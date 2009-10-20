@@ -50,7 +50,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   enum
   {
     XY_BUILD_MODE_2D,
-    Z_BUILD_MODE_2D
+    Z_BUILD_MODE_2D,
+    EDIT_X_GRID_2D,
+    EDIT_Y_GRID_2D
   };
 
   // structs
@@ -308,6 +310,10 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   virtual void                  gridAxisPoints( GridAxisPoints ap ) = 0;
 
   virtual void                  addGridPointFromViewer( Usul::Math::Vec3f point ) = 0;
+
+  // edit modes for the 2D grid
+  virtual void                  setEditMode2D( int mode ) = 0;
+  virtual void                  setBuildMode2D( int mode ) = 0;
     
 }; // struct IVaporIntrusionGUI
 

@@ -95,14 +95,12 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _showFoundation( true ),
   _showSources( true ),
   _showCracks( true ),
+  _showLabels( true ),
   _maxCrackGridDistance( 0.2f ),
-  _buildMode2D( IVPI::XY_BUILD_MODE_2D )
+  _buildMode2D( IVPI::XY_BUILD_MODE_2D ),
+  _editGridMode2D( IVPI::EDIT_X_GRID_2D )
 {
   USUL_TRACE_SCOPE;
-
-  // Setup the cubes
-  // this->_initCubes();
-
 }
  
 
@@ -3967,21 +3965,65 @@ void VaporIntrusionGUIDocument::addGridPointFromViewer( Usul::Math::Vec3f point 
 {
   Guard guard ( this );
 
-  // get the x axis grid
-  GridPoints xgrid ( this->_getGridFromAxis( "X" ) );
+  GridPoints grid;
+
+  float value ( 0.0f );
+
+  std::string axis;
+
+  if( _editGridMode2D == IVPI::EDIT_X_GRID_2D )
+  {
+    grid = this->_getGridFromAxis( "X" );
+    value = point[0];
+    axis = "X";
+  }
+
+  if( _editGridMode2D == IVPI::EDIT_Y_GRID_2D )
+  {
+    grid = this->_getGridFromAxis( "Z" );
+    value = point[2];
+    axis = "Z";
+  }
 
   // get the nearest grid point to the crack
-  Usul::Math::Vec2ui ind ( this->_snapToGrid( point[0], xgrid ) );
+  Usul::Math::Vec2ui ind ( this->_snapToGrid( value, grid ) );
 
   // get the near and far index
   unsigned int nearIndex ( ind[0] );
   unsigned int farIndex ( ind[1] );  
 
   // get the half way point
-  float p ( ( xgrid.at( nearIndex ).first + xgrid.at( farIndex ).first ) / 2.0f );
+  float p ( ( grid.at( nearIndex ).first + grid.at( farIndex ).first ) / 2.0f );
 
   // insert the new grid point
-  GridAxisPoint gap ( "X", Usul::Convert::Type< float, std::string >::convert( p ) );
+  GridAxisPoint gap ( axis, Usul::Convert::Type< float, std::string >::convert( p ) );
   _axisPoints.push_back( gap );
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the 2D grid edit mode
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setEditMode2D( int mode )
+{
+  Guard guard ( this );
+  _editGridMode2D = mode;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the 2D grid build Mode
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setBuildMode2D( int mode )
+{
+   Guard guard ( this );
+
+   _buildMode2D = mode;
 }

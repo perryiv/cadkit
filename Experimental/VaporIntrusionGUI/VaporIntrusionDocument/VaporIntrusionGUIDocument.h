@@ -235,6 +235,9 @@ public:
 
   virtual void                addGridPointFromViewer( Usul::Math::Vec3f point );
 
+  virtual void                setEditMode2D( int mode );
+  virtual void                setBuildMode2D( int mode );
+
 
   // Show/Hide functions
   void                        showBuilding ( bool b );
@@ -369,9 +372,11 @@ private:
     bool                      _showFoundation;
     bool                      _showSources;
     bool                      _showCracks;
+    bool                      _showLabels;
 
     float                     _maxCrackGridDistance;
     int                       _buildMode2D;
+    int                       _editGridMode2D;
   
 };
 

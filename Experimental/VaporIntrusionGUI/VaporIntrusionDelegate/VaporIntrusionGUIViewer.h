@@ -33,6 +33,7 @@ public:
   typedef OsgTools::Render::Viewer::CameraOption CameraOption;
   typedef OsgTools::Render::Viewer RenderViewer;
   typedef std::map< std::string, MaterialContainer* > MaterialContainers;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI IVPI;
 
   VaporIntrusionGUIViewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnknown* caller, MaterialContainers matContainers );
   //virtual ~VaporIntrusionGUIViewer ();

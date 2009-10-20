@@ -110,8 +110,9 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
   // Create an intersections list
   Intersections hits;
 
-  // Grab all the intersections
-  intersector->intersect( float( x ), float( y ), hits );
+  // Grab all the intersections and make sure there is a hit
+  if( false == intersector->intersect( float( x ), float( y ), hits ) )
+    return;
 
   // get the first hit
   osgUtil::LineSegmentIntersector::Intersection hit ( *hits.begin() );

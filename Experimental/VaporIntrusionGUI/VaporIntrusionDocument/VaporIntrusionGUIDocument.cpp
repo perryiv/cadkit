@@ -14,6 +14,7 @@
 
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IViewPort.h"
+#include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
@@ -70,7 +71,9 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VaporIntrusionGUIDocument, VaporIntrusionGUIDo
 
 VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor Intrusion GUI" ),
   _root( 0x0 ),
+  _root2D( 0x0 ),
   _dimensions( 10, 10, 10 ),
+  _initialSpacing( 1.0f, 1.0f, 1.0f ),
   _cubes(),
   _xValues(),
   _yValues(),
@@ -92,12 +95,13 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _showFoundation( true ),
   _showSources( true ),
   _showCracks( true ),
-  _maxCrackGridDistance( 0.2f )
+  _maxCrackGridDistance( 0.2f ),
+  _buildMode2D( IVPI::XY_BUILD_MODE_2D )
 {
   USUL_TRACE_SCOPE;
 
   // Setup the cubes
-  this->_initCubes();
+  // this->_initCubes();
 
 }
  
@@ -302,11 +306,27 @@ osg::Node *VaporIntrusionGUIDocument::buildScene ( const BaseClass::Options &opt
 {
   Guard guard( this );
   USUL_TRACE_SCOPE;
-  if( false == _root.valid() )
+
+  // get the build options
+  std::string renderOption ( options.find( "Dimension" )->second );
+ 
+  if( renderOption == "3D" )
   {
-    this->_buildScene( caller );
+    if( false == _root.valid())
+    {
+      this->_build3DScene( caller );      
+    }
+    return _root;
   }
-  return _root.get();
+  else
+  {
+    if( false == _root2D.valid() )
+    {
+      this->_build2DScene( caller );      
+    }
+    return _root2D;
+  }
+  
 }
 
 
@@ -323,6 +343,19 @@ void VaporIntrusionGUIDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  set the initial grid spacing
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setInitialSpacing( Usul::Math::Vec3f spacing )
+{
+  Guard guard ( this );
+
+  _initialSpacing = spacing;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -335,39 +368,17 @@ void VaporIntrusionGUIDocument::_initCubes()
   Guard guard( this );
 
  
-#if 0
-   // Clear the cubes
-  _cubes.clear();
+  // get the sizes of the axis
+  unsigned int xsize ( _dimensions[0] + 1 );
+  unsigned int ysize ( _dimensions[1] + 1 );
+  unsigned int zsize ( _dimensions[2] + 1 );
 
-  // Set the X size to the proper dimensions
-  _cubes.resize( _dimensions[0] );
-  for( unsigned int x = 0; x < _dimensions[0]; ++x )
-  {
-    // Set the X size to the proper dimensions
-    _cubes.at( x ).resize( _dimensions[1] );
-    for( unsigned int y = 0; y < _dimensions[1]; ++y )
-    {
-      // Set the X size to the proper dimensions
-      _cubes.at( x ).at( y ).resize( _dimensions[2] );
-      for( unsigned int z = 0; z < _dimensions[2]; ++z )
-      {
-        Cell cell;
-
-        cell.position = Usul::Math::Vec3f( float( x ), float( y ), float( z ) );
-        cell.dimensions = Usul::Math::Vec3f( 1.0f, 1.0f, 1.0f );
-
-        // Add a default cube
-        _cubes.at( x ).at( y ).at( z ) = cell;
-      }
-    }
-  }
-#else
   // size the x values
   _xValues.resize( _dimensions[0] );
 
   // set the initial value and width
   _xValues.at( 0 ).first = 0.0f - ( static_cast< double > ( _dimensions[0] ) / 2 );
-  _xValues.at( 0 ).second = 1.0f;
+  _xValues.at( 0 ).second = _initialSpacing[0];
 
   // add to the map
   _originalToCurrentIndex[ "X0" ] = 0;
@@ -377,7 +388,7 @@ void VaporIntrusionGUIDocument::_initCubes()
   {
     double position ( _xValues.at( i - 1 ).first + _xValues.at( i - 1 ).second );
     _xValues.at( i ).first = position;
-    _xValues.at( i ).second = 1.0f;
+    _xValues.at( i ).second = _initialSpacing[0];
 
     // key value for map
     std::string key ( Usul::Strings::format( "X", i ) );
@@ -386,12 +397,19 @@ void VaporIntrusionGUIDocument::_initCubes()
     _originalToCurrentIndex[ key ] = i;
   }
 
+  // add the end point
+  GridPoint lxp;
+  lxp.first = _xValues.at( _dimensions[0] - 1 ).first + _xValues.at( _dimensions[0] - 1 ).second;
+  lxp.second = 0.0f;
+  _xValues.push_back( lxp );
+  _originalToCurrentIndex[ Usul::Strings::format( "X", _dimensions[0] - 1 ) ] = _dimensions[0] - 1;
+
   // size the y values
   _yValues.resize( _dimensions[1] );
 
   // set the initial value and width
   _yValues.at( 0 ).first = 0.0f - ( static_cast< double > ( _dimensions[1] ) / 2 );
-  _yValues.at( 0 ).second = 1.0f;
+  _yValues.at( 0 ).second = _initialSpacing[1];
 
   // add to the map
   _originalToCurrentIndex[ "Y0" ] = 0;
@@ -399,9 +417,9 @@ void VaporIntrusionGUIDocument::_initCubes()
   // set the x values to defaults
   for( unsigned int j = 1; j < _dimensions[1]; ++j )
   {
-    double position ( _yValues.at( j - 1 ).first + _xValues.at( j - 1 ).second );
+    double position ( _yValues.at( j - 1 ).first + _yValues.at( j - 1 ).second );
     _yValues.at( j ).first = position;
-    _yValues.at( j ).second = 1.0f;
+    _yValues.at( j ).second = _initialSpacing[1];
     
     // key value for map
     std::string key ( Usul::Strings::format( "Y", j ) );
@@ -410,12 +428,20 @@ void VaporIntrusionGUIDocument::_initCubes()
     _originalToCurrentIndex[ key ] = j;
   }
 
+   // add the end point
+  GridPoint lyp;
+  lyp.first = _yValues.at( _dimensions[1] - 1 ).first + _yValues.at( _dimensions[1] - 1 ).second;
+  lyp.second = 0.0f;
+  _yValues.push_back( lyp );
+  _originalToCurrentIndex[ Usul::Strings::format( "Y", _dimensions[1] - 1 ) ] = _dimensions[1] - 1;
+
+
    // size the x values
   _zValues.resize( _dimensions[2] );
 
   // set the initial value and width
   _zValues.at( 0 ).first = 0.0f - ( static_cast< double > ( _dimensions[2] ) / 2 );
-  _zValues.at( 0 ).second = 1.0f;
+  _zValues.at( 0 ).second = _initialSpacing[2];
 
   // add to the map
   _originalToCurrentIndex[ "Z0" ] = 0;
@@ -425,7 +451,7 @@ void VaporIntrusionGUIDocument::_initCubes()
   {
     double position ( _zValues.at( k - 1 ).first + _zValues.at( k - 1 ).second );
     _zValues.at( k ).first = position;
-    _zValues.at( k ).second = 1.0f;
+    _zValues.at( k ).second = _initialSpacing[2];
     
     // key value for map
     std::string key ( Usul::Strings::format( "Z", k ) );
@@ -434,7 +460,12 @@ void VaporIntrusionGUIDocument::_initCubes()
     _originalToCurrentIndex[ key ] = k;
   }
 
-#endif
+   // add the end point
+  GridPoint lzp;
+  lzp.first = _zValues.at( _dimensions[2] - 1 ).first + _zValues.at( _dimensions[2] - 1 ).second;
+  lzp.second = 0.0f;
+  _zValues.push_back( lzp );
+  _originalToCurrentIndex[ Usul::Strings::format( "Z", _dimensions[2] - 1 ) ] = _dimensions[2] - 1;
 
   // save the original state
   _originalXValues = _xValues;
@@ -446,13 +477,126 @@ void VaporIntrusionGUIDocument::_initCubes()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene.
+//  Build the 2D scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
+void VaporIntrusionGUIDocument::_build2DScene( Usul::Interfaces::IUnknown *caller )
+{
+  Guard guard ( this );
+
+  if( false == _root2D.valid() )
+  {
+    _root2D = new osg::Group;
+  }
+
+  // Remove all the children
+  _root2D->removeChildren( 0, _root2D->getNumChildren() );  
+
+  // restore the grid values
+  this->_restoreGrid();
+
+  // add the additional points
+  this->_addPoints();
+
+  if( _buildMode2D == IVPI::XY_BUILD_MODE_2D )
+  {
+    _root2D->addChild( this->_buildXYScene() );
+  }
+  
+  if( _buildMode2D == IVPI::Z_BUILD_MODE_2D )
+  {
+    _root2D->addChild( this->_buildZScene() );
+  }
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the 2D XY scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* VaporIntrusionGUIDocument::_buildXYScene()
+{
+  Guard guard ( this );
+
+  GroupPtr group ( new osg::Group );
+
+  for( unsigned int i = 0; i < _xValues.size() - 1; ++i )
+  {
+    for( unsigned int j = 0; j < _zValues.size() - 1; ++j )
+    {
+       // points of the plane
+      osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+
+      // points
+      float sx ( _xValues.at( i ).first );
+      float ex ( _xValues.at( i + 1 ).first );
+      float sz ( _zValues.at( j ).first );
+      float ez ( _zValues.at( j + 1 ).first );
+
+      // add the points to the list of points
+      points->push_back( osg::Vec3f ( sx, 0, sz ) );
+      points->push_back( osg::Vec3f ( ex, 0, sz ) );
+      points->push_back( osg::Vec3f ( ex, 0, ez ) );
+      points->push_back( osg::Vec3f ( sx, 0, ez ) );
+
+      // add the plane
+      group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.5f, 0.5f, 0.5f, 1.0f ) ) );
+
+    }
+  }
+
+  return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the 2D Z scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* VaporIntrusionGUIDocument::_buildZScene()
+{
+  Guard guard ( this );
+
+  GroupPtr group ( new osg::Group );
+
+  return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Restore the original grid
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_restoreGrid()
+{
+  Guard guard ( this );
+
+  // reset values to the original state
+  _xValues = _originalXValues;
+  _yValues = _originalYValues;
+  _zValues = _originalZValues;
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the 3D scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_build3DScene ( Unknown *caller )
 {
   Guard guard( this );
+
   if( false == _root.valid() )
   {
     _root = new osg::Group;
@@ -473,6 +617,9 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
       this->_makeBuilding();
     }
   }
+
+  // restore the original grid points
+  this->_restoreGrid();
 
   if( true == _showCracks )
   {
@@ -506,18 +653,18 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
 void VaporIntrusionGUIDocument::_makeGrid( )
 {
   // get the size of the x domain
-  unsigned int xsize ( _xValues.size() );
+  unsigned int xsize ( _xValues.size() - 1 );
 
   // Loop through the dimensions and build the cube
   for( unsigned int x = 0; x < xsize; ++x )
   {
     // get the size of the y domain at x
-    unsigned int ysize ( _yValues.size() );
+    unsigned int ysize ( _yValues.size() - 1 );
 
     for( unsigned int y = 0; y < ysize; ++y )
     {
       // get the size of the z domain at xy
-      unsigned int zsize ( _zValues.size() );
+      unsigned int zsize ( _zValues.size() - 1);
 
       for( unsigned int z = 0; z < zsize; ++z )
       {
@@ -636,11 +783,6 @@ osg::Node*	VaporIntrusionGUIDocument::_buildPlane ( osg::Vec3Array* points, osg:
 void VaporIntrusionGUIDocument::_makeCracks()
 {
 	Guard guard ( this );
-
-  // reset values to the original state
-  _xValues = _originalXValues;
-  _yValues = _originalYValues;
-  _zValues = _originalZValues;
 
   // useful typedefs
   typedef Usul::Convert::Type< std::string, float > StrToFloat;
@@ -1097,8 +1239,18 @@ void VaporIntrusionGUIDocument::_makeSource3D()
 
 void VaporIntrusionGUIDocument::rebuildScene()
 {
-  // rebuild the scene
-  this->_buildScene();
+  // if the 3D scene is already valid then...
+  if( true == _root.valid() )
+  {
+    // rebuild the 3D scene
+    this->_build3DScene();
+  }
+  // if the 2D scene is already valid then...
+  if( true == _root2D.valid() )
+  {
+    // rebuild the 2D scene
+    this->_build2DScene();
+  }
 
   // request a redraw
   this->requestRedraw();
@@ -1237,9 +1389,6 @@ void VaporIntrusionGUIDocument::dimensions( Usul::Math::Vec3ui d )
 {
   Guard guard( this );
   _dimensions = d;
-
-  // build the cubes based on the current dimensions
-  this->_initCubes();
 
 }
 
@@ -2053,6 +2202,9 @@ void VaporIntrusionGUIDocument::initialize()
 {
   Guard guard( this );
 
+  // build the cubes based on the current dimensions
+  this->_initCubes();
+
   // initialize the grid materials
   this->_initializeGridMaterials();
 
@@ -2776,17 +2928,17 @@ void VaporIntrusionGUIDocument::draggerActive( bool value )
 
 void VaporIntrusionGUIDocument::_activateDragger()
 {
-  Guard guard( this );
-  
-  //re-build the scene
-  this->_buildScene( 0x0 );
+  //Guard guard( this );
+  //
+  ////re-build the scene
+  //this->_buildScene( 0x0 );
 
-  // create a dragger temp
-  osg::ref_ptr< osgManipulator::TabBoxDragger > dragger ( new osgManipulator::TabBoxDragger );
-  dragger->setupDefaultGeometry();
+  //// create a dragger temp
+  //osg::ref_ptr< osgManipulator::TabBoxDragger > dragger ( new osgManipulator::TabBoxDragger );
+  //dragger->setupDefaultGeometry();
 
-  //add the dragger to the scene
-  _root->addChild( dragger.get() );
+  ////add the dragger to the scene
+  //_root->addChild( dragger.get() );
 
 }
 
@@ -3602,7 +3754,7 @@ void VaporIntrusionGUIDocument::showBuilding ( bool b )
   {
     _showBuilding = b;
 
-    this->_buildScene();
+    this->rebuildScene();
   }
 }
 
@@ -3633,7 +3785,7 @@ void VaporIntrusionGUIDocument::showGrid ( bool b )
   {
     _showGrid = b;
 
-    this->_buildScene();
+    this->rebuildScene();
   }
 }
 
@@ -3665,7 +3817,7 @@ void VaporIntrusionGUIDocument::showCracks ( bool b )
   {
     _showCracks = b;
 
-    this->_buildScene();
+    this->rebuildScene();
   }
 }
 
@@ -3697,7 +3849,7 @@ void VaporIntrusionGUIDocument::showFoundation ( bool b )
   {
     _showFoundation = b;
 
-    this->_buildScene();
+    this->rebuildScene();
   }
 }
 
@@ -3729,7 +3881,7 @@ void VaporIntrusionGUIDocument::showSources ( bool b )
   {
     _showSources = b;
 
-    this->_buildScene();
+    this->rebuildScene();
   }
 }
 

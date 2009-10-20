@@ -34,7 +34,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1235852807u };
 
-  // comparison enumerations
+  // enumerations
   enum
   {
     EQUAL,
@@ -43,7 +43,14 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     GREATER_THAN,
     GREATER_THAN_OR_EQUAL,
     LESS_THAN_OR_EQUAL,
-    SIZEOF_EQUAL
+    SIZEOF_EQUAL,
+  };
+
+  // 2D build modes
+  enum
+  {
+    XY_BUILD_MODE_2D,
+    Z_BUILD_MODE_2D
   };
 
   // structs
@@ -226,6 +233,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   // Get/set the dimensions of the space
   virtual Usul::Math::Vec3ui    dimensions() = 0;
   virtual void                  dimensions( Usul::Math::Vec3ui ) = 0;
+  virtual void                  setInitialSpacing( Usul::Math::Vec3f spacing ) = 0;
 
   // Get/Set the material
   virtual void                  setMaterial( unsigned int x, unsigned int y, unsigned int z, Usul::Math::Vec4f c ) = 0;
@@ -239,7 +247,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   virtual void                  addValueAt( unsigned int x, unsigned int y, unsigned int z, const std::string& name, const std::string& value ) = 0;
   virtual void                  addValueAt( unsigned int x, unsigned int y, unsigned int z, const std::string& value ) = 0;
 
-  typedef std::vector< std::pair< double, double > > GridPoints;
+  typedef std::pair< double, double > GridPoint;
+  typedef std::vector< GridPoint > GridPoints;
 
   virtual GridPoints            getXGrid() = 0;
   virtual GridPoints            getYGrid() = 0;

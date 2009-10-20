@@ -67,6 +67,7 @@ public:
   typedef IVPI::GridPoint                                       GridPoint;
   typedef IVPI::GridPoints                                      GridPoints;
   typedef IVPI::ParameterList                                   ParameterList;
+  typedef IVPI::Object2D                                        Object2D;
   typedef IVaporIntrusionGUI::InputColumns                      InputColumns;
   typedef IVaporIntrusionGUI::InputColumn                       InputColumn;
   typedef IVaporIntrusionGUI::Category                          Category;
@@ -236,7 +237,15 @@ public:
   virtual void                addGridPointFromViewer( Usul::Math::Vec3f point );
 
   virtual void                setEditMode2D( int mode );
+  virtual int                 getEditMode2D();
+
   virtual void                setBuildMode2D( int mode );
+  virtual int                 getBuildMode2D();
+
+  virtual void                setObjectMode( int mode );
+  virtual int                 getObjectMode();
+
+  virtual void                keyMovementChange( int x, int y );
 
 
   // Show/Hide functions
@@ -254,6 +263,11 @@ public:
 
   void                        showSources ( bool b );
   bool                        isShowSources () const;
+
+  // Object menu functions
+  void                        objectMenuAddBuilding();
+
+
 
 
 
@@ -281,6 +295,7 @@ protected:
   // 2d build methods
   osg::Node*                  _buildXYScene();
   osg::Node*                  _buildZScene();
+  osg::Node*                  _buildObject();
 
   void                        _makeGrid();
   void                        _makeSymmetricalBuilding();
@@ -377,6 +392,9 @@ private:
     float                     _maxCrackGridDistance;
     int                       _buildMode2D;
     int                       _editGridMode2D;
+    int                       _objectMode;
+
+    Object2D                  _currentObject;
   
 };
 

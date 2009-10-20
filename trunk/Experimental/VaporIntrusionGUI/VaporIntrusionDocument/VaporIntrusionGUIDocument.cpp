@@ -97,8 +97,10 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _showCracks( true ),
   _showLabels( true ),
   _maxCrackGridDistance( 0.2f ),
-  _buildMode2D( IVPI::XY_BUILD_MODE_2D ),
-  _editGridMode2D( IVPI::EDIT_X_GRID_2D )
+  _buildMode2D( IVPI::BUILD_MODE_2D_XY ),
+  _editGridMode2D( IVPI::EDIT_X_GRID_2D ),
+  _objectMode( IVPI::OBJECT_NOTHING ),
+  _currentObject()
 {
   USUL_TRACE_SCOPE;
 }
@@ -497,14 +499,19 @@ void VaporIntrusionGUIDocument::_build2DScene( Usul::Interfaces::IUnknown *calle
   // add the additional points
   this->_addPoints();
 
-  if( _buildMode2D == IVPI::XY_BUILD_MODE_2D )
+  if( _buildMode2D == IVPI::BUILD_MODE_2D_XY )
   {
     _root2D->addChild( this->_buildXYScene() );
   }
   
-  if( _buildMode2D == IVPI::Z_BUILD_MODE_2D )
+  if( _buildMode2D == IVPI::BUILD_MODE_2D_Z )
   {
     _root2D->addChild( this->_buildZScene() );
+  }
+
+  if( _editGridMode2D == IVPI::OBJECT_PLACEMENT_2D || _editGridMode2D == IVPI::OBJECT_SIZE_2D )
+  {
+    _root2D->addChild( this->_buildObject() );
   }
 
 }
@@ -739,7 +746,7 @@ osg::Node*	VaporIntrusionGUIDocument::_buildPlane ( osg::Vec3Array* points, osg:
     
   // Normals for each face n ( p3 - p2 ) ^ ( p1 - p2 )
   osg::Vec3 n( ( vertices->at( 3 ) - vertices->at( 1 ) ) ^ ( vertices->at( 0 ) - vertices->at( 1 ) ) );
-  normals->push_back( n );normals->push_back( n );normals->push_back( n );normals->push_back( n );
+  normals->push_back( -n );normals->push_back( -n );normals->push_back( -n );normals->push_back( -n );
   
   // Geometry
   osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
@@ -3726,7 +3733,7 @@ void VaporIntrusionGUIDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   namespace UA = Usul::Adaptors;
   namespace UC = Usul::Commands;
 
-  // Make the menu.
+  // Add to the view menu.
   MenuKit::Menu::RefPtr view ( menu.find ( "&View", true ) );
 
   view->append ( ToggleButton::create ( "Show Building", boost::bind ( &VaporIntrusionGUIDocument::showBuilding, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowBuilding, this ) ) );
@@ -3734,6 +3741,12 @@ void VaporIntrusionGUIDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   view->append ( ToggleButton::create ( "Show Cracks", boost::bind ( &VaporIntrusionGUIDocument::showCracks, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowCracks, this ) ) );
   view->append ( ToggleButton::create ( "Show Foundation", boost::bind ( &VaporIntrusionGUIDocument::showFoundation, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowFoundation, this ) ) );
   view->append ( ToggleButton::create ( "Show Sources", boost::bind ( &VaporIntrusionGUIDocument::showSources, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowSources, this ) ) );
+
+  // Add to the objects menu.
+  MenuKit::Menu::RefPtr objectMenu ( menu.find ( "&Objects", true ) );
+
+  objectMenu->append ( MenuKit::Button::create ( "Building", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::objectMenuAddBuilding ) ) );
+
 
 }
 
@@ -4026,4 +4039,207 @@ void VaporIntrusionGUIDocument::setBuildMode2D( int mode )
    Guard guard ( this );
 
    _buildMode2D = mode;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the 2D grid edit Mode
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int VaporIntrusionGUIDocument::getEditMode2D()
+{
+  Guard guard ( this );
+
+  return _editGridMode2D;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the 2D grid build Mode
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int VaporIntrusionGUIDocument::getBuildMode2D()
+{
+  Guard guard ( this );
+
+  return _buildMode2D;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the 2D grid object Mode
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setObjectMode( int mode )
+{
+  Guard guard ( this );
+
+  _objectMode = mode;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the 2D grid object Mode
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int VaporIntrusionGUIDocument::getObjectMode()
+{
+  Guard guard ( this );
+
+  return _objectMode;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the movement change
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
+{
+  Guard guard ( this );
+
+  int xsize ( static_cast< int > ( _xValues.size() ) );
+  int zsize ( static_cast< int > ( _zValues.size() ) );
+
+  if( _editGridMode2D == IVPI::OBJECT_PLACEMENT_2D )
+  {
+    // update the position of the object
+    _currentObject.sx += x;
+    _currentObject.sz += y;
+    _currentObject.ex += x;
+    _currentObject.ez += y;
+
+    // make sure the object is within the grid bounds still
+    // First check the x values
+    if( _currentObject.sx < 0 )
+    {
+      _currentObject.sx = 0;
+      _currentObject.ex = 1;
+    }
+    if( _currentObject.sx > xsize - 2 )
+    {
+      _currentObject.sx = xsize - 2;
+      _currentObject.ex = xsize - 1;
+    }
+
+    // Check the y(z) values
+    if( _currentObject.sz < 0 )
+    {
+      _currentObject.sz = 0;
+      _currentObject.ez = 1;
+    }
+    if( _currentObject.sz > zsize - 2 )
+    {
+      _currentObject.sz = zsize - 2;
+      _currentObject.ez = zsize - 1;
+    }
+
+    // rebuild the scene
+    this->rebuildScene();
+
+  }
+
+  if( _editGridMode2D == IVPI::OBJECT_SIZE_2D )
+  {
+
+    // update the position of the object
+    _currentObject.ex += x;
+    _currentObject.ez += y;
+
+    // make sure the object is within the grid bounds still
+    // First check the x values
+    if( _currentObject.ex <= _currentObject.sx )
+    {
+      _currentObject.ex = _currentObject.sx + 1;
+    }
+    if( _currentObject.ex > xsize - 1 )
+    {
+      _currentObject.ex = xsize - 1;
+    }
+
+    // Check the y(z) values
+    if( _currentObject.ez <= _currentObject.sz )
+    {
+      _currentObject.ez = _currentObject.sz + 1;
+    }
+    if( _currentObject.ez > zsize - 1 )
+    {
+      _currentObject.ez = zsize - 1;
+    }
+
+    // rebuild the scene
+    this->rebuildScene();
+
+  }
+
+  
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the object
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* VaporIntrusionGUIDocument::_buildObject()
+{
+  Guard guard ( this );
+
+  GroupPtr group ( new osg::Group );
+
+  // points of the plane
+  osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+
+  //set the points
+
+  float sx ( _xValues.at( _currentObject.sx ).first );
+  float sz ( _zValues.at( _currentObject.sz ).first );
+  float ex ( _xValues.at( _currentObject.ex ).first );
+  float ez ( _zValues.at( _currentObject.ez ).first );
+  
+  points->push_back( osg::Vec3f ( sx, 0.001, sz ) );
+  points->push_back( osg::Vec3f ( ex, 0.001, sz ) );
+  points->push_back( osg::Vec3f ( ex, 0.001, ez ) );
+  points->push_back( osg::Vec3f ( sx, 0.001, ez ) );
+
+  group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 1.0f, 0.0f, 0.0f, 1.0f ) ) );
+
+  return group.release();
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the object
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::objectMenuAddBuilding()
+{
+  Guard guard ( this );
+
+  // set the edit mode to object placement
+  this->setEditMode2D( IVPI::OBJECT_PLACEMENT_2D );
+
+  // set the object type to building
+  _objectMode = IVPI::OBJECT_BUILDING;
+
+  // clear out the current object
+  Object2D object ( 0, 0, 0, 1, 0, 1 );
+  _currentObject = object;
+
+  // rebuild the Scene
+  this->rebuildScene();
 }

@@ -50,6 +50,7 @@ protected:
   virtual void                    wheelEvent ( QWheelEvent * );
 
   void                            _initializeViewDirection();
+  void                            _handleArrowKeys( int key, IVPI::QueryPtr document );
 
  private:
  

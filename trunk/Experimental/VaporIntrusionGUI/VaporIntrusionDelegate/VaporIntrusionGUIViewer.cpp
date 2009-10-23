@@ -247,6 +247,13 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
         {
           document->setEditMode2D( IVPI::OBJECT_SIZE_2D );
         }
+
+        // tell the document to create the object
+        if( currentMode == IVPI::OBJECT_SIZE_2D )
+        {
+          document->handleNewObject();
+          document->setEditMode2D( IVPI::EDIT_MODE_IDLE );
+        }
         
         std::cout << "Setting 2D Grid Size Object Mode" << std::endl;
       }

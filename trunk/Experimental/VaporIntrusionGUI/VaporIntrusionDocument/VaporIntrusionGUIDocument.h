@@ -267,6 +267,8 @@ public:
   // Object menu functions
   void                        objectMenuAddBuilding();
 
+  void                        handleNewObject();
+
 
 
 
@@ -351,6 +353,12 @@ protected:
   bool                        _gridHasPoint( const std::string& axis, float pos );
 
   void                        _restoreGrid();
+
+  // object creation methods
+  void                        _createNewBuilding();
+
+  
+
 
   
 

@@ -98,7 +98,7 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _showLabels( true ),
   _maxCrackGridDistance( 0.2f ),
   _buildMode2D( IVPI::BUILD_MODE_2D_XY ),
-  _editGridMode2D( IVPI::EDIT_X_GRID_2D ),
+  _editGridMode2D( IVPI::EDIT_MODE_IDLE ),
   _objectMode( IVPI::OBJECT_NOTHING ),
   _currentObject()
 {
@@ -1017,16 +1017,16 @@ void VaporIntrusionGUIDocument::_makeBuilding()
   material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
 
   // Building initial y position
-  float ypos ( _yValues.at( _yValues.size() - 1 ).first + StrToFloat::convert( _building.h ) );
+  float ypos ( _yValues.at( _yValues.size() - 1 ).first );
 
   // get the lower left corner of the building
   osg::Vec3f ll  ( StrToFloat::convert( _building.x ), ypos, StrToFloat::convert( _building.z ) );
 
   // snap the lower left to the grid
   osg::Vec2f corner ( ll.x(), ll.z() );
-  corner = this->_snapToGrid2D( corner );
-  ll.x() = corner.x();
-  ll.z() = corner.y();
+  //corner = this->_snapToGrid2D( corner );
+  //ll.x() = corner.x();
+  //ll.z() = corner.y();
 
   // update the building
   _building.x = Usul::Strings::format ( ll.x() );
@@ -3991,11 +3991,15 @@ void VaporIntrusionGUIDocument::addGridPointFromViewer( Usul::Math::Vec3f point 
     axis = "X";
   }
 
-  if( _editGridMode2D == IVPI::EDIT_Y_GRID_2D )
+  else if( _editGridMode2D == IVPI::EDIT_Y_GRID_2D )
   {
     grid = this->_getGridFromAxis( "Z" );
     value = point[2];
     axis = "Z";
+  }
+  else
+  {
+    return;
   }
 
   // get the nearest grid point to the crack
@@ -4241,5 +4245,63 @@ void VaporIntrusionGUIDocument::objectMenuAddBuilding()
   _currentObject = object;
 
   // rebuild the Scene
+  this->rebuildScene();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a new object
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::handleNewObject()
+{
+  Guard guard ( this );
+
+  // create a new building
+  if( _objectMode == IVPI::OBJECT_BUILDING )
+  {
+    this->_createNewBuilding();
+  }
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a new building
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_createNewBuilding()
+{
+  Guard guard ( this );
+
+  // useful typedefs
+  typedef Usul::Convert::Type< float, std::string > FTS;
+
+  // get the building corners
+  float sx ( _xValues.at( _currentObject.sx ).first );
+  float ex ( _xValues.at( _currentObject.ex ).first );
+  float sy ( _xValues.at( _currentObject.sy ).first );
+  float ey ( _xValues.at( _currentObject.ey ).first );
+  float sz ( _xValues.at( _currentObject.sz ).first );
+  float ez ( _xValues.at( _currentObject.ez ).first );
+
+  // Calculate the lwh
+  float l ( ex - sx );
+  float w ( ez - sz );
+  float h ( 0.5 );
+
+  // create a building object with the parameters entered in the 2D window
+  Building b ( FTS::convert( l ), FTS::convert( w ), FTS::convert( h ), FTS::convert( sx ), FTS::convert( sy ), FTS::convert( sz ), "1", "1", "1" );
+
+  // set the building
+  _building = b;
+
+  // tell the document that there is a building
+  this->useBuilding( true );
+
+  //rebuild the scene
   this->rebuildScene();
 }

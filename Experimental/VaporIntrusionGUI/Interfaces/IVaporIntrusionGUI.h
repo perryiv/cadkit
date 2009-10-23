@@ -51,6 +51,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   {
     BUILD_MODE_2D_XY,
     BUILD_MODE_2D_Z,
+    EDIT_MODE_IDLE,
     EDIT_X_GRID_2D,
     EDIT_Y_GRID_2D,
     OBJECT_PLACEMENT_2D,
@@ -346,6 +347,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   virtual int                   getObjectMode() = 0;
 
   virtual void                  keyMovementChange( int x, int y ) = 0;
+  virtual void                  handleNewObject() = 0;
     
 }; // struct IVaporIntrusionGUI
 

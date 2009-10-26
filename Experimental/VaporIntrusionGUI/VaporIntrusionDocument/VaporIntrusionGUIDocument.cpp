@@ -570,6 +570,37 @@ osg::Node* VaporIntrusionGUIDocument::_buildZScene()
 
   GroupPtr group ( new osg::Group );
 
+  for( unsigned int i = 0; i < _xValues.size() - 1; ++i )
+  {
+    for( unsigned int j = 0; j < _yValues.size() - 1; ++j )
+    {
+       // points of the plane
+      osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+
+      // points
+      float sx ( _xValues.at( i ).first );
+      float ex ( _xValues.at( i + 1 ).first );
+      float sz ( _yValues.at( j ).first );
+      float ez ( _yValues.at( j + 1 ).first );
+
+      // add the points to the list of points
+#if 1
+      points->push_back( osg::Vec3f ( sx, sz, 0 ) );
+      points->push_back( osg::Vec3f ( ex, sz, 0 ) );
+      points->push_back( osg::Vec3f ( ex, ez, 0 ) );
+      points->push_back( osg::Vec3f ( sx, ez, 0 ) );
+#else
+      points->push_back( osg::Vec3f ( sx, 0, sz ) );
+      points->push_back( osg::Vec3f ( ex, 0, sz ) );
+      points->push_back( osg::Vec3f ( ex, 0, ez ) );
+      points->push_back( osg::Vec3f ( sx, 0, ez ) );
+#endif
+      // add the plane
+      group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.5f, 0.5f, 0.5f, 1.0f ) ) );
+
+    }
+  }
+
   return group.release();
 }
 
@@ -3991,11 +4022,17 @@ void VaporIntrusionGUIDocument::addGridPointFromViewer( Usul::Math::Vec3f point 
     axis = "X";
   }
 
-  else if( _editGridMode2D == IVPI::EDIT_Y_GRID_2D )
+  else if( _editGridMode2D == IVPI::EDIT_Y_GRID_2D && _buildMode2D == IVPI::BUILD_MODE_2D_XY )
   {
     grid = this->_getGridFromAxis( "Z" );
     value = point[2];
     axis = "Z";
+  }
+  else if( _editGridMode2D == IVPI::EDIT_Y_GRID_2D && _buildMode2D == IVPI::BUILD_MODE_2D_Z )
+  {
+    grid = this->_getGridFromAxis( "Y" );
+    value = point[1];
+    axis = "Y";
   }
   else
   {
@@ -4043,6 +4080,8 @@ void VaporIntrusionGUIDocument::setBuildMode2D( int mode )
    Guard guard ( this );
 
    _buildMode2D = mode;
+
+   this->rebuildScene();
 }
 
 

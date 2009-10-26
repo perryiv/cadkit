@@ -54,6 +54,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     EDIT_MODE_IDLE,
     EDIT_X_GRID_2D,
     EDIT_Y_GRID_2D,
+    EDIT_Z_GRID_2D,
     OBJECT_PLACEMENT_2D,
     OBJECT_SIZE_2D
   };

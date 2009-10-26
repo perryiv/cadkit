@@ -227,6 +227,7 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
       {
         document->setBuildMode2D( IVPI::BUILD_MODE_2D_XY );
         std::cout << "Setting 2D Grid Domain to the XY Grid" << std::endl;
+        this->viewer()->camera( OsgTools::Render::Viewer::TOP );
       }
         break;
 
@@ -234,6 +235,7 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
       {
         document->setBuildMode2D( IVPI::BUILD_MODE_2D_Z );
         std::cout << "Setting 2D Grid Domain Mode to the Z (Basement/Soil) Grid" << std::endl;
+        this->viewer()->camera( OsgTools::Render::Viewer::FRONT );
       }
         break;
 
@@ -261,11 +263,15 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
     };
   }
 
+#if 0
+  BaseClass::keyPressEvent( event );
+#else
   // only let the base class handle certain key presses
   if( key == Qt::Key_F || key == Qt::Key_W )
   {
     BaseClass::keyPressEvent( event );
   }
+#endif
 }
 
 

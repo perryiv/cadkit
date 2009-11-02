@@ -127,8 +127,19 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
   // get the point on the model where the intersection occured
   osg::Vec3d p ( hit.getLocalIntersectPoint() );
 
-  // add the new grid point
-  document->addGridPointFromViewer( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
+  const bool left   ( ( true == event->buttons().testFlag ( Qt::LeftButton  ) ) );
+  const bool right  ( ( true == event->buttons().testFlag ( Qt::RightButton ) ) );
+
+  if( true == left )
+  {
+    // add the new grid point
+    document->addGridPointFromViewer( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
+  }
+  if( true == right )
+  {
+    // remove the new grid point
+    document->removeGridPointFromViewer( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
+  }
 
   // rebuild the scene
   document->rebuildScene();

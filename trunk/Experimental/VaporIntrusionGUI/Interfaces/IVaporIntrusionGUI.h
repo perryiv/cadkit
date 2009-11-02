@@ -336,6 +336,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   virtual void                  gridAxisPoints( GridAxisPoints ap ) = 0;
 
   virtual void                  addGridPointFromViewer( Usul::Math::Vec3f point ) = 0;
+  virtual void                  removeGridPointFromViewer( Usul::Math::Vec3f point ) = 0;
 
   // edit modes for the 2D grid
   virtual void                  setEditMode2D( int mode ) = 0;

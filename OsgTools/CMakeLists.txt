@@ -82,7 +82,6 @@ SET ( HEADERS
 	./Render/ActionAdapter.h
 	./Render/Animation.h
 	./Render/ClampProjection.h
-	./Render/ClipPlaneCallback.h
 	./Render/Constants.h
 	./Render/Defaults.h
 	./Render/EventAdapter.h
@@ -155,70 +154,79 @@ SET ( HEADERS
 #########################################################
 
 SET (SOURCES
-  Axes.cpp
-  Builders/Arrow.cpp
-  Builders/GradientBackground.cpp
-  Callbacks/SortBackToFront.cpp
-  Circle.cpp
-  ColorSetter.cpp
-  DisplayLists.cpp
-  Font.cpp
-  GlassBoundingBox.cpp
-  Grid.cpp
-  Group.cpp
-  Images/DownSample.cpp
-  IO/GLFeedback.cpp
-  IO/Reader.cpp
-  IO/STLWriter.cpp
-  Jitter.cpp
-  Lod.cpp
-  MaterialFactory.cpp
-  MaterialSetter.cpp
-  Mesh.cpp
-  Ray.cpp
-  Render/ActionAdapter.cpp
-  Render/Animation.cpp
-  Render/EventAdapter.cpp
-  Render/FBOScreenCapture.cpp
-  Render/FrameDump.cpp
-  Render/OffScreenRenderer.cpp
-  Render/Renderer.cpp
-  Render/SceneManager.cpp
-  Render/TiledScreenCapture.cpp
-  Render/Trackball.cpp
-  Render/Viewer.cpp
-  Sample.cpp
-  ShapeFactory.cpp
-  State/PolygonMode.cpp
-  State/ShadeModel.cpp
-  State/StateSet.cpp
-  Statistics.cpp
-  Text.cpp
-  Torus.cpp
-  Triangles/Block.cpp
-  Triangles/Blocks.cpp
-  Triangles/ColorFunctor.cpp
-  Triangles/Factory.cpp
-  Triangles/Loop.cpp
-  Triangles/LoopSplitter.cpp
-  Triangles/SharedVertex.cpp
-  Triangles/Triangle.cpp
-  Triangles/TriangleSet.cpp
-  Utilities/ConvertToTriangles.cpp
-  Utilities/DeleteHandler.cpp
-  Utilities/FindNormals.cpp
-  Utilities/Intersect.cpp
-  Utilities/TranslateGeometry.cpp
-  Widgets/Axes.cpp
-  Widgets/ClipPlane.cpp
-  Widgets/ProgressBar.cpp
-  Widgets/ProgressBarGroup.cpp
-  Widgets/GradientIcon.cpp
-  Widgets/Item.cpp
-  Widgets/Image.cpp
-  Widgets/Legend.cpp
-  Widgets/LegendObject.cpp
-  Widgets/Text.cpp
+  ./Axes.cpp
+./Builders/Arrow.cpp
+./Builders/GradientBackground.cpp
+./Callbacks/SortBackToFront.cpp
+./Circle.cpp
+./ColorSetter.cpp
+./DisplayLists.cpp
+./Font.cpp
+./GlassBoundingBox.cpp
+./Grid.cpp
+./Group.cpp
+./IO/GLFeedback.cpp
+./IO/Reader.cpp
+./IO/STLWriter.cpp
+./IO/WriteEPS.cpp
+./Images/DownSample.cpp
+./Jitter.cpp
+./Lod.cpp
+./MaterialFactory.cpp
+./MaterialSetter.cpp
+./Mesh.cpp
+./Objects/Cylinder.cpp
+./Objects/Object.cpp
+./Objects/RegularGrid.cpp
+./Objects/VertexSequence.cpp
+./Points/OctTree.cpp
+./Points/OctTreeNode.cpp
+./Points/PointLoader.cpp
+./Points/PointSet.cpp
+./Ray.cpp
+./Render/ActionAdapter.cpp
+./Render/Animation.cpp
+./Render/EventAdapter.cpp
+./Render/FBOScreenCapture.cpp
+./Render/FrameDump.cpp
+./Render/OffScreenRenderer.cpp
+./Render/Renderer.cpp
+./Render/SceneManager.cpp
+./Render/TiledScreenCapture.cpp
+./Render/Trackball.cpp
+./Render/Viewer.cpp
+./Sample.cpp
+./ShapeFactory.cpp
+./State/PolygonMode.cpp
+./State/ShadeModel.cpp
+./State/StateSet.cpp
+./Statistics.cpp
+./Text.cpp
+./Torus.cpp
+./Triangles/Block.cpp
+./Triangles/Blocks.cpp
+./Triangles/ColorFunctor.cpp
+./Triangles/Factory.cpp
+./Triangles/Loop.cpp
+./Triangles/LoopSplitter.cpp
+./Triangles/SharedVertex.cpp
+./Triangles/Triangle.cpp
+./Triangles/TriangleSet.cpp
+./Utilities/ConvertToTriangles.cpp
+./Utilities/DeleteHandler.cpp
+./Utilities/FindNormals.cpp
+./Utilities/Intersect.cpp
+./Utilities/TranslateGeometry.cpp
+./Widgets/Axes.cpp
+./Widgets/ClipPlane.cpp
+./Widgets/GradientIcon.cpp
+./Widgets/Image.cpp
+./Widgets/Item.cpp
+./Widgets/Legend.cpp
+./Widgets/LegendObject.cpp
+./Widgets/ProgressBar.cpp
+./Widgets/ProgressBarGroup.cpp
+./Widgets/Text.cpp
 )
 
 #########################################################

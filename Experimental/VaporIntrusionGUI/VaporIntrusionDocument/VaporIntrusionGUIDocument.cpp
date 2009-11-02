@@ -820,9 +820,6 @@ void VaporIntrusionGUIDocument::_makeCracks()
 {
 	Guard guard ( this );
 
-  // useful typedefs
-  typedef Usul::Convert::Type< std::string, float > StrToFloat;
-
   // get the z axis grid
   GridPoints zgrid ( this->_getGridFromAxis( "Z" ) );
   // create the visuals for the x direction cracks first
@@ -3346,66 +3343,45 @@ void VaporIntrusionGUIDocument::_removeGridPoint( const std::string& axis, float
 {
   Guard guard ( this );
 
-  // get the grid points
-  GridPoints axisGrid ( this->_getGridFromAxis( axis ) );
-
   // the new grid for this axis
-  GridPoints grid;
+  GridAxisPoints grid;
 
   // make sure there are points
-  if( axisGrid.size() == 0 )
+  if( _axisPoints.size() == 0 )
   {
     std::cout << "No points found for axis: " << axis << std::endl;
     return;
   }
 
+  // current index
   unsigned int index ( 0 );
 
-  while( index < axisGrid.size() )
+  while( index < _axisPoints.size() )
   {
-    GridPoint p ( axisGrid.at( index ) );
+    // get the next point
+    GridAxisPoint p ( _axisPoints.at( index ) );
 
-    GridPoint p0, p1;
+    // convert to a float
+    float ppos ( StrToFloat::convert( p.value ) );
 
     // found a match
-    if( p.first == pos )
+    if( p.axis == axis && ppos == pos )
     {
-      if( index > 0 )
-      {
-        // get the previous position
-        p0 = axisGrid.at( index - 1 );
 
-        // make sure there is a next position
-        if( index < axisGrid.size() )
-        {
-          // get the next position
-          p1 = axisGrid.at( index + 1 );
-
-          // update the previous size with the next position
-          p0.second = p1.first - p0.first;
-
-          // update the previous position in the grid
-          grid.at( index - 1) = p0;
-        }
-      }
     }
-
     // match not found
     else
     {
       // add to the temp grid list
-      grid.push_back( axisGrid.at( index ) );
+      grid.push_back( _axisPoints.at( index ) );
     }
 
     // increment the index
     ++index;
   }
 
-  // set the new grid for this axis
-  this->_setGridFromAxis( axis, grid );
-
-  // fix the dimensions
-  this->_fixDimensions();
+  // set the axis grid
+  _axisPoints = grid;
 
 
 }
@@ -4052,6 +4028,74 @@ void VaporIntrusionGUIDocument::addGridPointFromViewer( Usul::Math::Vec3f point 
   // insert the new grid point
   GridAxisPoint gap ( axis, Usul::Convert::Type< float, std::string >::convert( p ) );
   _axisPoints.push_back( gap );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called from the viewer to add a grid point where the user clicked in the 
+//  window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::removeGridPointFromViewer( Usul::Math::Vec3f point )
+{
+  Guard guard ( this );
+
+  GridPoints grid;
+
+  float value ( 0.0f );
+
+  std::string axis;
+
+  if( _editGridMode2D == IVPI::EDIT_X_GRID_2D )
+  {
+    grid = this->_getGridFromAxis( "X" );
+    value = point[0];
+    axis = "X";
+  }
+
+  else if( _editGridMode2D == IVPI::EDIT_Y_GRID_2D && _buildMode2D == IVPI::BUILD_MODE_2D_XY )
+  {
+    grid = this->_getGridFromAxis( "Z" );
+    value = point[2];
+    axis = "Z";
+  }
+  else if( _editGridMode2D == IVPI::EDIT_Y_GRID_2D && _buildMode2D == IVPI::BUILD_MODE_2D_Z )
+  {
+    grid = this->_getGridFromAxis( "Y" );
+    value = point[1];
+    axis = "Y";
+  }
+  else
+  {
+    return;
+  }
+
+  // get the nearest grid point to the crack
+  Usul::Math::Vec2ui ind ( this->_snapToGrid( value, grid ) );
+
+  // get the near and far index
+  unsigned int nearIndex ( ind[0] );
+  unsigned int farIndex ( ind[1] );  
+
+  // get the grid points closest to the input point and
+  // calculate the distances to both
+  float p1 ( grid.at( nearIndex ).first );
+  float p2 ( grid.at( farIndex ).first );
+  float d1 ( abs ( value - p1 ) );
+  float d2 ( abs ( value - p2 ) );
+
+  if( d1 < d2 )
+  {
+    this->_removeGridPoint( axis, p1 );
+  }
+  else
+  {
+    this->_removeGridPoint( axis, p2 );
+  }
+
 
 }
 

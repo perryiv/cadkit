@@ -86,6 +86,9 @@ public:
   typedef std::vector< std::string >                            StringVec;
   typedef std::map< std::string, unsigned int >                 GridMap;
 
+  // function typedefs
+  typedef Usul::Convert::Type< std::string, float > StrToFloat;
+
   
   // structs and typedefs for structs
   struct Value
@@ -235,6 +238,7 @@ public:
   virtual void                gridAxisPoints( GridAxisPoints ap );
 
   virtual void                addGridPointFromViewer( Usul::Math::Vec3f point );
+  virtual void                removeGridPointFromViewer( Usul::Math::Vec3f point );
 
   virtual void                setEditMode2D( int mode );
   virtual int                 getEditMode2D();

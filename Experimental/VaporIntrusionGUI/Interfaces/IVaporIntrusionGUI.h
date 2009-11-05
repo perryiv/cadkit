@@ -56,7 +56,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     EDIT_Y_GRID_2D,
     EDIT_Z_GRID_2D,
     OBJECT_PLACEMENT_2D,
-    OBJECT_SIZE_2D
+    OBJECT_SIZE_XY,
+    OBJECT_SIZE_XZ
   };
 
   // Objects

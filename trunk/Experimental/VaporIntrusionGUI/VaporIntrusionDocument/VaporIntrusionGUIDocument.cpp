@@ -15,6 +15,7 @@
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IViewPort.h"
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/ICamera.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
@@ -38,7 +39,9 @@
 #include "OsgTools/Group.h"
 #include "OsgTools/Convert.h"
 #include "OsgTools/State/StateSet.h"
+#include "OsgTools/State/PolygonMode.h"
 #include "OsgTools/Box.h"
+#include "OsgTools/Render/Viewer.h"
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
@@ -56,6 +59,7 @@
 #include "osg/Texture2D"
 #include "osg/BoundingBox"
 #include "osgManipulator/TabBoxDragger"
+#include "osg/PolygonMode"
 
 #include <iterator>
 #include <vector>
@@ -324,6 +328,9 @@ osg::Node *VaporIntrusionGUIDocument::buildScene ( const BaseClass::Options &opt
     {
       this->_build2DScene( caller );      
     }
+    OsgTools::State::StateSet::setLighting( _root2D.get(), false );
+    OsgTools::State::PolygonMode::set( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE, _root2D->getOrCreateStateSet() );
+    
     return _root2D;
   }
   
@@ -408,8 +415,8 @@ void VaporIntrusionGUIDocument::_initCubes()
   _yValues.resize( _dimensions[1] );
 
   // set the initial value and width
-  _yValues.at( 0 ).first = 0.0f - ( static_cast< double > ( _dimensions[1] ) / 2 );
-  _yValues.at( 0 ).second = _initialSpacing[1];
+  _yValues.at( 0 ).first = 0.0f;
+  _yValues.at( 0 ).second = -_initialSpacing[1];
 
   // add to the map
   _originalToCurrentIndex[ "Y0" ] = 0;
@@ -419,7 +426,7 @@ void VaporIntrusionGUIDocument::_initCubes()
   {
     double position ( _yValues.at( j - 1 ).first + _yValues.at( j - 1 ).second );
     _yValues.at( j ).first = position;
-    _yValues.at( j ).second = _initialSpacing[1];
+    _yValues.at( j ).second = -_initialSpacing[1];
     
     // key value for map
     std::string key ( Usul::Strings::format( "Y", j ) );
@@ -509,7 +516,9 @@ void VaporIntrusionGUIDocument::_build2DScene( Usul::Interfaces::IUnknown *calle
     _root2D->addChild( this->_buildZScene() );
   }
 
-  if( _editGridMode2D == IVPI::OBJECT_PLACEMENT_2D || _editGridMode2D == IVPI::OBJECT_SIZE_2D )
+  if( _editGridMode2D == IVPI::OBJECT_PLACEMENT_2D || 
+      _editGridMode2D == IVPI::OBJECT_SIZE_XY      ||
+      _editGridMode2D == IVPI::OBJECT_SIZE_XZ        )
   {
     _root2D->addChild( this->_buildObject() );
   }
@@ -988,11 +997,8 @@ void VaporIntrusionGUIDocument::_makeFoundation( osg::Vec3f ll )
   material->setAmbient( osg::Material::FRONT_AND_BACK, c );
   material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
 
-  // Building initial y position
-  float ypos ( _yValues.at( _yValues.size() - 1 ).first + StrToFloat::convert( _building.h ) );
-
   // get the length, width, and height of the building
-  osg::Vec3f lhw ( StrToFloat::convert( _building.l ), -1 * StrToFloat::convert( _building.h ), StrToFloat::convert( _building.w ) );
+  osg::Vec3f lhw ( StrToFloat::convert( _building.l ), StrToFloat::convert( _building.h ), StrToFloat::convert( _building.w ) );
 
   // create the points for the building
   osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
@@ -1044,25 +1050,14 @@ void VaporIntrusionGUIDocument::_makeBuilding()
   material->setAmbient( osg::Material::FRONT_AND_BACK, c );
   material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
 
-  // Building initial y position
-  float ypos ( _yValues.at( _yValues.size() - 1 ).first );
-
   // get the lower left corner of the building
-  osg::Vec3f ll  ( StrToFloat::convert( _building.x ), ypos, StrToFloat::convert( _building.z ) );
+  osg::Vec3f ll  ( StrToFloat::convert( _building.x ), StrToFloat::convert( _building.y ), StrToFloat::convert( _building.z ) );
 
   // snap the lower left to the grid
   osg::Vec2f corner ( ll.x(), ll.z() );
-  //corner = this->_snapToGrid2D( corner );
-  //ll.x() = corner.x();
-  //ll.z() = corner.y();
-
-  // update the building
-  _building.x = Usul::Strings::format ( ll.x() );
-  _building.z = Usul::Strings::format ( ll.z() );
-  _building.y = Usul::Strings::format ( ypos );
 
   // get the length, width, and height of the building
-  osg::Vec3f lhw ( StrToFloat::convert( _building.l ), StrToFloat::convert( _building.h ), StrToFloat::convert( _building.w ) );
+  osg::Vec3f lhw ( StrToFloat::convert( _building.l ), StrToFloat::convert( "0.5" ), StrToFloat::convert( _building.w ) );
 
   // create the points for the building
   osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
@@ -3258,13 +3253,28 @@ void VaporIntrusionGUIDocument::_insertGridPoint( const std::string& axis, float
     grid.push_back( axisGrid.at( i ) );
   }
 
+  // direction in the positive or negative
+  float pnd ( 1 );
+
   // get the position and distance of the first index
   float p1 ( axisGrid.at( indices[0] ).first );
+
+  // if the point before has a position that is greater than the positon to add
+  if( p1 > pos )
+  {
+    pnd = -1;
+  }
+
+  // distance to the point to insert
   float d1 ( sqrt ( ( pos - p1 ) * ( pos - p1 ) ) );
+
+  // +- correction
+  d1 *= pnd;
 
   // get the position and distance of the second index
   float p2 ( axisGrid.at( indices[1] ).first );
   float d2 ( sqrt ( ( p2 - pos ) * ( p2 - pos ) ) );
+  d2 *= pnd;
 
   // update the distance on the point before the new entry
   grid.push_back( GridPoint( static_cast< double > ( p1 ), static_cast< double > ( d1 ) ) );
@@ -3600,14 +3610,35 @@ Usul::Math::Vec2ui VaporIntrusionGUIDocument::_snapToGrid( float value, GridPoin
   indices[0] = currIndex;
   indices[1] = currIndex;
 
-  if( currIndex < grid.size() - 1 && value > grid.at( currIndex ).first )
+  float v1 ( grid.at( currIndex ).first );
+
+  if( currIndex < grid.size() - 1 )
   {
-    indices[1] = currIndex + 1;
+    float v2 ( grid.at( currIndex + 1 ).first );
+
+    if( v1 > v2 )
+    {
+      float t ( v2 );
+      v2 = v1;
+      v1 = t;
+    }
+
+    if( value >= v1 && value <= v2 )
+    {
+      indices[1] = currIndex + 1;
+    }
+    else
+    {
+      if( currIndex > 0 )
+      {
+        indices[1] = currIndex - 1;
+      }
+    }
   }
-  if( currIndex > 0 && value < grid.at( currIndex ).first ) 
-  {
-    indices[1] = currIndex - 1;
-  }
+  //if( currIndex > 0 && value < grid.at( currIndex ).first ) 
+  //{
+  //  indices[1] = currIndex - 1;
+  //}
     
   return indices;  
 }
@@ -4196,6 +4227,7 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
   Guard guard ( this );
 
   int xsize ( static_cast< int > ( _xValues.size() ) );
+  int ysize ( static_cast< int > ( _yValues.size() ) );
   int zsize ( static_cast< int > ( _zValues.size() ) );
 
   if( _editGridMode2D == IVPI::OBJECT_PLACEMENT_2D )
@@ -4236,7 +4268,7 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
 
   }
 
-  if( _editGridMode2D == IVPI::OBJECT_SIZE_2D )
+  if( _editGridMode2D == IVPI::OBJECT_SIZE_XY )
   {
 
     // update the position of the object
@@ -4269,6 +4301,39 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
 
   }
 
+  if( _editGridMode2D == IVPI::OBJECT_SIZE_XZ )
+  {
+
+    // update the position of the object
+    _currentObject.ex += x;
+    _currentObject.ey += y;
+
+    // make sure the object is within the grid bounds still
+    // First check the x values
+    if( _currentObject.ex <= _currentObject.sx )
+    {
+      _currentObject.ex = _currentObject.sx + 1;
+    }
+    if( _currentObject.ex > xsize - 1 )
+    {
+      _currentObject.ex = xsize - 1;
+    }
+
+    // Check the y(z) values
+    if( _currentObject.ey <= _currentObject.sy )
+    {
+      _currentObject.ey = _currentObject.sy + 1;
+    }
+    if( _currentObject.ey > ysize - 1 )
+    {
+      _currentObject.ey = ysize - 1;
+    }
+
+    // rebuild the scene
+    this->rebuildScene();
+
+  }
+
   
 
 }
@@ -4288,19 +4353,41 @@ osg::Node* VaporIntrusionGUIDocument::_buildObject()
   // points of the plane
   osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
 
-  //set the points
+  // If we are building the XY plane
+  if( _editGridMode2D == IVPI::OBJECT_SIZE_XY || _editGridMode2D == IVPI::OBJECT_PLACEMENT_2D )
+  {
+    //set the points
 
-  float sx ( _xValues.at( _currentObject.sx ).first );
-  float sz ( _zValues.at( _currentObject.sz ).first );
-  float ex ( _xValues.at( _currentObject.ex ).first );
-  float ez ( _zValues.at( _currentObject.ez ).first );
-  
-  points->push_back( osg::Vec3f ( sx, 0.001, sz ) );
-  points->push_back( osg::Vec3f ( ex, 0.001, sz ) );
-  points->push_back( osg::Vec3f ( ex, 0.001, ez ) );
-  points->push_back( osg::Vec3f ( sx, 0.001, ez ) );
+    float sx ( _xValues.at( _currentObject.sx ).first );
+    float sz ( _zValues.at( _currentObject.sz ).first );
+    float ex ( _xValues.at( _currentObject.ex ).first );
+    float ez ( _zValues.at( _currentObject.ez ).first );
+    
+    points->push_back( osg::Vec3f ( sx, 0.001, sz ) );
+    points->push_back( osg::Vec3f ( ex, 0.001, sz ) );
+    points->push_back( osg::Vec3f ( ex, 0.001, ez ) );
+    points->push_back( osg::Vec3f ( sx, 0.001, ez ) );
 
-  group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 1.0f, 0.0f, 0.0f, 1.0f ) ) );
+    group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 1.0f, 0.0f, 0.0f, 1.0f ) ) );
+  }
+
+  if( _editGridMode2D == IVPI::OBJECT_SIZE_XZ )
+  {
+    //set the points
+
+    float sx ( _xValues.at( _currentObject.sx ).first );
+    float sy ( _yValues.at( _currentObject.sy ).first );
+    float ex ( _xValues.at( _currentObject.ex ).first );
+    float ey ( _yValues.at( _currentObject.ey ).first );
+    
+    points->push_back( osg::Vec3f ( sx, sy, 0.001 ) );
+    points->push_back( osg::Vec3f ( ex, sy, 0.001 ) );
+    points->push_back( osg::Vec3f ( ex, ey, 0.001 ) );
+    points->push_back( osg::Vec3f ( sx, ey, 0.001 ) );
+
+    group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 1.0f, 0.0f, 0.0f, 1.0f ) ) );
+  }
+
 
   return group.release();
 
@@ -4319,6 +4406,16 @@ void VaporIntrusionGUIDocument::objectMenuAddBuilding()
 
   // set the edit mode to object placement
   this->setEditMode2D( IVPI::OBJECT_PLACEMENT_2D );
+
+  // set the correct build mode
+  this->setBuildMode2D( IVPI::BUILD_MODE_2D_XY );
+
+  // set the camera mode to top
+  Usul::Interfaces::ICamera::QueryPtr camera ( Usul::Documents::Manager::instance().activeView() );
+  if( true == camera.valid() )
+  {
+    camera->camera( OsgTools::Render::Viewer::TOP );
+  }
 
   // set the object type to building
   _objectMode = IVPI::OBJECT_BUILDING;
@@ -4366,15 +4463,15 @@ void VaporIntrusionGUIDocument::_createNewBuilding()
   // get the building corners
   float sx ( _xValues.at( _currentObject.sx ).first );
   float ex ( _xValues.at( _currentObject.ex ).first );
-  float sy ( _xValues.at( _currentObject.sy ).first );
-  float ey ( _xValues.at( _currentObject.ey ).first );
-  float sz ( _xValues.at( _currentObject.sz ).first );
-  float ez ( _xValues.at( _currentObject.ez ).first );
+  float sy ( _yValues.at( _currentObject.sy ).first );
+  float ey ( _yValues.at( _currentObject.ey ).first );
+  float sz ( _zValues.at( _currentObject.sz ).first );
+  float ez ( _zValues.at( _currentObject.ez ).first );
 
   // Calculate the lwh
   float l ( ex - sx );
   float w ( ez - sz );
-  float h ( 0.5 );
+  float h ( ey - sy );
 
   // create a building object with the parameters entered in the 2D window
   Building b ( FTS::convert( l ), FTS::convert( w ), FTS::convert( h ), FTS::convert( sx ), FTS::convert( sy ), FTS::convert( sz ), "1", "1", "1" );

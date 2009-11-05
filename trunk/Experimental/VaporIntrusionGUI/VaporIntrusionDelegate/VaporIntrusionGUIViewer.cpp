@@ -258,14 +258,27 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
         // toggle the mode
         if( currentMode == IVPI::OBJECT_PLACEMENT_2D )
         {
-          document->setEditMode2D( IVPI::OBJECT_SIZE_2D );
+          document->setEditMode2D( IVPI::OBJECT_SIZE_XY );
+        }
+
+        // toggle the mode
+        if( currentMode == IVPI::OBJECT_SIZE_XY )
+        {
+          document->setEditMode2D( IVPI::OBJECT_SIZE_XZ );
+          document->setBuildMode2D( IVPI::BUILD_MODE_2D_Z );
+          this->viewer()->camera( OsgTools::Render::Viewer::FRONT );
+          std::cout << "Setting 2D Grid Domain Mode to the Z (Basement/Soil) Grid" << std::endl;
         }
 
         // tell the document to create the object
-        if( currentMode == IVPI::OBJECT_SIZE_2D )
+        if( currentMode == IVPI::OBJECT_SIZE_XZ )
         {
           document->handleNewObject();
           document->setEditMode2D( IVPI::EDIT_MODE_IDLE );
+
+          document->setBuildMode2D( IVPI::BUILD_MODE_2D_XY );
+          std::cout << "Setting 2D Grid Domain to the XY Grid" << std::endl;
+          this->viewer()->camera( OsgTools::Render::Viewer::TOP );
         }
         
         std::cout << "Setting 2D Grid Size Object Mode" << std::endl;

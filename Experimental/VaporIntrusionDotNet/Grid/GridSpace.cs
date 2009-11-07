@@ -103,7 +103,7 @@ namespace VaporIntrusionDotNet
     public static void setComponentAt( int i, int j, int k, Component c )
     {
       // index ( j + ( i * d[1] ) + ( k * d[0] * d[1] ) );
-      int index =  i + ( j * _dimensions.x ) + ( k * _dimensions.x * _dimensions.y );
+      int index = i + ( j * _dimensions.x ) + ( k * _dimensions.x * _dimensions.y );
 
       if (_gridSpace.Count > index)
       {

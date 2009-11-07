@@ -226,6 +226,14 @@
 				RelativePath=".\LibModelManager.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Timeline.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Timeline.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Export"

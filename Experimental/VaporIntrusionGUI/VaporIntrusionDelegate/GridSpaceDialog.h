@@ -39,10 +39,7 @@ public:
   std::string         name();
   unsigned int        x();
   unsigned int        y();
-  unsigned int        z();
-  float               s();
-  float               t();
-  float               u();
+  float               depth();
 
 private:
  

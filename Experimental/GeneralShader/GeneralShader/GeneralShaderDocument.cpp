@@ -1574,7 +1574,7 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   osg::Vec2f t10 ( 1.0f, 0.0f );
   osg::Vec2f t11 ( 1.0f, 1.0f );
 
-  // Tangent vector attributes
+  // Tangent vector attribute
   osg::ref_ptr< osg::Vec4Array > tangent ( new osg::Vec4Array );
 
 //--------------------------------------------------------------------------

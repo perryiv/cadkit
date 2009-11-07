@@ -359,7 +359,7 @@ void VaporIntrusionGUIViewer::keyReleaseEvent ( QKeyEvent * event )
   if ( 0x0 == event )
     return;
 
-  BaseClass::keyReleaseEvent( event );
+  //BaseClass::keyReleaseEvent( event );
  
 }
 

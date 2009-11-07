@@ -28,6 +28,8 @@ namespace VaporIntrusionDotNet
     public struct GridPoint
     {
       public Point point;
+      public float width;
+      public float height;
       public Color color;
     };
 
@@ -59,8 +61,8 @@ namespace VaporIntrusionDotNet
       _brush = new SolidBrush(Color.FromArgb(128,Color.Gray));
 
       // grid resolution
-      _gridSize.x = 100;
-      _gridSize.y = 100;
+      _gridSize.x = 10;
+      _gridSize.y = 10;
 
       _selecting = false;
 
@@ -85,7 +87,10 @@ namespace VaporIntrusionDotNet
     public void initialize()
     {
       // resize the grid
-      _resizeGrid();
+      //_resizeGrid();
+
+      // initialize the grid
+      _initializeGrid();
     }
 
 
@@ -255,15 +260,12 @@ namespace VaporIntrusionDotNet
         GridPoint c = new GridPoint();
 
         c.point = p;
+        c.width = _grid[i].width;
+        c.height = _grid[i].height;
         c.color = color;
 
         // set the grid point
         _grid[i] = c;
-
-        
-        
-        
-        
 
       }
 
@@ -294,10 +296,16 @@ namespace VaporIntrusionDotNet
       Bitmap b = new Bitmap(width, height);
 
       // initialize the points
-      for (int i = 0; i < _gridSize.x; ++i)
+      for (int i = 1; i < _gridSize.x; ++i)
       {
-        for (int j = 0; j < _gridSize.y; ++j)
+        for (int j = 1; j < _gridSize.y; ++j)
         {
+          // get the current index into the grid
+          int index = i + (j * _gridSize.x);
+
+          // get the point at index <index>
+          GridPoint gridPoint = _grid[index];
+
           // get the sub dimensions of this triangle
           int w0 = i * widthStep;
           int h0 = j * heightStep;
@@ -317,6 +325,66 @@ namespace VaporIntrusionDotNet
           GridPoint c = new GridPoint();
 
           c.point = p;
+          c.color = Color.Red;
+
+
+          // set the grid point
+          _grid.Add(c);
+
+        }
+      }
+
+      // set the image on the canvas
+      this.BackgroundImage = b;
+    }
+
+
+
+    //*************************************************************************************
+    //
+    // resize the grid
+    //
+    //*************************************************************************************
+
+    private void _initializeGrid()
+    {
+      // get the current size of the screen
+      int width = this.Width;
+      int height = this.Height;
+
+      // find out how much space between rects
+      int widthStep = width / _gridSize.x;
+      int heightStep = height / _gridSize.y;
+
+      // bitmap to hold the points
+      Bitmap b = new Bitmap(width, height);
+
+      // initialize the points
+      for (int i = 0; i < _gridSize.x; ++i)
+      {
+        for (int j = 0; j < _gridSize.y; ++j)
+        {
+          // get the sub dimensions of this triangle
+          int w0 = i * widthStep;
+          int h0 = j * heightStep;
+          int w1 = (i + 1) * widthStep;
+          int h1 = (j + 1) * heightStep;
+
+          // make a temp point
+          Point p = new Point((w0 + (w1 - w0) / 2), (h0 + (h1 - h0) / 2));
+
+          // set the color of p          
+          b.SetPixel(p.X, p.Y, Color.Red);
+          b.SetPixel(p.X + 1, p.Y, Color.Red);
+          b.SetPixel(p.X, p.Y + 1, Color.Red);
+          b.SetPixel(p.X + 1, p.Y + 1, Color.Red);
+
+          // Make a component to store the point
+          GridPoint c = new GridPoint();
+
+          c.point = p;
+          c.width = widthStep;
+          c.height = heightStep;
           c.color = Color.Red;
 
 

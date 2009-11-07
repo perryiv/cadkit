@@ -344,48 +344,6 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
   QWidget *parent ( mainWindow.valid() ? mainWindow->mainWindow() : 0x0 );
 
-  //// Make the building dialog
-  //BuildingDialog bd ( parent );
-
-  //// Show the dialog.
-  //if ( QDialog::Accepted != bd.exec() )
-  //  throw Usul::Exceptions::Canceled();
-
-  //// Make the contaminant dialog
-  //ContaminantDialog cd ( parent );
-
-  //// Show the dialog.
-  //if ( QDialog::Accepted != cd.exec() )
-  //  throw Usul::Exceptions::Canceled();
-
-  //// Make the Sources dialog
-  //SourceDialog sd ( parent );
-
-  //// Show the dialog.
-  //if ( QDialog::Accepted != sd.exec() )
-  //  throw Usul::Exceptions::Canceled();
-
-  //// Make the AddContaminantsToSource dialog
-  //AddContaminantsToSourceDialog actsd ( parent );
-
-  //// set the sources and contaminants
-  //actsd.sources( sd.sources() );
-  //actsd.contaminants( cd.contaminants() );
-
-  //// initialize the AddContaminantsToSource dialog
-  //actsd.initialize();
-
-  //// Show the dialog.
-  //if ( QDialog::Accepted != actsd.exec() )
-  //  throw Usul::Exceptions::Canceled();
-
-  //// Make the Sources dialog
-  //SoilDialog soilDialog ( parent );
-
-  //// Show the dialog.
-  //if ( QDialog::Accepted != soilDialog.exec() )
-  //  throw Usul::Exceptions::Canceled();
-
   // Make the dialog.
   NewVaporIntrusion nd ( parent );
 
@@ -401,34 +359,20 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
     throw Usul::Exceptions::Canceled();
   
   // Get and store the dimensions
-  Usul::Math::Vec3ui d ( dialog.x(), dialog.y(), dialog.z() );
-  Usul::Math::Vec3f spacing( dialog.s(), dialog.t(), dialog.u() );
-
-  // Make the dialog.
-  ModifyGridPointsDlg modify ( parent );
-
-  // Show the dialog.
-  if ( QDialog::Accepted != modify.exec() )
-    throw Usul::Exceptions::Canceled();
-
-  // Make the dialog.
-  BuildingDialog bd ( parent );
-
-  // Show the dialog.
-  if ( QDialog::Accepted != bd.exec() )
-    throw Usul::Exceptions::Canceled();
-
-  // get the symmetry information
-  bool symmetrical ( bd.symmetricGrid() );
+  float depth ( dialog.depth() / 0.8f );
+  unsigned int depthui ( static_cast< unsigned int > ( depth ) );
+  if( static_cast< float > ( depthui ) < depth )
+  {
+    ++depthui;
+  }
+  Usul::Math::Vec3ui d ( dialog.x(), depthui, dialog.y() );
+  Usul::Math::Vec3f spacing( 1.6f, 0.8f, 1.6f );
 
   // get the document
   VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr doc ( document );
 
   if( true == doc.valid() )
   {    
-    // set the grid refinements
-    doc->gridAxisPoints( modify.gridAxisPoints() );
-
     // set the initial grid spacing
     doc->setInitialSpacing( spacing );
 
@@ -438,14 +382,6 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
     // initialize the document
     doc->initialize();
 
-    // set to use buildings or not
-    doc->useBuilding( bd.useBuilding() );
-
-    // set the building 
-    doc->building( bd.building() );
-
-    // set the grid symmetry
-    doc->symmetricalGrid( symmetrical );
   }
   
 }

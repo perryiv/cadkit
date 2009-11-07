@@ -25,7 +25,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 GridSpaceDialog::GridSpaceDialog ( QWidget *parent ) : BaseClass ( parent ),
-_defaultValue ( 5 )
+_defaultValue ( 4 )
 {
   // Initialize code from Designer.
   this->setupUi ( this );
@@ -33,14 +33,11 @@ _defaultValue ( 5 )
   std::string defaultValue( Usul::Convert::Type< unsigned int, std::string >::convert( _defaultValue ) );
 
   // set the text fields with the default value
-  xValue->setText( defaultValue.c_str() );
-  yValue->setText( defaultValue.c_str() );
-  zValue->setText( defaultValue.c_str() );
+  _depth->setText( defaultValue.c_str() );
 
   // set the default spacing to unit length
-  _xSpacing->setText( "1" );
-  _ySpacing->setText( "1" );
-  _zSpacing->setText( "1" );
+  _xSpacing->setText( "5" );
+  _ySpacing->setText( "5" );
 
   // set the text field for the experiment name
   spaceName->setText( "Untitled" );
@@ -80,16 +77,16 @@ std::string GridSpaceDialog::name()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float GridSpaceDialog::s()
+unsigned int GridSpaceDialog::x()
 {
   std::string value ( _xSpacing->text().toStdString() );
 
   // s value
-  float s ( 1.0f );
+  unsigned int s ( 1 );
 
   if( value.length() > 0 )
   {
-    s = Usul::Convert::Type< std::string, float >::convert( value );
+    s = Usul::Convert::Type< std::string, unsigned int >::convert( value );
   }
 
   return s;
@@ -102,86 +99,19 @@ float GridSpaceDialog::s()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float GridSpaceDialog::t()
+unsigned int GridSpaceDialog::y()
 {
   std::string value ( _ySpacing->text().toStdString() );
 
   // t value
-  float t ( 1.0f );
+  unsigned int t ( 1 );
 
   if( value.length() > 0 )
   {
-    t = Usul::Convert::Type< std::string, float >::convert( value );
+    t = Usul::Convert::Type< std::string, unsigned int >::convert( value );
   }
 
   return t;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the (z) spacing
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float GridSpaceDialog::u()
-{
-  std::string value ( _zSpacing->text().toStdString() );
-
-  // u value
-  float u ( 1.0f );
-
-  if( value.length() > 0 )
-  {
-    u = Usul::Convert::Type< std::string, float >::convert( value );
-  }
-
-  return u;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the width value (x)
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int GridSpaceDialog::x()
-{
-  std::string value ( xValue->text().toStdString() );
-
-  // x value
-  unsigned int x ( _defaultValue );
-
-  if( value.length() > 0 )
-  {
-    x = Usul::Convert::Type< std::string, unsigned int >::convert( value );
-  }
-
-  return x;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the height value (y)
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int GridSpaceDialog::y()
-{
-  std::string value ( yValue->text().toStdString() );
-
-  // y value
-  unsigned int y ( _defaultValue );
-
-  if( value.length() > 0 )
-  {
-    y = Usul::Convert::Type< std::string, unsigned int >::convert( value );
-  }
-
-  return y;
-
 }
 
 
@@ -191,16 +121,16 @@ unsigned int GridSpaceDialog::y()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int GridSpaceDialog::z()
+float GridSpaceDialog::depth()
 {
-  std::string value ( zValue->text().toStdString() );
+  std::string value ( _depth->text().toStdString() );
 
   // z value
-  unsigned int z ( _defaultValue );
+  float z ( _defaultValue );
 
   if( value.length() > 0 )
   {
-    z = Usul::Convert::Type< std::string, unsigned int >::convert( value );
+    z = Usul::Convert::Type< std::string, float >::convert( value );
   }
 
   return z;

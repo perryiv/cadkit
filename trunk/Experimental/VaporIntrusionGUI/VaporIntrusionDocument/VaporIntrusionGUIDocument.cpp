@@ -86,7 +86,7 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _draggerState( false ),
   _gridMaterials(),
   _building( "1", "1", "1", "0", "0", "0", "0", "", "" ),
-  _useBuilding( true ),
+  _useBuilding( false ),
   _sources(),
   _contaminants(),
   _soils(),
@@ -104,7 +104,8 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _buildMode2D( IVPI::BUILD_MODE_2D_XY ),
   _editGridMode2D( IVPI::EDIT_MODE_IDLE ),
   _objectMode( IVPI::OBJECT_NOTHING ),
-  _currentObject()
+  _currentObject(),
+  _minimumGridDistance( 0.1f )
 {
   USUL_TRACE_SCOPE;
 }
@@ -503,6 +504,9 @@ void VaporIntrusionGUIDocument::_build2DScene( Usul::Interfaces::IUnknown *calle
   // restore the grid values
   this->_restoreGrid();
 
+  // add the grid padding points
+  this->_addGridPadding();
+
   // add the additional points
   this->_addPoints();
 
@@ -680,6 +684,9 @@ void VaporIntrusionGUIDocument::_build3DScene ( Unknown *caller )
 
   if( true == _showGrid )
   {
+    // add the grid padding points
+    this->_addGridPadding();
+
     // add the additional points
     this->_addPoints();
 
@@ -3635,6 +3642,11 @@ Usul::Math::Vec2ui VaporIntrusionGUIDocument::_snapToGrid( float value, GridPoin
       }
     }
   }
+  else
+  {
+    indices[0] = currIndex - 1;
+    indices[1] = currIndex;
+  }
   //if( currIndex > 0 && value < grid.at( currIndex ).first ) 
   //{
   //  indices[1] = currIndex - 1;
@@ -3978,6 +3990,41 @@ void VaporIntrusionGUIDocument::gridAxisPoints( GridAxisPoints ap )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Add 40cm and 80cm padding to grid edges
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_addGridPadding()
+{
+  // get the first and last x point
+  float fxp ( _xValues.at( 0 ).first );
+  float lxp ( _xValues.at( _xValues.size() - 1 ).first );
+
+  // get the first and last z point
+  float fzp ( _zValues.at( 0 ).first );
+  float lzp ( _zValues.at( _zValues.size() - 1 ).first );
+
+  // insert padding at the beginning of the x grid
+  this->_insertGridPoint( "X", fxp + 0.4 );
+  this->_insertGridPoint( "X", fxp + 0.8 );
+
+  // insert padding at the end of the x grid
+  this->_insertGridPoint( "X", lxp - 0.4 );
+  this->_insertGridPoint( "X", lxp - 0.8 );
+
+  // insert padding at the beginning of the x grid
+  this->_insertGridPoint( "Z", fzp + 0.4 );
+  this->_insertGridPoint( "Z", fzp + 0.8 );
+
+  // insert padding at the end of the x grid
+  this->_insertGridPoint( "Z", lzp - 0.4 );
+  this->_insertGridPoint( "Z", lzp - 0.8 );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Add additional points to the grid
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -4052,6 +4099,16 @@ void VaporIntrusionGUIDocument::addGridPointFromViewer( Usul::Math::Vec3f point 
   // get the near and far index
   unsigned int nearIndex ( ind[0] );
   unsigned int farIndex ( ind[1] );  
+
+  // get the distance
+  float d ( abs ( grid.at( nearIndex ).first - grid.at( farIndex ).first ) );
+
+  // check to see that the distance is > than the minimum distance * 2 
+  if( d < _minimumGridDistance * 2.0f )
+  {
+    std::cout << "Unable to subdivide! The resulting grid distance would be smaller than the minimum allowed distance" << std::endl;
+    return;
+  }
 
   // get the half way point
   float p ( ( grid.at( nearIndex ).first + grid.at( farIndex ).first ) / 2.0f );

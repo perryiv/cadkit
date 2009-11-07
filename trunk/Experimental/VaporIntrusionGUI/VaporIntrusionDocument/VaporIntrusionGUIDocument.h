@@ -354,6 +354,7 @@ protected:
   osg::Vec3f                  _snapToGrid3D( osg::Vec3f corner );
 
   void                        _addPoints();
+  void                        _addGridPadding();
   bool                        _gridHasPoint( const std::string& axis, float pos );
 
   void                        _restoreGrid();
@@ -407,6 +408,7 @@ private:
     int                       _objectMode;
 
     Object2D                  _currentObject;
+    float                     _minimumGridDistance;
   
 };
 

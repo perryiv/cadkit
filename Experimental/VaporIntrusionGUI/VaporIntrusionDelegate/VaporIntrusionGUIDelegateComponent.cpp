@@ -148,11 +148,8 @@ bool VaporIntrusionGUIDelegateComponent::doesHandle( const std::string& token ) 
 
 void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Document *document, Usul::Interfaces::IUnknown* caller )
 {
-  //typedef CadKit::Helios::Views::OSG::Viewer QtViewer;
-
-  // Non-ref'ing smart-pointers that throw if given null.
-  //typedef Usul::Pointers::Configs::NoRefCountingNullThrows Policy;
-  //typedef Usul::Pointers::SmartPointer < QtViewer, Policy > QtViewerPtr;
+  // useful typedefs
+  typedef OsgTools::Render::Viewer::Corners Corners;
 
   Usul::Interfaces::Qt::IWorkspace::QueryPtr workspace ( caller );
 
@@ -168,14 +165,6 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     _xyzView = new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
     parent->addWindow ( _xyzView.get() );
 
-    //// Add XZ window
-    //_xzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainer  );
-    //parent->addWindow ( _xzView.get() );
-
-    //// Add YZ window
-    //_yzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainer  );
-    //parent->addWindow ( _yzView.get() );
-
     // Build the scene.
     Usul::Interfaces::IBuildScene::QueryPtr build ( document );
     if ( build.valid () )
@@ -190,9 +179,6 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
       options2D["Dimension"] = "2D";
       _xyView->viewer()->scene  ( build->buildScene ( options2D, caller ) );
 
-
-      //_xzView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
-      //_yzView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
     }
 
     // Set the titles
@@ -201,37 +187,38 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     _xyView->setTitle ( "2D Grid View" );
     _xyView->viewer()->camera( OsgTools::Render::Viewer::TOP );
 
-    //_xzView->setTitle ( "XZ -- Top View" );
-    //_xzView->camera( OsgTools::Render::Viewer::TOP );
-    //_xzView->set( Usul::Math::Vec3ui( 1, 0, 1 ) );
-    //_xzView->id( 2 );
+    // the color white
+    osg::Vec4 white ( 1.0f, 1.0f, 1.0f, 1.0f );
 
-    //_yzView->setTitle ( "YZ -- Left View" );
-    //_yzView->camera( OsgTools::Render::Viewer::LEFT );
-    //_yzView->set( Usul::Math::Vec3ui( 0, 1, 1 ) );
-    //_yzView->id( 3 );
+    // Get the viewer.
+    OsgTools::Render::Viewer::RefPtr xyzViewer ( _xyzView->viewer() );
 
-    // Get the bounds of the parent window
+    // if valid, set the background color to white
+    if( true == xyzViewer.valid() )
+    {
+      // Top left corner.
+      xyzViewer->backgroundCorners ( Corners::ALL );
+      xyzViewer->backgroundColor ( white );
+    }
+
+    // Get the viewer.
+    OsgTools::Render::Viewer::RefPtr xyViewer ( _xyView->viewer() );
+
+    // if valid, set the background color to white
+    if( true == xyViewer.valid() )
+    {
+      // Top left corner.
+      xyViewer->backgroundCorners ( Corners::ALL );
+      xyViewer->backgroundColor ( white );
+    }
+
+       // Get the bounds of the parent window
     int w ( parent->width()  * 0.5 );
     int h ( parent->height() * 0.5 );
-
-    //// XYZ window is the top left window
-    //_xyzView->resize ( w, h );
-
-    // XY window is the bottom right window
-    //_xyView->resize  ( w, h );
-
-    //// XZ window is the bottom left window
-    //_xzView->resize  ( w, h );
-
-    //// XY window is the top right window
-    //_yzView->resize  ( w, h );
 
     // Show the windows
     _xyzView->show();
     _xyView->show();
-    //_xzView->show();
-    //_yzView->show();
 
     // Start with all windows tiled
     parent->tile();
@@ -282,30 +269,6 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
 
   // Add the window menu to the main menu
   menu.append( variableMenu.get() );
-
-  // Check for a valid document
-  //if( true == document.valid() )
-  //{
-  //  // Make the menu.
-  //  MenuKit::Menu::RefPtr paramMenu ( new MenuKit::Menu ( "Parameters" ) );
-
-  //  // get the categories
-  //  Categories categories = document->categories();
-  //  
-  //  for( unsigned int i = 0; i < categories.size(); ++i )
-  //  {
-  //    // get the menu name
-  //    std::string menuName ( categories.at( i ).name );
-
-  //    // add the sub menu to the main menu
-  //    paramMenu->append ( MenuKit::Button::create ( menuName, Usul::Adaptors::bind1<void> ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ) ) ); 
-  //  }
-
-    // Add the window menu to the main menu
-  //  menu.append( paramMenu.get() );
-
-  //}
-
 
   // Make the run menu.
   MenuKit::Menu::RefPtr runMenu ( new MenuKit::Menu ( "Run" ) );
@@ -358,14 +321,8 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   if ( QDialog::Accepted != dialog.exec() )
     throw Usul::Exceptions::Canceled();
   
-  // Get and store the dimensions
-  float depth ( dialog.depth() / 0.8f );
-  unsigned int depthui ( static_cast< unsigned int > ( depth ) );
-  if( static_cast< float > ( depthui ) < depth )
-  {
-    ++depthui;
-  }
-  Usul::Math::Vec3ui d ( dialog.x(), depthui, dialog.y() );
+  
+  Usul::Math::Vec3ui d ( dialog.x(), static_cast< unsigned int > ( dialog.depth() * 100 ), dialog.y() );
   Usul::Math::Vec3f spacing( 1.6f, 0.8f, 1.6f );
 
   // get the document

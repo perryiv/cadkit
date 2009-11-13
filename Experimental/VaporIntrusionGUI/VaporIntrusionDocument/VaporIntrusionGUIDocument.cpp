@@ -375,24 +375,31 @@ void VaporIntrusionGUIDocument::_initCubes()
 {
   Guard guard( this );
 
+  // Get and store the dimensions
+  float trueDepth ( static_cast< float > ( _dimensions[1] / 100 ) );
+  float depth (  trueDepth / 0.8f );
+  unsigned int depthui ( static_cast< unsigned int > ( depth ) );
+
+  float yRemainder ( trueDepth - static_cast< float > ( depthui * 0.8f ) );
+  
  
   // get the sizes of the axis
-  unsigned int xsize ( _dimensions[0] + 1 );
-  unsigned int ysize ( _dimensions[1] + 1 );
-  unsigned int zsize ( _dimensions[2] + 1 );
+  unsigned int xsize ( _dimensions[0] );
+  unsigned int ysize ( depthui + 1 );
+  unsigned int zsize ( _dimensions[2] );
 
   // size the x values
-  _xValues.resize( _dimensions[0] );
+  _xValues.resize( xsize );
 
   // set the initial value and width
-  _xValues.at( 0 ).first = 0.0f - ( static_cast< double > ( _dimensions[0] ) / 2 );
+  _xValues.at( 0 ).first = 0.0f - ( static_cast< double > ( xsize ) / 2 );
   _xValues.at( 0 ).second = _initialSpacing[0];
 
   // add to the map
   _originalToCurrentIndex[ "X0" ] = 0;
 
   // set the x values to defaults
-  for( unsigned int i = 1; i < _dimensions[0]; ++i )
+  for( unsigned int i = 1; i < xsize; ++i )
   {
     double position ( _xValues.at( i - 1 ).first + _xValues.at( i - 1 ).second );
     _xValues.at( i ).first = position;
@@ -407,13 +414,13 @@ void VaporIntrusionGUIDocument::_initCubes()
 
   // add the end point
   GridPoint lxp;
-  lxp.first = _xValues.at( _dimensions[0] - 1 ).first + _xValues.at( _dimensions[0] - 1 ).second;
+  lxp.first = _xValues.at( xsize - 1 ).first + _xValues.at( xsize - 1 ).second;
   lxp.second = 0.0f;
   _xValues.push_back( lxp );
-  _originalToCurrentIndex[ Usul::Strings::format( "X", _dimensions[0] - 1 ) ] = _dimensions[0] - 1;
+  _originalToCurrentIndex[ Usul::Strings::format( "X", xsize - 1 ) ] = xsize - 1;
 
   // size the y values
-  _yValues.resize( _dimensions[1] );
+  _yValues.resize( ysize - 1);
 
   // set the initial value and width
   _yValues.at( 0 ).first = 0.0f;
@@ -423,7 +430,7 @@ void VaporIntrusionGUIDocument::_initCubes()
   _originalToCurrentIndex[ "Y0" ] = 0;
 
   // set the x values to defaults
-  for( unsigned int j = 1; j < _dimensions[1]; ++j )
+  for( unsigned int j = 1; j < ysize - 1; ++j )
   {
     double position ( _yValues.at( j - 1 ).first + _yValues.at( j - 1 ).second );
     _yValues.at( j ).first = position;
@@ -436,26 +443,33 @@ void VaporIntrusionGUIDocument::_initCubes()
     _originalToCurrentIndex[ key ] = j;
   }
 
+  // add the remainder
+  GridPoint yRem;
+  yRem.first = _yValues.at( ysize - 2 ).first + _yValues.at( ysize - 2 ).second;
+  yRem.second = -yRemainder;
+  _yValues.push_back( yRem );
+  _originalToCurrentIndex[ Usul::Strings::format( "Y", ysize - 2 ) ] = ysize - 2;
+
    // add the end point
   GridPoint lyp;
-  lyp.first = _yValues.at( _dimensions[1] - 1 ).first + _yValues.at( _dimensions[1] - 1 ).second;
+  lyp.first = _yValues.at( ysize - 1 ).first + _yValues.at( ysize - 1 ).second;
   lyp.second = 0.0f;
   _yValues.push_back( lyp );
-  _originalToCurrentIndex[ Usul::Strings::format( "Y", _dimensions[1] - 1 ) ] = _dimensions[1] - 1;
+  _originalToCurrentIndex[ Usul::Strings::format( "Y", ysize - 1 ) ] = ysize - 1;
 
 
    // size the x values
-  _zValues.resize( _dimensions[2] );
+  _zValues.resize( zsize );
 
   // set the initial value and width
-  _zValues.at( 0 ).first = 0.0f - ( static_cast< double > ( _dimensions[2] ) / 2 );
+  _zValues.at( 0 ).first = 0.0f - ( static_cast< double > ( zsize ) / 2 );
   _zValues.at( 0 ).second = _initialSpacing[2];
 
   // add to the map
   _originalToCurrentIndex[ "Z0" ] = 0;
 
   // set the x values to defaults
-  for( unsigned int k = 1; k < _dimensions[2]; ++k )
+  for( unsigned int k = 1; k < zsize; ++k )
   {
     double position ( _zValues.at( k - 1 ).first + _zValues.at( k - 1 ).second );
     _zValues.at( k ).first = position;
@@ -470,10 +484,10 @@ void VaporIntrusionGUIDocument::_initCubes()
 
    // add the end point
   GridPoint lzp;
-  lzp.first = _zValues.at( _dimensions[2] - 1 ).first + _zValues.at( _dimensions[2] - 1 ).second;
+  lzp.first = _zValues.at( zsize - 1 ).first + _zValues.at( zsize - 1 ).second;
   lzp.second = 0.0f;
   _zValues.push_back( lzp );
-  _originalToCurrentIndex[ Usul::Strings::format( "Z", _dimensions[2] - 1 ) ] = _dimensions[2] - 1;
+  _originalToCurrentIndex[ Usul::Strings::format( "Z", zsize - 1 ) ] = zsize - 1;
 
   // save the original state
   _originalXValues = _xValues;
@@ -520,6 +534,7 @@ void VaporIntrusionGUIDocument::_build2DScene( Usul::Interfaces::IUnknown *calle
     _root2D->addChild( this->_buildZScene() );
   }
 
+
   if( _editGridMode2D == IVPI::OBJECT_PLACEMENT_2D || 
       _editGridMode2D == IVPI::OBJECT_SIZE_XY      ||
       _editGridMode2D == IVPI::OBJECT_SIZE_XZ        )
@@ -527,6 +542,11 @@ void VaporIntrusionGUIDocument::_build2DScene( Usul::Interfaces::IUnknown *calle
     _root2D->addChild( this->_buildObject() );
   }
 
+  // build the 2d objects and add them to the scene
+  // Building, sources, soils, etc.
+  this->_build2DObjects();
+
+  
 }
 
 
@@ -721,7 +741,7 @@ void VaporIntrusionGUIDocument::_makeGrid( )
       for( unsigned int z = 0; z < zsize; ++z )
       {
         // Set the default ValueType
-        Color c ( 0.5, 0.5, 0.5, 0.3 );
+        Color c ( 0.2, 0.2, 0.2, 0.2 );
         osg::ref_ptr< osg::Material > material ( new osg::Material );
         material->setAmbient( osg::Material::FRONT_AND_BACK, c );
         material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
@@ -4104,7 +4124,7 @@ void VaporIntrusionGUIDocument::addGridPointFromViewer( Usul::Math::Vec3f point 
   float d ( abs ( grid.at( nearIndex ).first - grid.at( farIndex ).first ) );
 
   // check to see that the distance is > than the minimum distance * 2 
-  if( d < _minimumGridDistance * 2.0f )
+  if( d < ( _minimumGridDistance * 2.0f ) - 0.001 )
   {
     std::cout << "Unable to subdivide! The resulting grid distance would be smaller than the minimum allowed distance" << std::endl;
     return;
@@ -4394,6 +4414,74 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
   
 
 }
+
+
+osg::Node* VaporIntrusionGUIDocument::_drawBuilding2D()
+{
+  Guard guard( this );
+  
+  GroupPtr group ( new osg::Group );
+
+  // points of the plane
+  osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+
+  if( IVPI::BUILD_MODE_2D_XY == this->getBuildMode2D() )
+  {
+    Building b ( this-> building() );
+    //set the points
+
+    float sx ( StrToFloat::convert( b.x ) );
+    float sz ( StrToFloat::convert( b.z ) );
+    float ex ( StrToFloat::convert( b.x ) + StrToFloat::convert( b.l ) );
+    float ez ( StrToFloat::convert( b.z ) + StrToFloat::convert( b.w ) );
+    
+    points->push_back( osg::Vec3f ( sx, 0.001, sz ) );
+    points->push_back( osg::Vec3f ( ex, 0.001, sz ) );
+    points->push_back( osg::Vec3f ( ex, 0.001, ez ) );
+    points->push_back( osg::Vec3f ( sx, 0.001, ez ) );
+
+    group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 0.0f, 1.0f, 1.0f ) ) );
+  }
+
+  if( IVPI::BUILD_MODE_2D_Z == this->getBuildMode2D() )
+  {
+    Building b ( this-> building() );
+    //set the points
+
+    float sx ( StrToFloat::convert( b.x ) );
+    float sy ( StrToFloat::convert( b.y ) );
+    float ex ( StrToFloat::convert( b.x ) + StrToFloat::convert( b.l ) );
+    float ey ( StrToFloat::convert( b.y ) + StrToFloat::convert( b.h ) );
+    
+    points->push_back( osg::Vec3f ( sx, sy, 0.001 ) );
+    points->push_back( osg::Vec3f ( ex, sy, 0.001 ) );
+    points->push_back( osg::Vec3f ( ex, ey, 0.001 ) );
+    points->push_back( osg::Vec3f ( sx, ey, 0.001 ) );
+
+    group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 0.0f, 1.0f, 1.0f ) ) );
+  }
+  
+  return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the 2D objects
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_build2DObjects()
+{
+   Guard guard ( this );
+
+  if( true == _useBuilding )
+  {
+    _root2D->addChild( this->_drawBuilding2D() );
+  }
+
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

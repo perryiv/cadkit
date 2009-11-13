@@ -88,6 +88,7 @@ public:
 
   // function typedefs
   typedef Usul::Convert::Type< std::string, float > StrToFloat;
+  typedef Usul::Convert::Type< std::string, int > StrToInt;
 
   
   // structs and typedefs for structs
@@ -302,6 +303,9 @@ protected:
   osg::Node*                  _buildXYScene();
   osg::Node*                  _buildZScene();
   osg::Node*                  _buildObject();
+  void                        _build2DObjects();
+
+  osg::Node*                  _drawBuilding2D();
 
   void                        _makeGrid();
   void                        _makeSymmetricalBuilding();

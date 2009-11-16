@@ -57,7 +57,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     EDIT_Z_GRID_2D,
     OBJECT_PLACEMENT_2D,
     OBJECT_SIZE_XY,
-    OBJECT_SIZE_XZ
+    OBJECT_SIZE_XZ,
+    CRACK_PLACEMENT_X,
+    CRACK_PLACEMENT_Y
   };
 
   // Objects
@@ -67,7 +69,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     OBJECT_BUILDING,
     OBJECT_SOIL,
     OBJECT_SOURCE,
-    OBJECT_FOUNDATION
+    OBJECT_FOUNDATION,
+    OBJECT_CRACK
   };
 
 

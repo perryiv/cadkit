@@ -3816,6 +3816,7 @@ void VaporIntrusionGUIDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   MenuKit::Menu::RefPtr objectMenu ( menu.find ( "&Objects", true ) );
 
   objectMenu->append ( MenuKit::Button::create ( "Building", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::objectMenuAddBuilding ) ) );
+  objectMenu->append ( MenuKit::Button::create ( "Crack", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::objectMenuAddCrack ) ) );
 
 
 }
@@ -4539,6 +4540,34 @@ osg::Node* VaporIntrusionGUIDocument::_buildObject()
 }
 
 
+void VaporIntrusionGUIDocument::objectMenuAddCrack()
+{
+  Guard guard ( this );
+
+  // set the edit mode to object placement
+  this->setEditMode2D( IVPI::OBJECT_PLACEMENT_2D );
+
+  // set the correct build mode
+  this->setBuildMode2D( IVPI::CRACK_PLACEMENT_X );
+
+  // set the camera mode to top
+  Usul::Interfaces::ICamera::QueryPtr camera ( Usul::Documents::Manager::instance().activeView() );
+  if( true == camera.valid() )
+  {
+    camera->camera( OsgTools::Render::Viewer::TOP );
+  }
+
+  // set the object type to building
+  _objectMode = IVPI::OBJECT_CRACK;
+
+  // clear out the current object
+  Object2D object ( 0, 0, 0, 1, 0, 1 );
+  _currentObject = object;
+
+  // rebuild the Scene
+  this->rebuildScene();
+
+}
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Build the object

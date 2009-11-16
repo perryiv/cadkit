@@ -272,6 +272,8 @@ public:
   // Object menu functions
   void                        objectMenuAddBuilding();
 
+  void                        objectMenuAddCrack();
+
   void                        handleNewObject();
 
 

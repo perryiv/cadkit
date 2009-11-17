@@ -3606,6 +3606,36 @@ void VaporIntrusionGUIDocument::symmetricalGrid( bool value )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Return the index of the closest grid point to <value>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int VaporIntrusionGUIDocument::_closestGridPoint( float value, GridPoints grid )
+{
+   Guard guard ( this );
+
+  // get the starting value for the x values
+  float minDistance ( abs ( grid.at( 0 ).first - value ) );
+  unsigned int currIndex ( 0 );
+
+  // check the rest of the x values to find the closest point to the corner
+  for( unsigned int i = 1; i < grid.size(); ++i )
+  {
+    float temp ( abs ( grid.at( i ).first - value ) ); 
+
+    if( temp < minDistance )
+    {
+      minDistance = temp;
+      currIndex = i;
+    }
+
+  }
+
+  return currIndex;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // Find indices that the grid point lies between
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -3667,11 +3697,8 @@ Usul::Math::Vec2ui VaporIntrusionGUIDocument::_snapToGrid( float value, GridPoin
     indices[0] = currIndex - 1;
     indices[1] = currIndex;
   }
-  //if( currIndex > 0 && value < grid.at( currIndex ).first ) 
-  //{
-  //  indices[1] = currIndex - 1;
-  //}
     
+  // returned indices are guaranteed to be [0] < [1]
   return indices;  
 }
 
@@ -3817,6 +3844,9 @@ void VaporIntrusionGUIDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
 
   objectMenu->append ( MenuKit::Button::create ( "Building", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::objectMenuAddBuilding ) ) );
   objectMenu->append ( MenuKit::Button::create ( "Crack", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::objectMenuAddCrack ) ) );
+
+  // Add to the objects menu.
+  MenuKit::Menu::RefPtr toolsMenu ( menu.find ( "&Tools", true ) );
 
 
 }
@@ -4072,6 +4102,140 @@ void VaporIntrusionGUIDocument::_addPoints()
   }
 }
 
+void VaporIntrusionGUIDocument::handleLeftMouseClick( Usul::Math::Vec3f point )
+{
+  if( _editGridMode2D == IVPI::EDIT_X_GRID_2D || _editGridMode2D == IVPI::EDIT_Y_GRID_2D )
+  {
+    this->_addGridPointFromViewer( point );
+  }
+  if( _editGridMode2D == IVPI::CRACK_PLACEMENT_X || _editGridMode2D == IVPI::CRACK_PLACEMENT_Y )
+  {
+    this->_addCrack( point );
+  }
+
+}
+
+
+void VaporIntrusionGUIDocument::handleRightMouseClick( Usul::Math::Vec3f point )
+{
+  if( _editGridMode2D == IVPI::EDIT_X_GRID_2D || _editGridMode2D == IVPI::EDIT_Y_GRID_2D )
+  {
+    this->_removeGridPointFromViewer( point );
+  }
+  if( _editGridMode2D == IVPI::CRACK_PLACEMENT_X || _editGridMode2D == IVPI::CRACK_PLACEMENT_Y )
+  {
+    this->_removeCrack( point );
+  }
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a crack
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_addCrack( Usul::Math::Vec3f point )
+{
+  Guard guard ( this );
+
+  // make sure there is a building in the experiment
+  if( false == this->useBuilding() )
+  {
+    std::cout << "There must be a building in the experiment to perform this operation!" << std::cout;
+    return;
+  }
+
+  // get the closest grid point
+  unsigned int index;
+  
+  // working grid
+  GridPoints grid;
+
+  // working axis
+  std::string axis;
+
+  // Building side walls 
+  float bsw1 ( 0.0f );
+  float bsw2 ( 0.0f );
+
+  // X axis selected
+  if( _editGridMode2D == IVPI::CRACK_PLACEMENT_X )
+  {
+    axis = "X";
+    grid = this->_getGridFromAxis( axis );
+    index = this->_closestGridPoint( point[0], grid );
+    bsw1 = StrToFloat::convert( _building.x );
+    bsw2 = StrToFloat::convert( _building.x ) + StrToFloat::convert( _building.l );
+    
+  }
+
+  // "Y" axis selected
+  if ( _editGridMode2D == IVPI::CRACK_PLACEMENT_Y )
+  {
+    axis = "Z";
+    grid = this->_getGridFromAxis( axis );
+    index = this->_closestGridPoint( point[2], grid );
+    bsw1 = StrToFloat::convert( _building.z );
+    bsw2 = StrToFloat::convert( _building.z ) + StrToFloat::convert( _building.w );
+  }
+
+  // indices of the sidewalls
+  unsigned int bswi1( this->_closestGridPoint( bsw1, grid ) );
+  unsigned int bswi2( this->_closestGridPoint( bsw2, grid ) );
+  
+  // make sure there is a grid point between the crack and the sidewalls of the building
+  // on either side of the crack  
+  if( !( index > bswi1 + 1 ) || !( index < bswi2 - 1 ) )
+  {
+    std::cout << "Invalid location for a crack.  There must be at least 1 grid point between the crack and the building sidewalls." << std::endl;
+    return;
+  }
+
+  if( "X" == axis )
+  {
+    // create the crack
+    std::string start ( _building.z );
+    std::string end   ( Usul::Strings::format ( StrToFloat::convert ( start ) + StrToFloat::convert ( _building.l ) ) ); 
+    Crack crack( start, end, Usul::Strings::format ( grid.at( index ).first ) );
+
+    // add the cracks to the list of cracks for the X axis
+    _cracks.first.push_back( crack );
+  }
+  if( "Z" == axis )
+  {
+    // create the crack
+    std::string start ( _building.x );
+    std::string end   ( Usul::Strings::format ( StrToFloat::convert ( start ) + StrToFloat::convert ( _building.w ) ) ); 
+    Crack crack( start, end, Usul::Strings::format ( grid.at( index ).first ) );
+
+    // add the cracks to the list of cracks for the Z axis
+    _cracks.second.push_back( crack );
+  }
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a crack
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_removeCrack( Usul::Math::Vec3f point )
+{
+  Guard guard ( this );
+
+  // make sure there is a building in the experiment
+  if( false == this->useBuilding() )
+  {
+    std::cout << "There must be a building in the experiment to perform this operation!" << std::cout;
+    return;
+  }
+
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -4080,7 +4244,7 @@ void VaporIntrusionGUIDocument::_addPoints()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::addGridPointFromViewer( Usul::Math::Vec3f point )
+void VaporIntrusionGUIDocument::_addGridPointFromViewer( Usul::Math::Vec3f point )
 {
   Guard guard ( this );
 
@@ -4148,7 +4312,7 @@ void VaporIntrusionGUIDocument::addGridPointFromViewer( Usul::Math::Vec3f point 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::removeGridPointFromViewer( Usul::Math::Vec3f point )
+void VaporIntrusionGUIDocument::_removeGridPointFromViewer( Usul::Math::Vec3f point )
 {
   Guard guard ( this );
 
@@ -4544,11 +4708,17 @@ void VaporIntrusionGUIDocument::objectMenuAddCrack()
 {
   Guard guard ( this );
 
+  if( false == this->useBuilding() )
+  {
+    std::cout << "There must be a building present to add cracks!" << std::endl;
+    return;
+  }
+
   // set the edit mode to object placement
-  this->setEditMode2D( IVPI::OBJECT_PLACEMENT_2D );
+  this->setEditMode2D( IVPI::CRACK_PLACEMENT_X );
 
   // set the correct build mode
-  this->setBuildMode2D( IVPI::CRACK_PLACEMENT_X );
+  this->setBuildMode2D( IVPI::BUILD_MODE_2D_XY );
 
   // set the camera mode to top
   Usul::Interfaces::ICamera::QueryPtr camera ( Usul::Documents::Manager::instance().activeView() );
@@ -4560,9 +4730,9 @@ void VaporIntrusionGUIDocument::objectMenuAddCrack()
   // set the object type to building
   _objectMode = IVPI::OBJECT_CRACK;
 
-  // clear out the current object
-  Object2D object ( 0, 0, 0, 1, 0, 1 );
-  _currentObject = object;
+  //// clear out the current object
+  //Object2D object ( 0, 0, 0, 1, 0, 1 );
+  //_currentObject = object;
 
   // rebuild the Scene
   this->rebuildScene();

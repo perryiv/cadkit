@@ -238,8 +238,8 @@ public:
   virtual GridAxisPoints      gridAxisPoints();
   virtual void                gridAxisPoints( GridAxisPoints ap );
 
-  virtual void                addGridPointFromViewer( Usul::Math::Vec3f point );
-  virtual void                removeGridPointFromViewer( Usul::Math::Vec3f point );
+  virtual void                handleLeftMouseClick( Usul::Math::Vec3f point );
+  virtual void                handleRightMouseClick( Usul::Math::Vec3f point );
 
   virtual void                setEditMode2D( int mode );
   virtual int                 getEditMode2D();
@@ -351,11 +351,16 @@ protected:
   void                        _insertGridPoint( const std::string& axis, float pos );
   void                        _removeGridPoint( const std::string& axis, float pos );
   void                        _fixDimensions();
+  void                        _addGridPointFromViewer( Usul::Math::Vec3f point );
+  void                        _removeGridPointFromViewer( Usul::Math::Vec3f point );
+  void                        _addCrack( Usul::Math::Vec3f point );
+  void                        _removeCrack( Usul::Math::Vec3f point );
 
   GridPoints                  _getGridFromAxis( const std::string& axis );
   void                        _setGridFromAxis( const std::string& axis, GridPoints grid );
 
   Usul::Math::Vec2ui          _snapToGrid( float value, GridPoints grid );
+  unsigned int                _closestGridPoint( float value, GridPoints grid );
   osg::Vec2f                  _snapToGrid2D( osg::Vec2f corner );
   osg::Vec3f                  _snapToGrid3D( osg::Vec3f corner );
 

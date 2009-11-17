@@ -74,6 +74,28 @@ void VaporIntrusionGUIViewer::mouseMoveEvent ( QMouseEvent * event )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  The mouse has been double clicked.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIViewer::mouseDoubleClickEvent ( QMouseEvent * event )
+{
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  if ( false == viewer.valid() )
+    return;
+
+  if ( 0x0 == event )
+    return;
+
+  if( true == viewer->picking() )
+    return;
+
+  //BaseClass::mouseMoveEvent( event );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  A mouse button has been pressed.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -133,12 +155,12 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
   if( true == left )
   {
     // add the new grid point
-    document->addGridPointFromViewer( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
+    document->handleLeftMouseClick( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
   }
   if( true == right )
   {
     // remove the new grid point
-    document->removeGridPointFromViewer( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
+    document->handleRightMouseClick( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
   }
 
   // rebuild the scene
@@ -250,7 +272,7 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
       }
         break;
 
-      case Qt::Key_Enter:
+      case Qt::Key_Return:
       {
         // get the current mode
         int currentMode ( document->getEditMode2D() );

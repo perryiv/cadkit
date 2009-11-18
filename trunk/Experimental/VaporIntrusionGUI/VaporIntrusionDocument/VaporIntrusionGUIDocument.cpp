@@ -101,9 +101,10 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _showCracks( true ),
   _showLabels( true ),
   _maxCrackGridDistance( 0.2f ),
-  _buildMode2D( IVPI::BUILD_MODE_2D_XY ),
+  _buildMode2D( IVPI::BUILD_MODE_GRID_EDIT ),
   _editGridMode2D( IVPI::EDIT_MODE_IDLE ),
   _objectMode( IVPI::OBJECT_NOTHING ),
+  _viewMode2D( IVPI::VIEW_MODE_2D_XY ),
   _currentObject(),
   _minimumGridDistance( 0.1f )
 {
@@ -524,12 +525,15 @@ void VaporIntrusionGUIDocument::_build2DScene( Usul::Interfaces::IUnknown *calle
   // add the additional points
   this->_addPoints();
 
-  if( _buildMode2D == IVPI::BUILD_MODE_2D_XY )
+  // get the view mode
+  int viewMode ( this->getViewMode2D() );
+
+  if( viewMode == IVPI::VIEW_MODE_2D_XY )
   {
     _root2D->addChild( this->_buildXYScene() );
   }
   
-  if( _buildMode2D == IVPI::BUILD_MODE_2D_Z )
+  if( viewMode == IVPI::VIEW_MODE_2D_Z )
   {
     _root2D->addChild( this->_buildZScene() );
   }
@@ -870,18 +874,18 @@ void VaporIntrusionGUIDocument::_makeCracks()
     float end   ( StrToFloat::convert( c.end   ) );
 
     // set the corners
-    float y( StrToFloat::convert( _building.z ) + value );
+    float y( /*StrToFloat::convert( _building.z ) +*/ value );
 
     // set the "z" corners
-    float sx ( StrToFloat::convert( _building.x ) + start );
-    float ex ( StrToFloat::convert( _building.x ) + end );
+    float sx ( StrToFloat::convert( _building.x ) /*+ start*/ );
+    float ex ( StrToFloat::convert( _building.x ) + StrToFloat::convert( _building.w ) );
 
     // points of the plane
     osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
 
     //set the points
     float sd ( StrToFloat::convert( _building.y  ) );
-    float ed ( StrToFloat::convert( _building.y  ) + -1 * StrToFloat::convert( _building.h ) );
+    float ed ( StrToFloat::convert( _building.y  ) + StrToFloat::convert( _building.h ) );
 
     points->push_back( osg::Vec3f ( sx, sd, y ) );
     points->push_back( osg::Vec3f ( ex, sd, y ) );
@@ -890,40 +894,40 @@ void VaporIntrusionGUIDocument::_makeCracks()
 
     _root->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
 
-    // get the nearest grid point to the crack
-    Usul::Math::Vec2ui ind ( this->_snapToGrid( y, zgrid ) );
+    //// get the nearest grid point to the crack
+    //Usul::Math::Vec2ui ind ( this->_snapToGrid( y, zgrid ) );
 
-    unsigned int nearIndex ( ind[0] );
-    unsigned int farIndex ( ind[1] );
+    //unsigned int nearIndex ( ind[0] );
+    //unsigned int farIndex ( ind[1] );
 
-    // the point where the crack is
-    float p ( y );
-    float d ( Usul::Math::minimum<float>( abs ( y - zgrid.at( nearIndex ).first ), _maxCrackGridDistance ) );
+    //// the point where the crack is
+    //float p ( y );
+    //float d ( Usul::Math::minimum<float>( abs ( y - zgrid.at( nearIndex ).first ), _maxCrackGridDistance ) );
 
-    // p1 will be 2 grid units away from p toward the nearest grid point
-    float p1 ( p + d );
+    //// p1 will be 2 grid units away from p toward the nearest grid point
+    //float p1 ( p + d );
 
-    // P2 is 2 grid units away from p toward the farthest grid point
-    float p2 ( p - d );
+    //// P2 is 2 grid units away from p toward the farthest grid point
+    //float p2 ( p - d );
 
-    //float d2 ( Usul::Math::minimum<float> ( zgrid.at( farIndex ).first - p2, _maxCrackGridDistance ) );  
-    
-    // half of the distance d
-    float hd ( d / 2 );
+    ////float d2 ( Usul::Math::minimum<float> ( zgrid.at( farIndex ).first - p2, _maxCrackGridDistance ) );  
+    //
+    //// half of the distance d
+    //float hd ( d / 2 );
 
-    // p3 is halfway between p and p1
-    float p3 ( p + hd );
+    //// p3 is halfway between p and p1
+    //float p3 ( p + hd );
 
-    // p4 is halfway between p and p2
-    float p4 ( p - hd );
+    //// p4 is halfway between p and p2
+    //float p4 ( p - hd );
 
-    // add a grid point on the crack and sam distance from the crack and nearest point to the next
-    // nearest point and the crack on the Y axis
-    this->_insertGridPoint( "Z", p );
-    this->_insertGridPoint( "Z", p1 );
-    this->_insertGridPoint( "Z", p2 );
-    this->_insertGridPoint( "Z", p3 );
-    this->_insertGridPoint( "Z", p4 );
+    //// add a grid point on the crack and sam distance from the crack and nearest point to the next
+    //// nearest point and the crack on the Y axis
+    //this->_insertGridPoint( "Z", p );
+    //this->_insertGridPoint( "Z", p1 );
+    //this->_insertGridPoint( "Z", p2 );
+    //this->_insertGridPoint( "Z", p3 );
+    //this->_insertGridPoint( "Z", p4 );
 
   }
 
@@ -942,18 +946,22 @@ void VaporIntrusionGUIDocument::_makeCracks()
     float end   ( StrToFloat::convert( c.end   ) );
 
     // set the corners
-    float y( StrToFloat::convert( _building.x ) + value );
+    float y( /*StrToFloat::convert( _building.x ) +*/ value );
 
     // set the "z" corners
-    float sx ( StrToFloat::convert( _building.z ) + start );
-    float ex ( StrToFloat::convert( _building.z ) + end );
-
+#if 0
+    float sx ( StrToFloat::convert( _building.z )  );
+    float ex ( StrToFloat::convert( _building.z ) + StrToFloat::convert( _building.l ) );
+#else
+    float sx ( start  );
+    float ex ( end );
+#endif
     // points of the plane
     osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
 
     //set the points
     float sd ( StrToFloat::convert( _building.y  ) );
-    float ed ( StrToFloat::convert( _building.y  ) + -1 * StrToFloat::convert( _building.h ) );
+    float ed ( StrToFloat::convert( _building.y  ) + StrToFloat::convert( _building.h ) );
 
     points->push_back( osg::Vec3f ( y, sd, sx ) );
     points->push_back( osg::Vec3f ( y, sd, ex ) );
@@ -962,38 +970,6 @@ void VaporIntrusionGUIDocument::_makeCracks()
 
     _root->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
 
-    // get the nearest grid point to the crack    
-    Usul::Math::Vec2ui ind ( this->_snapToGrid( y, xgrid ) );
-
-    unsigned int nearIndex ( ind[0] );
-    unsigned int farIndex  ( ind[1] );
-
-     // the point where the crack is
-    float p ( y );
-    float d ( Usul::Math::minimum<float>( abs ( y - xgrid.at( nearIndex ).first ), _maxCrackGridDistance ) );
-
-    // p1 will be 2 grid units away from p toward the nearest grid point
-    float p1 ( p + d );
-
-    // P2 is 2 grid units away from p toward the farthest grid point
-    float p2 ( p - d );
-    
-    // half of the distance d
-    float hd ( d / 2 );
-
-    // p3 is halfway between p and p1
-    float p3 ( p + hd );
-
-    // p4 is halfway between p and p2
-    float p4 ( p - hd );
-
-    // add a grid point on the crack and sam distance from the crack and nearest point to the next
-    // nearest point and the crack on the Y axis
-    this->_insertGridPoint( "X", p );
-    this->_insertGridPoint( "X", p1 );
-    this->_insertGridPoint( "X", p2 );
-    this->_insertGridPoint( "X", p3 );
-    this->_insertGridPoint( "X", p4 );
   }
 
 	
@@ -4102,13 +4078,28 @@ void VaporIntrusionGUIDocument::_addPoints()
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Handle left mouse clicks from the viewer
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void VaporIntrusionGUIDocument::handleLeftMouseClick( Usul::Math::Vec3f point )
 {
-  if( _editGridMode2D == IVPI::EDIT_X_GRID_2D || _editGridMode2D == IVPI::EDIT_Y_GRID_2D )
+  Guard guard ( this );
+
+  // get the build mode
+  int buildMode ( this->getBuildMode2D() );
+
+  // grid line editing
+  if( buildMode == IVPI::BUILD_MODE_GRID_EDIT )
   {
     this->_addGridPointFromViewer( point );
   }
-  if( _editGridMode2D == IVPI::CRACK_PLACEMENT_X || _editGridMode2D == IVPI::CRACK_PLACEMENT_Y )
+
+  // foundation crack editing
+  if( buildMode == IVPI::BUILD_MODE_CRACK_EDIT )
   {
     this->_addCrack( point );
   }
@@ -4116,13 +4107,27 @@ void VaporIntrusionGUIDocument::handleLeftMouseClick( Usul::Math::Vec3f point )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Handle right mouse clicks from the viewer
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void VaporIntrusionGUIDocument::handleRightMouseClick( Usul::Math::Vec3f point )
 {
-  if( _editGridMode2D == IVPI::EDIT_X_GRID_2D || _editGridMode2D == IVPI::EDIT_Y_GRID_2D )
+  Guard guard ( this );
+
+  // get the build mode
+  int buildMode ( this->getBuildMode2D() );
+
+  // grid line editing
+  if( buildMode == IVPI::BUILD_MODE_GRID_EDIT )
   {
     this->_removeGridPointFromViewer( point );
   }
-  if( _editGridMode2D == IVPI::CRACK_PLACEMENT_X || _editGridMode2D == IVPI::CRACK_PLACEMENT_Y )
+
+  // foundation crack editing
+  if( buildMode == IVPI::BUILD_MODE_CRACK_EDIT )
   {
     this->_removeCrack( point );
   }
@@ -4201,7 +4206,7 @@ void VaporIntrusionGUIDocument::_addCrack( Usul::Math::Vec3f point )
     Crack crack( start, end, Usul::Strings::format ( grid.at( index ).first ) );
 
     // add the cracks to the list of cracks for the X axis
-    _cracks.first.push_back( crack );
+    _cracks.second.push_back( crack );
   }
   if( "Z" == axis )
   {
@@ -4211,7 +4216,7 @@ void VaporIntrusionGUIDocument::_addCrack( Usul::Math::Vec3f point )
     Crack crack( start, end, Usul::Strings::format ( grid.at( index ).first ) );
 
     // add the cracks to the list of cracks for the Z axis
-    _cracks.second.push_back( crack );
+    _cracks.first.push_back( crack );
   }
 
 }
@@ -4254,20 +4259,26 @@ void VaporIntrusionGUIDocument::_addGridPointFromViewer( Usul::Math::Vec3f point
 
   std::string axis;
 
-  if( _editGridMode2D == IVPI::EDIT_X_GRID_2D )
+  // get teh edit mode
+  int editMode ( this->getEditMode2D() );
+
+  // get the view mode
+  int viewMode ( this->getViewMode2D() );
+
+  if( editMode == IVPI::EDIT_X_GRID_2D )
   {
     grid = this->_getGridFromAxis( "X" );
     value = point[0];
     axis = "X";
   }
 
-  else if( _editGridMode2D == IVPI::EDIT_Y_GRID_2D && _buildMode2D == IVPI::BUILD_MODE_2D_XY )
+  else if( editMode == IVPI::EDIT_Y_GRID_2D && viewMode == IVPI::VIEW_MODE_2D_XY )
   {
     grid = this->_getGridFromAxis( "Z" );
     value = point[2];
     axis = "Z";
   }
-  else if( _editGridMode2D == IVPI::EDIT_Y_GRID_2D && _buildMode2D == IVPI::BUILD_MODE_2D_Z )
+  else if( editMode == IVPI::EDIT_Y_GRID_2D && viewMode == IVPI::VIEW_MODE_2D_Z )
   {
     grid = this->_getGridFromAxis( "Y" );
     value = point[1];
@@ -4322,20 +4333,26 @@ void VaporIntrusionGUIDocument::_removeGridPointFromViewer( Usul::Math::Vec3f po
 
   std::string axis;
 
-  if( _editGridMode2D == IVPI::EDIT_X_GRID_2D )
+  // get the edit mode
+  int editMode ( this->getEditMode2D() );
+
+  // get the view mode
+  int viewMode ( this->getViewMode2D() );
+
+  if( editMode == IVPI::EDIT_X_GRID_2D )
   {
     grid = this->_getGridFromAxis( "X" );
     value = point[0];
     axis = "X";
   }
 
-  else if( _editGridMode2D == IVPI::EDIT_Y_GRID_2D && _buildMode2D == IVPI::BUILD_MODE_2D_XY )
+  else if( editMode == IVPI::EDIT_Y_GRID_2D && viewMode == IVPI::VIEW_MODE_2D_XY )
   {
     grid = this->_getGridFromAxis( "Z" );
     value = point[2];
     axis = "Z";
   }
-  else if( _editGridMode2D == IVPI::EDIT_Y_GRID_2D && _buildMode2D == IVPI::BUILD_MODE_2D_Z )
+  else if( editMode == IVPI::EDIT_Y_GRID_2D && viewMode == IVPI::VIEW_MODE_2D_Z )
   {
     grid = this->_getGridFromAxis( "Y" );
     value = point[1];
@@ -4397,8 +4414,6 @@ void VaporIntrusionGUIDocument::setBuildMode2D( int mode )
    Guard guard ( this );
 
    _buildMode2D = mode;
-
-   this->rebuildScene();
 }
 
 
@@ -4427,6 +4442,36 @@ int VaporIntrusionGUIDocument::getBuildMode2D()
   Guard guard ( this );
 
   return _buildMode2D;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the 2D grid view Mode
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setViewMode2D( int mode )
+{
+  Guard guard ( this );
+  _viewMode2D = mode;
+  
+  // rebuild the scene
+  this->rebuildScene();
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the 2D grid view Mode
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int VaporIntrusionGUIDocument::getViewMode2D()
+{
+  Guard guard ( this );
+  return _viewMode2D;
 }
 
 
@@ -4581,6 +4626,87 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw the cracks on the 2D grid
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* VaporIntrusionGUIDocument::_drawCracks2D()
+{
+  Guard guard ( this );
+
+  GroupPtr group ( new osg::Group );
+
+  // Z Axis cracks
+	for( unsigned int i = 0; i < _cracks.first.size(); ++ i )
+	{
+    // get the crack
+    Crack c ( _cracks.first.at( i ) );
+
+    // convert the crack values
+    float value ( StrToFloat::convert( c.value ) );
+    float start ( StrToFloat::convert( c.start ) );
+    float end   ( StrToFloat::convert( c.end   ) );
+
+    // set the corners
+    float y( value );
+
+    // set the "z" corners
+    float sx ( start );
+    float ex ( end );
+
+    // points of the plane
+    osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+    points->push_back( osg::Vec3f ( sx, 0.0001, y ) );
+    points->push_back( osg::Vec3f ( ex, 0.0001, y ) );
+    points->push_back( osg::Vec3f ( ex, 0.0001, y ) );
+    points->push_back( osg::Vec3f ( sx, 0.0001, y ) );
+
+    group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
+
+  }
+
+  // X axis cracks
+	for( unsigned int i = 0; i < _cracks.second.size(); ++ i )
+	{
+    // get the crack
+    Crack c ( _cracks.second.at( i ) );
+
+    // convert the crack values
+    float value ( StrToFloat::convert( c.value ) );
+    float start ( StrToFloat::convert( c.start ) );
+    float end   ( StrToFloat::convert( c.end   ) );
+
+    // set the corners
+    float y( value );
+
+    // set the "z" corners
+    float sx ( start  );
+    float ex ( end );
+
+    // points of the plane
+    osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+    points->push_back( osg::Vec3f ( y, 0.0001, sx ) );
+    points->push_back( osg::Vec3f ( y, 0.0001, ex ) );
+    points->push_back( osg::Vec3f ( y, 0.0001, ex ) );
+    points->push_back( osg::Vec3f ( y, 0.0001, sx ) );
+
+    group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
+
+  }
+
+  return group.release();
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw the building on the 2D grid
+//
+///////////////////////////////////////////////////////////////////////////////
+
 osg::Node* VaporIntrusionGUIDocument::_drawBuilding2D()
 {
   Guard guard( this );
@@ -4590,7 +4716,10 @@ osg::Node* VaporIntrusionGUIDocument::_drawBuilding2D()
   // points of the plane
   osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
 
-  if( IVPI::BUILD_MODE_2D_XY == this->getBuildMode2D() )
+  // get the view mode
+  int viewMode ( this->getViewMode2D() );
+
+  if( IVPI::VIEW_MODE_2D_XY == viewMode )
   {
     Building b ( this-> building() );
     //set the points
@@ -4608,7 +4737,7 @@ osg::Node* VaporIntrusionGUIDocument::_drawBuilding2D()
     group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 0.0f, 1.0f, 1.0f ) ) );
   }
 
-  if( IVPI::BUILD_MODE_2D_Z == this->getBuildMode2D() )
+  if( IVPI::VIEW_MODE_2D_Z == viewMode )
   {
     Building b ( this-> building() );
     //set the points
@@ -4642,7 +4771,12 @@ void VaporIntrusionGUIDocument::_build2DObjects()
 
   if( true == _useBuilding )
   {
+    // add the building
     _root2D->addChild( this->_drawBuilding2D() );
+
+    // add any foundation cracks
+    _root2D->addChild( this->_drawCracks2D() );
+
   }
 
 }
@@ -4718,7 +4852,7 @@ void VaporIntrusionGUIDocument::objectMenuAddCrack()
   this->setEditMode2D( IVPI::CRACK_PLACEMENT_X );
 
   // set the correct build mode
-  this->setBuildMode2D( IVPI::BUILD_MODE_2D_XY );
+  this->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
 
   // set the camera mode to top
   Usul::Interfaces::ICamera::QueryPtr camera ( Usul::Documents::Manager::instance().activeView() );
@@ -4752,7 +4886,7 @@ void VaporIntrusionGUIDocument::objectMenuAddBuilding()
   this->setEditMode2D( IVPI::OBJECT_PLACEMENT_2D );
 
   // set the correct build mode
-  this->setBuildMode2D( IVPI::BUILD_MODE_2D_XY );
+  this->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
 
   // set the camera mode to top
   Usul::Interfaces::ICamera::QueryPtr camera ( Usul::Documents::Manager::instance().activeView() );

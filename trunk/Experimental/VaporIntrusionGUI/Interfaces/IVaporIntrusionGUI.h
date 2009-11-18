@@ -34,7 +34,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1235852807u };
 
-  // enumerations
+  // comparison enumerations
   enum
   {
     EQUAL,
@@ -46,11 +46,22 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     SIZEOF_EQUAL,
   };
 
-  // 2D build modes
+  // view modes
+  enum
+  { 
+    VIEW_MODE_2D_XY,
+    VIEW_MODE_2D_Z
+  };
+
+  // build modes
   enum
   {
-    BUILD_MODE_2D_XY,
-    BUILD_MODE_2D_Z,
+    BUILD_MODE_GRID_EDIT,
+    BUILD_MODE_CRACK_EDIT
+  };
+  // 2D edit modes
+  enum
+  {
     EDIT_MODE_IDLE,
     EDIT_X_GRID_2D,
     EDIT_Y_GRID_2D,
@@ -351,6 +362,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual void                  setObjectMode( int mode ) = 0;
   virtual int                   getObjectMode() = 0;
+
+  virtual void                  setViewMode2D( int mode ) = 0;
+  virtual int                   getViewMode2D() = 0;
 
   virtual void                  keyMovementChange( int x, int y ) = 0;
   virtual void                  handleNewObject() = 0;

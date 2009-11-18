@@ -359,6 +359,7 @@ protected:
   void                        _removeGridPointFromViewer( Usul::Math::Vec3f point );
   void                        _addCrack( Usul::Math::Vec3f point );
   void                        _removeCrack( Usul::Math::Vec3f point );
+  bool                        _crackExists( Cracks cracks, Crack crack );
 
   GridPoints                  _getGridFromAxis( const std::string& axis );
   void                        _setGridFromAxis( const std::string& axis, GridPoints grid );

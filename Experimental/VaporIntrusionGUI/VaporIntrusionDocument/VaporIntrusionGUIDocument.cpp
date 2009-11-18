@@ -4206,7 +4206,10 @@ void VaporIntrusionGUIDocument::_addCrack( Usul::Math::Vec3f point )
     Crack crack( start, end, Usul::Strings::format ( grid.at( index ).first ) );
 
     // add the cracks to the list of cracks for the X axis
-    _cracks.second.push_back( crack );
+    if( false == this->_crackExists( _cracks.second, crack ) )
+    {
+      _cracks.second.push_back( crack );
+    }
   }
   if( "Z" == axis )
   {
@@ -4216,11 +4219,43 @@ void VaporIntrusionGUIDocument::_addCrack( Usul::Math::Vec3f point )
     Crack crack( start, end, Usul::Strings::format ( grid.at( index ).first ) );
 
     // add the cracks to the list of cracks for the Z axis
-    _cracks.first.push_back( crack );
+    if( false == this->_crackExists( _cracks.first, crack ) )
+    {
+      _cracks.first.push_back( crack );
+    }
   }
 
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Check if <crack> exists in <cracks>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::_crackExists( Cracks cracks, Crack crack )
+{
+  Guard guard ( this );
+
+  // Value of the input crack
+  float v ( StrToFloat::convert ( crack.value ) );
+
+  for( unsigned int i = 0; i < cracks.size(); ++i )
+  {
+    Crack c ( cracks.at( i ) );
+
+    // Value of the crack at position i
+    float vi ( StrToFloat::convert( c.value ) );
+
+    // check to see if the two values are close to being equal
+    if( v <= vi + 0.0000001f && v >= vi - 0.0000001f )
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -4238,6 +4273,80 @@ void VaporIntrusionGUIDocument::_removeCrack( Usul::Math::Vec3f point )
     std::cout << "There must be a building in the experiment to perform this operation!" << std::cout;
     return;
   }
+
+  // The closest grid point
+  float cPoint ( 0.0f );
+  
+  // working axis
+  std::string axis;
+
+  // Selected Cracks
+  Cracks cracks;
+
+  // get the edit mode
+  int editMode ( this->getEditMode2D() );
+
+  // X axis selected
+  if( editMode == IVPI::CRACK_PLACEMENT_X )
+  {
+    // set the axis
+    axis = "X";
+
+    // get the X axis cracks
+    cracks = _cracks.second;  
+
+    // get the X grid
+    GridPoints grid ( this->_getGridFromAxis( axis ) );
+
+    // get the X component point from the input value
+    cPoint = grid.at ( this->_closestGridPoint( point[0], grid ) ).first;
+  }
+
+  // "Y" axis selected
+  if ( editMode == IVPI::CRACK_PLACEMENT_Y )
+  {
+    // set the axis
+    axis = "Z";
+
+    // get the Z axis cracks
+    cracks = _cracks.first;
+
+    // get the Z grid
+    GridPoints grid ( this->_getGridFromAxis( axis ) );
+
+    // get the Z component point from the input value
+    cPoint = grid.at ( this->_closestGridPoint( point[2], grid ) ).first;
+  }
+
+  // new cracks
+  Cracks newCracks;
+
+  for( unsigned int i = 0; i < cracks.size(); ++i )
+  {
+    // get the current crack
+    Crack crack ( cracks.at( i ) );
+
+    // get the float value of the crack
+    float v ( StrToFloat::convert( crack.value ) );
+
+    // if the crack is a match do not add it to the list of new cracks
+    if( !( v >= cPoint - 0.00001) || !( v <= cPoint + 0.00001 ) )
+    {
+      newCracks.push_back( crack );
+    }
+
+  }
+
+  if( "X" == axis )
+  {
+    _cracks.second = newCracks;
+  }
+
+  if( "Z" == axis )
+  {
+    _cracks.first = newCracks;
+  }
+
 
 }
 

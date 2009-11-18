@@ -233,6 +233,15 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
   // get the key pressed
   int key ( event->key() );
 
+  // get the current build mode
+  int buildMode ( document->getBuildMode2D() );
+
+  // get the current edit mode
+  int editMode ( document->getEditMode2D() );
+
+  // get the current view mode
+  int viewMode ( document->getViewMode2D() );
+
   if( key == Qt::Key_Left || key == Qt::Key_Right || key == Qt::Key_Up || key == Qt::Key_Down )
   {
     this->_handleArrowKeys( key, document );
@@ -245,20 +254,38 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
     {
       case Qt::Key_X:
       {
-        document->setEditMode2D( IVPI::EDIT_X_GRID_2D );
+        if( buildMode == IVPI::BUILD_MODE_GRID_EDIT )
+        {
+          document->setEditMode2D( IVPI::EDIT_X_GRID_2D );
+        }
+
+        if( buildMode == IVPI::BUILD_MODE_CRACK_EDIT )
+        {
+          document->setEditMode2D( IVPI::CRACK_PLACEMENT_X );
+        }
         std::cout << "Setting 2D Grid Edit Mode to the X axis" << std::endl;
       }
         break;
+
       case Qt::Key_Y:
       {
-        document->setEditMode2D( IVPI::EDIT_Y_GRID_2D );
+        if( buildMode == IVPI::BUILD_MODE_GRID_EDIT )
+        {
+          document->setEditMode2D( IVPI::EDIT_Y_GRID_2D );
+        }
+
+        if( buildMode == IVPI::BUILD_MODE_CRACK_EDIT )
+        {
+          document->setEditMode2D( IVPI::CRACK_PLACEMENT_Y );
+        }
+
         std::cout << "Setting 2D Grid Edit Mode to the Y axis" << std::endl;
       }
         break;
 
       case Qt::Key_G:
       {
-        document->setBuildMode2D( IVPI::BUILD_MODE_2D_XY );
+        document->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
         std::cout << "Setting 2D Grid Domain to the XY Grid" << std::endl;
         this->viewer()->camera( OsgTools::Render::Viewer::TOP );
       }
@@ -266,39 +293,50 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
 
       case Qt::Key_B:
       {
-        document->setBuildMode2D( IVPI::BUILD_MODE_2D_Z );
+        document->setViewMode2D( IVPI::VIEW_MODE_2D_Z );
         std::cout << "Setting 2D Grid Domain Mode to the Z (Basement/Soil) Grid" << std::endl;
         this->viewer()->camera( OsgTools::Render::Viewer::FRONT );
       }
         break;
 
+      case Qt::Key_C:
+      {
+        document->setBuildMode2D( IVPI::BUILD_MODE_CRACK_EDIT );
+        document->setEditMode2D( IVPI::EDIT_MODE_IDLE );
+        std::cout << "Setting edit mode to foundation cracks.  Right and left clicks will add/remove cracks" << std::endl;
+      }
+        break;
+      case Qt::Key_V:
+      {
+        document->setBuildMode2D( IVPI::BUILD_MODE_GRID_EDIT );
+        document->setEditMode2D( IVPI::EDIT_MODE_IDLE );
+        std::cout << "Setting edit mode to grid lines.  Right and left clicks will add/remove grid lines" << std::endl;
+      }
+        break;
       case Qt::Key_Return:
       {
-        // get the current mode
-        int currentMode ( document->getEditMode2D() );
-
         // toggle the mode
-        if( currentMode == IVPI::OBJECT_PLACEMENT_2D )
+        if( editMode == IVPI::OBJECT_PLACEMENT_2D )
         {
           document->setEditMode2D( IVPI::OBJECT_SIZE_XY );
         }
 
         // toggle the mode
-        if( currentMode == IVPI::OBJECT_SIZE_XY )
+        if( editMode == IVPI::OBJECT_SIZE_XY )
         {
           document->setEditMode2D( IVPI::OBJECT_SIZE_XZ );
-          document->setBuildMode2D( IVPI::BUILD_MODE_2D_Z );
+          document->setViewMode2D( IVPI::VIEW_MODE_2D_Z );
           this->viewer()->camera( OsgTools::Render::Viewer::FRONT );
           std::cout << "Setting 2D Grid Domain Mode to the Z (Basement/Soil) Grid" << std::endl;
         }
 
         // tell the document to create the object
-        if( currentMode == IVPI::OBJECT_SIZE_XZ )
+        if( editMode == IVPI::OBJECT_SIZE_XZ )
         {
           document->handleNewObject();
           document->setEditMode2D( IVPI::EDIT_MODE_IDLE );
 
-          document->setBuildMode2D( IVPI::BUILD_MODE_2D_XY );
+          document->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
           std::cout << "Setting 2D Grid Domain to the XY Grid" << std::endl;
           this->viewer()->camera( OsgTools::Render::Viewer::TOP );
         }

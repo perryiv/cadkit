@@ -250,6 +250,9 @@ public:
   virtual void                setObjectMode( int mode );
   virtual int                 getObjectMode();
 
+  virtual void                setViewMode2D( int mode );
+  virtual int                 getViewMode2D();
+
   virtual void                keyMovementChange( int x, int y );
 
 
@@ -308,6 +311,7 @@ protected:
   void                        _build2DObjects();
 
   osg::Node*                  _drawBuilding2D();
+  osg::Node*                  _drawCracks2D();
 
   void                        _makeGrid();
   void                        _makeSymmetricalBuilding();
@@ -417,6 +421,7 @@ private:
     int                       _buildMode2D;
     int                       _editGridMode2D;
     int                       _objectMode;
+    int                       _viewMode2D;
 
     Object2D                  _currentObject;
     float                     _minimumGridDistance;

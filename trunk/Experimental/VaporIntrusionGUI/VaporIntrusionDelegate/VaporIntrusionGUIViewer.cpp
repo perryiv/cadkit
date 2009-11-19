@@ -254,62 +254,52 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
     {
       case Qt::Key_X:
       {
-        if( buildMode == IVPI::BUILD_MODE_GRID_EDIT )
-        {
-          document->setEditMode2D( IVPI::EDIT_X_GRID_2D );
-        }
-
-        if( buildMode == IVPI::BUILD_MODE_CRACK_EDIT )
-        {
-          document->setEditMode2D( IVPI::CRACK_PLACEMENT_X );
-        }
+        document->setEditMode2D( IVPI::EDIT_X_GRID_2D );
         std::cout << "Setting 2D Grid Edit Mode to the X axis" << std::endl;
       }
         break;
 
       case Qt::Key_Y:
       {
-        if( buildMode == IVPI::BUILD_MODE_GRID_EDIT )
-        {
-          document->setEditMode2D( IVPI::EDIT_Y_GRID_2D );
-        }
-
-        if( buildMode == IVPI::BUILD_MODE_CRACK_EDIT )
-        {
-          document->setEditMode2D( IVPI::CRACK_PLACEMENT_Y );
-        }
-
+        document->setEditMode2D( IVPI::EDIT_Y_GRID_2D );
         std::cout << "Setting 2D Grid Edit Mode to the Y axis" << std::endl;
       }
         break;
 
-      case Qt::Key_G:
+      case Qt::Key_Comma:
       {
+        document->setViewMode2D( IVPI::VIEW_MODE_2D_XY );       
+      }
+      break;
+
+      case Qt::Key_B :
+      {
+        // set the edit mode to object placement
+        document->setEditMode2D( IVPI::OBJECT_PLACEMENT_2D );
+
+        // set the correct build mode
         document->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
-        std::cout << "Setting 2D Grid Domain to the XY Grid" << std::endl;
-        this->viewer()->camera( OsgTools::Render::Viewer::TOP );
+
+        // set the object type to building
+        document->setObjectMode( IVPI::OBJECT_BUILDING );
       }
         break;
 
-      case Qt::Key_B:
+      case Qt::Key_Period:
       {
-        document->setViewMode2D( IVPI::VIEW_MODE_2D_Z );
-        std::cout << "Setting 2D Grid Domain Mode to the Z (Basement/Soil) Grid" << std::endl;
-        this->viewer()->camera( OsgTools::Render::Viewer::FRONT );
+        document->setViewMode2D( IVPI::VIEW_MODE_2D_XZ );
       }
         break;
 
       case Qt::Key_C:
       {
         document->setBuildMode2D( IVPI::BUILD_MODE_CRACK_EDIT );
-        document->setEditMode2D( IVPI::EDIT_MODE_IDLE );
         std::cout << "Setting edit mode to foundation cracks.  Right and left clicks will add/remove cracks" << std::endl;
       }
         break;
       case Qt::Key_V:
       {
         document->setBuildMode2D( IVPI::BUILD_MODE_GRID_EDIT );
-        document->setEditMode2D( IVPI::EDIT_MODE_IDLE );
         std::cout << "Setting edit mode to grid lines.  Right and left clicks will add/remove grid lines" << std::endl;
       }
         break;
@@ -325,8 +315,8 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
         if( editMode == IVPI::OBJECT_SIZE_XY )
         {
           document->setEditMode2D( IVPI::OBJECT_SIZE_XZ );
-          document->setViewMode2D( IVPI::VIEW_MODE_2D_Z );
-          this->viewer()->camera( OsgTools::Render::Viewer::FRONT );
+          document->setViewMode2D( IVPI::VIEW_MODE_2D_XZ );
+          //this->viewer()->camera( OsgTools::Render::Viewer::FRONT );
           std::cout << "Setting 2D Grid Domain Mode to the Z (Basement/Soil) Grid" << std::endl;
         }
 
@@ -338,7 +328,7 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
 
           document->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
           std::cout << "Setting 2D Grid Domain to the XY Grid" << std::endl;
-          this->viewer()->camera( OsgTools::Render::Viewer::TOP );
+          //this->viewer()->camera( OsgTools::Render::Viewer::TOP );
         }
         
         std::cout << "Setting 2D Grid Size Object Mode" << std::endl;

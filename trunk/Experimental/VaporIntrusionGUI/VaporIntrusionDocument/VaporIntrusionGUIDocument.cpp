@@ -11,6 +11,7 @@
 
 #include "VaporIntrusionGUIDocument.h"
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
+#include "GenericIndexToggle.h"
 
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IViewPort.h"
@@ -533,7 +534,7 @@ void VaporIntrusionGUIDocument::_build2DScene( Usul::Interfaces::IUnknown *calle
     _root2D->addChild( this->_buildXYScene() );
   }
   
-  if( viewMode == IVPI::VIEW_MODE_2D_Z )
+  if( viewMode == IVPI::VIEW_MODE_2D_XZ )
   {
     _root2D->addChild( this->_buildZScene() );
   }
@@ -3809,22 +3810,169 @@ void VaporIntrusionGUIDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   // Add to the view menu.
   MenuKit::Menu::RefPtr view ( menu.find ( "&View", true ) );
 
-  view->append ( ToggleButton::create ( "Show Building", boost::bind ( &VaporIntrusionGUIDocument::showBuilding, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowBuilding, this ) ) );
-  view->append ( ToggleButton::create ( "Show Grid", boost::bind ( &VaporIntrusionGUIDocument::showGrid, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowGrid, this ) ) );
-  view->append ( ToggleButton::create ( "Show Cracks", boost::bind ( &VaporIntrusionGUIDocument::showCracks, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowCracks, this ) ) );
-  view->append ( ToggleButton::create ( "Show Foundation", boost::bind ( &VaporIntrusionGUIDocument::showFoundation, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowFoundation, this ) ) );
-  view->append ( ToggleButton::create ( "Show Sources", boost::bind ( &VaporIntrusionGUIDocument::showSources, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowSources, this ) ) );
+  view->append ( ToggleButton::create ( "Building", boost::bind ( &VaporIntrusionGUIDocument::showBuilding, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowBuilding, this ) ) );
+  view->append ( ToggleButton::create ( "Grid", boost::bind ( &VaporIntrusionGUIDocument::showGrid, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowGrid, this ) ) );
+  view->append ( ToggleButton::create ( "Cracks", boost::bind ( &VaporIntrusionGUIDocument::showCracks, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowCracks, this ) ) );
+  view->append ( ToggleButton::create ( "Foundation", boost::bind ( &VaporIntrusionGUIDocument::showFoundation, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowFoundation, this ) ) );
+  view->append ( ToggleButton::create ( "Sources", boost::bind ( &VaporIntrusionGUIDocument::showSources, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowSources, this ) ) );
 
   // Add to the objects menu.
   MenuKit::Menu::RefPtr objectMenu ( menu.find ( "&Objects", true ) );
+  objectMenu->append ( MenuKit::Button::create ( "Building (B)", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::objectMenuAddBuilding ) ) );
 
-  objectMenu->append ( MenuKit::Button::create ( "Building", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::objectMenuAddBuilding ) ) );
-  objectMenu->append ( MenuKit::Button::create ( "Crack", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::objectMenuAddCrack ) ) );
+  //----------------------------------------------------------------------------------------------
 
-  // Add to the objects menu.
+  // Create the tools menu.
   MenuKit::Menu::RefPtr toolsMenu ( menu.find ( "&Tools", true ) );
 
+  // Add the view sub menu
+  MenuKit::Menu::RefPtr viewMenu  ( toolsMenu->find ( "&Views", true ) );
+  viewMenu->append ( new ToggleButton ( genericIndexToggle( caller, Usul::Adaptors::memberFunction<bool> ( this, &VaporIntrusionGUIDocument::isViewMode ), 
+                                                                    Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::setIsViewMode2D ),
+                                                                    "XY Plane (,)", IVPI::VIEW_MODE_2D_XY ) ) );
+  viewMenu->append ( new ToggleButton ( genericIndexToggle( caller, Usul::Adaptors::memberFunction<bool> ( this, &VaporIntrusionGUIDocument::isViewMode ), 
+                                                                    Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::setIsViewMode2D ),
+                                                                    "XZ Plane (.)", IVPI::VIEW_MODE_2D_XZ ) ) );
 
+
+  // Add the build sub menu
+  MenuKit::Menu::RefPtr buildMenu ( toolsMenu->find ( "&Builds", true ) );
+  buildMenu->append ( new ToggleButton ( genericIndexToggle( caller, Usul::Adaptors::memberFunction<bool> ( this, &VaporIntrusionGUIDocument::isBuildMode ), 
+                                                                    Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::setIsBuildMode2D ),
+                                                                    "Grid (V)", IVPI::BUILD_MODE_GRID_EDIT ) ) );
+  buildMenu->append ( new ToggleButton ( genericIndexToggle( caller, Usul::Adaptors::memberFunction<bool> ( this, &VaporIntrusionGUIDocument::isBuildMode ), 
+                                                                    Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::setIsBuildMode2D ),
+                                                                    "Crack (C)", IVPI::BUILD_MODE_CRACK_EDIT ) ) );
+
+  // Add the edit sub menu
+  MenuKit::Menu::RefPtr editMenu  ( toolsMenu->find ( "&Edits", true ) );
+  editMenu->append ( new ToggleButton ( genericIndexToggle( caller, Usul::Adaptors::memberFunction<bool> ( this, &VaporIntrusionGUIDocument::isEditMode ), 
+                                                                    Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::setIsEditMode2D ),
+                                                                    "Local X Axis (X)", IVPI::EDIT_X_GRID_2D ) ) );
+  editMenu->append ( new ToggleButton ( genericIndexToggle( caller, Usul::Adaptors::memberFunction<bool> ( this, &VaporIntrusionGUIDocument::isEditMode ), 
+                                                                    Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::setIsEditMode2D ),
+                                                                    "Local Y Axis (Y)", IVPI::EDIT_Y_GRID_2D ) ) );
+
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the edit mode state
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setIsEditMode2D( int mode, bool value )
+{
+  Guard guard ( this );
+
+  if( true == value )
+  {
+    this->setEditMode2D( mode );
+  }
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the edit mode state
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::isEditMode( int mode )
+{
+  Guard guard ( this );
+
+  // get the build mode
+  int editMode ( this->getEditMode2D() );
+
+  if ( editMode == mode )
+  {
+    return true;
+  }
+
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the build mode state
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setIsBuildMode2D( int mode, bool value )
+{
+  Guard guard ( this );
+
+  if( true == value )
+  {
+    this->setBuildMode2D( mode );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the build mode state
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::isBuildMode( int mode )
+{
+  Guard guard ( this );
+
+  // get the build mode
+  int buildMode ( this->getBuildMode2D() );
+
+  if ( buildMode == mode )
+  {
+    return true;
+  }
+
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the view mode state
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setIsViewMode2D( int mode, bool value )
+{
+  Guard guard ( this );
+
+  if( true == value )
+  {
+    this->setViewMode2D( mode );
+  }
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the view mode state
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::isViewMode( int mode )
+{
+  Guard guard ( this );
+  
+  // get the view mode
+  int viewMode ( this->getViewMode2D() );
+
+  if ( viewMode == mode )
+  {
+    return true;
+  }
+
+  return false;
 }
 
 
@@ -4165,8 +4313,11 @@ void VaporIntrusionGUIDocument::_addCrack( Usul::Math::Vec3f point )
   float bsw1 ( 0.0f );
   float bsw2 ( 0.0f );
 
+  // get the edit grid mode
+  int editMode ( this->getEditMode2D() );
+
   // X axis selected
-  if( _editGridMode2D == IVPI::CRACK_PLACEMENT_X )
+  if( editMode == IVPI::EDIT_X_GRID_2D )
   {
     axis = "X";
     grid = this->_getGridFromAxis( axis );
@@ -4177,7 +4328,7 @@ void VaporIntrusionGUIDocument::_addCrack( Usul::Math::Vec3f point )
   }
 
   // "Y" axis selected
-  if ( _editGridMode2D == IVPI::CRACK_PLACEMENT_Y )
+  if ( editMode == IVPI::EDIT_Y_GRID_2D )
   {
     axis = "Z";
     grid = this->_getGridFromAxis( axis );
@@ -4287,7 +4438,7 @@ void VaporIntrusionGUIDocument::_removeCrack( Usul::Math::Vec3f point )
   int editMode ( this->getEditMode2D() );
 
   // X axis selected
-  if( editMode == IVPI::CRACK_PLACEMENT_X )
+  if( editMode == IVPI::EDIT_X_GRID_2D )
   {
     // set the axis
     axis = "X";
@@ -4303,7 +4454,7 @@ void VaporIntrusionGUIDocument::_removeCrack( Usul::Math::Vec3f point )
   }
 
   // "Y" axis selected
-  if ( editMode == IVPI::CRACK_PLACEMENT_Y )
+  if ( editMode == IVPI::EDIT_Y_GRID_2D )
   {
     // set the axis
     axis = "Z";
@@ -4387,7 +4538,7 @@ void VaporIntrusionGUIDocument::_addGridPointFromViewer( Usul::Math::Vec3f point
     value = point[2];
     axis = "Z";
   }
-  else if( editMode == IVPI::EDIT_Y_GRID_2D && viewMode == IVPI::VIEW_MODE_2D_Z )
+  else if( editMode == IVPI::EDIT_Y_GRID_2D && viewMode == IVPI::VIEW_MODE_2D_XZ )
   {
     grid = this->_getGridFromAxis( "Y" );
     value = point[1];
@@ -4461,7 +4612,7 @@ void VaporIntrusionGUIDocument::_removeGridPointFromViewer( Usul::Math::Vec3f po
     value = point[2];
     axis = "Z";
   }
-  else if( editMode == IVPI::EDIT_Y_GRID_2D && viewMode == IVPI::VIEW_MODE_2D_Z )
+  else if( editMode == IVPI::EDIT_Y_GRID_2D && viewMode == IVPI::VIEW_MODE_2D_XZ )
   {
     grid = this->_getGridFromAxis( "Y" );
     value = point[1];
@@ -4568,6 +4719,9 @@ void VaporIntrusionGUIDocument::setViewMode2D( int mode )
   // rebuild the scene
   this->rebuildScene();
 
+  // set the view
+  this->_setCameraFromViewMode( mode );
+
 }
 
 
@@ -4594,7 +4748,15 @@ void VaporIntrusionGUIDocument::setObjectMode( int mode )
 {
   Guard guard ( this );
 
+  // set the object mode
   _objectMode = mode;
+
+  // clear out the current object
+  Object2D object ( 0, 0, 0, 1, 0, 1 );
+  _currentObject = object;
+
+  // rebuild the Scene
+  this->rebuildScene();
 }
 
 
@@ -4846,7 +5008,7 @@ osg::Node* VaporIntrusionGUIDocument::_drawBuilding2D()
     group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 0.0f, 1.0f, 1.0f ) ) );
   }
 
-  if( IVPI::VIEW_MODE_2D_Z == viewMode )
+  if( IVPI::VIEW_MODE_2D_XZ == viewMode )
   {
     Building b ( this-> building() );
     //set the points
@@ -4947,40 +5109,50 @@ osg::Node* VaporIntrusionGUIDocument::_buildObject()
 }
 
 
-void VaporIntrusionGUIDocument::objectMenuAddCrack()
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the camera position from the view mode
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_setCameraFromViewMode( int mode )
 {
   Guard guard ( this );
 
-  if( false == this->useBuilding() )
+  switch( mode )
   {
-    std::cout << "There must be a building present to add cracks!" << std::endl;
-    return;
+    case IVPI::VIEW_MODE_2D_XY :
+    {
+      // set the camera mode to top
+      Usul::Interfaces::ICamera::QueryPtr camera ( Usul::Documents::Manager::instance().activeView() );
+      if( true == camera.valid() )
+      {
+        camera->camera( OsgTools::Render::Viewer::TOP );
+      }
+      
+      // feedback
+      std::cout << "Setting 2D Grid Domain to the XY Grid" << std::endl; 
+    }
+    break;
+    case IVPI::VIEW_MODE_2D_XZ :
+    {
+      // set the camera mode to top
+      Usul::Interfaces::ICamera::QueryPtr camera ( Usul::Documents::Manager::instance().activeView() );
+      if( true == camera.valid() )
+      {
+        camera->camera( OsgTools::Render::Viewer::FRONT );
+      }
+      
+      // feedback
+      std::cout << "Setting 2D Grid Domain Mode to the XZ (Basement/Soil) Grid" << std::endl;
+    }
+    break;
+    default:
+      break;
   }
-
-  // set the edit mode to object placement
-  this->setEditMode2D( IVPI::CRACK_PLACEMENT_X );
-
-  // set the correct build mode
-  this->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
-
-  // set the camera mode to top
-  Usul::Interfaces::ICamera::QueryPtr camera ( Usul::Documents::Manager::instance().activeView() );
-  if( true == camera.valid() )
-  {
-    camera->camera( OsgTools::Render::Viewer::TOP );
-  }
-
-  // set the object type to building
-  _objectMode = IVPI::OBJECT_CRACK;
-
-  //// clear out the current object
-  //Object2D object ( 0, 0, 0, 1, 0, 1 );
-  //_currentObject = object;
-
-  // rebuild the Scene
-  this->rebuildScene();
-
 }
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Build the object
@@ -4997,22 +5169,8 @@ void VaporIntrusionGUIDocument::objectMenuAddBuilding()
   // set the correct build mode
   this->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
 
-  // set the camera mode to top
-  Usul::Interfaces::ICamera::QueryPtr camera ( Usul::Documents::Manager::instance().activeView() );
-  if( true == camera.valid() )
-  {
-    camera->camera( OsgTools::Render::Viewer::TOP );
-  }
-
   // set the object type to building
-  _objectMode = IVPI::OBJECT_BUILDING;
-
-  // clear out the current object
-  Object2D object ( 0, 0, 0, 1, 0, 1 );
-  _currentObject = object;
-
-  // rebuild the Scene
-  this->rebuildScene();
+  this->setObjectMode( IVPI::OBJECT_BUILDING );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

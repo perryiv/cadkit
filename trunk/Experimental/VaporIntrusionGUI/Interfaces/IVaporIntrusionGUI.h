@@ -50,7 +50,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   enum
   { 
     VIEW_MODE_2D_XY,
-    VIEW_MODE_2D_Z
+    VIEW_MODE_2D_XZ,
+    VIEW_MODE_2D_YZ
   };
 
   // build modes
@@ -68,9 +69,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     EDIT_Z_GRID_2D,
     OBJECT_PLACEMENT_2D,
     OBJECT_SIZE_XY,
-    OBJECT_SIZE_XZ,
-    CRACK_PLACEMENT_X,
-    CRACK_PLACEMENT_Y
+    OBJECT_SIZE_XZ
   };
 
   // Objects

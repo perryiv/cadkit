@@ -243,15 +243,23 @@ public:
 
   virtual void                setEditMode2D( int mode );
   virtual int                 getEditMode2D();
+  void                        setIsEditMode2D( int mode, bool value );
+  void                        setEditModeByAxis( const std::string& axis );
+  bool                        isEditMode( int mode );
 
   virtual void                setBuildMode2D( int mode );
   virtual int                 getBuildMode2D();
+  void                        setIsBuildMode2D( int mode, bool value );
+  bool                        isBuildMode( int mode );
 
   virtual void                setObjectMode( int mode );
   virtual int                 getObjectMode();
 
+
   virtual void                setViewMode2D( int mode );
   virtual int                 getViewMode2D();
+  void                        setIsViewMode2D( int mode, bool value );
+  bool                        isViewMode( int mode );
 
   virtual void                keyMovementChange( int x, int y );
 
@@ -274,8 +282,6 @@ public:
 
   // Object menu functions
   void                        objectMenuAddBuilding();
-
-  void                        objectMenuAddCrack();
 
   void                        handleNewObject();
 
@@ -337,6 +343,8 @@ protected:
   void                        _readCracks( const std::string& filename );
   
   int                         _getComparitor( const std::string& comparitor );
+
+  void                        _setCameraFromViewMode( int mode );
 
   
   void                        _activateDragger();

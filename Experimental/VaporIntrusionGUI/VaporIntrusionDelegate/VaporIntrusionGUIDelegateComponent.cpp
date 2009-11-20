@@ -220,8 +220,8 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     _xyzView->show();
     _xyView->show();
 
-    // disable the 2d axis
-    _xyView->viewer()->axesShown( false );
+    // swap the y and Z axis labels on the 2d viewer
+    _xyView->viewer()->axesLabels( "X", "Z", "Y" );
 
     // swap the y and Z axis labels on the 3d viewer
     _xyzView->viewer()->axesLabels( "X", "Z", "Y" );

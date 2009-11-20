@@ -386,8 +386,8 @@ protected:
   // object creation methods
   void                        _createNewBuilding();
 
-  
-
+  osg::Node *                 _createGridLabels2D();
+  osg::Node *                 _createText( osg::Vec3Array* positions, StringVec labels );
 
   
 

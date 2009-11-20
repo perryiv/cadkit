@@ -367,6 +367,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual void                  keyMovementChange( int x, int y ) = 0;
   virtual void                  handleNewObject() = 0;
+
+  // clear functions
+  virtual void                  clearObject() = 0;
     
 }; // struct IVaporIntrusionGUI
 

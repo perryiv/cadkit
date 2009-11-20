@@ -107,7 +107,9 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _objectMode( IVPI::OBJECT_NOTHING ),
   _viewMode2D( IVPI::VIEW_MODE_2D_XY ),
   _currentObject(),
-  _minimumGridDistance( 0.1f )
+  _minimumGridDistance( 0.1f ),
+  _root2DHi( new osg::Group ),
+  _object2D( new osg::Group )
 {
   USUL_TRACE_SCOPE;
 }
@@ -336,7 +338,14 @@ osg::Node *VaporIntrusionGUIDocument::buildScene ( const BaseClass::Options &opt
     OsgTools::State::StateSet::setLighting( _root2D.get(), false );
     OsgTools::State::PolygonMode::set( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE, _root2D->getOrCreateStateSet() );
     
-    return _root2D;
+    // setting everything not otherwise protected to wireframe mode
+    OsgTools::State::StateSet::setLighting( _object2D.get(), false );
+    OsgTools::State::PolygonMode::set( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE, _object2D->getOrCreateStateSet() );
+    
+    _root2DHi->addChild( _root2D.get() );
+    _root2DHi->addChild( _object2D.get() );
+
+    return _root2DHi;
   }
   
 }
@@ -518,7 +527,7 @@ void VaporIntrusionGUIDocument::_build2DScene( Usul::Interfaces::IUnknown *calle
 
   // Remove all the children
   _root2D->removeChildren( 0, _root2D->getNumChildren() );  
-
+  
   // restore the grid values
   this->_restoreGrid();
 
@@ -541,20 +550,24 @@ void VaporIntrusionGUIDocument::_build2DScene( Usul::Interfaces::IUnknown *calle
     _root2D->addChild( this->_buildZScene() );
   }
 
-
-  if( _editGridMode2D == IVPI::OBJECT_PLACEMENT_2D || 
-      _editGridMode2D == IVPI::OBJECT_SIZE_XY      ||
-      _editGridMode2D == IVPI::OBJECT_SIZE_XZ        )
-  {
-    _root2D->addChild( this->_buildObject() );
-  }
+  //if( _editGridMode2D == IVPI::OBJECT_PLACEMENT_2D || 
+  //    _editGridMode2D == IVPI::OBJECT_SIZE_XY      ||
+  //    _editGridMode2D == IVPI::OBJECT_SIZE_XZ        )
+  //{
+  //  _root2D->addChild( this->_buildObject() );
+  //}
 
   // build the 2d objects and add them to the scene
   // Building, sources, soils, etc.
   this->_build2DObjects();
 
+  // add any foundation cracks
+  _root2D->addChild( this->_drawCracks2D() );
+
   // build the grid labels
   _root2D->addChild( this->_createGridLabels2D() );
+
+  
 }
 
 
@@ -3952,6 +3965,7 @@ void VaporIntrusionGUIDocument::setIsViewMode2D( int mode, bool value )
   if( true == value )
   {
     this->setViewMode2D( mode );
+
   }
 
 }
@@ -4501,7 +4515,6 @@ void VaporIntrusionGUIDocument::_removeCrack( Usul::Math::Vec3f point )
     _cracks.first = newCracks;
   }
 
-
 }
 
 
@@ -4758,8 +4771,8 @@ void VaporIntrusionGUIDocument::setObjectMode( int mode )
   Object2D object ( 0, 0, 0, 1, 0, 1 );
   _currentObject = object;
 
-  // rebuild the Scene
-  this->rebuildScene();
+  // rebuild the scene
+  this->_rebuildObject();
 }
 
 
@@ -4774,6 +4787,21 @@ int VaporIntrusionGUIDocument::getObjectMode()
   Guard guard ( this );
 
   return _objectMode;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the object
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::clearObject()
+{
+  Guard guard ( this );
+
+  // Remove all the children
+  _object2D->removeChildren( 0, _root2D->getNumChildren() );
 }
 
 
@@ -4824,9 +4852,6 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
       _currentObject.ez = zsize - 1;
     }
 
-    // rebuild the scene
-    this->rebuildScene();
-
   }
 
   if( _editGridMode2D == IVPI::OBJECT_SIZE_XY )
@@ -4856,9 +4881,6 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
     {
       _currentObject.ez = zsize - 1;
     }
-
-    // rebuild the scene
-    this->rebuildScene();
 
   }
 
@@ -4890,15 +4912,30 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
       _currentObject.ey = ysize - 1;
     }
 
-    // rebuild the scene
-    this->rebuildScene();
-
   }
 
-  
-
+  // rebuild the scene
+  this->_rebuildObject();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Redraw the current object
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_rebuildObject()
+{
+  Guard guard( this );
+
+  // Remove all the children
+  _object2D->removeChildren( 0, _root2D->getNumChildren() );
+
+  // add the object
+  _object2D->addChild( this->_buildObject() );
+
+  this->requestRedraw();
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -5047,9 +5084,6 @@ void VaporIntrusionGUIDocument::_build2DObjects()
   {
     // add the building
     _root2D->addChild( this->_drawBuilding2D() );
-
-    // add any foundation cracks
-    _root2D->addChild( this->_drawCracks2D() );
 
   }
 
@@ -5469,7 +5503,6 @@ osg::Node * VaporIntrusionGUIDocument::_createText( osg::Vec3Array* positions, S
   osg::ref_ptr<osg::PolygonMode> mode ( new osg::PolygonMode );
   mode->setMode ( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL );
   stateset->setAttributeAndModes ( mode.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-
 
   // set the geode stateset
   geode->setStateSet( stateset.get() );

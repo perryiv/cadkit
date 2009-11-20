@@ -285,7 +285,8 @@ public:
 
   void                        handleNewObject();
 
-
+  // clear functions
+  void                        clearObject();
 
 
 
@@ -389,7 +390,10 @@ protected:
   osg::Node *                 _createGridLabels2D();
   osg::Node *                 _createText( osg::Vec3Array* positions, StringVec labels );
 
-  
+
+  // rebuild functions
+  void                        _rebuildObject();
+
 
 private:
     GroupPtr                  _root;
@@ -434,6 +438,10 @@ private:
 
     Object2D                  _currentObject;
     float                     _minimumGridDistance;
+
+    GroupPtr                  _root2DHi;
+    GroupPtr                  _object2D;
+
   
 };
 

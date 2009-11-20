@@ -331,6 +331,8 @@ osg::Node *VaporIntrusionGUIDocument::buildScene ( const BaseClass::Options &opt
     {
       this->_build2DScene( caller );      
     }
+
+    // setting everything not otherwise protected to wireframe mode
     OsgTools::State::StateSet::setLighting( _root2D.get(), false );
     OsgTools::State::PolygonMode::set( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE, _root2D->getOrCreateStateSet() );
     
@@ -394,7 +396,7 @@ void VaporIntrusionGUIDocument::_initCubes()
   _xValues.resize( xsize );
 
   // set the initial value and width
-  _xValues.at( 0 ).first = 0.0f - ( static_cast< double > ( xsize ) / 2 );
+  _xValues.at( 0 ).first = 0.0f /*- ( static_cast< double > ( xsize ) / 2 )*/;
   _xValues.at( 0 ).second = _initialSpacing[0];
 
   // add to the map
@@ -464,7 +466,7 @@ void VaporIntrusionGUIDocument::_initCubes()
   _zValues.resize( zsize );
 
   // set the initial value and width
-  _zValues.at( 0 ).first = 0.0f - ( static_cast< double > ( zsize ) / 2 );
+  _zValues.at( 0 ).first = 0.0f /*- ( static_cast< double > ( zsize ) / 2 )*/;
   _zValues.at( 0 ).second = _initialSpacing[2];
 
   // add to the map
@@ -551,7 +553,8 @@ void VaporIntrusionGUIDocument::_build2DScene( Usul::Interfaces::IUnknown *calle
   // Building, sources, soils, etc.
   this->_build2DObjects();
 
-  
+  // build the grid labels
+  _root2D->addChild( this->_createGridLabels2D() );
 }
 
 
@@ -5229,4 +5232,248 @@ void VaporIntrusionGUIDocument::_createNewBuilding()
 
   //rebuild the scene
   this->rebuildScene();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create labels for the grid points.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node * VaporIntrusionGUIDocument::_createGridLabels2D()
+{
+  Guard guard( this );
+
+  // group to store the labels
+  GroupPtr group ( new osg::Group );
+
+  // get the view mode
+  int viewMode ( this->getViewMode2D() );
+
+  
+
+  if( viewMode == IVPI::VIEW_MODE_2D_XY )
+  {    
+    // Create the X axis labels
+    {
+      // create a vec3array to hold the positions
+      osg::ref_ptr< osg::Vec3Array > positions ( new osg::Vec3Array );
+
+      // create the labels
+      StringVec labels;
+
+      // get the component values
+      float x ( _originalXValues.at( 0 ).first );        
+      float y ( 0.0f );
+      float z ( _originalZValues.at( _originalZValues.size() - 1 ).first );
+
+      // adjust z position modifier
+      float zMod ( 1.05 );
+
+      // adjust the x so it is outside the grid
+      float xMod (  0.25 * abs( _originalXValues.at( 1 ).first - x ) );
+
+      // add the vector of positions
+      positions->push_back( osg::Vec3 ( x - xMod, y, z * zMod ) );
+
+      // add the label
+      labels.push_back( Usul::Strings::format( "(", z, ")(", x, ")" ) );
+      
+      for( unsigned int i = 1; i < _originalXValues.size(); ++i )
+      {
+        // get the component values
+        x = _originalXValues.at( i ).first; 
+
+        // add the vector of positions
+        positions->push_back( osg::Vec3 ( x, y, z * zMod ) );
+
+        // add the label
+        labels.push_back( Usul::Strings::format( x ) );
+        
+      }
+
+      // create the labels
+      group->addChild( this->_createText( positions, labels ) );
+    }
+    {
+      // create a vec3array to hold the positions
+      osg::ref_ptr< osg::Vec3Array > positions ( new osg::Vec3Array );
+
+      // create the labels
+      StringVec labels;
+
+      // get the x component
+      float x ( _originalXValues.at( 0 ).first ); 
+
+      // adjust the x so it is outside the grid
+      float xMod (  0.25 * abs( _originalXValues.at( 1 ).first - x ) );
+
+      // set the y component
+      float y ( 0.0f );
+      
+      for( unsigned int i = 0; i < _originalZValues.size(); ++i )
+      {
+        // get the component values
+        float z ( _originalZValues.at( i ).first );     
+
+        // add the vector of positions
+        positions->push_back( osg::Vec3 ( x - xMod, y, z ) );
+
+        // add the label
+        labels.push_back( Usul::Strings::format( z ) );
+      }
+
+      // create the labels
+      group->addChild( this->_createText( positions, labels ) );
+    }
+  }
+
+  if( viewMode == IVPI::VIEW_MODE_2D_XZ )
+  {
+    // Create the X axis labels
+    {
+      // create a vec3array to hold the positions
+      osg::ref_ptr< osg::Vec3Array > positions ( new osg::Vec3Array );
+
+      // create the labels
+      StringVec labels;
+
+      // get the component values
+      float x ( _originalXValues.at( 0 ).first );        
+      float y ( _originalYValues.at( _originalYValues.size() - 1 ).first );
+      float z ( 0.0f );
+
+      // adjust z position modifier
+      float yMod ( 1.05 );
+
+      // adjust the x so it is outside the grid
+      float xMod (  0.25 * abs( _originalXValues.at( 1 ).first - x ) );
+
+      // add the vector of positions
+      positions->push_back( osg::Vec3 ( x - xMod, y * yMod, z ) );
+
+      // add the label
+      labels.push_back( Usul::Strings::format( "(", y, ")(", x, ")" ) );
+      
+      for( unsigned int i = 1; i < _originalXValues.size(); ++i )
+      {
+        // get the component values
+        x = _originalXValues.at( i ).first;        
+
+        // add the vector of positions
+        positions->push_back( osg::Vec3 ( x, y * yMod, z ) );
+
+        // add the label
+        labels.push_back( Usul::Strings::format( x ) );
+      }
+
+      // create the labels
+      group->addChild( this->_createText( positions, labels ) );
+    }
+    {
+      // create a vec3array to hold the positions
+      osg::ref_ptr< osg::Vec3Array > positions ( new osg::Vec3Array );
+
+      // create the labels
+      StringVec labels;
+
+      // x and z values
+      float x ( _originalXValues.at( 0 ).first );
+      float z ( 0.0f );  
+
+      // adjust the x so it is outside the grid
+      float xMod (  0.25 * abs( _originalXValues.at( 1 ).first - x ) );
+      
+      for( unsigned int i = 0; i < _originalYValues.size(); ++i )
+      {
+        // get the y value
+        float y ( _originalYValues.at( i ).first );
+
+        // add the vector of positions
+        positions->push_back( osg::Vec3 ( x - xMod, y, z ) );
+
+        // add the label
+        labels.push_back( Usul::Strings::format( y ) );
+      }
+
+      // create the labels
+      group->addChild( this->_createText( positions, labels ) );
+    }
+  }
+
+  return group.release();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create text objects from the input positions
+//  Used to label the grid points.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node * VaporIntrusionGUIDocument::_createText( osg::Vec3Array* positions, StringVec labels )
+{
+  Guard guard( this );
+
+  if( labels.size() != positions->size() )
+  {
+    return new osg::Group;
+  }
+
+  // create the font for the text
+  osg::ref_ptr< osgText::Font > font ( osgText::readFontFile ( "fonts/arial.ttf" ) );
+
+  // create the geode
+  osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+
+  // create the stateset
+  osg::ref_ptr< osg::StateSet > stateset ( geode->getOrCreateStateSet() );
+
+  for( unsigned int i = 0; i < positions->size(); ++i )
+  {
+    // create the text object
+    osg::ref_ptr< osgText::Text  > text ( new osgText::Text() );
+
+    // set the font, color, size mode
+    text->setFont( font.get() );
+    text->setColor( osg::Vec4f( 0, 0, 0, 1 ) );
+    text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
+
+    // don't use display lists
+    text->setUseDisplayList( false );
+
+    // get the vec2 of this position
+    osg::Vec3 p ( positions->at( i ) );
+    
+    // set the character size, position, layout, resolution and height
+    text->setCharacterSize( 20 );
+    text->setPosition( p );
+    text->setLayout( osgText::Text::LEFT_TO_RIGHT );
+    text->setFontResolution ( 32, 32 );
+    text->setMaximumHeight( 50 );
+
+    // create the string for the text
+    std::string tStr( Usul::Strings::format( labels.at( i ) ) );
+    
+    // set the text and set to autorotate to the screen
+    text->setText( tStr );
+    text->setAutoRotateToScreen( true );
+
+    // add the text object to the geode
+    geode->addDrawable( text.get() );
+
+  }
+
+  // make sure the stateset is set to fill and is protected
+  osg::ref_ptr<osg::PolygonMode> mode ( new osg::PolygonMode );
+  mode->setMode ( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL );
+  stateset->setAttributeAndModes ( mode.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+
+
+  // set the geode stateset
+  geode->setStateSet( stateset.get() );
+  
+  // return the geode
+  return geode.release();
 }

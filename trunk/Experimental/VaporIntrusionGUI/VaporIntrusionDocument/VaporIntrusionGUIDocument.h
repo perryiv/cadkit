@@ -329,6 +329,13 @@ protected:
 
   void                        _initCubes();
 
+  // update
+  
+  // rebuild functions
+  void                        _rebuildObject();
+  void                        _rebuildCracks();
+  void                        _rebuildScene3D();
+
   // Write the necessary files for the Vapor Intrusion Process
   void                        _write( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
   void                        _writeLayerFile( const std::string& directory ) const;
@@ -391,8 +398,7 @@ protected:
   osg::Node *                 _createText( osg::Vec3Array* positions, StringVec labels );
 
 
-  // rebuild functions
-  void                        _rebuildObject();
+  
 
 
 private:
@@ -441,6 +447,8 @@ private:
 
     GroupPtr                  _root2DHi;
     GroupPtr                  _object2D;
+    GroupPtr                  _cracks2D;
+    GroupPtr                  _labels2D;
 
   
 };

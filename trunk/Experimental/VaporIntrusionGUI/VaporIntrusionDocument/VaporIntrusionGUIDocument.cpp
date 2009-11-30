@@ -109,7 +109,9 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _currentObject(),
   _minimumGridDistance( 0.1f ),
   _root2DHi( new osg::Group ),
-  _object2D( new osg::Group )
+  _object2D( new osg::Group ),
+  _cracks2D( new osg::Group ),
+  _labels2D( new osg::Group )
 {
   USUL_TRACE_SCOPE;
 }
@@ -342,8 +344,22 @@ osg::Node *VaporIntrusionGUIDocument::buildScene ( const BaseClass::Options &opt
     OsgTools::State::StateSet::setLighting( _object2D.get(), false );
     OsgTools::State::PolygonMode::set( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE, _object2D->getOrCreateStateSet() );
     
+     // setting everything not otherwise protected to wireframe mode
+    OsgTools::State::StateSet::setLighting( _cracks2D.get(), false );
+    OsgTools::State::PolygonMode::set( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE, _cracks2D->getOrCreateStateSet() );
+    
+
+    // add the 2d root (grid information)
     _root2DHi->addChild( _root2D.get() );
+
+    // add the object information
     _root2DHi->addChild( _object2D.get() );
+
+    // add the cracks
+    _root2DHi->addChild( _cracks2D.get() );
+
+    // add the labels
+    _root2DHi->addChild( _labels2D.get() );
 
     return _root2DHi;
   }
@@ -562,7 +578,7 @@ void VaporIntrusionGUIDocument::_build2DScene( Usul::Interfaces::IUnknown *calle
   this->_build2DObjects();
 
   // add any foundation cracks
-  _root2D->addChild( this->_drawCracks2D() );
+  // _root2D->addChild( this->_drawCracks2D() );
 
   // build the grid labels
   _root2D->addChild( this->_createGridLabels2D() );
@@ -1281,6 +1297,26 @@ void VaporIntrusionGUIDocument::_makeSource3D()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Rebuild the 3D scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_rebuildScene3D()
+{
+  Guard guard ( this );
+
+  // if the 3D scene is already valid then...
+  if( true == _root.valid() )
+  {
+    // rebuild the 3D scene
+    this->_build3DScene();
+  }
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // Rebuild the scene
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1366,9 +1402,9 @@ osg::Node* VaporIntrusionGUIDocument::_buildCube( osg::Vec3Array* points, Color 
   geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
 
   // Colors
-
   colors->push_back( c );
-  // set the colors and set binding to per vertex
+
+  // set the colors and set binding
   geometry->setColorArray( colors.get() );
   geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
   
@@ -1384,6 +1420,7 @@ osg::Node* VaporIntrusionGUIDocument::_buildCube( osg::Vec3Array* points, Color 
 
   // Set the user data with the cube location
   group->setUserData( ud.get() );
+
   return group.release();
 }
 
@@ -4261,12 +4298,15 @@ void VaporIntrusionGUIDocument::handleLeftMouseClick( Usul::Math::Vec3f point )
   if( buildMode == IVPI::BUILD_MODE_GRID_EDIT )
   {
     this->_addGridPointFromViewer( point );
+    this->rebuildScene();
   }
 
   // foundation crack editing
   if( buildMode == IVPI::BUILD_MODE_CRACK_EDIT )
   {
     this->_addCrack( point );
+    this->_rebuildCracks();
+    this->_rebuildScene3D();
   }
 
 }
@@ -4289,12 +4329,15 @@ void VaporIntrusionGUIDocument::handleRightMouseClick( Usul::Math::Vec3f point )
   if( buildMode == IVPI::BUILD_MODE_GRID_EDIT )
   {
     this->_removeGridPointFromViewer( point );
+    this->rebuildScene();
   }
 
   // foundation crack editing
   if( buildMode == IVPI::BUILD_MODE_CRACK_EDIT )
   {
     this->_removeCrack( point );
+    this->_rebuildCracks();
+    this->_rebuildScene3D();
   }
 
 }
@@ -4394,6 +4437,34 @@ void VaporIntrusionGUIDocument::_addCrack( Usul::Math::Vec3f point )
   }
 
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update and rebuild cracks for 2D
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_rebuildCracks()
+{
+  Guard guard ( this );
+
+  if( false == _cracks2D.valid() )
+  {
+    _cracks2D = new osg::Group();
+  }
+
+  //remove all children
+  _cracks2D->removeChildren( 0, _cracks2D->getNumChildren() );
+
+  // rebuild the cracks
+  _cracks2D->addChild( this->_drawCracks2D() );
+
+  // redraw the scene
+  this->requestRedraw();
+    
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -5283,9 +5354,7 @@ osg::Node * VaporIntrusionGUIDocument::_createGridLabels2D()
   GroupPtr group ( new osg::Group );
 
   // get the view mode
-  int viewMode ( this->getViewMode2D() );
-
-  
+  int viewMode ( this->getViewMode2D() );  
 
   if( viewMode == IVPI::VIEW_MODE_2D_XY )
   {    

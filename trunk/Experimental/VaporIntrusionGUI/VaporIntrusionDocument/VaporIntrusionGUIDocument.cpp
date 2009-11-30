@@ -910,8 +910,10 @@ void VaporIntrusionGUIDocument::_makeCracks()
     float y( /*StrToFloat::convert( _building.z ) +*/ value );
 
     // set the "z" corners
-    float sx ( StrToFloat::convert( _building.x ) /*+ start*/ );
-    float ex ( StrToFloat::convert( _building.x ) + StrToFloat::convert( _building.w ) );
+    //float sx ( StrToFloat::convert( _building.x ) /*+ start*/ );
+    //float ex ( StrToFloat::convert( _building.x ) + StrToFloat::convert( _building.w ) );
+    float sx ( start );
+    float ex ( end );
 
     // points of the plane
     osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
@@ -920,10 +922,22 @@ void VaporIntrusionGUIDocument::_makeCracks()
     float sd ( StrToFloat::convert( _building.y  ) );
     float ed ( StrToFloat::convert( _building.y  ) + StrToFloat::convert( _building.h ) );
 
+    //points->push_back( osg::Vec3f ( sx, sd, y ) );
+    //points->push_back( osg::Vec3f ( ex, sd, y ) );
+    //points->push_back( osg::Vec3f ( ex, ed, y ) );
+    //points->push_back( osg::Vec3f ( sx, ed, y ) );
+
+#if 0
+    points->push_back( osg::Vec3f ( y, sd, sx ) );
+    points->push_back( osg::Vec3f ( y, sd, ex ) );
+    points->push_back( osg::Vec3f ( y, ed, ex ) );
+    points->push_back( osg::Vec3f ( y, ed, sx ) );
+#else
     points->push_back( osg::Vec3f ( sx, sd, y ) );
     points->push_back( osg::Vec3f ( ex, sd, y ) );
     points->push_back( osg::Vec3f ( ex, ed, y ) );
     points->push_back( osg::Vec3f ( sx, ed, y ) );
+#endif
 
     _root->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
 
@@ -996,10 +1010,17 @@ void VaporIntrusionGUIDocument::_makeCracks()
     float sd ( StrToFloat::convert( _building.y  ) );
     float ed ( StrToFloat::convert( _building.y  ) + StrToFloat::convert( _building.h ) );
 
+#if 1
     points->push_back( osg::Vec3f ( y, sd, sx ) );
     points->push_back( osg::Vec3f ( y, sd, ex ) );
     points->push_back( osg::Vec3f ( y, ed, ex ) );
     points->push_back( osg::Vec3f ( y, ed, sx ) );
+#else
+    points->push_back( osg::Vec3f ( sx, sd, y ) );
+    points->push_back( osg::Vec3f ( ex, sd, y ) );
+    points->push_back( osg::Vec3f ( ex, ed, y ) );
+    points->push_back( osg::Vec3f ( sx, ed, y ) );
+#endif
 
     _root->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
 
@@ -3892,7 +3913,7 @@ void VaporIntrusionGUIDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   MenuKit::Menu::RefPtr buildMenu ( toolsMenu->find ( "&Builds", true ) );
   buildMenu->append ( new ToggleButton ( genericIndexToggle( caller, Usul::Adaptors::memberFunction<bool> ( this, &VaporIntrusionGUIDocument::isBuildMode ), 
                                                                     Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::setIsBuildMode2D ),
-                                                                    "Grid (V)", IVPI::BUILD_MODE_GRID_EDIT ) ) );
+                                                                    "Grid (G)", IVPI::BUILD_MODE_GRID_EDIT ) ) );
   buildMenu->append ( new ToggleButton ( genericIndexToggle( caller, Usul::Adaptors::memberFunction<bool> ( this, &VaporIntrusionGUIDocument::isBuildMode ), 
                                                                     Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::setIsBuildMode2D ),
                                                                     "Crack (C)", IVPI::BUILD_MODE_CRACK_EDIT ) ) );
@@ -4409,30 +4430,30 @@ void VaporIntrusionGUIDocument::_addCrack( Usul::Math::Vec3f point )
     return;
   }
 
-  if( "X" == axis )
-  {
-    // create the crack
-    std::string start ( _building.z );
-    std::string end   ( Usul::Strings::format ( StrToFloat::convert ( start ) + StrToFloat::convert ( _building.l ) ) ); 
-    Crack crack( start, end, Usul::Strings::format ( grid.at( index ).first ) );
-
-    // add the cracks to the list of cracks for the X axis
-    if( false == this->_crackExists( _cracks.second, crack ) )
-    {
-      _cracks.second.push_back( crack );
-    }
-  }
   if( "Z" == axis )
   {
     // create the crack
     std::string start ( _building.x );
+    std::string end   ( Usul::Strings::format ( StrToFloat::convert ( start ) + StrToFloat::convert ( _building.l ) ) ); 
+    Crack crack( start, end, Usul::Strings::format ( grid.at( index ).first ) );
+
+    // add the cracks to the list of cracks for the X axis
+    if( false == this->_crackExists( _cracks.first, crack ) )
+    {
+      _cracks.first.push_back( crack );
+    }
+  }
+  if( "X" == axis )
+  {
+    // create the crack
+    std::string start ( _building.z );
     std::string end   ( Usul::Strings::format ( StrToFloat::convert ( start ) + StrToFloat::convert ( _building.w ) ) ); 
     Crack crack( start, end, Usul::Strings::format ( grid.at( index ).first ) );
 
     // add the cracks to the list of cracks for the Z axis
-    if( false == this->_crackExists( _cracks.first, crack ) )
+    if( false == this->_crackExists( _cracks.second, crack ) )
     {
-      _cracks.first.push_back( crack );
+      _cracks.second.push_back( crack );
     }
   }
 
@@ -5040,10 +5061,18 @@ osg::Node* VaporIntrusionGUIDocument::_drawCracks2D()
 
     // points of the plane
     osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+
+#if 1
     points->push_back( osg::Vec3f ( sx, 0.0001, y ) );
     points->push_back( osg::Vec3f ( ex, 0.0001, y ) );
     points->push_back( osg::Vec3f ( ex, 0.0001, y ) );
     points->push_back( osg::Vec3f ( sx, 0.0001, y ) );
+#else
+    points->push_back( osg::Vec3f ( y, 0.0001, sx ) );
+    points->push_back( osg::Vec3f ( y, 0.0001, ex ) );
+    points->push_back( osg::Vec3f ( y, 0.0001, ex ) );
+    points->push_back( osg::Vec3f ( y, 0.0001, sx ) );
+#endif
 
     group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
 
@@ -5069,10 +5098,23 @@ osg::Node* VaporIntrusionGUIDocument::_drawCracks2D()
 
     // points of the plane
     osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+
+#if 0
+    points->push_back( osg::Vec3f ( sx, 0.0001, y ) );
+    points->push_back( osg::Vec3f ( ex, 0.0001, y ) );
+    points->push_back( osg::Vec3f ( ex, 0.0001, y ) );
+    points->push_back( osg::Vec3f ( sx, 0.0001, y ) );
+#else
     points->push_back( osg::Vec3f ( y, 0.0001, sx ) );
     points->push_back( osg::Vec3f ( y, 0.0001, ex ) );
     points->push_back( osg::Vec3f ( y, 0.0001, ex ) );
     points->push_back( osg::Vec3f ( y, 0.0001, sx ) );
+#endif
+
+    //points->push_back( osg::Vec3f ( y, 0.0001, sx ) );
+    //points->push_back( osg::Vec3f ( y, 0.0001, ex ) );
+    //points->push_back( osg::Vec3f ( y, 0.0001, ex ) );
+    //points->push_back( osg::Vec3f ( y, 0.0001, sx ) );
 
     group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
 

@@ -297,7 +297,7 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
         std::cout << "Setting edit mode to foundation cracks.  Right and left clicks will add/remove cracks" << std::endl;
       }
         break;
-      case Qt::Key_V:
+      case Qt::Key_G:
       {
         document->setBuildMode2D( IVPI::BUILD_MODE_GRID_EDIT );
         std::cout << "Setting edit mode to grid lines.  Right and left clicks will add/remove grid lines" << std::endl;

@@ -164,7 +164,7 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
   }
 
   // rebuild the scene
-  document->rebuildScene();
+  //document->rebuildScene();
 
   //BaseClass::mousePressEvent( event );
 }

@@ -398,7 +398,8 @@ protected:
   osg::Node *                 _createText( osg::Vec3Array* positions, StringVec labels );
 
 
-  
+  bool                        _checkGridForObject( const std::string& axis, float point );
+  bool                        _checkBuildingEdges( const std::string& axis, float point );
 
 
 private:

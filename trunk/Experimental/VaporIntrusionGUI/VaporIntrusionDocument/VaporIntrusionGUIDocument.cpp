@@ -4489,6 +4489,80 @@ void VaporIntrusionGUIDocument::_rebuildCracks()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  check to see if a building edge lies on the <point> in the <axis>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::_checkBuildingEdges( const std::string& axis, float point )
+{
+  Guard guard ( this );
+
+  Building b (  this->building() );
+
+  if( "X" == axis )
+  {
+    float p1 ( StrToFloat::convert( b.x ) );
+    float p2 ( p1 + StrToFloat::convert( b.l ) );
+    
+    if( point > p1 - 0.000001 && point < p1 + 0.000001 )
+      return true;
+
+    if( point > p2 - 0.000001 && point < p2 + 0.000001 )
+      return true;
+    
+  }
+
+  if( "Y" == axis )
+  {
+    float p1 ( StrToFloat::convert( b.y ) );
+    float p2 ( p1 + StrToFloat::convert( b.h ) );
+    
+    if( point > p1 - 0.000001 && point < p1 + 0.000001 )
+      return true;
+
+    if( point > p2 - 0.000001 && point < p2 + 0.000001 )
+      return true;
+  }
+
+  if( "Z" == axis )
+  {
+
+    float p1 ( StrToFloat::convert( b.z ) );
+    float p2 ( p1 + StrToFloat::convert( b.w ) );
+    
+    if( point > p1 - 0.000001 && point < p1 + 0.000001 )
+      return true;
+
+    if( point > p2 - 0.000001 && point < p2 + 0.000001 )
+      return true;
+  }
+
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Verify whether or not an object occupies the selected grid point
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::_checkGridForObject( const std::string& axis, float point )
+{
+  Guard guard ( this );
+
+  // check the building
+  if( true == this->useBuilding() && true == this->_checkBuildingEdges( axis, point ) )
+  {
+    return true;
+  }
+
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Check if <crack> exists in <cracks>
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -4728,6 +4802,17 @@ void VaporIntrusionGUIDocument::_removeGridPointFromViewer( Usul::Math::Vec3f po
   }
   else
   {
+    return;
+  }
+
+  // get the value of the nearest grid point
+  unsigned int index ( this->_closestGridPoint( value, grid ) );
+  float gridPointValue ( grid.at( index ).first );
+
+  // make sure there aren't any objects on the point 
+  if( true == this->_checkGridForObject( axis, gridPointValue ) )
+  {
+    std::cout << "Error: cannot remove a grid point where an object lies." << std::endl;
     return;
   }
 

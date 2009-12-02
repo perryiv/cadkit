@@ -393,6 +393,7 @@ protected:
 
   // object creation methods
   void                        _createNewBuilding();
+  void                        _setBuildingLocationFromClick( Usul::Math::Vec3f point );
 
   osg::Node *                 _createGridLabels2D();
   osg::Node *                 _createText( osg::Vec3Array* positions, StringVec labels );

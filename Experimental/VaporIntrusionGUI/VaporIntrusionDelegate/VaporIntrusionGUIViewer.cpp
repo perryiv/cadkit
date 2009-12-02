@@ -30,8 +30,6 @@
 #include "QtGui/QFileDialog"
 #include "QtGui/QMessageBox"
 
-#include "osg/Material"
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -67,10 +65,24 @@ void VaporIntrusionGUIViewer::mouseMoveEvent ( QMouseEvent * event )
 
   if( true == viewer->picking() )
     return;
+  // Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument()->queryInterface( VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::IID ) );
+   
+  // Check for a valid pointer
+  if( false == document.valid() )
+    return;
 
+  // get the mouse position in world space
+  osg::Vec3d p ( this->_getIntersectPoint( event ) );
+
+  // set the mouse coords
+  //document->setMouseCoords( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
+
+  const bool left   ( ( true == event->buttons().testFlag ( Qt::LeftButton  ) ) );
+  const bool right  ( ( true == event->buttons().testFlag ( Qt::RightButton ) ) );
   const bool middle ( ( true == event->buttons().testFlag ( Qt::MidButton   ) ) );
 
-  if( true == middle )
+  if( false == left && false == right )
   {
     BaseClass::mouseMoveEvent( event );
   }
@@ -101,21 +113,18 @@ void VaporIntrusionGUIViewer::mouseDoubleClickEvent ( QMouseEvent * event )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  A mouse button has been pressed.
+//  Get the mouse intersection point
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
+osg::Vec3d VaporIntrusionGUIViewer::_getIntersectPoint( QMouseEvent * event )
 {
-  if ( 0x0 == event )
-    return;
-
-  typedef OsgTools::Render::EventAdapter EventAdapter;
+   typedef OsgTools::Render::EventAdapter EventAdapter;
   typedef osgUtil::LineSegmentIntersector::Intersections Intersections;
 
   OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
   if ( false == viewer.valid() )
-    return;
+    return osg::Vec3d( 0.0, 0.0, 0.0 );
 
   // Declare the event adapter.
   EventAdapter::Ptr ea ( new EventAdapter );
@@ -132,17 +141,35 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
 
   // Check for a valid pointer
   if( false == intersector.valid() )
-    return;
+    return osg::Vec3d( 0.0, 0.0, 0.0 );
 
   // Create an intersections list
   Intersections hits;
 
   // Grab all the intersections and make sure there is a hit
   if( false == intersector->intersect( float( x ), float( y ), hits ) )
-    return;
+    return osg::Vec3d( 0.0, 0.0, 0.0 );
 
   // get the first hit
   osgUtil::LineSegmentIntersector::Intersection hit ( *hits.begin() );
+
+  // get the point on the model where the intersection occured
+  osg::Vec3d p ( hit.getLocalIntersectPoint() );
+
+  return p;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  A mouse button has been pressed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
+{
+  if ( 0x0 == event )
+    return;
 
   // Query the active document for IVaporIntrusionGUI
   VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument()->queryInterface( VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::IID ) );
@@ -151,12 +178,14 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
   if( false == document.valid() )
     return;
 
-  // get the point on the model where the intersection occured
-  osg::Vec3d p ( hit.getLocalIntersectPoint() );
-
   const bool left   ( ( true == event->buttons().testFlag ( Qt::LeftButton  ) ) );
   const bool right  ( ( true == event->buttons().testFlag ( Qt::RightButton ) ) );
   const bool middle ( ( true == event->buttons().testFlag ( Qt::MidButton   ) ) );
+
+  osg::Vec3d p ( this->_getIntersectPoint( event ) );
+
+  // set the mouse coords
+  // document->setMouseCoords( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
 
   if( true == left )
   {

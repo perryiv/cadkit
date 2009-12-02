@@ -15,6 +15,7 @@
 
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IViewPort.h"
+#include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ICamera.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -86,7 +87,7 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _inputParameters(),
   _draggerState( false ),
   _gridMaterials(),
-  _building( "1", "1", "1", "0", "0", "0", "0", "", "" ),
+  _building( "1", "1", "1", "0", "0", "0", "0", "0", "", "" ),
   _useBuilding( false ),
   _sources(),
   _contaminants(),
@@ -111,7 +112,11 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _root2DHi( new osg::Group ),
   _object2D( new osg::Group ),
   _cracks2D( new osg::Group ),
-  _labels2D( new osg::Group )
+  _labels2D( new osg::Group ),
+  _mouseXCoord( 0.0f ),
+  _mouseYCoord( 0.0f ),
+  _textXPos( 0 ),
+  _textYPos( 0 )
 {
   USUL_TRACE_SCOPE;
 }
@@ -376,7 +381,9 @@ osg::Node *VaporIntrusionGUIDocument::buildScene ( const BaseClass::Options &opt
 
 void VaporIntrusionGUIDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
-
+  //std::string message ( Usul::Strings::format( "Cursor: ( ", _mouseXCoord, ", ", _mouseYCoord, " )" )  );
+  //this->_setStatusText( message, _textXPos, _textYPos, 0.20, 0.05, caller );
+  //this->requestRedraw();
 }
 
 
@@ -1190,7 +1197,7 @@ void VaporIntrusionGUIDocument::_makeSymmetricalBuilding( )
   std::string newY ( Usul::Convert::Type< double, std::string >::convert( _yValues.at( _yValues.size() - 1 ).first + _yValues.at( _yValues.size() - 1 ).second ) );
   std::string newZ ( Usul::Convert::Type< double, std::string >::convert( _zValues.at( zi ).first ) );
   std::string vol ( "1" );
-  Building newB ( _building.l, _building.w, _building.h, newX, newY, newZ, vol, _building.xrate, _building.thickness );
+  Building newB ( _building.l, _building.w, _building.h, newX, newY, newZ, _building.depth, _building.v , _building.xrate, _building.thickness );
   _building = newB;
 
   // color for the building
@@ -5587,7 +5594,7 @@ void VaporIntrusionGUIDocument::_createNewBuilding()
   float h ( ey - sy );
 
   // create a building object with the parameters entered in the 2D window
-  Building b ( FTS::convert( l ), FTS::convert( w ), FTS::convert( h ), FTS::convert( sx ), FTS::convert( sy ), FTS::convert( sz ), "1", "1", "1" );
+  Building b ( FTS::convert( l ), FTS::convert( w ), FTS::convert( h ), FTS::convert( sx ), FTS::convert( sy ), FTS::convert( sz ), "0", "1", "1", "1" );
 
   // set the building
   _building = b;
@@ -5838,4 +5845,71 @@ osg::Node * VaporIntrusionGUIDocument::_createText( osg::Vec3Array* positions, S
   
   // return the geode
   return geode.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Update the mouse coordinates in world space
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setMouseCoords( Usul::Math::Vec3f point )
+{
+  Guard guard ( this );
+
+  // get the current view mode
+  int viewMode ( this->getViewMode2D() );
+
+  if( viewMode == IVPI::VIEW_MODE_2D_XY )
+  {
+    _mouseXCoord = point[0];
+    _mouseYCoord = point[2];
+  }
+
+  if( viewMode == IVPI::VIEW_MODE_2D_XZ )
+  {
+    _mouseXCoord = point[0];
+    _mouseYCoord = point[1];
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Update the status text
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_setStatusText( const std::string message, unsigned int &textXPos, unsigned int &textYPos,
+                                                double xmult, double ymult, Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  // useful typedefs
+  typedef Usul::Interfaces::ITextMatrix::QueryPtr ITextPtr;
+  typedef Usul::Interfaces::IViewport::QueryPtr   IViewPortPtr;
+
+  ITextPtr textMatrix ( caller );
+  if( false == textMatrix.valid() )
+    throw std::runtime_error ( "Error 3793514250: Failed to find a valid interface to Usul::Interfaces::ITextMatrix " );
+
+  IViewPortPtr viewPort( caller );
+  if( false == viewPort.valid() )
+    throw std::runtime_error ( "Error 2482359443: Failed to find a valid interface to Usul::Interfaces::IViewport " );
+
+  textMatrix->removeText( static_cast< unsigned int > ( textXPos ),
+                          static_cast< unsigned int > ( textYPos ) );
+   
+  const double xpos ( ::floor( viewPort->width()  * xmult ) );
+  const double ypos ( ::floor( viewPort->height() * ymult ) );
+
+  osg::Vec4f fcolor (  1.0, 1.0, 1.0, 1 );
+  osg::Vec4f bcolor (  0.0, 0.0, 0.0, 1 );
+
+  textXPos = static_cast< unsigned int > ( xpos );
+  textYPos = static_cast< unsigned int > ( ypos );
+
+  textMatrix->setText ( textXPos, textYPos, message, fcolor, bcolor );
 }

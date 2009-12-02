@@ -120,17 +120,18 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   {
     std::string l,w,h;
     std::string x,y,z;
-    std::string v, xrate, thickness;
+    std::string depth, v, xrate, thickness;
 
     Building( const std::string& length, const std::string& width, const std::string& height,
-              const std::string& xpos, const std::string& ypos, const std::string& zpos, const std::string& vol,
+              const std::string& xpos, const std::string& ypos, const std::string& zpos, 
+              const std::string& d, const std::string& vol,
               const std::string& xr, const std::string& th ):
     l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ),
-    v ( vol ), xrate ( xr ), thickness( th )
+    depth( d ), v ( vol ), xrate ( xr ), thickness( th )
     {};
 
     Building():
-    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" ), v(  "1" ), xrate ( "" ), thickness( "" )
+    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" ), depth( "0" ), v(  "1" ), xrate ( "" ), thickness( "" )
     {};
   };
   
@@ -352,6 +353,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual void                  handleLeftMouseClick( Usul::Math::Vec3f point ) = 0;
   virtual void                  handleRightMouseClick( Usul::Math::Vec3f point ) = 0;
+  virtual void                  setMouseCoords( Usul::Math::Vec3f point ) = 0;
 
   // edit modes for the 2D grid
   virtual void                  setEditMode2D( int mode ) = 0;
@@ -371,6 +373,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   // clear functions
   virtual void                  clearObject() = 0;
+
+  
+
     
 }; // struct IVaporIntrusionGUI
 

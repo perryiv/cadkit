@@ -25,6 +25,8 @@
 
 #include "OsgTools/Render/Viewer.h"
 
+#include "osg/Material"
+
 class VaporIntrusionGUIViewer : public CadKit::Helios::Views::OSG::Viewer
 {
 
@@ -52,6 +54,7 @@ protected:
 
   void                            _initializeViewDirection();
   void                            _handleArrowKeys( int key, IVPI::QueryPtr document );
+  osg::Vec3d                      _getIntersectPoint( QMouseEvent * event );
 
  private:
  

@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>441</width>
-    <height>509</height>
+    <width>394</width>
+    <height>398</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -15,8 +15,8 @@
   <widget class="QDialogButtonBox" name="okCancelButtons" >
    <property name="geometry" >
     <rect>
-     <x>130</x>
-     <y>460</y>
+     <x>110</x>
+     <y>350</y>
      <width>160</width>
      <height>32</height>
     </rect>
@@ -33,165 +33,24 @@
     <rect>
      <x>30</x>
      <y>20</y>
-     <width>381</width>
-     <height>421</height>
+     <width>331</width>
+     <height>291</height>
     </rect>
    </property>
    <property name="title" >
     <string>Building Parameters</string>
    </property>
-   <widget class="QCheckBox" name="_buildingExists" >
-    <property name="geometry" >
-     <rect>
-      <x>69</x>
-      <y>40</y>
-      <width>121</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text" >
-     <string>Is there a Building?</string>
-    </property>
-   </widget>
-   <widget class="QGroupBox" name="groupBox" >
-    <property name="geometry" >
-     <rect>
-      <x>60</x>
-      <y>90</y>
-      <width>231</width>
-      <height>141</height>
-     </rect>
-    </property>
-    <property name="title" >
-     <string>Geometry</string>
-    </property>
-    <widget class="QLineEdit" name="_x" >
-     <property name="geometry" >
-      <rect>
-       <x>40</x>
-       <y>30</y>
-       <width>51</width>
-       <height>23</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="_y" >
-     <property name="geometry" >
-      <rect>
-       <x>40</x>
-       <y>60</y>
-       <width>51</width>
-       <height>23</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_14" >
-     <property name="geometry" >
-      <rect>
-       <x>19</x>
-       <y>30</y>
-       <width>16</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text" >
-      <string>X</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_8" >
-     <property name="geometry" >
-      <rect>
-       <x>19</x>
-       <y>60</y>
-       <width>16</width>
-       <height>18</height>
-      </rect>
-     </property>
-     <property name="text" >
-      <string>Y</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="_lengthField" >
-     <property name="geometry" >
-      <rect>
-       <x>160</x>
-       <y>30</y>
-       <width>51</width>
-       <height>23</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="_widthField" >
-     <property name="geometry" >
-      <rect>
-       <x>160</x>
-       <y>60</y>
-       <width>51</width>
-       <height>23</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_10" >
-     <property name="geometry" >
-      <rect>
-       <x>110</x>
-       <y>90</y>
-       <width>42</width>
-       <height>18</height>
-      </rect>
-     </property>
-     <property name="text" >
-      <string>Volume</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="_volume" >
-     <property name="geometry" >
-      <rect>
-       <x>160</x>
-       <y>90</y>
-       <width>51</width>
-       <height>23</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_2" >
-     <property name="geometry" >
-      <rect>
-       <x>120</x>
-       <y>30</y>
-       <width>41</width>
-       <height>18</height>
-      </rect>
-     </property>
-     <property name="text" >
-      <string>Length</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_3" >
-     <property name="geometry" >
-      <rect>
-       <x>120</x>
-       <y>60</y>
-       <width>33</width>
-       <height>18</height>
-      </rect>
-     </property>
-     <property name="text" >
-      <string>Width</string>
-     </property>
-    </widget>
-   </widget>
    <widget class="QGroupBox" name="groupBox_3" >
     <property name="geometry" >
      <rect>
-      <x>60</x>
-      <y>240</y>
-      <width>231</width>
-      <height>131</height>
+      <x>40</x>
+      <y>80</y>
+      <width>261</width>
+      <height>191</height>
      </rect>
     </property>
     <property name="title" >
-     <string>Foundation</string>
+     <string/>
     </property>
     <widget class="QLineEdit" name="_depth" >
      <property name="geometry" >
@@ -262,18 +121,41 @@
       </rect>
      </property>
     </widget>
+    <widget class="QLabel" name="label_10" >
+     <property name="geometry" >
+      <rect>
+       <x>90</x>
+       <y>120</y>
+       <width>42</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="text" >
+      <string>Volume</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="_volume" >
+     <property name="geometry" >
+      <rect>
+       <x>140</x>
+       <y>120</y>
+       <width>51</width>
+       <height>23</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
-   <widget class="QCheckBox" name="_symmetricalCheckBox" >
+   <widget class="QCheckBox" name="_useBuilding" >
     <property name="geometry" >
      <rect>
-      <x>70</x>
-      <y>60</y>
-      <width>161</width>
+      <x>50</x>
+      <y>40</y>
+      <width>211</width>
       <height>22</height>
      </rect>
     </property>
     <property name="text" >
-     <string>Symmetrical Grid Space</string>
+     <string>Building is present in experiment</string>
     </property>
    </widget>
   </widget>

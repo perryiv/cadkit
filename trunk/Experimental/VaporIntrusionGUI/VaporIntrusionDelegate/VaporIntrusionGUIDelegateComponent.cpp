@@ -566,7 +566,7 @@ void VaporIntrusionGUIDelegateComponent::editBuilding()
   editor.building( document->building() );
 
   // initialize
-  editor.initialize();
+  editor.initialize( document->useBuilding() );
 
   // Show the dialog.
   if ( QDialog::Accepted != editor.exec() )
@@ -575,8 +575,20 @@ void VaporIntrusionGUIDelegateComponent::editBuilding()
   // set the grid symmetry
   document->symmetricalGrid( editor.symmetricGrid() );
 
+  // get the document's building
+  Building bDoc ( document->building() );
+
+  // get the editor's building
+  Building bDlg ( editor.building() );
+
+  // set the appropriate parameters from the dialog
+  bDoc.thickness = bDlg.thickness;
+  bDoc.xrate = bDlg.xrate;
+  bDoc.v = bDlg.v;
+  bDoc.depth = bDlg.depth;
+
   // reset the building information
-  document->building( editor.building() );
+  document->building( bDoc );
 
   // set the use building state
   document->useBuilding( editor.useBuilding() );

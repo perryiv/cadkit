@@ -263,6 +263,8 @@ public:
 
   virtual void                keyMovementChange( int x, int y );
 
+  virtual void                setMouseCoords( Usul::Math::Vec3f point );
+
 
   // Show/Hide functions
   void                        showBuilding ( bool b );
@@ -403,6 +405,10 @@ protected:
   bool                        _checkBuildingEdges( const std::string& axis, float point );
   bool                        _checkBuildingInterior( const std::string& axis, float point );
 
+  
+  void                        _setStatusText( const std::string message, unsigned int &textXPos, unsigned int &textYPos,
+                                              double xmult, double ymult, Usul::Interfaces::IUnknown *caller );
+
 
 private:
     GroupPtr                  _root;
@@ -452,6 +458,11 @@ private:
     GroupPtr                  _object2D;
     GroupPtr                  _cracks2D;
     GroupPtr                  _labels2D;
+
+    float                     _mouseXCoord;
+    float                     _mouseYCoord;
+    unsigned int              _textXPos;
+    unsigned int              _textYPos;
 
   
 };

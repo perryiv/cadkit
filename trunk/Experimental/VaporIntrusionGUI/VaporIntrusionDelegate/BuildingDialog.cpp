@@ -41,7 +41,7 @@ _building()
   //_cracksTable->setHorizontalHeaderLabels( titles );
 
   //initialize the table view
-  this->initialize();
+  this->initialize( false );
 }
 
 
@@ -65,9 +65,10 @@ BuildingDialog::~BuildingDialog()
 
 BuildingDialog::Building BuildingDialog::building()
 {
-  Building b( _lengthField->text().toStdString(), _depth->text().toStdString(), _widthField->text().toStdString(), 
-              _x->text().toStdString(), "0", _y->text().toStdString(), 
-              _volume->text().toStdString(), _exchangeRate->text().toStdString(), _thickness->text().toStdString() );
+  Building b( "0", "0", "0", 
+              "0", "0", "0", 
+              _depth->text().toStdString(), _volume->text().toStdString(), 
+              _exchangeRate->text().toStdString(), _thickness->text().toStdString() );
   //b.cracks = _building.cracks;  
   _building = b;
 
@@ -94,9 +95,9 @@ void BuildingDialog::building( Building b )
 ///////////////////////////////////////////////////////////////////////////////
 
 bool BuildingDialog::useBuilding()
-{
-  bool value ( _buildingExists->checkState() );
-  return value;
+{  
+  bool checked ( this->_useBuilding->isChecked() );
+  return checked;
 }
 
 
@@ -107,16 +108,14 @@ bool BuildingDialog::useBuilding()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void BuildingDialog::initialize()
+void BuildingDialog::initialize( bool useBuilding )
 {
-  _x->setText( "0" );
-  _y->setText( "0" );
-  _depth->setText( "1" );
-  _lengthField->setText( "1" );
-  _widthField->setText( "1" );
-  _exchangeRate->setText( "0" );
-  _thickness->setText( "0" );
-  _volume->setText( "1" );
+  // set the building dialog defaults
+  _depth->setText( _building.depth.c_str() );
+  _exchangeRate->setText( _building.xrate.c_str() );
+  _thickness->setText( _building.thickness.c_str() );
+  _volume->setText( _building.v.c_str() );
+  _useBuilding->setChecked( useBuilding );
 }
 
 
@@ -129,7 +128,7 @@ void BuildingDialog::initialize()
 
 bool BuildingDialog::symmetricGrid()
 {
-  return _symmetricalCheckBox->isChecked();
+  return false;
 }
 
 

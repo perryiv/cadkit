@@ -45,7 +45,7 @@ public:
   void     building( Building b );
   bool     useBuilding();
 
-  void     initialize();
+  void     initialize( bool useBuilding );
   bool     symmetricGrid();
 
 

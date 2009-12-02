@@ -68,7 +68,12 @@ void VaporIntrusionGUIViewer::mouseMoveEvent ( QMouseEvent * event )
   if( true == viewer->picking() )
     return;
 
-  //BaseClass::mouseMoveEvent( event );
+  const bool middle ( ( true == event->buttons().testFlag ( Qt::MidButton   ) ) );
+
+  if( true == middle )
+  {
+    BaseClass::mouseMoveEvent( event );
+  }
 }
 
 
@@ -151,6 +156,7 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
 
   const bool left   ( ( true == event->buttons().testFlag ( Qt::LeftButton  ) ) );
   const bool right  ( ( true == event->buttons().testFlag ( Qt::RightButton ) ) );
+  const bool middle ( ( true == event->buttons().testFlag ( Qt::MidButton   ) ) );
 
   if( true == left )
   {
@@ -166,7 +172,10 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
   // rebuild the scene
   //document->rebuildScene();
 
-  //BaseClass::mousePressEvent( event );
+  if( true == middle )
+  {
+    BaseClass::mousePressEvent( event );
+  }
 }
 
 
@@ -272,6 +281,23 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
       }
       break;
 
+      case Qt::Key_Escape :
+      {
+        // reset edit mode to idle
+        document->setEditMode2D( IVPI::EDIT_MODE_IDLE );
+
+        // reset to teh default view
+        std::cout << "Setting 2D Grid Domain to the XY Grid" << std::endl;
+        document->setViewMode2D( IVPI::VIEW_MODE_2D_XY ); 
+
+        // set the object type to nothing
+        document->setObjectMode( IVPI::OBJECT_NOTHING );
+
+        // clear the temp object
+        document->clearObject();
+      }
+      break;
+
       case Qt::Key_B :
       {
         // set the edit mode to object placement
@@ -336,6 +362,9 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
 
           // clear the temp object
           document->clearObject();
+
+          // set the object type to nothing
+          document->setObjectMode( IVPI::OBJECT_NOTHING );
         }
         
         std::cout << "Setting 2D Grid Size Object Mode" << std::endl;

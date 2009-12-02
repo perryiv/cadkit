@@ -400,6 +400,7 @@ protected:
 
   bool                        _checkGridForObject( const std::string& axis, float point );
   bool                        _checkBuildingEdges( const std::string& axis, float point );
+  bool                        _checkBuildingInterior( const std::string& axis, float point );
 
 
 private:

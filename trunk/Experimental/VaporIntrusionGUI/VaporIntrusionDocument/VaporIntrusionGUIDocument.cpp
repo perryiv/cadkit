@@ -4489,6 +4489,55 @@ void VaporIntrusionGUIDocument::_rebuildCracks()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Check to see if a grid point lies within the building x and z bounds.
+//  This will make sure that foundation crack rules are followed when
+//  removing a grid point.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::_checkBuildingInterior( const std::string& axis, float point )
+{
+  Guard guard ( this );
+
+  // we don't care about the y axis since cracks are only placed in x and z
+  if( "Y" == axis )
+  {
+    return false;
+  }
+
+  // get the building
+  Building b ( this->building() );
+
+  // get the dimensions in the x and z axises
+  float sx ( StrToFloat::convert( b.x ) );
+  float ex ( sx + StrToFloat::convert( b.l ) );
+  float sz ( StrToFloat::convert( b.z ) );
+  float ez ( sx + StrToFloat::convert( b.w ) );
+
+  if( "Z" == axis && _cracks.first.size() > 0 )
+  {
+    if( point <= ez && point >= sz )
+    {
+      std::cout << "Error: cannot remove a grid point from the building interior while cracks exist in this axis." << std::endl;
+      return true;
+    }
+  }
+
+  if( "X" == axis && _cracks.second.size() > 0 )
+  {
+    if( point <= ex && point >= sx )
+    {
+      std::cout << "Error: cannot remove a grid point from the building interior while cracks exist in this axis." << std::endl;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  check to see if a building edge lies on the <point> in the <axis>
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -4551,11 +4600,22 @@ bool VaporIntrusionGUIDocument::_checkGridForObject( const std::string& axis, fl
 {
   Guard guard ( this );
 
+  bool useBuilding ( this->useBuilding() );
+
   // check the building
-  if( true == this->useBuilding() && true == this->_checkBuildingEdges( axis, point ) )
+  if( true == useBuilding && true == this->_checkBuildingEdges( axis, point ) )
+  {
+    std::cout << "Error: cannot remove a grid point from the building edge." << std::endl;
+    return true;
+  }
+
+  // check the building cracks
+  if( true == useBuilding && true == this->_checkBuildingInterior( axis, point ) )
   {
     return true;
   }
+
+
 
   return false;
 }
@@ -4812,7 +4872,6 @@ void VaporIntrusionGUIDocument::_removeGridPointFromViewer( Usul::Math::Vec3f po
   // make sure there aren't any objects on the point 
   if( true == this->_checkGridForObject( axis, gridPointValue ) )
   {
-    std::cout << "Error: cannot remove a grid point where an object lies." << std::endl;
     return;
   }
 

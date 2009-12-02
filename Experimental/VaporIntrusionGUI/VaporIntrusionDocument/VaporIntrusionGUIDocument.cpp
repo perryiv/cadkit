@@ -4329,6 +4329,13 @@ void VaporIntrusionGUIDocument::handleLeftMouseClick( Usul::Math::Vec3f point )
     this->_rebuildCracks();
     this->_rebuildScene3D();
   }
+  
+  // object placement
+  if( buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_2D )
+  {
+    // set the building location
+    this->_setBuildingLocationFromClick( point );
+  }
 
 }
 
@@ -5043,6 +5050,68 @@ void VaporIntrusionGUIDocument::clearObject()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the building location
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_setBuildingLocationFromClick( Usul::Math::Vec3f point )
+{
+  Guard guard ( this );
+
+  // get the X and Z grids
+  GridPoints xgrid ( this->_getGridFromAxis( "X" ) );
+  GridPoints zgrid ( this->_getGridFromAxis( "Z" ) );
+
+  // get the closest X and Z grid indices
+  unsigned int xi ( this->_closestGridPoint( point[0], xgrid ) );
+  unsigned int zi ( this->_closestGridPoint( point[2], zgrid ) );
+
+  // get the grid sizes
+  int xsize ( static_cast< int > ( _xValues.size() ) );
+  int zsize ( static_cast< int > ( _zValues.size() ) );
+
+  // place the grid point
+  {
+    // update the position of the object
+    _currentObject.sx = xi;
+    _currentObject.sz = zi;
+    _currentObject.ex = xi + 1;
+    _currentObject.ez = zi + 1;
+
+    // make sure the object is within the grid bounds still
+    // First check the x values
+    if( _currentObject.sx < 0 )
+    {
+      _currentObject.sx = 0;
+      _currentObject.ex = 1;
+    }
+    if( _currentObject.sx > xsize - 2 )
+    {
+      _currentObject.sx = xsize - 2;
+      _currentObject.ex = xsize - 1;
+    }
+
+    // Check the y(z) values
+    if( _currentObject.sz < 0 )
+    {
+      _currentObject.sz = 0;
+      _currentObject.ez = 1;
+    }
+    if( _currentObject.sz > zsize - 2 )
+    {
+      _currentObject.sz = zsize - 2;
+      _currentObject.ez = zsize - 1;
+    }
+
+  }
+
+  // rebuild the scene
+  this->_rebuildObject();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the movement change
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -5055,7 +5124,9 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
   int ysize ( static_cast< int > ( _yValues.size() ) );
   int zsize ( static_cast< int > ( _zValues.size() ) );
 
-  if( _editGridMode2D == IVPI::OBJECT_PLACEMENT_2D )
+  int buildMode ( this->getBuildMode2D() );
+
+  if( buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_2D )
   {
     // update the position of the object
     _currentObject.sx += x;
@@ -5090,7 +5161,7 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
 
   }
 
-  if( _editGridMode2D == IVPI::OBJECT_SIZE_XY )
+  if( buildMode == IVPI::BUILD_MODE_OBJECT_SIZE_XY )
   {
 
     // update the position of the object
@@ -5120,7 +5191,7 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
 
   }
 
-  if( _editGridMode2D == IVPI::OBJECT_SIZE_XZ )
+  if( buildMode == IVPI::BUILD_MODE_OBJECT_SIZE_XZ )
   {
 
     // update the position of the object
@@ -5362,8 +5433,11 @@ osg::Node* VaporIntrusionGUIDocument::_buildObject()
   // points of the plane
   osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
 
+  // Get the current build mode
+  int buildMode ( this->getBuildMode2D() );
+
   // If we are building the XY plane
-  if( _editGridMode2D == IVPI::OBJECT_SIZE_XY || _editGridMode2D == IVPI::OBJECT_PLACEMENT_2D )
+  if( buildMode == IVPI::BUILD_MODE_OBJECT_SIZE_XY || buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_2D )
   {
     //set the points
 
@@ -5380,7 +5454,7 @@ osg::Node* VaporIntrusionGUIDocument::_buildObject()
     group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 1.0f, 0.0f, 0.0f, 1.0f ) ) );
   }
 
-  if( _editGridMode2D == IVPI::OBJECT_SIZE_XZ )
+  if( buildMode == IVPI::BUILD_MODE_OBJECT_SIZE_XZ )
   {
     //set the points
 
@@ -5458,7 +5532,7 @@ void VaporIntrusionGUIDocument::objectMenuAddBuilding()
   Guard guard ( this );
 
   // set the edit mode to object placement
-  this->setEditMode2D( IVPI::OBJECT_PLACEMENT_2D );
+  this->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_2D );
 
   // set the correct build mode
   this->setViewMode2D( IVPI::VIEW_MODE_2D_XY );

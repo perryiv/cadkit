@@ -57,8 +57,12 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   // build modes
   enum
   {
+    BUILD_MODE_NONE,
     BUILD_MODE_GRID_EDIT,
-    BUILD_MODE_CRACK_EDIT
+    BUILD_MODE_CRACK_EDIT,
+    BUILD_MODE_OBJECT_PLACEMENT_2D,
+    BUILD_MODE_OBJECT_SIZE_XY,
+    BUILD_MODE_OBJECT_SIZE_XZ
   };
   // 2D edit modes
   enum
@@ -66,10 +70,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     EDIT_MODE_IDLE,
     EDIT_X_GRID_2D,
     EDIT_Y_GRID_2D,
-    EDIT_Z_GRID_2D,
-    OBJECT_PLACEMENT_2D,
-    OBJECT_SIZE_XY,
-    OBJECT_SIZE_XZ
+    EDIT_Z_GRID_2D
   };
 
   // Objects

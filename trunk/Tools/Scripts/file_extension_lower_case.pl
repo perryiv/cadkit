@@ -24,9 +24,10 @@ while ( @ARGV )
 
   print ( sprintf ( "mv %s %s.%s\n", $file, $base, $ext ) );
 
-  my $command = sprintf ( "mv %s %s.%s", $file, $base, $temp_extension );
-  `$command`;
+# There's a bug so commenting out. Use print statements above if correct.
+#  my $command = sprintf ( "mv %s %s.%s", $file, $base, $temp_extension );
+#  `$command`;
 
-  $command = sprintf ( "mv %s.%s %s.%s", $base, $temp_extension, $base, $ext );
-  `$command`;
+#  $command = sprintf ( "mv %s.%s %s.%s", $base, $temp_extension, $base, $ext );
+#  `$command`;
 }

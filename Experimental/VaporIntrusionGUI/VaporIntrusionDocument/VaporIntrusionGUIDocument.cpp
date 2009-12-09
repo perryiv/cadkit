@@ -116,7 +116,8 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _mouseXCoord( 0.0f ),
   _mouseYCoord( 0.0f ),
   _textXPos( 0 ),
-  _textYPos( 0 )
+  _textYPos( 0 ),
+  _placementCrack()
 {
   USUL_TRACE_SCOPE;
 }
@@ -3923,7 +3924,7 @@ void VaporIntrusionGUIDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
                                                                     "Grid (G)", IVPI::BUILD_MODE_GRID_EDIT ) ) );
   buildMenu->append ( new ToggleButton ( genericIndexToggle( caller, Usul::Adaptors::memberFunction<bool> ( this, &VaporIntrusionGUIDocument::isBuildMode ), 
                                                                     Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::setIsBuildMode2D ),
-                                                                    "Crack (C)", IVPI::BUILD_MODE_CRACK_EDIT ) ) );
+                                                                    "Crack (C)", IVPI::BUILD_MODE_CRACK_PLACE1 ) ) );
 
   // Add the edit sub menu
   MenuKit::Menu::RefPtr editMenu  ( toolsMenu->find ( "&Edits", true ) );
@@ -4311,6 +4312,147 @@ void VaporIntrusionGUIDocument::_addPoints()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Handle adding cracks
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_handleCrackAdd( Usul::Math::Vec3f point )
+{
+  Guard guard ( this );
+  
+  // get the closest grid point
+  unsigned int index;
+  
+  // working grid
+  GridPoints grid;
+
+  // working axis
+  std::string axis;
+
+  // get the edit grid mode
+  int editMode ( this->getEditMode2D() );
+
+  // get the build mode
+  int buildMode ( this->getBuildMode2D() );
+
+  // X axis selected
+  if( editMode == IVPI::EDIT_X_GRID_2D )
+  {
+    if( buildMode == IVPI::BUILD_MODE_CRACK_PLACE1 )
+    {
+      grid = this->_getGridFromAxis( "X" );
+      index = this->_closestGridPoint( point[0], grid );
+      _placementCrack.value = Usul::Strings::format( grid.at( index ).first );
+
+      grid = this->_getGridFromAxis( "Z" );
+      index = this->_closestGridPoint( point[2], grid );
+      _placementCrack.start = Usul::Strings::format( grid.at( index ).first );
+    }
+    if( buildMode == IVPI::BUILD_MODE_CRACK_PLACE2 )
+    {
+      // get the grid and index
+      grid = this->_getGridFromAxis( "Z" );
+      index = this->_closestGridPoint( point[2], grid );
+
+      // set the crack end point
+      _placementCrack.end = Usul::Strings::format( grid.at( index ).first );
+
+      // Building side walls 
+      float bsw1 ( StrToFloat::convert( _building.z ) );
+      float bsw2 ( bsw1 + StrToFloat::convert( _building.l ) );
+
+      // get the z grid
+      grid = this->_getGridFromAxis( "X" );
+
+      // indices of the sidewalls
+      unsigned int bswi1( this->_closestGridPoint( bsw1, grid ) );
+      unsigned int bswi2( this->_closestGridPoint( bsw2, grid ) );
+
+      // add the crack, rebuild the cracks visual, rebuild the scene
+      this->_addCrack( "X", _placementCrack, bswi1, bswi2 );
+      this->_rebuildCracks();
+      this->_rebuildScene3D();
+
+      // clear out the placement crack
+      _placementCrack = Crack();
+    }    
+  }
+
+  // "Y" axis selected
+  if ( editMode == IVPI::EDIT_Y_GRID_2D )
+  {
+    if( buildMode == IVPI::BUILD_MODE_CRACK_PLACE1 )
+    {
+      grid = this->_getGridFromAxis( "Z" );
+      index = this->_closestGridPoint( point[2], grid );
+      _placementCrack.value = Usul::Strings::format( grid.at( index ).first );
+
+      grid = this->_getGridFromAxis( "X" );
+      index = this->_closestGridPoint( point[0], grid );
+      _placementCrack.start = Usul::Strings::format( grid.at( index ).first );
+    }
+    if( buildMode == IVPI::BUILD_MODE_CRACK_PLACE2 )
+    {
+      // get the grid and index
+      grid = this->_getGridFromAxis( "X" );
+      index = this->_closestGridPoint( point[0], grid );
+
+      // set the crack end point
+      _placementCrack.end = Usul::Strings::format( grid.at( index ).first );
+
+      // get the z grid
+      grid = this->_getGridFromAxis( "Z" );
+
+      // Building side walls 
+      float bsw1 ( StrToFloat::convert( _building.x ) );
+      float bsw2 ( bsw1 + StrToFloat::convert( _building.w ) );
+
+      // indices of the sidewalls
+      unsigned int bswi1( this->_closestGridPoint( bsw1, grid ) );
+      unsigned int bswi2( this->_closestGridPoint( bsw2, grid ) );
+
+      // add the crack, rebuild the cracks visual, rebuild the scene
+      this->_addCrack( "Z", _placementCrack, bswi1, bswi2 );
+      this->_rebuildCracks();
+      this->_rebuildScene3D();
+
+      // clear out the placement crack
+      _placementCrack = Crack();
+    }
+  }
+  
+  // change the crack build mode
+  if( buildMode == IVPI::BUILD_MODE_CRACK_PLACE1 )
+  {
+    this->setBuildMode2D( IVPI::BUILD_MODE_CRACK_PLACE2 );
+  }
+  else
+  {
+    if( buildMode == IVPI::BUILD_MODE_CRACK_PLACE2 )
+    {
+      this->setBuildMode2D( IVPI::BUILD_MODE_CRACK_PLACE1 );
+    }
+  }
+
+
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Handle removing cracks
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_handleCrackRemove( Usul::Math::Vec3f point )
+{
+  Guard guard ( this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Handle left mouse clicks from the viewer
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -4330,11 +4472,10 @@ void VaporIntrusionGUIDocument::handleLeftMouseClick( Usul::Math::Vec3f point )
   }
 
   // foundation crack editing
-  if( buildMode == IVPI::BUILD_MODE_CRACK_EDIT )
+  if( buildMode == IVPI::BUILD_MODE_CRACK_PLACE1 || 
+      buildMode == IVPI::BUILD_MODE_CRACK_PLACE2    )
   {
-    this->_addCrack( point );
-    this->_rebuildCracks();
-    this->_rebuildScene3D();
+    this->_handleCrackAdd( point );
   }
   
   // object placement
@@ -4368,7 +4509,7 @@ void VaporIntrusionGUIDocument::handleRightMouseClick( Usul::Math::Vec3f point )
   }
 
   // foundation crack editing
-  if( buildMode == IVPI::BUILD_MODE_CRACK_EDIT )
+  if( buildMode == IVPI::BUILD_MODE_CRACK_PLACE1 )
   {
     this->_removeCrack( point );
     this->_rebuildCracks();
@@ -4384,7 +4525,7 @@ void VaporIntrusionGUIDocument::handleRightMouseClick( Usul::Math::Vec3f point )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_addCrack( Usul::Math::Vec3f point )
+void VaporIntrusionGUIDocument::_addCrack( const std::string& axis, Crack crack, unsigned int bswi1, unsigned int bswi2 )
 {
   Guard guard ( this );
 
@@ -4394,63 +4535,23 @@ void VaporIntrusionGUIDocument::_addCrack( Usul::Math::Vec3f point )
     std::cout << "There must be a building in the experiment to perform this operation!" << std::cout;
     return;
   }
-
-  // get the closest grid point
-  unsigned int index;
   
   // working grid
-  GridPoints grid;
+  GridPoints grid ( this->_getGridFromAxis( axis ) );
 
-  // working axis
-  std::string axis;
-
-  // Building side walls 
-  float bsw1 ( 0.0f );
-  float bsw2 ( 0.0f );
-
-  // get the edit grid mode
-  int editMode ( this->getEditMode2D() );
-
-  // X axis selected
-  if( editMode == IVPI::EDIT_X_GRID_2D )
-  {
-    axis = "X";
-    grid = this->_getGridFromAxis( axis );
-    index = this->_closestGridPoint( point[0], grid );
-    bsw1 = StrToFloat::convert( _building.x );
-    bsw2 = StrToFloat::convert( _building.x ) + StrToFloat::convert( _building.l );
-    
-  }
-
-  // "Y" axis selected
-  if ( editMode == IVPI::EDIT_Y_GRID_2D )
-  {
-    axis = "Z";
-    grid = this->_getGridFromAxis( axis );
-    index = this->_closestGridPoint( point[2], grid );
-    bsw1 = StrToFloat::convert( _building.z );
-    bsw2 = StrToFloat::convert( _building.z ) + StrToFloat::convert( _building.w );
-  }
-
-  // indices of the sidewalls
-  unsigned int bswi1( this->_closestGridPoint( bsw1, grid ) );
-  unsigned int bswi2( this->_closestGridPoint( bsw2, grid ) );
+  // get the closest grid point
+  unsigned int index ( this->_closestGridPoint( StrToFloat::convert( crack.value ), grid ) );
   
-  // make sure there is a grid point between the crack and the sidewalls of the building
+  // make sure there is 2 grid points between the crack and the sidewalls of the building
   // on either side of the crack  
-  if( !( index > bswi1 + 1 ) || !( index < bswi2 - 1 ) )
+  if( !( index > bswi1 + 2 ) || !( index < bswi2 - 2 ) )
   {
-    std::cout << "Invalid location for a crack.  There must be at least 1 grid point between the crack and the building sidewalls." << std::endl;
+    std::cout << "Invalid location for a crack.  There must be at least 2 grid points between the crack and the building sidewalls." << std::endl;
     return;
   }
 
   if( "Z" == axis )
   {
-    // create the crack
-    std::string start ( _building.x );
-    std::string end   ( Usul::Strings::format ( StrToFloat::convert ( start ) + StrToFloat::convert ( _building.l ) ) ); 
-    Crack crack( start, end, Usul::Strings::format ( grid.at( index ).first ) );
-
     // add the cracks to the list of cracks for the X axis
     if( false == this->_crackExists( _cracks.first, crack ) )
     {
@@ -4459,11 +4560,6 @@ void VaporIntrusionGUIDocument::_addCrack( Usul::Math::Vec3f point )
   }
   if( "X" == axis )
   {
-    // create the crack
-    std::string start ( _building.z );
-    std::string end   ( Usul::Strings::format ( StrToFloat::convert ( start ) + StrToFloat::convert ( _building.w ) ) ); 
-    Crack crack( start, end, Usul::Strings::format ( grid.at( index ).first ) );
-
     // add the cracks to the list of cracks for the Z axis
     if( false == this->_crackExists( _cracks.second, crack ) )
     {

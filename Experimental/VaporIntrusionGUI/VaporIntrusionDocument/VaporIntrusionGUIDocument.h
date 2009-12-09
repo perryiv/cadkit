@@ -375,9 +375,7 @@ protected:
   void                        _fixDimensions();
   void                        _addGridPointFromViewer( Usul::Math::Vec3f point );
   void                        _removeGridPointFromViewer( Usul::Math::Vec3f point );
-  void                        _addCrack( Usul::Math::Vec3f point );
-  void                        _removeCrack( Usul::Math::Vec3f point );
-  bool                        _crackExists( Cracks cracks, Crack crack );
+  
 
   GridPoints                  _getGridFromAxis( const std::string& axis );
   void                        _setGridFromAxis( const std::string& axis, GridPoints grid );
@@ -409,6 +407,12 @@ protected:
   void                        _setStatusText( const std::string message, unsigned int &textXPos, unsigned int &textYPos,
                                               double xmult, double ymult, Usul::Interfaces::IUnknown *caller );
 
+
+  void                        _handleCrackAdd( Usul::Math::Vec3f point );
+  void                        _handleCrackRemove( Usul::Math::Vec3f point );
+  void                        _addCrack( const std::string& axis, Crack crack, unsigned int bswi1, unsigned int bswi2 );
+  void                        _removeCrack( Usul::Math::Vec3f point );
+  bool                        _crackExists( Cracks cracks, Crack crack );
 
 private:
     GroupPtr                  _root;
@@ -463,6 +467,8 @@ private:
     float                     _mouseYCoord;
     unsigned int              _textXPos;
     unsigned int              _textYPos;
+
+    Crack                     _placementCrack;
 
   
 };

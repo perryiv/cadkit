@@ -348,7 +348,7 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
 
       case Qt::Key_C:
       {
-        document->setBuildMode2D( IVPI::BUILD_MODE_CRACK_EDIT );
+        document->setBuildMode2D( IVPI::BUILD_MODE_CRACK_PLACE1 );
         std::cout << "Setting edit mode to foundation cracks.  Right and left clicks will add/remove cracks" << std::endl;
       }
         break;

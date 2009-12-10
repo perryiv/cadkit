@@ -410,7 +410,9 @@ protected:
 
   void                        _handleCrackAdd( Usul::Math::Vec3f point );
   void                        _handleCrackRemove( Usul::Math::Vec3f point );
-  void                        _addCrack( const std::string& axis, Crack crack, unsigned int bswi1, unsigned int bswi2 );
+  void                        _addCrack( const std::string& axis1, const std::string& axis2, Crack crack, 
+                                         unsigned int parallelWall1, unsigned int parallelWall2, 
+                                         unsigned int perpendicularWall1, unsigned int perpendicularWall2 );
   void                        _removeCrack( Usul::Math::Vec3f point );
   bool                        _crackExists( Cracks cracks, Crack crack );
 

@@ -3901,6 +3901,7 @@ void VaporIntrusionGUIDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   // Add to the objects menu.
   MenuKit::Menu::RefPtr objectMenu ( menu.find ( "&Objects", true ) );
   objectMenu->append ( MenuKit::Button::create ( "Building (B)", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::objectMenuAddBuilding ) ) );
+  objectMenu->append ( MenuKit::Button::create ( "Source (S)", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::objectMenuAddSource ) ) );
 
   //----------------------------------------------------------------------------------------------
 
@@ -4501,7 +4502,7 @@ void VaporIntrusionGUIDocument::handleLeftMouseClick( Usul::Math::Vec3f point )
   }
   
   // object placement
-  if( buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_2D )
+  if( buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_XY )
   {
     // set the building location
     this->_setBuildingLocationFromClick( point );
@@ -5274,7 +5275,7 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
 
   int buildMode ( this->getBuildMode2D() );
 
-  if( buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_2D )
+  if( buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_XY )
   {
     // update the position of the object
     _currentObject.sx += x;
@@ -5305,6 +5306,41 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
     {
       _currentObject.sz = zsize - 2;
       _currentObject.ez = zsize - 1;
+    }
+
+  }
+
+  if( buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_XZ )
+  {
+    // update the position of the object
+    _currentObject.sx += x;
+    _currentObject.sy += y;
+    _currentObject.ex += x;
+    _currentObject.ey += y;
+
+    // make sure the object is within the grid bounds still
+    // First check the x values
+    if( _currentObject.sx < 0 )
+    {
+      _currentObject.sx = 0;
+      _currentObject.ex = 1;
+    }
+    if( _currentObject.sx > xsize - 2 )
+    {
+      _currentObject.sx = xsize - 2;
+      _currentObject.ex = xsize - 1;
+    }
+
+    // Check the y(z) values
+    if( _currentObject.sy < 0 )
+    {
+      _currentObject.sy = 0;
+      _currentObject.ey = 1;
+    }
+    if( _currentObject.sy > ysize - 2 )
+    {
+      _currentObject.sy = ysize - 2;
+      _currentObject.ey = ysize - 1;
     }
 
   }
@@ -5585,7 +5621,7 @@ osg::Node* VaporIntrusionGUIDocument::_buildObject()
   int buildMode ( this->getBuildMode2D() );
 
   // If we are building the XY plane
-  if( buildMode == IVPI::BUILD_MODE_OBJECT_SIZE_XY || buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_2D )
+  if( buildMode == IVPI::BUILD_MODE_OBJECT_SIZE_XY || buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_XY )
   {
     //set the points
 
@@ -5602,7 +5638,7 @@ osg::Node* VaporIntrusionGUIDocument::_buildObject()
     group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 1.0f, 0.0f, 0.0f, 1.0f ) ) );
   }
 
-  if( buildMode == IVPI::BUILD_MODE_OBJECT_SIZE_XZ )
+  if( buildMode == IVPI::BUILD_MODE_OBJECT_SIZE_XZ || buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_XZ )
   {
     //set the points
 
@@ -5671,6 +5707,27 @@ void VaporIntrusionGUIDocument::_setCameraFromViewMode( int mode )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Add a source to the experiment
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::objectMenuAddSource()
+{
+  Guard guard ( this );
+
+   // set the edit mode to object placement
+  this->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_XY );
+
+  // set the correct build mode
+  this->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
+
+  // set the object type to SOURCE
+  this->setObjectMode( IVPI::OBJECT_SOURCE );
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the object
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -5680,7 +5737,7 @@ void VaporIntrusionGUIDocument::objectMenuAddBuilding()
   Guard guard ( this );
 
   // set the edit mode to object placement
-  this->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_2D );
+  this->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_XY );
 
   // set the correct build mode
   this->setViewMode2D( IVPI::VIEW_MODE_2D_XY );

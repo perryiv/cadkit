@@ -330,13 +330,26 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
       case Qt::Key_B :
       {
         // set the edit mode to object placement
-        document->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_2D );
+        document->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_XY );
 
         // set the correct build mode
         document->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
 
         // set the object type to building
         document->setObjectMode( IVPI::OBJECT_BUILDING );
+      }
+        break;
+
+      case Qt::Key_S :
+      {
+        // set the edit mode to object placement
+        document->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_XY );
+
+        // set the correct build mode
+        document->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
+
+        // set the object type to building
+        document->setObjectMode( IVPI::OBJECT_SOURCE );
       }
         break;
 
@@ -361,7 +374,7 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
       case Qt::Key_Return:
       {
         // toggle the mode
-        if( buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_2D )
+        if( buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_XY )
         {
           document->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_SIZE_XY );
         }
@@ -372,11 +385,30 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
           // clear the temp object
           document->clearObject();
 
-          document->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_SIZE_XZ );
+          // get the object mode
+          int objectMode ( document->getObjectMode() );
+
+          // change the view mode and provide feedback to the user
           document->setViewMode2D( IVPI::VIEW_MODE_2D_XZ );
-          //this->viewer()->camera( OsgTools::Render::Viewer::FRONT );
           std::cout << "Setting 2D Grid Domain Mode to the Z (Basement/Soil) Grid" << std::endl;
 
+          // if this is a building
+          if( objectMode == IVPI::OBJECT_BUILDING )
+          {
+            document->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_SIZE_XZ );
+          }
+          // if it is not
+          else
+          {
+            document->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_XZ );
+          }
+
+        }
+
+        // toggle the mode
+        if( buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_XZ )
+        {
+          document->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_SIZE_XZ );
         }
 
         // tell the document to create the object
@@ -389,7 +421,7 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
           std::cout << "Setting 2D Grid Domain to the XY Grid" << std::endl;
           //this->viewer()->camera( OsgTools::Render::Viewer::TOP );
 
-          // clear the temp object
+          // clear the temp
           document->clearObject();
 
           // set the object type to nothing

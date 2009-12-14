@@ -284,6 +284,7 @@ public:
 
   // Object menu functions
   void                        objectMenuAddBuilding();
+  void                        objectMenuAddSource();
 
   void                        handleNewObject();
 

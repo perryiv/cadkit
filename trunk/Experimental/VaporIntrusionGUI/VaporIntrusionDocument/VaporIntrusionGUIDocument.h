@@ -394,6 +394,7 @@ protected:
 
   // object creation methods
   void                        _createNewBuilding();
+  void                        _createNewSource();
   void                        _setBuildingLocationFromClick( Usul::Math::Vec3f point );
 
   osg::Node *                 _createGridLabels2D();

@@ -183,7 +183,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
     Source( const std::string& length, const std::string& width, const std::string& height,
                  const std::string& xpos, const std::string& ypos, const std::string& zpos,
-                 const std::string& n, std::vector< Contaminant > c ):
+                 const std::string& n, Contaminants c ):
     l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ), name( n ), contaminants( c )
     {};
 

@@ -1280,18 +1280,18 @@ void VaporIntrusionGUIDocument::_makeSource3D()
     osg::Vec3f ll  ( StrToFloat::convert( s.x ), StrToFloat::convert( s.y ), StrToFloat::convert( s.z ) );
 
     // snap to the grid
-    ll = this->_snapToGrid3D( ll );
+    //ll = this->_snapToGrid3D( ll );
 
     // update the source
-    _sources.at( i ).x = ll.x();
-    _sources.at( i ).y = ll.y();
-    _sources.at( i ).z = ll.z();
+    //_sources.at( i ).x = ll.x();
+    //_sources.at( i ).y = ll.y();
+    //_sources.at( i ).z = ll.z();
 
     // shrink
     ll = osg::Vec3f ( ll.x() - 0.00001, ll.y() - 0.00001, ll.z() - 0.00001 );
 
     // get the length, width, and height of the contaminant
-    osg::Vec3f lwh ( StrToFloat::convert( s.l ), StrToFloat::convert( s.w ), StrToFloat::convert( s.h ) );
+    osg::Vec3f lwh ( StrToFloat::convert( s.l ), StrToFloat::convert( s.h ), StrToFloat::convert( s.w ) );
 
     // create the points for the contaminant
     osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
@@ -5761,6 +5761,57 @@ void VaporIntrusionGUIDocument::handleNewObject()
   {
     this->_createNewBuilding();
   }
+
+  // create a new building
+  if( _objectMode == IVPI::OBJECT_SOURCE )
+  {
+    this->_createNewSource();
+  }
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a new source
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_createNewSource()
+{
+  Guard guard ( this );
+
+  // useful typedefs
+  typedef Usul::Convert::Type< float, std::string > FTS;
+
+  // get the corners
+  float sx ( _xValues.at( _currentObject.sx ).first );
+  float ex ( _xValues.at( _currentObject.ex ).first );
+  float sy ( _yValues.at( _currentObject.sy ).first );
+  float ey ( _yValues.at( _currentObject.ey ).first );
+  float sz ( _zValues.at( _currentObject.sz ).first );
+  float ez ( _zValues.at( _currentObject.ez ).first );
+
+  // Calculate the lwh
+  float l ( ex - sx );
+  float w ( ez - sz );
+  float h ( ey - sy );
+
+  IVPI::Contaminants c;
+
+  // create a building object with the parameters entered in the 2D window
+  IVPI::Source s ( Usul::Strings::format ( l ),
+                   Usul::Strings::format ( w ),
+                   Usul::Strings::format ( h ),
+                   Usul::Strings::format ( sx ),
+                   Usul::Strings::format ( sy ),
+                   Usul::Strings::format ( sz ),
+                   "Untitled", c );
+
+  _sources.push_back( s );
+
+  //rebuild the scene
+  this->rebuildScene();
 
 }
 

@@ -23,7 +23,6 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/GUI/IGUIDelegate.h"
 #include "Usul/Interfaces/IInitNewDocument.h"
 
 #include <string>

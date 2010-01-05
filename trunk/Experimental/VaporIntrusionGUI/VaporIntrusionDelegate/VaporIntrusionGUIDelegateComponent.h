@@ -26,7 +26,7 @@
 #include "ScalarEditorDialog.h"
 #include "BuildingDialog.h"
 #include "SourceDialog.h"
-#include "ContaminantDialog.h"
+#include "ChemicalDialog.h"
 #include "AddContaminantsToSourceDialog.h"
 #include "SoilDialog.h"
 #include "SendDialog.h"
@@ -124,10 +124,10 @@ public:
   void                        editSources();
 
   // edit the Contaminant values
-  void                        editContaminants();
+  void                        editChemicals();
 
   // edit the Contaminant values
-  void                        editAddContaminantsToSource();
+  void                        editAddChemicalsToSource();
 
   // edit the Soil values
   void                        editSoils();

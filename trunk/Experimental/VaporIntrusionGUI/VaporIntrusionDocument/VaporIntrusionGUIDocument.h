@@ -223,8 +223,8 @@ public:
   virtual void                sources( Sources s );
   virtual Sources             sources();
 
-  virtual void                contaminants( Contaminants c );
-  virtual Contaminants        contaminants();
+  virtual void                chemicals( Chemicals c );
+  virtual Chemicals           chemicals();
 
   virtual void                soils( Soils s );
   virtual Soils               soils();
@@ -348,7 +348,7 @@ protected:
   // read layer file
   void                        _readConfigFile( const std::string& catName, const std::string& filename );
   void                        _readInitializationFile( const std::string& filename );
-  void                        _readContaminants( const std::string& filename );
+  void                        _readChemicals( const std::string& filename );
   void                        _readSources( const std::string& filename );
   void                        _readSoils( const std::string& filename );
   void                        _readCracks( const std::string& filename );
@@ -435,7 +435,7 @@ private:
     Building                  _building;
     bool                      _useBuilding;
     Sources                   _sources;
-    Contaminants              _contaminants;
+    Chemicals                 _chemicals;
     Soils                     _soils;
     CracksPair                _cracks;
     GridAxisPoints            _axisPoints;

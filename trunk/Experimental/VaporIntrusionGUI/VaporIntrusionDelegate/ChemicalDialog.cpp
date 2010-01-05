@@ -14,9 +14,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ContaminantDialog.h"
+#include "ChemicalDialog.h"
+#include "AddChemicalDialog.h"
 
 #include "Usul/Strings/Format.h"
+#include "Usul/Exceptions/Canceled.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -24,7 +26,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ContaminantDialog::ContaminantDialog ( QWidget *parent ) : 
+ChemicalDialog::ChemicalDialog ( QWidget *parent ) : 
 BaseClass ( parent ),
 _chemicals()
 {
@@ -33,14 +35,15 @@ _chemicals()
 
   QStringList titles;
 
-  titles.push_back( "Name" );
+  titles.push_back( "Chemical" );
   titles.push_back( "H. Law" );
   titles.push_back( "Koc" );
   titles.push_back( "Diff in Air" );
   titles.push_back( "Diff in H2O" );
-  titles.push_back( "Atmo. Conc." );
+  titles.push_back( "Initial Conc." );
+  titles.push_back( "Present" );
 
-  _contaminantTable->setHorizontalHeaderLabels( titles );
+  _chemicalTable->setHorizontalHeaderLabels( titles );
 
   //initialize the table view
   this->_initialize();
@@ -53,7 +56,7 @@ _chemicals()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ContaminantDialog::~ContaminantDialog()
+ChemicalDialog::~ChemicalDialog()
 {
   
 }
@@ -65,7 +68,7 @@ ContaminantDialog::~ContaminantDialog()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ContaminantDialog::initialize()
+void ChemicalDialog::initialize()
 {
   this->_initialize();
 }
@@ -77,7 +80,7 @@ void ContaminantDialog::initialize()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ContaminantDialog::_initialize()
+void ChemicalDialog::_initialize()
 {
   // first pass through Source values?
   bool firstPass( true );
@@ -88,10 +91,10 @@ void ContaminantDialog::_initialize()
   for( unsigned int i = 0; i < _chemicals.size(); ++i )
   {
     // create a Source object
-    Contaminant c ( _chemicals.at( i ) );
+    Chemical c ( _chemicals.at( i ) );
 
     // add a row
-    _contaminantTable->insertRow( rowCount );
+    _chemicalTable->insertRow( rowCount );
 
      // create an item widget for the first column
     QTableWidgetItem *item0 = new QTableWidgetItem;
@@ -120,27 +123,27 @@ void ContaminantDialog::_initialize()
     if( true == firstPass )
     {
       // set the current item
-      _contaminantTable->setCurrentItem( item0 );
+      _chemicalTable->setCurrentItem( item0 );
 
       // no longer the first pass
       firstPass = false;
     }
 
     // insert the columns
-    _contaminantTable->setItem( rowCount, 0, item0 );
-    _contaminantTable->setItem( rowCount, 1, item1 );
-    _contaminantTable->setItem( rowCount, 2, item2 );
-    _contaminantTable->setItem( rowCount, 3, item3 );
-    _contaminantTable->setItem( rowCount, 4, item4 );
-    _contaminantTable->setItem( rowCount, 5, item5 ); 
+    _chemicalTable->setItem( rowCount, 0, item0 );
+    _chemicalTable->setItem( rowCount, 1, item1 );
+    _chemicalTable->setItem( rowCount, 2, item2 );
+    _chemicalTable->setItem( rowCount, 3, item3 );
+    _chemicalTable->setItem( rowCount, 4, item4 );
+    _chemicalTable->setItem( rowCount, 5, item5 ); 
 
     // set the values of the row
-    _contaminantTable->item( rowCount, 0 )->setText( c.name.c_str()     );
-    _contaminantTable->item( rowCount, 1 )->setText( c.henry.c_str()     );
-    _contaminantTable->item( rowCount, 2 )->setText( c.koc.c_str()      );
-    _contaminantTable->item( rowCount, 3 )->setText( c.airDiff.c_str()  );
-    _contaminantTable->item( rowCount, 4 )->setText( c.waterDiff.c_str()  );
-    _contaminantTable->item( rowCount, 5 )->setText( c.atmoConc.c_str() );
+    _chemicalTable->item( rowCount, 0 )->setText( c.name.c_str()     );
+    _chemicalTable->item( rowCount, 1 )->setText( c.henry.c_str()     );
+    _chemicalTable->item( rowCount, 2 )->setText( c.koc.c_str()      );
+    _chemicalTable->item( rowCount, 3 )->setText( c.airDiff.c_str()  );
+    _chemicalTable->item( rowCount, 4 )->setText( c.waterDiff.c_str()  );
+    _chemicalTable->item( rowCount, 5 )->setText( c.atmoConc.c_str() );
 
     ++rowCount;
   }
@@ -153,25 +156,28 @@ void ContaminantDialog::_initialize()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ContaminantDialog::on_addButton_clicked()
+void ChemicalDialog::on_addButton_clicked()
 {
-  // get the parameters from the text boxes
-  std::string name        ( this->_name->text().toStdString()      );
-  std::string hlaw        ( this->_hlaw->text().toStdString()      );
-  std::string koc         ( this->_koc->text().toStdString()       );
-  std::string diffAir     ( this->_diffAir->text().toStdString()   );
-  std::string diffH2O     ( this->_diffWater->text().toStdString() );
-  std::string atmoConc    ( this->_atmoConc->text().toStdString()  );
+  // create an instance of AddChemicalDialog to handle the request
+  AddChemicalDialog dialog;
 
-  Contaminant c ( _chemicals.size(), name, hlaw, koc, diffAir, diffH2O, atmoConc );
+  // Show the dialog.
+  if ( QDialog::Accepted != dialog.exec() )
+    throw Usul::Exceptions::Canceled();
+
+  // get the chemical
+  Chemical c ( dialog.createChemical() );
+
+  // set the proper chemical index
+  c.index = _chemicals.size();
 
   // add the Source to the list of contamimants
   _chemicals.push_back( c );
 
-  int rowCount ( _contaminantTable->rowCount() );
+  int rowCount ( _chemicalTable->rowCount() );
 
   // add a row
-  _contaminantTable->insertRow( rowCount );
+  _chemicalTable->insertRow( rowCount );
 
   // create an item widget for the first column
   QTableWidgetItem *item0 = new QTableWidgetItem;
@@ -198,23 +204,23 @@ void ContaminantDialog::on_addButton_clicked()
   item3->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
 
   // set the current item
-  _contaminantTable->setCurrentItem( item0 );
+  _chemicalTable->setCurrentItem( item0 );
 
   // insert the columns
-  _contaminantTable->setItem( rowCount, 0, item0 );
-  _contaminantTable->setItem( rowCount, 1, item1 );
-  _contaminantTable->setItem( rowCount, 2, item2 );
-  _contaminantTable->setItem( rowCount, 3, item3 );
-  _contaminantTable->setItem( rowCount, 4, item4 );
-  _contaminantTable->setItem( rowCount, 5, item5 ); 
+  _chemicalTable->setItem( rowCount, 0, item0 );
+  _chemicalTable->setItem( rowCount, 1, item1 );
+  _chemicalTable->setItem( rowCount, 2, item2 );
+  _chemicalTable->setItem( rowCount, 3, item3 );
+  _chemicalTable->setItem( rowCount, 4, item4 );
+  _chemicalTable->setItem( rowCount, 5, item5 ); 
 
   // set the values of the row
-  _contaminantTable->item( rowCount, 0 )->setText( name.c_str()     );
-  _contaminantTable->item( rowCount, 1 )->setText( hlaw.c_str()     );
-  _contaminantTable->item( rowCount, 2 )->setText( koc.c_str()      );
-  _contaminantTable->item( rowCount, 3 )->setText( diffAir.c_str()  );
-  _contaminantTable->item( rowCount, 4 )->setText( diffH2O.c_str()  );
-  _contaminantTable->item( rowCount, 5 )->setText( atmoConc.c_str() );
+  _chemicalTable->item( rowCount, 0 )->setText( c.name.c_str()     );
+  _chemicalTable->item( rowCount, 1 )->setText( c.henry.c_str()     );
+  _chemicalTable->item( rowCount, 2 )->setText( c.koc.c_str()      );
+  _chemicalTable->item( rowCount, 3 )->setText( c.airDiff.c_str()  );
+  _chemicalTable->item( rowCount, 4 )->setText( c.waterDiff.c_str()  );
+  _chemicalTable->item( rowCount, 5 )->setText( c.atmoConc.c_str() );
  
 }
 
@@ -225,10 +231,10 @@ void ContaminantDialog::on_addButton_clicked()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ContaminantDialog::on_removeButton_clicked()
+void ChemicalDialog::on_removeButton_clicked()
 {
-   // get the currently selected Chemicals
-  QList<QTableWidgetItem*> selectedItems ( _contaminantTable->selectedItems() );
+   // get the currently selected chemicals
+  QList<QTableWidgetItem*> selectedItems ( _chemicalTable->selectedItems() );
 
   std::vector< unsigned int > rowsToRemove;
 
@@ -289,7 +295,7 @@ void ContaminantDialog::on_removeButton_clicked()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ContaminantDialog::Chemicals ContaminantDialog::chemicals()
+ChemicalDialog::Chemicals ChemicalDialog::chemicals()
 {
   return _chemicals;
 }
@@ -301,12 +307,12 @@ ContaminantDialog::Chemicals ContaminantDialog::chemicals()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ContaminantDialog::_clearTable()
+void ChemicalDialog::_clearTable()
 {
   // remove all the rows
-  for( int i = _contaminantTable->rowCount() - 1; i >= 0 ; --i )
+  for( int i = _chemicalTable->rowCount() - 1; i >= 0 ; --i )
   {
-    _contaminantTable->removeRow( i );
+    _chemicalTable->removeRow( i );
   }
 }
 
@@ -317,59 +323,7 @@ void ContaminantDialog::_clearTable()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ContaminantDialog::chemicals( Chemicals c )
+void ChemicalDialog::chemicals( Chemicals c )
 {
   _chemicals = c;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update a Contaminant
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ContaminantDialog::on_updateButton_clicked()
-{
-  // get the parameters from the text boxes
-  std::string name        ( this->_name->text().toStdString()      );
-  std::string hlaw        ( this->_hlaw->text().toStdString()      );
-  std::string koc         ( this->_koc->text().toStdString()       );
-  std::string diffAir     ( this->_diffAir->text().toStdString()   );
-  std::string diffH2O     ( this->_diffWater->text().toStdString() );
-  std::string atmoConc    ( this->_atmoConc->text().toStdString()  );
-
-  Contaminant c ( _chemicals.size(), name, hlaw, koc, diffAir, diffH2O, atmoConc );
-
-  // get the currently selected Chemicals
-  QList<QTableWidgetItem*> selectedItems ( _contaminantTable->selectedItems() );
-
-  // User selected rows
-  std::vector< unsigned int > selectedRows;
-
-  // loop through the selected chemicals
-  for( int i = 0; i < selectedItems.size(); ++i )
-  {
-    // get the current item
-    QTableWidgetItem* item = selectedItems.at( i );
-
-    // get the row index
-    unsigned int row ( item->row() );
-
-    // add to the rows to remove list
-    selectedRows.push_back( row );
-  }
-
-  for( unsigned int i = 0; i < selectedRows.size(); ++i )
-  {
-    // updated the selected rows
-    _chemicals.at( selectedRows.at( i ) ) = c;
-  }
-
-  // clear the cracks table
-  this->_clearTable();
-
-  // repopulate the table
-  this->_initialize();
-
 }

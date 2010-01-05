@@ -35,7 +35,7 @@ BaseClass ( parent )
   titles.push_back( "Name" );
   titles.push_back( "Location" );
   titles.push_back( "Size" );
-  titles.push_back( "Contaminants" );
+  titles.push_back( "Chemicals" );
   titles.push_back( "Color" );
 
   _sourceTable->setHorizontalHeaderLabels( titles );
@@ -146,13 +146,13 @@ void SourceDialog::_initialize()
     _sourceTable->setItem( rowCount, 2, item2 );
     _sourceTable->setItem( rowCount, 3, item3 );
   
-    // get the source contaminants
-    Contaminants sc( _sources.at( i ).contaminants );
+    // get the source chemicals
+    Chemicals sc( _sources.at( i ).chemicals );
 
    // string to hold the contaminant data
     std::string scstr ("( ");
 
-    // loop through the already assigned contaminants
+    // loop through the already assigned chemicals
     for( unsigned int j = 0; j < sc.size(); ++j )
     {
       // get the contaminant
@@ -209,7 +209,7 @@ void SourceDialog::on_addButton_clicked()
                             static_cast< float > ( qc.blueF() ),
                             static_cast< float > ( qc.alphaF() ) );
 
-  Contaminants c;
+  Chemicals c;
 
   // create a Source object
   Source s ( l, w, h, x, y, z, name, c );
@@ -263,12 +263,12 @@ void SourceDialog::on_addButton_clicked()
 
 void SourceDialog::on_removeButton_clicked()
 {
-     // get the currently selected Contaminants
+     // get the currently selected Chemicals
   QList<QTableWidgetItem*> selectedItems ( _sourceTable->selectedItems() );
 
   std::vector< unsigned int > rowsToRemove;
 
-  // loop through the selected contaminants
+  // loop through the selected chemicals
   for( int i = 0; i < selectedItems.size(); ++i )
   {
     // get the current item
@@ -359,19 +359,19 @@ void SourceDialog::on_updateButton_clicked()
                             static_cast< float > ( qc.alphaF() ) );
 
 
-  Contaminants c;
+  Chemicals c;
 
   // create a Source object
   Source s ( l, w, h, x, y, z, name, c );
   s.color = color;
 
-  // get the currently selected Contaminants
+  // get the currently selected Chemicals
   QList<QTableWidgetItem*> selectedItems ( _sourceTable->selectedItems() );
 
   // User selected rows
   std::vector< unsigned int > selectedRows;
 
-  // loop through the selected contaminants
+  // loop through the selected chemicals
   for( int i = 0; i < selectedItems.size(); ++i )
   {
     // get the current item
@@ -386,8 +386,8 @@ void SourceDialog::on_updateButton_clicked()
 
   for( unsigned int i = 0; i < selectedRows.size(); ++i )
   {
-    // grab the current contaminants to copy to the new source values
-    s.contaminants = _sources.at( selectedRows.at( i ) ).contaminants;
+    // grab the current chemicals to copy to the new source values
+    s.chemicals = _sources.at( selectedRows.at( i ) ).chemicals;
 
     // updated the selected rows
     _sources.at( selectedRows.at( i ) ) = s;

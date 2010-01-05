@@ -14,59 +14,51 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __VAPORINTRUSION_ADDCONTAMINANTSTOSOURCE_DIALOG_H__
-#define __VAPORINTRUSION_ADDCONTAMINANTSTOSOURCE_DIALOG_H__
+#ifndef __VAPORINTRUSION_ADD_CHEMICAL_DIALOG_H__
+#define __VAPORINTRUSION_ADD_CHEMICAL_DIALOG_H__
 
 #include "VaporIntrusionGUI/Interfaces/IVaporIntrusionGUI.h"
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/Math/Vector3.h"
 
-#include "ui_AddContaminantsToSourceDialog.h"
+#include "ui_AddChemicalDialog.h"
 
 #include "QtGui/QDialog"
 
-class AddContaminantsToSourceDialog : public QDialog,
-                             private Ui::AddContaminantsToSourceDialog
+
+class AddChemicalDialog : public QDialog,
+                             private Ui::AddChemicalDialog
 {
   Q_OBJECT;
 public:
   typedef QDialog BaseClass;
   typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI IVPI;
-  typedef IVPI::Source Source;
-  typedef IVPI::Sources Sources;
-  typedef IVPI::Chemical Chemical;
+  typedef IVPI::Chemical  Chemical;
   typedef IVPI::Chemicals Chemicals;
 
   // Useful typedefs  
 
-  AddContaminantsToSourceDialog ( QWidget *parent = 0x0 );
-  virtual ~AddContaminantsToSourceDialog();
-
-  Sources             sources();
-  void                sources( Sources s );  
-
-  Chemicals           chemicals();
-  void                chemicals( Chemicals c );
+  AddChemicalDialog ( QWidget *parent = 0x0 );
+  virtual ~AddChemicalDialog();
 
   void                initialize();
+  Chemical            chemical();
+  void                chemical( Chemical c );
+  Chemical                createChemical();
 
 protected:
 
   void                _initialize();
-  void                _initSource();
-  void                _initContaminants();
-private:
+  void                _clearTable();
 
-  Sources             _sources;
-  Chemicals           _chemicals;
+private:
+  Chemical           _chemical;
 
 private slots:
-  void on_addButton_clicked();
-  void on_removeButton_clicked();
 
 };
 
 
 
-#endif // __VAPORINTRUSION_ADDCONTAMINANTSTOSOURCE_DIALOG_H__
+#endif // __VAPORINTRUSION_ADD_CHEMICAL_DIALOG_H__

@@ -34,8 +34,8 @@ class ContaminantDialog : public QDialog,
 public:
   typedef QDialog BaseClass;
   typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI IVPI;
-  typedef IVPI::Contaminant  Contaminant;
-  typedef IVPI::Contaminants Contaminants;
+  typedef IVPI::Chemical  Chemical;
+  typedef IVPI::Chemicals Chemicals;
 
   // Useful typedefs  
 
@@ -43,8 +43,8 @@ public:
   virtual ~ContaminantDialog();
 
   void                initialize();
-  Contaminants        contaminants();
-  void                contaminants( Contaminants c );
+  Chemicals        contaminants();
+  void                contaminants( Chemicals c );
 
 protected:
 
@@ -52,7 +52,7 @@ protected:
   void                _clearTable();
 
 private:
-  Contaminants        _contaminants;
+  Chemicals        _contaminants;
 
 private slots:
   void on_addButton_clicked();

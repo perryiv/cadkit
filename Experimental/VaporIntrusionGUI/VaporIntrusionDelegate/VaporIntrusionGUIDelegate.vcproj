@@ -264,6 +264,36 @@
 				Name="Qt"
 				>
 				<File
+					RelativePath=".\AddChemicalDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\AddChemicalDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_AddChemicalDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\AddChemicalDialog.ui -o .\ui_AddChemicalDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AddChemicalDialog.h&quot; -o &quot;.\GeneratedFiles\moc_AddChemicalDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\AddChemicalDialog.ui;$(QTDIR)\bin\moc.exe;.\AddChemicalDialog.h"
+							Outputs=".\ui_AddChemicalDialog.h;.\GeneratedFiles\moc_AddChemicalDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_AddChemicalDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\AddChemicalDialog.ui -o .\ui_AddChemicalDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AddChemicalDialog.h&quot; -o &quot;.\GeneratedFiles\moc_AddChemicalDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\AddChemicalDialog.ui;$(QTDIR)\bin\moc.exe;.\AddChemicalDialog.h"
+							Outputs=".\ui_AddChemicalDialog.h;.\GeneratedFiles\moc_AddChemicalDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\AddContaminantsToSourceDialog.cpp"
 					>
 				</File>
@@ -324,21 +354,21 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\ContaminantDialog.cpp"
+					RelativePath=".\ChemicalDialog.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\ContaminantDialog.h"
+					RelativePath=".\ChemicalDialog.h"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
-							Description="Creating ui_ContaminantDialog.h..."
-							CommandLine="$(QTDIR)\bin\uic.exe .\ContaminantDialog.ui -o .\ui_ContaminantDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\ContaminantDialog.h&quot; -o &quot;.\GeneratedFiles\moc_ContaminantDialog.cpp&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ContaminantDialog.ui;$(QTDIR)\bin\moc.exe;.\ContaminantDialog.h"
-							Outputs=".\ui_ContaminantDialog.h;.\GeneratedFiles\moc_ContaminantDialog.cpp"
+							Description="Creating ui_ChemicalDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\ChemicalDialog.ui -o .\ui_ChemicalDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\ChemicalDialog.h&quot; -o &quot;.\GeneratedFiles\moc_ChemicalDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ChemicalDialog.ui;$(QTDIR)\bin\moc.exe;.\ChemicalDialog.h"
+							Outputs=".\ui_ChemicalDialog.h;.\GeneratedFiles\moc_ChemicalDialog.cpp"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -346,10 +376,10 @@
 						>
 						<Tool
 							Name="VCCustomBuildTool"
-							Description="Creating ui_ContaminantDialog.h..."
-							CommandLine="$(QTDIR)\bin\uic.exe .\ContaminantDialog.ui -o .\ui_ContaminantDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\ContaminantDialog.h&quot; -o &quot;.\GeneratedFiles\moc_ContaminantDialog.cpp&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ContaminantDialog.ui;$(QTDIR)\bin\moc.exe;.\ContaminantDialog.h"
-							Outputs=".\ui_ContaminantDialog.h;.\GeneratedFiles\moc_ContaminantDialog.cpp"
+							Description="Creating ui_ChemicalDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\ChemicalDialog.ui -o .\ui_ChemicalDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\ChemicalDialog.h&quot; -o &quot;.\GeneratedFiles\moc_ChemicalDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ChemicalDialog.ui;$(QTDIR)\bin\moc.exe;.\ChemicalDialog.h"
+							Outputs=".\ui_ChemicalDialog.h;.\GeneratedFiles\moc_ChemicalDialog.cpp"
 						/>
 					</FileConfiguration>
 				</File>
@@ -748,6 +778,10 @@
 				Name="Generated"
 				>
 				<File
+					RelativePath=".\generatedfiles\moc_AddChemicalDialog.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\generatedfiles\moc_AddContaminantsToSourceDialog.cpp"
 					>
 				</File>
@@ -756,7 +790,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_ContaminantDialog.cpp"
+					RelativePath=".\generatedfiles\moc_ChemicalDialog.cpp"
 					>
 				</File>
 				<File

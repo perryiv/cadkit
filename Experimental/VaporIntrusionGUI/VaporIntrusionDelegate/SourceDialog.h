@@ -36,15 +36,15 @@ public:
   typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI IVPI;
   typedef IVPI::Source Source;
   typedef IVPI::Sources Sources;
-  typedef IVPI::Contaminant Contaminant;
-  typedef IVPI::Contaminants Contaminants;
+  typedef IVPI::Chemical Chemical;
+  typedef IVPI::Chemicals Chemicals;
 
   // Useful typedefs  
 
   SourceDialog ( QWidget *parent = 0x0 );
   virtual ~SourceDialog();
 
-  Sources        sources();
+  Sources             sources();
   void                sources( Sources c );  
 
   void                initialize();
@@ -55,7 +55,7 @@ protected:
   void                _clearTable();
 
 private:
-  Sources _sources;
+  Sources             _sources;
 
 private slots:
   void on_addButton_clicked();

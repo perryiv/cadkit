@@ -24,7 +24,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AddContaminantsToSourceDialog::AddContaminantsToSourceDialog ( QWidget *parent ) : 
+ AddContaminantsToSourceDialog:: AddContaminantsToSourceDialog ( QWidget *parent ) : 
 BaseClass ( parent )
 {
   //// Initialize code from Designer.
@@ -34,21 +34,21 @@ BaseClass ( parent )
   QStringList sourceTitles;
 
   sourceTitles.push_back( "Name" );
-  sourceTitles.push_back( "Contaminants" );
+  sourceTitles.push_back( "Chemicals" );
 
   _sourceTable->setHorizontalHeaderLabels( sourceTitles );
 
-  // create and set the contaminant titles
-  QStringList contaminantTitles;
+  // create and set the chemical titles
+  QStringList chemicalTitles;
 
-  contaminantTitles.push_back( "Name" );
-  contaminantTitles.push_back( "H. Law" );
-  contaminantTitles.push_back( "Koc" );
-  contaminantTitles.push_back( "Diff in Air" );
-  contaminantTitles.push_back( "Diff in H2O" );
-  contaminantTitles.push_back( "Atmo. Conc." );
+  chemicalTitles.push_back( "Name" );
+  chemicalTitles.push_back( "H. Law" );
+  chemicalTitles.push_back( "Koc" );
+  chemicalTitles.push_back( "Diff in Air" );
+  chemicalTitles.push_back( "Diff in H2O" );
+  chemicalTitles.push_back( "Atmo. Conc." );
 
-  _contaminantTable->setHorizontalHeaderLabels( contaminantTitles );
+  _contaminantTable->setHorizontalHeaderLabels( chemicalTitles );
 
   //initialize the table view
   this->_initialize();
@@ -61,7 +61,7 @@ BaseClass ( parent )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AddContaminantsToSourceDialog::~AddContaminantsToSourceDialog()
+ AddContaminantsToSourceDialog::~ AddContaminantsToSourceDialog()
 {
   
 }
@@ -73,7 +73,7 @@ AddContaminantsToSourceDialog::~AddContaminantsToSourceDialog()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AddContaminantsToSourceDialog::Sources AddContaminantsToSourceDialog::sources()
+ AddContaminantsToSourceDialog::Sources  AddContaminantsToSourceDialog::sources()
 {
   return _sources;
 }
@@ -85,7 +85,7 @@ AddContaminantsToSourceDialog::Sources AddContaminantsToSourceDialog::sources()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddContaminantsToSourceDialog::sources( Sources s )
+void  AddContaminantsToSourceDialog::sources( Sources s )
 {
   _sources = s;
 }
@@ -93,25 +93,25 @@ void AddContaminantsToSourceDialog::sources( Sources s )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the contaminants
+//  Get the chemicals
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AddContaminantsToSourceDialog::Contaminants AddContaminantsToSourceDialog::contaminants()
+ AddContaminantsToSourceDialog::Chemicals  AddContaminantsToSourceDialog::chemicals()
 {
-  return _contaminants;
+  return _chemicals;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the contaminants
+//  Set the chemicals
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddContaminantsToSourceDialog::contaminants( Contaminants c )
+void  AddContaminantsToSourceDialog::chemicals( Chemicals c )
 {
-  _contaminants = c;
+  _chemicals = c;
 }
 
 
@@ -121,7 +121,7 @@ void AddContaminantsToSourceDialog::contaminants( Contaminants c )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddContaminantsToSourceDialog::initialize()
+void  AddContaminantsToSourceDialog::initialize()
 {
   this->_initialize();
 }
@@ -133,7 +133,7 @@ void AddContaminantsToSourceDialog::initialize()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddContaminantsToSourceDialog::_initSource()
+void  AddContaminantsToSourceDialog::_initSource()
 {
  // first pass through Source values?
   bool firstPass( true );
@@ -170,21 +170,21 @@ void AddContaminantsToSourceDialog::_initSource()
     _sourceTable->setItem( rowCount, 0, item0 );
     _sourceTable->setItem( rowCount, 1, item1 );    
 
-    // get the source contaminants
-    Contaminants sc( s.contaminants );
+    // get the source chemicals
+    Chemicals sc( s.chemicals );
 
-    // string to hold the contaminant data
+    // string to hold the chemical data
     std::string scstr ("( ");
 
-    // loop through the already assigned contaminants
+    // loop through the already assigned chemicals
     for( unsigned int j = 0; j < sc.size(); ++j )
     {
-      // get the contaminant
+      // get the chemical
       std::string cname ( sc.at( j ).name );
       
       if( j < sc.size() - 1 )
       {
-        // if this isn't the last element add a comma after the contaminant name
+        // if this isn't the last element add a comma after the chemical name
         scstr = Usul::Strings::format( scstr, cname, ", " );
       }
       else
@@ -209,11 +209,11 @@ void AddContaminantsToSourceDialog::_initSource()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Initialization of contaminants.
+//  Initialization of chemicals.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddContaminantsToSourceDialog::_initContaminants()
+void  AddContaminantsToSourceDialog::_initContaminants()
 {
 // first pass through Source values?
   bool firstPass( true );
@@ -221,10 +221,10 @@ void AddContaminantsToSourceDialog::_initContaminants()
   // the current number of rows
   unsigned int rowCount ( 0 );
 
-  for( unsigned int i = 0; i < _contaminants.size(); ++i )
+  for( unsigned int i = 0; i < _chemicals.size(); ++i )
   {
     // create a Source object
-    Contaminant c ( _contaminants.at( i ) );
+    Chemical c ( _chemicals.at( i ) );
 
     // add a row
     _contaminantTable->insertRow( rowCount );
@@ -289,12 +289,12 @@ void AddContaminantsToSourceDialog::_initContaminants()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddContaminantsToSourceDialog::_initialize()
+void  AddContaminantsToSourceDialog::_initialize()
 {
   // initialize the sources
   this->_initSource();
 
-  // initialize the contaminants
+  // initialize the chemicals
   this->_initContaminants();
 }
 
@@ -305,30 +305,30 @@ void AddContaminantsToSourceDialog::_initialize()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddContaminantsToSourceDialog::on_addButton_clicked()
+void  AddContaminantsToSourceDialog::on_addButton_clicked()
 {
-  // get the currently selected Contaminants
-  QList<QTableWidgetItem*> selectedContaminants ( _contaminantTable->selectedItems() );
+  // get the currently selected Chemicals
+  QList<QTableWidgetItem*> selectedChemicals ( _contaminantTable->selectedItems() );
 
-  // temp value to hold the selected contaminants
-  Contaminants c;
+  // temp value to hold the selected chemicals
+  Chemicals c;
 
-  // loop through the selected contaminants
-  for( int i = 0; i < selectedContaminants.size(); ++i )
+  // loop through the selected chemicals
+  for( int i = 0; i < selectedChemicals.size(); ++i )
   {
     // get the current item
-    QTableWidgetItem* item = selectedContaminants.at( i );
+    QTableWidgetItem* item = selectedChemicals.at( i );
 
     // get the row index
     unsigned int row ( item->row() );
 
-    // get the contaminant
-    if( row < _contaminants.size() )
+    // get the chemical
+    if( row < _chemicals.size() )
     {
-      // temp value to hold the contaminant
-      Contaminant ctemp ( _contaminants.at( row ) );
+      // temp value to hold the chemical
+      Chemical ctemp ( _chemicals.at( row ) );
 
-      // add to the temp list of selected contaminants
+      // add to the temp list of selected chemicals
       c.push_back( ctemp );
     }
   }
@@ -336,7 +336,7 @@ void AddContaminantsToSourceDialog::on_addButton_clicked()
   // get the currently selected sources
   QList<QTableWidgetItem*> selectedSources ( _sourceTable->selectedItems() );
 
-  // loop through the selected sources and add the selected contaminants
+  // loop through the selected sources and add the selected chemicals
   for( int i = 0; i < selectedSources.size(); ++i )
   {
     // get the current item
@@ -347,11 +347,11 @@ void AddContaminantsToSourceDialog::on_addButton_clicked()
 
     if( row < _sources.size() )
     {
-      // loop through and add contaminants to the selected source
+      // loop through and add chemicals to the selected source
       for( unsigned int j = 0; j < c.size(); ++j )
       {
-        // add the contaminant to the list of contaminants for this source
-        _sources.at( row ).contaminants.push_back( c.at( j ) );
+        // add the chemical to the list of chemicals for this source
+        _sources.at( row ).chemicals.push_back( c.at( j ) );
       }
     }
 
@@ -375,30 +375,30 @@ void AddContaminantsToSourceDialog::on_addButton_clicked()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddContaminantsToSourceDialog::on_removeButton_clicked()
+void  AddContaminantsToSourceDialog::on_removeButton_clicked()
 {
- // get the currently selected Contaminants
-  QList<QTableWidgetItem*> selectedContaminants ( _contaminantTable->selectedItems() );
+ // get the currently selected Chemicals
+  QList<QTableWidgetItem*> selectedChemicals ( _contaminantTable->selectedItems() );
 
-  // temp value to hold the selected contaminants
-  Contaminants c;
+  // temp value to hold the selected chemicals
+  Chemicals c;
 
-  // loop through the selected contaminants
-  for( int i = 0; i < selectedContaminants.size(); ++i )
+  // loop through the selected chemicals
+  for( int i = 0; i < selectedChemicals.size(); ++i )
   {
     // get the current item
-    QTableWidgetItem* item = selectedContaminants.at( i );
+    QTableWidgetItem* item = selectedChemicals.at( i );
 
     // get the row index
     unsigned int row ( item->row() );
 
-    // get the contaminant
-    if( row < _contaminants.size() )
+    // get the chemical
+    if( row < _chemicals.size() )
     {
-      // temp value to hold the contaminant
-      Contaminant ctemp ( _contaminants.at( row ) );
+      // temp value to hold the chemical
+      Chemical ctemp ( _chemicals.at( row ) );
 
-      // add to the temp list of selected contaminants
+      // add to the temp list of selected chemicals
       c.push_back( ctemp );
     }
   }
@@ -406,7 +406,7 @@ void AddContaminantsToSourceDialog::on_removeButton_clicked()
   // get the currently selected sources
   QList<QTableWidgetItem*> selectedSources ( _sourceTable->selectedItems() );
 
-  // loop through the selected sources and add the selected contaminants
+  // loop through the selected sources and add the selected chemicals
   for( int i = 0; i < selectedSources.size(); ++i )
   {
     // get the current item
@@ -418,24 +418,24 @@ void AddContaminantsToSourceDialog::on_removeButton_clicked()
     if( row < _sources.size() )
     {
       // get the old source
-      Contaminants oldlist ( _sources.at( row ).contaminants );
+      Chemicals oldlist ( _sources.at( row ).chemicals );
 
       // new source
-      Contaminants newlist;
+      Chemicals newlist;
 
-      // loop through and remove contaminants from the selected source
+      // loop through and remove chemicals from the selected source
       for( unsigned int j = 0; j < oldlist.size(); ++j )
       {
-        // get the contaminant name from the old lise
+        // get the chemical name from the old lise
         std::string nameFromSource ( oldlist.at( j ).name );
 
         // remove?
         bool removeEntry ( false );
 
-        // loop through the contaminants to remove
+        // loop through the chemicals to remove
         for( unsigned int k = 0; k < c.size(); ++k )
         {
-          // get the contaminant name from the list of those to be removed
+          // get the chemical name from the list of those to be removed
           std::string nameToRemove ( c.at( k ).name );
 
           if( nameToRemove == nameFromSource )
@@ -453,8 +453,8 @@ void AddContaminantsToSourceDialog::on_removeButton_clicked()
 
       }
       
-      // update the source contaminant list at i
-      _sources.at( row ).contaminants = newlist;
+      // update the source chemical list at i
+      _sources.at( row ).chemicals = newlist;
       
     }
   }

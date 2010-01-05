@@ -90,7 +90,7 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _building( "1", "1", "1", "0", "0", "0", "0", "0", "", "" ),
   _useBuilding( false ),
   _sources(),
-  _contaminants(),
+  _chemicals(),
   _soils(),
   _cracks(),
   _axisPoints(),
@@ -743,7 +743,7 @@ void VaporIntrusionGUIDocument::_build3DScene ( Unknown *caller )
 
   if( true == _showSources )
   {
-    // build the contaminant 3D element
+    // build the chemical 3D element
     this->_makeSource3D();  
   }
 
@@ -1252,7 +1252,7 @@ void VaporIntrusionGUIDocument::_makeSymmetricalBuilding( )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Add the contaminant 3D objects to the scene
+// Add the chemical 3D objects to the scene
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1265,10 +1265,10 @@ void VaporIntrusionGUIDocument::_makeSource3D()
 
   for( unsigned int i = 0; i < _sources.size(); ++i )
   {
-    // get the contaminant
+    // get the chemical
     Source s ( _sources.at( i ) );
 
-    // color for the contaminant
+    // color for the chemical
     Color c ( s.color[0], s.color[1], s.color[2], 0.8 );
    
     // Material for the cube
@@ -1276,7 +1276,7 @@ void VaporIntrusionGUIDocument::_makeSource3D()
     material->setAmbient( osg::Material::FRONT_AND_BACK, c );
     material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
 
-    // get the lower left corner of the contaminant
+    // get the lower left corner of the chemical
     osg::Vec3f ll  ( StrToFloat::convert( s.x ), StrToFloat::convert( s.y ), StrToFloat::convert( s.z ) );
 
     // snap to the grid
@@ -1290,10 +1290,10 @@ void VaporIntrusionGUIDocument::_makeSource3D()
     // shrink
     ll = osg::Vec3f ( ll.x() - 0.00001, ll.y() - 0.00001, ll.z() - 0.00001 );
 
-    // get the length, width, and height of the contaminant
+    // get the length, width, and height of the chemical
     osg::Vec3f lwh ( StrToFloat::convert( s.l ), StrToFloat::convert( s.h ), StrToFloat::convert( s.w ) );
 
-    // create the points for the contaminant
+    // create the points for the chemical
     osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
     p->push_back( osg::Vec3f ( ll.x()          , ll.y()          , ll.z()           ) );
     p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y()          , ll.z()           ) );
@@ -2326,9 +2326,9 @@ void VaporIntrusionGUIDocument::initialize()
   _configFileName = Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "vpi_config.vpi";
   this->_readInitializationFile( _configFileName );
 
-  // read the contaminants file
-  std::string contamintantFilename ( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "contaminants.vpi" );
-  this->_readContaminants( contamintantFilename );
+  // read the chemicals file
+  std::string contamintantFilename ( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "chemicals.vpi" );
+  this->_readChemicals( contamintantFilename );
 
   // read the sources file
   std::string sourceFilename ( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "sources.vpi" );
@@ -2417,14 +2417,14 @@ void VaporIntrusionGUIDocument::_readSources( const std::string& filename )
         Usul::Strings::trimLeft( name, ' ' );
         Usul::Strings::trimRight( name, ' ' );
 
-        // create a temp contaminant
-        Contaminants c;
+        // create a temp chemical
+        Chemicals c;
         Source s ( l, w, h, xpos, ypos, zpos, name, c );
 
-        // add to the list of contaminants
+        // add to the list of chemicals
         _sources.push_back( s );
 
-        // increment the number of contaminants read
+        // increment the number of chemicals read
         ++lineNumber;
 
       }// end for for activators read   
@@ -2511,13 +2511,13 @@ void VaporIntrusionGUIDocument::_readSoils( const std::string& filename )
         Usul::Strings::trimLeft( name, ' ' );
         Usul::Strings::trimRight( name, ' ' );
 
-        // create a temp contaminant
+        // create a temp chemical
         Soil s ( name, elevation, porosity, H2OPorosity, carbon, permability, viscosity );
 
-        // add to the list of contaminants
+        // add to the list of chemicals
         _soils.push_back( s );
 
-        // increment the number of contaminants read
+        // increment the number of chemicals read
         ++lineNumber;
 
       }// end for for activators read   
@@ -2598,13 +2598,13 @@ void VaporIntrusionGUIDocument::_readCracks( const std::string& filename )
  //       std::string ey    ( sv.at( 3 ) );
  //       std::string w     ( sv.at( 4 ) );
 
- //       // create a temp contaminant
+ //       // create a temp chemical
  //       Crack c ( sx, sy, ex, ey, w );
 
- //       // add to the list of contaminants
+ //       // add to the list of chemicals
  //       _cracks.push_back( c );
 
- //       // increment the number of contaminants read
+ //       // increment the number of chemicals read
  //       ++lineNumber;
 
  //     }// end for for activators read   
@@ -2621,11 +2621,11 @@ void VaporIntrusionGUIDocument::_readCracks( const std::string& filename )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Read the contaminants file
+// Read the chemicals file
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_readContaminants( const std::string& filename )
+void VaporIntrusionGUIDocument::_readChemicals( const std::string& filename )
 {
   Guard guard ( this );
 
@@ -2641,12 +2641,12 @@ void VaporIntrusionGUIDocument::_readContaminants( const std::string& filename )
   // make sure the file was opened
   if( false == ifs.is_open() )
   {
-    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No Presets loaded for Contaminants" ) << std::endl;
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No Presets loaded for Chemicals" ) << std::endl;
     return;
   }
 
   // feedback.
-  std::cout << "Reading Contaminants file: " << filename << std::endl;
+  std::cout << "Reading Chemicals file: " << filename << std::endl;
 
   // buffer size
   const unsigned long int bufSize ( 4095 );
@@ -2692,13 +2692,13 @@ void VaporIntrusionGUIDocument::_readContaminants( const std::string& filename )
         Usul::Strings::trimLeft( name, ' ' );
         Usul::Strings::trimRight( name, ' ' );
 
-        // create a temp contaminant
-        Contaminant c ( lineNumber, name, henry, koc, diffair, diffh2o, atmoconc );
+        // create a temp chemical
+        Chemical c ( lineNumber, name, henry, koc, diffair, diffh2o, atmoconc );
 
-        // add to the list of contaminants
-        _contaminants.push_back( c );
+        // add to the list of chemicals
+        _chemicals.push_back( c );
 
-        // increment the number of contaminants read
+        // increment the number of chemicals read
         ++lineNumber;
 
       }// end for for activators read   
@@ -3216,27 +3216,27 @@ VaporIntrusionGUIDocument::Sources VaporIntrusionGUIDocument::sources()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Set the contaminants
+// Set the chemicals
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::contaminants( Contaminants c )
+void VaporIntrusionGUIDocument::chemicals( Chemicals c )
 {
   Guard guard ( this );
-  _contaminants = c;
+  _chemicals = c;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Get the contaminants
+// Get the chemicals
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-VaporIntrusionGUIDocument::Contaminants VaporIntrusionGUIDocument::contaminants()
+VaporIntrusionGUIDocument::Chemicals VaporIntrusionGUIDocument::chemicals()
 {
   Guard guard ( this );
-  return _contaminants;
+  return _chemicals;
 }
 
 
@@ -5762,10 +5762,14 @@ void VaporIntrusionGUIDocument::handleNewObject()
     this->_createNewBuilding();
   }
 
-  // create a new building
+  // create a new source
   if( _objectMode == IVPI::OBJECT_SOURCE )
   {
+    // create the source
     this->_createNewSource();
+
+    // launch properties dialog for newly made source
+
   }
 
 }
@@ -5797,7 +5801,7 @@ void VaporIntrusionGUIDocument::_createNewSource()
   float w ( ez - sz );
   float h ( ey - sy );
 
-  IVPI::Contaminants c;
+  IVPI::Chemicals c;
 
   // create a building object with the parameters entered in the 2D window
   IVPI::Source s ( Usul::Strings::format ( l ),

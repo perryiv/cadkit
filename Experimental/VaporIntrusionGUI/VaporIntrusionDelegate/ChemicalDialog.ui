@@ -1,0 +1,113 @@
+<ui version="4.0" >
+ <class>ChemicalsDialog</class>
+ <widget class="QDialog" name="ChemicalsDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>782</width>
+    <height>544</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Chemical Library</string>
+  </property>
+  <widget class="QPushButton" name="removeButton" >
+   <property name="geometry" >
+    <rect>
+     <x>290</x>
+     <y>510</y>
+     <width>75</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Remove</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="addButton" >
+   <property name="geometry" >
+    <rect>
+     <x>210</x>
+     <y>510</y>
+     <width>75</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Add</string>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="_chemicalTable" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>741</width>
+     <height>481</height>
+    </rect>
+   </property>
+   <property name="rowCount" >
+    <number>0</number>
+   </property>
+   <property name="columnCount" >
+    <number>7</number>
+   </property>
+   <column/>
+   <column/>
+   <column/>
+   <column/>
+   <column/>
+   <column/>
+   <column/>
+  </widget>
+  <widget class="QDialogButtonBox" name="okCancelButton" >
+   <property name="geometry" >
+    <rect>
+     <x>370</x>
+     <y>510</y>
+     <width>156</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>okCancelButton</sender>
+   <signal>accepted()</signal>
+   <receiver>ChemicalsDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>357</x>
+     <y>363</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>202</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>okCancelButton</sender>
+   <signal>rejected()</signal>
+   <receiver>ChemicalsDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>357</x>
+     <y>363</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>202</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

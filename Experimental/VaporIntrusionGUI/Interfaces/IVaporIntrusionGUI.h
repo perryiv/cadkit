@@ -152,39 +152,39 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   };
   typedef std::vector< Soil > Soils;
 
-  struct Contaminant
+  struct Chemical
   {
     unsigned int index;
     std::string name, henry, koc, airDiff, waterDiff, atmoConc;
     
-    Contaminant():
+    Chemical():
     index( 0 ), name(), henry(), koc(), airDiff(), waterDiff(), atmoConc()
     {};
 
-    Contaminant( unsigned int i, const std::string& n, const std::string& h, const std::string& k,
+    Chemical( unsigned int i, const std::string& n, const std::string& h, const std::string& k,
                  const std::string& ad, const std::string& wd, const std::string& ac ):
     index( i ), name( n ), henry( h ), koc( k ), airDiff( ad ), waterDiff( wd ), atmoConc( ac )
     {};
 
   };
-  typedef std::vector< Contaminant > Contaminants;
+  typedef std::vector< Chemical > Chemicals;
 
   struct Source
   {
     std::string l,w,h;
     std::string x,y,z;
     std::string name;
-    Contaminants contaminants;
+    Chemicals chemicals;
     Usul::Math::Vec4f color;
 
     Source():
-    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" ), name ( "" ), contaminants()
+    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" ), name ( "" ), chemicals()
     {};
 
     Source( const std::string& length, const std::string& width, const std::string& height,
                  const std::string& xpos, const std::string& ypos, const std::string& zpos,
-                 const std::string& n, Contaminants c ):
-    l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ), name( n ), contaminants( c )
+                 const std::string& n, Chemicals c ):
+    l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ), name( n ), chemicals( c )
     {};
 
   };
@@ -338,8 +338,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   virtual void                  sources( Sources s ) = 0;
   virtual Sources               sources() = 0;
 
-  virtual void                  contaminants( Contaminants c ) = 0;
-  virtual Contaminants          contaminants() = 0;
+  virtual void                  chemicals( Chemicals c ) = 0;
+  virtual Chemicals             chemicals() = 0;
 
   virtual void                  soils( Soils s ) = 0;
   virtual Soils                 soils() = 0;

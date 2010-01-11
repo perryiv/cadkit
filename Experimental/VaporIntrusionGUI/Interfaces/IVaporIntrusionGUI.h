@@ -156,14 +156,15 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   {
     unsigned int index;
     std::string name, henry, koc, airDiff, waterDiff, atmoConc;
+    bool present;
     
     Chemical():
-    index( 0 ), name(), henry(), koc(), airDiff(), waterDiff(), atmoConc()
+    index( 0 ), name(), henry(), koc(), airDiff(), waterDiff(), atmoConc(), present( true )
     {};
 
     Chemical( unsigned int i, const std::string& n, const std::string& h, const std::string& k,
                  const std::string& ad, const std::string& wd, const std::string& ac ):
-    index( i ), name( n ), henry( h ), koc( k ), airDiff( ad ), waterDiff( wd ), atmoConc( ac )
+    index( i ), name( n ), henry( h ), koc( k ), airDiff( ad ), waterDiff( wd ), atmoConc( ac ), present( true )
     {};
 
   };
@@ -340,6 +341,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual void                  chemicals( Chemicals c ) = 0;
   virtual Chemicals             chemicals() = 0;
+  virtual Chemicals             library() = 0;
 
   virtual void                  soils( Soils s ) = 0;
   virtual Soils                 soils() = 0;

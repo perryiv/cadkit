@@ -43,8 +43,10 @@ public:
   virtual ~ChemicalDialog();
 
   void                initialize();
-  Chemicals        chemicals();
+  Chemicals           chemicals();
   void                chemicals( Chemicals c );
+  void                library( Chemicals l );
+  Chemicals           getSelectedChemicals();
 
 protected:
 
@@ -53,6 +55,7 @@ protected:
 
 private:
   Chemicals        _chemicals;
+  Chemicals        _chemicalLibrary;
 
 private slots:
   void on_addButton_clicked();

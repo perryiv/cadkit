@@ -20,6 +20,8 @@
 #include "Usul/Strings/Format.h"
 #include "Usul/Exceptions/Canceled.h"
 
+#include <QtGui/QCheckBox>
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -88,10 +90,10 @@ void ChemicalDialog::_initialize()
   // the current number of rows
   unsigned int rowCount ( 0 );
 
-  for( unsigned int i = 0; i < _chemicals.size(); ++i )
+  for( unsigned int i = 0; i < _chemicalLibrary.size(); ++i )
   {
     // create a Source object
-    Chemical c ( _chemicals.at( i ) );
+    Chemical c ( _chemicalLibrary.at( i ) );
 
     // add a row
     _chemicalTable->insertRow( rowCount );
@@ -120,6 +122,27 @@ void ChemicalDialog::_initialize()
     QTableWidgetItem *item5 = new QTableWidgetItem;
     item5->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
 
+    // create a checkbox widget for the seventh column
+    QTableWidgetItem *item6 = new QTableWidgetItem;
+    item6->data( Qt::CheckStateRole );
+    item6->setCheckState( Qt::Unchecked );
+
+    // if the chemical is present check item6
+    for( unsigned int j = 0; j < _chemicals.size(); ++j )
+    {
+      // get the chemical from the list of chemicals in the experiment
+      Chemical cx ( _chemicals.at( j ) );
+
+      // check to see if the name matches that of the current chemical
+      if( cx.name == c.name )
+      {
+        // check the chemical checkbox
+        item6->setCheckState( Qt::Checked );
+        break;
+      }
+    }
+
+
     if( true == firstPass )
     {
       // set the current item
@@ -135,7 +158,8 @@ void ChemicalDialog::_initialize()
     _chemicalTable->setItem( rowCount, 2, item2 );
     _chemicalTable->setItem( rowCount, 3, item3 );
     _chemicalTable->setItem( rowCount, 4, item4 );
-    _chemicalTable->setItem( rowCount, 5, item5 ); 
+    _chemicalTable->setItem( rowCount, 5, item5 );
+    _chemicalTable->setItem( rowCount, 6, item6 );
 
     // set the values of the row
     _chemicalTable->item( rowCount, 0 )->setText( c.name.c_str()     );
@@ -197,11 +221,16 @@ void ChemicalDialog::on_addButton_clicked()
 
   // create an item widget for the fifth column
   QTableWidgetItem *item4 = new QTableWidgetItem;
-  item3->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+  item4->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
 
   // create an item widget for the sixth column
   QTableWidgetItem *item5 = new QTableWidgetItem;
-  item3->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+  item5->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+
+  // create a checkbox widget for the seventh column
+  QTableWidgetItem *item6 = new QTableWidgetItem;
+  item6->data( Qt::CheckStateRole );
+  item6->setCheckState( Qt::Checked );
 
   // set the current item
   _chemicalTable->setCurrentItem( item0 );
@@ -213,6 +242,7 @@ void ChemicalDialog::on_addButton_clicked()
   _chemicalTable->setItem( rowCount, 3, item3 );
   _chemicalTable->setItem( rowCount, 4, item4 );
   _chemicalTable->setItem( rowCount, 5, item5 ); 
+  _chemicalTable->setItem( rowCount, 6, item6 ); 
 
   // set the values of the row
   _chemicalTable->item( rowCount, 0 )->setText( c.name.c_str()     );
@@ -222,6 +252,53 @@ void ChemicalDialog::on_addButton_clicked()
   _chemicalTable->item( rowCount, 4 )->setText( c.waterDiff.c_str()  );
   _chemicalTable->item( rowCount, 5 )->setText( c.atmoConc.c_str() );
  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the library
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ChemicalDialog::library( Chemicals l )
+{
+  _chemicalLibrary = l;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the chemicals specified by the user that will be present in the 
+//  experiment space.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ChemicalDialog::Chemicals ChemicalDialog::getSelectedChemicals()
+{
+  // Chemicals to return
+  Chemicals chemicals;
+
+  for( int i = 0; i < _chemicalTable->rowCount(); ++ i )
+  {
+    // get the checkbox item at row i
+    QTableWidgetItem* item ( _chemicalTable->item( i, 6 ) );
+
+    // get the value of the check box
+    Qt::CheckState checked ( item->checkState() );
+
+    // if it is checked add it to the list of chemicals to return
+    if( Qt::Checked == checked )
+    {
+      // get the chemical at this index
+      Chemical c ( _chemicals.at( i ) );
+
+      // add the chemical to the list of those to return
+      chemicals.push_back( c );
+    }
+  }
+
+  return chemicals;
 }
 
 

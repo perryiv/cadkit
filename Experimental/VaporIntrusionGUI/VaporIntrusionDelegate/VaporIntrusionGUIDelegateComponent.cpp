@@ -470,6 +470,9 @@ void VaporIntrusionGUIDelegateComponent::editChemicals()
   // set the chemicals
   editor.chemicals( document->chemicals() );
 
+  // set the chemical library
+  editor.library( document->library() );
+
   // populate the chemical list
   editor.initialize();
 
@@ -477,7 +480,7 @@ void VaporIntrusionGUIDelegateComponent::editChemicals()
   if ( QDialog::Accepted != editor.exec() )
     throw Usul::Exceptions::Canceled();
 
-  document->chemicals( editor.chemicals() );
+  document->chemicals( editor.getSelectedChemicals() );
 
   document->rebuildScene();
 }

@@ -13,6 +13,9 @@
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 #include "GenericIndexToggle.h"
 
+// Dialogs
+#include "VaporIntrusionGUI/VaporIntrusionDelegate/SourcePropertiesDialog.h"
+
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IViewPort.h"
 #include "Usul/Interfaces/ITextMatrix.h"
@@ -22,6 +25,7 @@
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Properties/Attribute.h"
+#include "Usul/Exceptions/Canceled.h"
 
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Case.h"
@@ -2707,6 +2711,9 @@ void VaporIntrusionGUIDocument::_readChemicals( const std::string& filename )
 
   }// end while read for file parsing
 
+  // seed the library
+  _chemicalLibrary = _chemicals;
+
   ifs.close();
 }
 
@@ -3211,6 +3218,20 @@ VaporIntrusionGUIDocument::Sources VaporIntrusionGUIDocument::sources()
   Guard guard ( this );
 
   return _sources;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the chemical library
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::Chemicals VaporIntrusionGUIDocument::library()
+{
+  Guard guard ( this );
+
+  return _chemicalLibrary;
 }
 
 
@@ -3918,7 +3939,7 @@ void VaporIntrusionGUIDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
                                                                     "XZ Plane (.)", IVPI::VIEW_MODE_2D_XZ ) ) );
 
 
-  // Add the build sub menu
+  // Add the build sub men
   MenuKit::Menu::RefPtr buildMenu ( toolsMenu->find ( "&Builds", true ) );
   buildMenu->append ( new ToggleButton ( genericIndexToggle( caller, Usul::Adaptors::memberFunction<bool> ( this, &VaporIntrusionGUIDocument::isBuildMode ), 
                                                                     Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::setIsBuildMode2D ),
@@ -5768,8 +5789,22 @@ void VaporIntrusionGUIDocument::handleNewObject()
     // create the source
     this->_createNewSource();
 
-    // launch properties dialog for newly made source
+    //// launch properties dialog for newly made source
+    //SourcePropertiesDialog spd;
 
+    //// set the default source 
+    //spd.source( _sources.at( _sources.size() - 1 ) );
+
+    //// Show the dialog.
+    //if ( QDialog::Accepted != spd.exec() )
+    //throw Usul::Exceptions::Canceled();
+
+    //// get the modified source
+    //Source s ( spd.source() );
+
+    //// update the source
+    //_sources.at( _sources.size() - 1 ) = s;
+    
   }
 
 }
@@ -5812,11 +5847,44 @@ void VaporIntrusionGUIDocument::_createNewSource()
                    Usul::Strings::format ( sz ),
                    "Untitled", c );
 
+  // generate a random color for the source
+  s.color = this->_randomColor();
+
+  // add the source to the list of sources
   _sources.push_back( s );
 
   //rebuild the scene
   this->rebuildScene();
 
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Generate a random color
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec4f VaporIntrusionGUIDocument::_randomColor()
+{
+ 
+  // seed the random number generator
+  srand( time( NULL ) );
+
+  // generate the channels of the color
+  float r ( static_cast< float > ( 1 + rand() % 100 ) + static_cast< float > ( 1 + rand() % 100 ) + static_cast< float > ( 1 + rand() % 100 ) );
+  float red   ( ( r / 3 ) / 100.0f );
+ 
+  float g ( static_cast< float > ( 1 + rand() % 100 ) + static_cast< float > ( 1 + rand() % 100 ) + static_cast< float > ( 1 + rand() % 100 ) ); 
+  float green ( ( g / 3 ) / 100.0f );
+
+  float b ( static_cast< float > ( 1 + rand() % 100 ) + static_cast< float > ( 1 + rand() % 100 ) + static_cast< float > ( 1 + rand() % 100 ) ); 
+  float blue  ( ( b / 3 ) / 100.0f );
+  
+
+  // generate the color
+  Usul::Math::Vec4f color ( red, green, blue, 1.0f ); 
+
+  return color;
 }
 
 

@@ -225,6 +225,7 @@ public:
 
   virtual void                chemicals( Chemicals c );
   virtual Chemicals           chemicals();
+  virtual Chemicals           library();
 
   virtual void                soils( Soils s );
   virtual Soils               soils();
@@ -418,6 +419,8 @@ protected:
   void                        _removeCrack( Usul::Math::Vec3f point );
   bool                        _crackExists( Cracks cracks, Crack crack );
 
+  Usul::Math::Vec4f           _randomColor();
+
 private:
     GroupPtr                  _root;
     GroupPtr                  _root2D;
@@ -436,6 +439,7 @@ private:
     bool                      _useBuilding;
     Sources                   _sources;
     Chemicals                 _chemicals;
+    Chemicals                 _chemicalLibrary;
     Soils                     _soils;
     CracksPair                _cracks;
     GridAxisPoints            _axisPoints;

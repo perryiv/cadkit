@@ -773,6 +773,36 @@
 						/>
 					</FileConfiguration>
 				</File>
+				<File
+					RelativePath=".\SourcePropertiesDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SourcePropertiesDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_SourcePropertiesDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\SourcePropertiesDialog.ui -o .\ui_SourcePropertiesDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\SourcePropertiesDialog.h&quot; -o &quot;.\GeneratedFiles\moc_SourcePropertiesDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\SourcePropertiesDialog.ui;$(QTDIR)\bin\moc.exe;.\SourcePropertiesDialog.h"
+							Outputs=".\ui_SourcePropertiesDialog.h;.\GeneratedFiles\moc_SourcePropertiesDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_SourcePropertiesDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\SourcePropertiesDialog.ui -o .\ui_SourcePropertiesDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\SourcePropertiesDialog.h&quot; -o &quot;.\GeneratedFiles\moc_SourcePropertiesDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\SourcePropertiesDialog.ui;$(QTDIR)\bin\moc.exe;.\SourcePropertiesDialog.h"
+							Outputs=".\ui_SourcePropertiesDialog.h;.\GeneratedFiles\moc_SourcePropertiesDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
 			</Filter>
 			<Filter
 				Name="Generated"
@@ -843,6 +873,10 @@
 				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_SourceDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_SourcePropertiesDialog.cpp"
 					>
 				</File>
 			</Filter>

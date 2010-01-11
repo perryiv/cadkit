@@ -45,7 +45,7 @@ public:
   void                initialize();
   Chemical            chemical();
   void                chemical( Chemical c );
-  Chemical                createChemical();
+  Chemical            createChemical();
 
 protected:
 

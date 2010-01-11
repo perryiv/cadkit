@@ -4359,7 +4359,7 @@ void VaporIntrusionGUIDocument::_handleCrackAdd( Usul::Math::Vec3f point )
   int buildMode ( this->getBuildMode2D() );
 
   // X axis selected
-  if( editMode == IVPI::EDIT_X_GRID_2D )
+  if( editMode == IVPI::EDIT_Y_GRID_2D )
   {
     // get the parallel and perpendicular grids
     paraGrid = this->_getGridFromAxis( "X" );
@@ -4403,8 +4403,9 @@ void VaporIntrusionGUIDocument::_handleCrackAdd( Usul::Math::Vec3f point )
     }    
   }
 
+
   // "Y" axis selected
-  if ( editMode == IVPI::EDIT_Y_GRID_2D )
+  if ( editMode == IVPI::EDIT_X_GRID_2D )
   {
     // get the parallel and perpendicular grids
     paraGrid = this->_getGridFromAxis( "Z" );
@@ -4858,7 +4859,7 @@ void VaporIntrusionGUIDocument::_removeCrack( Usul::Math::Vec3f point )
   int editMode ( this->getEditMode2D() );
 
   // X axis selected
-  if( editMode == IVPI::EDIT_X_GRID_2D )
+  if( editMode == IVPI::EDIT_Y_GRID_2D )
   {
     // set the axis
     axis = "X";
@@ -4874,7 +4875,7 @@ void VaporIntrusionGUIDocument::_removeCrack( Usul::Math::Vec3f point )
   }
 
   // "Y" axis selected
-  if ( editMode == IVPI::EDIT_Y_GRID_2D )
+  if ( editMode == IVPI::EDIT_X_GRID_2D )
   {
     // set the axis
     axis = "Z";

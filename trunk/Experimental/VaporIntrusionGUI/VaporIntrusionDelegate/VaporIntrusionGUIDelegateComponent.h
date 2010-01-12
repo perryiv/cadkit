@@ -74,6 +74,7 @@ public:
 
   // IVaporIntrusionGUI typedefs
   typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI IVaporIntrusionGUI;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI IVPI;
   typedef IVaporIntrusionGUI::Category Category;
   typedef IVaporIntrusionGUI::Categories Categories;
   typedef IVaporIntrusionGUI::MaterialsMap MaterialsMap;

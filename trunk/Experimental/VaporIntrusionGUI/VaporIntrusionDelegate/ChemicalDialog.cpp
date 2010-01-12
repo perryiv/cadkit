@@ -197,6 +197,7 @@ void ChemicalDialog::on_addButton_clicked()
 
   // add the Source to the list of contamimants
   _chemicals.push_back( c );
+  _chemicalLibrary.push_back( c );
 
   int rowCount ( _chemicalTable->rowCount() );
 
@@ -269,6 +270,19 @@ void ChemicalDialog::library( Chemicals l )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the library
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ChemicalDialog::Chemicals ChemicalDialog::library()
+{
+  return _chemicalLibrary;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the chemicals specified by the user that will be present in the 
 //  experiment space.
 //
@@ -328,35 +342,71 @@ void ChemicalDialog::on_removeButton_clicked()
     rowsToRemove.push_back( row );
   }
 
-  // new building cracks
-  Chemicals newlist;
-
-  // old building cracks
-  Chemicals oldlist ( _chemicals );
-
-  for( unsigned int i = 0; i < oldlist.size(); ++i )
+  // remove from the active chemicals
   {
-    // remove the row or not
-    bool removeRow ( false );
+    // new building cracks
+    Chemicals newlist;
 
-    for( unsigned int j = 0; j < rowsToRemove.size(); ++j )
+    // old building cracks
+    Chemicals oldlist ( _chemicals );
+
+    for( unsigned int i = 0; i < oldlist.size(); ++i )
     {
-      if( i == rowsToRemove.at( j ) )
+      // remove the row or not
+      bool removeRow ( false );
+
+      for( unsigned int j = 0; j < rowsToRemove.size(); ++j )
       {
-        // this row is marked to be removed
-        removeRow = true;
+        if( i == rowsToRemove.at( j ) )
+        {
+          // this row is marked to be removed
+          removeRow = true;
+        }
+      }
+
+      // if the row is not to be removed then add it to the new cracks list
+      if( false == removeRow )
+      {
+        newlist.push_back( oldlist.at( i ) );
       }
     }
 
-    // if the row is not to be removed then add it to the new cracks list
-    if( false == removeRow )
-    {
-      newlist.push_back( oldlist.at( i ) );
-    }
-  }
+    // update the building cracks
+    _chemicals = newlist;
+  } // end active chemical removal
+  
+  // remove from the chemical library
+  {
+    // new building cracks
+    Chemicals newlist;
 
-  // update the building cracks
-  _chemicals = newlist;
+    // old building cracks
+    Chemicals oldlist ( _chemicalLibrary );
+
+    for( unsigned int i = 0; i < oldlist.size(); ++i )
+    {
+      // remove the row or not
+      bool removeRow ( false );
+
+      for( unsigned int j = 0; j < rowsToRemove.size(); ++j )
+      {
+        if( i == rowsToRemove.at( j ) )
+        {
+          // this row is marked to be removed
+          removeRow = true;
+        }
+      }
+
+      // if the row is not to be removed then add it to the new cracks list
+      if( false == removeRow )
+      {
+        newlist.push_back( oldlist.at( i ) );
+      }
+    }
+
+    // update the building cracks
+    _chemicalLibrary = newlist;
+  } // end library removal
 
   // clear the cracks table
   this->_clearTable();

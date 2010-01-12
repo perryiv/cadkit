@@ -226,6 +226,7 @@ public:
   virtual void                chemicals( Chemicals c );
   virtual Chemicals           chemicals();
   virtual Chemicals           library();
+  virtual void                library( Chemicals l );
 
   virtual void                soils( Soils s );
   virtual Soils               soils();

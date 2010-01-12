@@ -342,6 +342,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   virtual void                  chemicals( Chemicals c ) = 0;
   virtual Chemicals             chemicals() = 0;
   virtual Chemicals             library() = 0;
+  virtual void                  library( Chemicals l ) = 0;
 
   virtual void                  soils( Soils s ) = 0;
   virtual Soils                 soils() = 0;

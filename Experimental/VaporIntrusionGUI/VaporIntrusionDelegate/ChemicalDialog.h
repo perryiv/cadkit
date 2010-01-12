@@ -46,7 +46,9 @@ public:
   Chemicals           chemicals();
   void                chemicals( Chemicals c );
   void                library( Chemicals l );
+  Chemicals           library();
   Chemicals           getSelectedChemicals();
+
 
 protected:
 

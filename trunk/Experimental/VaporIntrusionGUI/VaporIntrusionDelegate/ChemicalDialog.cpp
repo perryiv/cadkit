@@ -305,7 +305,7 @@ ChemicalDialog::Chemicals ChemicalDialog::getSelectedChemicals()
     if( Qt::Checked == checked )
     {
       // get the chemical at this index
-      Chemical c ( _chemicals.at( i ) );
+      Chemical c ( _chemicalLibrary.at( i ) );
 
       // add the chemical to the list of those to return
       chemicals.push_back( c );

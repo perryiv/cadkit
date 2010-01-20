@@ -422,6 +422,9 @@ protected:
 
   Usul::Math::Vec4f           _randomColor();
 
+  // update the source information for all sources
+  void                        _updateSources();
+
 private:
     GroupPtr                  _root;
     GroupPtr                  _root2D;

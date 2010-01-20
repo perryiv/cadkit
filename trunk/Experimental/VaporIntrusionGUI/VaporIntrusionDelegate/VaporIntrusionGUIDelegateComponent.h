@@ -27,7 +27,7 @@
 #include "BuildingDialog.h"
 #include "SourceDialog.h"
 #include "ChemicalDialog.h"
-#include "AddContaminantsToSourceDialog.h"
+#include "SourceConcentrationDialog.h"
 #include "SoilDialog.h"
 #include "SendDialog.h"
 #include "GridSpaceDialog.h"

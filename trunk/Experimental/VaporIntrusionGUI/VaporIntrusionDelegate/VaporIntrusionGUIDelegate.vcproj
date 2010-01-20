@@ -294,36 +294,6 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\AddContaminantsToSourceDialog.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\AddContaminantsToSourceDialog.h"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Creating ui_AddContaminantsToSourceDialog.h..."
-							CommandLine="$(QTDIR)\bin\uic.exe .\AddContaminantsToSourceDialog.ui -o .\ui_AddContaminantsToSourceDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AddContaminantsToSourceDialog.h&quot; -o &quot;.\GeneratedFiles\moc_AddContaminantsToSourceDialog.cpp&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\AddContaminantsToSourceDialog.ui;$(QTDIR)\bin\moc.exe;.\AddContaminantsToSourceDialog.h"
-							Outputs=".\ui_AddContaminantsToSourceDialog.h;.\GeneratedFiles\moc_AddContaminantsToSourceDialog.cpp"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Creating ui_AddContaminantsToSourceDialog.h..."
-							CommandLine="$(QTDIR)\bin\uic.exe .\AddContaminantsToSourceDialog.ui -o .\ui_AddContaminantsToSourceDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AddContaminantsToSourceDialog.h&quot; -o &quot;.\GeneratedFiles\moc_AddContaminantsToSourceDialog.cpp&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\AddContaminantsToSourceDialog.ui;$(QTDIR)\bin\moc.exe;.\AddContaminantsToSourceDialog.h"
-							Outputs=".\ui_AddContaminantsToSourceDialog.h;.\GeneratedFiles\moc_AddContaminantsToSourceDialog.cpp"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath=".\BuildingDialog.cpp"
 					>
 				</File>
@@ -744,6 +714,36 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\SourceConcentrationDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SourceConcentrationDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_SourceConcentrationDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\SourceConcentrationDialog.ui -o .\ui_SourceConcentrationDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\SourceConcentrationDialog.h&quot; -o &quot;.\GeneratedFiles\moc_SourceConcentrationDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\SourceConcentrationDialog.ui;$(QTDIR)\bin\moc.exe;.\SourceConcentrationDialog.h"
+							Outputs=".\ui_SourceConcentrationDialog.h;.\GeneratedFiles\moc_SourceConcentrationDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_SourceConcentrationDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\SourceConcentrationDialog.ui -o .\ui_SourceConcentrationDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\SourceConcentrationDialog.h&quot; -o &quot;.\GeneratedFiles\moc_SourceConcentrationDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\SourceConcentrationDialog.ui;$(QTDIR)\bin\moc.exe;.\SourceConcentrationDialog.h"
+							Outputs=".\ui_SourceConcentrationDialog.h;.\GeneratedFiles\moc_SourceConcentrationDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\SourceDialog.cpp"
 					>
 				</File>
@@ -812,10 +812,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_AddContaminantsToSourceDialog.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\generatedfiles\moc_BuildingDialog.cpp"
 					>
 				</File>
@@ -869,6 +865,10 @@
 				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_SoilDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_SourceConcentrationDialog.cpp"
 					>
 				</File>
 				<File

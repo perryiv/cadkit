@@ -2699,6 +2699,9 @@ void VaporIntrusionGUIDocument::_readChemicals( const std::string& filename )
         // create a temp chemical
         Chemical c ( lineNumber, name, henry, koc, diffair, diffh2o, atmoconc );
 
+        // set the initial source concentration level
+        c.sourceConc = "0";
+
         // add to the list of chemicals
         _chemicals.push_back( c );
 
@@ -3258,8 +3261,96 @@ void VaporIntrusionGUIDocument::chemicals( Chemicals c )
 {
   Guard guard ( this );
   _chemicals = c;
+
+  // update the sources
+  this->_updateSources();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Update the source information related to the current set of chemicals
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_updateSources()
+{
+  Guard guard ( this );
+
+  for( unsigned int i = 0; i < _sources.size(); ++i )
+  {
+    // get the current source
+    Source source ( _sources.at( i ) );
+
+    // get the source chemical set
+    Chemicals chemicals ( source.chemicals );
+
+    // Temporary storage for changes to the source chemical set
+    Chemicals tc;
+
+    // loop first through the source chemicals and check
+    // for changes in the current chemical set
+    for( unsigned int j = 0; j < chemicals.size(); ++j )
+    {
+      // get the current chemical
+      Chemical c ( chemicals.at( j ) );
+
+      for( unsigned int k = 0; k < _chemicals.size(); ++ k )
+      {
+        // get the chemical from the current set
+        Chemical kc ( _chemicals.at( k ) );
+
+        // if the names match add it to the temp set
+        if( kc.name == c.name )
+        {
+          tc.push_back( c );
+        }
+      }
+    }
+
+    // TC contains the updated chemicals at this point.
+    // load TC into the chemical set
+    chemicals = tc;
+
+    // Now check for any additions to the chemical set that
+    // should be added to the source set
+    for( unsigned int j = 0; j < _chemicals.size(); ++ j )
+    {
+      // get the current chemical
+      Chemical c ( _chemicals.at( j ) );
+
+      // bool to flag found or now
+      bool found ( false );
+
+      // check to see if the chemical exists in the chemical set
+      // if not, add it
+      for( unsigned int k = 0; k < chemicals.size(); ++k )
+      {
+        // get the current source chemical
+        Chemical sc ( chemicals.at( k ) );
+
+        if( sc.name == c.name )
+        {
+          found = true;
+          break;
+        }
+      }
+
+      // if the chemical wasn't found, add it
+      if( false == found )
+      {
+        chemicals.push_back( c );
+      }
+
+    }
+  
+    // update the source with the new chemical set
+    source.chemicals = chemicals;
+
+    // update the source in the source set
+    _sources.at( i ) = source;
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -5850,7 +5941,7 @@ void VaporIntrusionGUIDocument::_createNewSource()
   float w ( ez - sz );
   float h ( ey - sy );
 
-  IVPI::Chemicals c;
+  IVPI::Chemicals c ( _chemicals );
 
   // create a building object with the parameters entered in the 2D window
   IVPI::Source s ( Usul::Strings::format ( l ),

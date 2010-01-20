@@ -156,26 +156,33 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   {
     unsigned int index;
     std::string name, henry, koc, airDiff, waterDiff, atmoConc;
+    std::string sourceConc;
     bool present;
     
     Chemical():
     index( 0 ), name(), henry(), koc(), airDiff(), waterDiff(), atmoConc(), present( true )
-    {};
+    {
+      sourceConc = "0";
+    };
 
     Chemical( unsigned int i, const std::string& n, const std::string& h, const std::string& k,
                  const std::string& ad, const std::string& wd, const std::string& ac ):
     index( i ), name( n ), henry( h ), koc( k ), airDiff( ad ), waterDiff( wd ), atmoConc( ac ), present( true )
-    {};
+    {
+      sourceConc = "0";
+    };
 
   };
   typedef std::vector< Chemical > Chemicals;
 
+  typedef std::vector< std::string > Concentrations;
   struct Source
   {
     std::string l,w,h;
     std::string x,y,z;
     std::string name;
     Chemicals chemicals;
+    Concentrations concentrations;
     Usul::Math::Vec4f color;
 
     Source():

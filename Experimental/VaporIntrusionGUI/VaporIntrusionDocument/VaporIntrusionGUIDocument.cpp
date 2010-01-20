@@ -5710,6 +5710,70 @@ osg::Node* VaporIntrusionGUIDocument::_drawBuilding2D()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Draw the sources on the 2D grid
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* VaporIntrusionGUIDocument::_drawSources2D()
+{
+  Guard guard( this );
+  
+  GroupPtr group ( new osg::Group );
+  
+  // get the view mode
+  int viewMode ( this->getViewMode2D() );
+
+  for( unsigned int i = 0; i < _sources.size(); ++i )
+  {
+    // get the current source
+    Source s ( this->sources().at( i ) );
+
+    // osg of the source color
+    osg::Vec4f color ( s.color[0], s.color[1], s.color[2], s.color[3] );
+
+    // points of the plane
+    osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+
+
+    if( IVPI::VIEW_MODE_2D_XY == viewMode )
+    {
+
+      float sx ( StrToFloat::convert( s.x ) );
+      float sz ( StrToFloat::convert( s.z ) );
+      float ex ( StrToFloat::convert( s.x ) + StrToFloat::convert( s.l ) );
+      float ez ( StrToFloat::convert( s.z ) + StrToFloat::convert( s.w ) );
+      
+      points->push_back( osg::Vec3f ( sx, 0.001, sz ) );
+      points->push_back( osg::Vec3f ( ex, 0.001, sz ) );
+      points->push_back( osg::Vec3f ( ex, 0.001, ez ) );
+      points->push_back( osg::Vec3f ( sx, 0.001, ez ) );
+
+      group->addChild ( this->_buildPlane( points.get(), color ) );
+    }
+
+    if( IVPI::VIEW_MODE_2D_XZ == viewMode )
+    {
+      //set the points
+      float sx ( StrToFloat::convert( s.x ) );
+      float sy ( StrToFloat::convert( s.y ) );
+      float ex ( StrToFloat::convert( s.x ) + StrToFloat::convert( s.l ) );
+      float ey ( StrToFloat::convert( s.y ) + StrToFloat::convert( s.h ) );
+      
+      points->push_back( osg::Vec3f ( sx, sy, 0.001 ) );
+      points->push_back( osg::Vec3f ( ex, sy, 0.001 ) );
+      points->push_back( osg::Vec3f ( ex, ey, 0.001 ) );
+      points->push_back( osg::Vec3f ( sx, ey, 0.001 ) );
+
+      group->addChild ( this->_buildPlane( points.get(), color ) );
+    }
+  }
+  
+  return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the 2D objects
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -5723,6 +5787,12 @@ void VaporIntrusionGUIDocument::_build2DObjects()
     // add the building
     _root2D->addChild( this->_drawBuilding2D() );
 
+  }
+
+  if( this->sources().size() > 0 )
+  {
+    // add the sources
+    _root2D->addChild( this->_drawSources2D() );
   }
 
 }

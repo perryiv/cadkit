@@ -324,6 +324,7 @@ protected:
 
   osg::Node*                  _drawBuilding2D();
   osg::Node*                  _drawCracks2D();
+  osg::Node*                  _drawSources2D();
 
   void                        _makeGrid();
   void                        _makeSymmetricalBuilding();

@@ -198,10 +198,7 @@ template<class String> inline void SlPathname<String>::setPathname ( const Strin
       _ext = ext;
 
       // Pop the extension and period off.
-      for ( unsigned int i = 0; i < ext.size() + 1; ++i )
-      {
-        pathname.erase ( pathname.end() );
-      }
+      pathname.erase( pathname.end() - (ext.size() + 1), pathname.end());
     }
   }
 

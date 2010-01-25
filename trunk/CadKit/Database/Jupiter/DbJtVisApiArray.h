@@ -67,11 +67,7 @@ template <class T> inline DbJtVisApiArray<T>::~DbJtVisApiArray()
 
   if ( _p )
   {
-#ifdef _CADKIT_USE_JTOPEN
-    JtkEntityFactory::deleteMemory ( _p );
-#else
     delete [] _p;
-#endif
   }
 }
 

@@ -28,7 +28,7 @@
 #include "SourceDialog.h"
 #include "ChemicalDialog.h"
 #include "SourceConcentrationDialog.h"
-#include "SoilDialog.h"
+#include "SoilLayerDialog.h"
 #include "SendDialog.h"
 #include "GridSpaceDialog.h"
 #include "CracksDialog.h"

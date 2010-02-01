@@ -96,6 +96,7 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _sources(),
   _chemicals(),
   _soils(),
+  _soilLibrary(),
   _cracks(),
   _axisPoints(),
   _originalToCurrentIndex(),
@@ -2493,7 +2494,7 @@ void VaporIntrusionGUIDocument::_readSoils( const std::string& filename )
 
       // separate the strings
       StringVec sv;
-      Usul::Strings::split( tStr, ",", false, sv );
+      Usul::Strings::split( tStr, "|", false, sv );
 
       // debugging
       //std::cout << "Reading: " << tStr << std::endl;
@@ -2503,23 +2504,23 @@ void VaporIntrusionGUIDocument::_readSoils( const std::string& filename )
       {
         // temp column to hold the input line
         // #Name,Value,Description,Type,Activators
-        std::string name          ( sv.at( 0 ) );
-        std::string elevation     ( sv.at( 1 ) );
+        std::string type          ( sv.at( 0 ) );
+        std::string name          ( sv.at( 1 ) );
         std::string porosity      ( sv.at( 2 ) );
         std::string H2OPorosity   ( sv.at( 3 ) );
-        std::string carbon        ( sv.at( 4 ) );
+        std::string viscosity     ( sv.at( 4 ) );
         std::string permability   ( sv.at( 5 ) );
-        std::string viscosity     ( sv.at( 6 ) );
+        std::string carbon        ( sv.at( 6 ) );
 
         // trim trailing and leading white space
         Usul::Strings::trimLeft( name, ' ' );
         Usul::Strings::trimRight( name, ' ' );
 
         // create a temp chemical
-        Soil s ( name, elevation, porosity, H2OPorosity, carbon, permability, viscosity );
+        Soil s ( name, type, porosity, H2OPorosity, viscosity, permability, carbon );
 
         // add to the list of chemicals
-        _soils.push_back( s );
+        _soilLibrary.push_back( s );
 
         // increment the number of chemicals read
         ++lineNumber;
@@ -2675,13 +2676,13 @@ void VaporIntrusionGUIDocument::_readChemicals( const std::string& filename )
 
       // separate the strings
       StringVec sv;
-      Usul::Strings::split( tStr, ",", false, sv );
+      Usul::Strings::split( tStr, "|", false, sv );
 
       // debugging
       //std::cout << "Reading: " << tStr << std::endl;
       
       // make sure all the columns are there
-      if( sv.size() == 6 )
+      if( sv.size() == 5 )
       {
         // temp column to hold the input line
         // #Name,Value,Description,Type,Activators
@@ -2690,7 +2691,8 @@ void VaporIntrusionGUIDocument::_readChemicals( const std::string& filename )
         std::string koc       ( sv.at( 2 ) );
         std::string diffair   ( sv.at( 3 ) );
         std::string diffh2o   ( sv.at( 4 ) );
-        std::string atmoconc  ( sv.at( 5 ) );
+        //std::string atmoconc  ( sv.at( 5 ) );
+        std::string atmoconc  ( "0" );
 
         // trim trailing and leading white space
         Usul::Strings::trimLeft( name, ' ' );
@@ -4027,6 +4029,7 @@ void VaporIntrusionGUIDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   MenuKit::Menu::RefPtr objectMenu ( menu.find ( "&Objects", true ) );
   objectMenu->append ( MenuKit::Button::create ( "Building (B)", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::objectMenuAddBuilding ) ) );
   objectMenu->append ( MenuKit::Button::create ( "Source (S)", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::objectMenuAddSource ) ) );
+  objectMenu->append ( MenuKit::Button::create ( "Soil (I)", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDocument::objectMenuAddSoil ) ) );
 
   //----------------------------------------------------------------------------------------------
 
@@ -5800,6 +5803,33 @@ void VaporIntrusionGUIDocument::_build2DObjects()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the soil library
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::soilLibrary( SoilLibrary l )
+{
+  Guard guard ( this );
+
+  _soilLibrary = l;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the soil library
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::SoilLibrary VaporIntrusionGUIDocument::soilLibrary()
+{
+  Guard guard ( this );
+
+  return _soilLibrary;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the object
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -5907,6 +5937,28 @@ void VaporIntrusionGUIDocument::_setCameraFromViewMode( int mode )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+void VaporIntrusionGUIDocument::objectMenuAddSoil()
+{
+  Guard guard ( this );
+
+   // set the edit mode to object placement
+  this->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_XY );
+
+  // set the correct build mode
+  this->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
+
+  // set the object type to SOIL
+  this->setObjectMode( IVPI::OBJECT_SOIL );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a source to the experiment
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void VaporIntrusionGUIDocument::objectMenuAddSource()
 {
   Guard guard ( this );
@@ -5982,6 +6034,13 @@ void VaporIntrusionGUIDocument::handleNewObject()
     
   }
 
+  // create a soil layer
+  if( _objectMode == IVPI::OBJECT_SOIL )
+  {
+    // create the soil
+    this->_createNewSoil();
+  }
+
 }
 
 
@@ -6032,6 +6091,62 @@ void VaporIntrusionGUIDocument::_createNewSource()
   this->rebuildScene();
 
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a new source
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_createNewSoil()
+{
+  Guard guard ( this );
+
+  // useful typedefs
+  typedef Usul::Convert::Type< float, std::string > FTS;
+
+  // get the corners
+  float sx ( _xValues.at( _currentObject.sx ).first );
+  float ex ( _xValues.at( _currentObject.ex ).first );
+  float sy ( _yValues.at( _currentObject.sy ).first );
+  float ey ( _yValues.at( _currentObject.ey ).first );
+  float sz ( _zValues.at( _currentObject.sz ).first );
+  float ez ( _zValues.at( _currentObject.ez ).first );
+
+  // Calculate the lwh
+  float l ( ex - sx );
+  float w ( ez - sz );
+  float h ( ey - sy );
+
+  // create a building object with the parameters entered in the 2D window
+  IVPI::Soil soil;
+
+  // generate a random color for the source
+  soil.color = this->_randomColor();
+
+  // set the soil dimensions
+  soil.dimensions( Usul::Strings::format ( sx ),
+                   Usul::Strings::format ( sy ), 
+                   Usul::Strings::format ( sz ),
+                   Usul::Strings::format ( l  ),
+                   Usul::Strings::format ( w  ),
+                   Usul::Strings::format ( h  ) );
+
+  // make the layer name
+  std::string lname ( Usul::Strings::format( "SoilLayer_", _soils.size() + 1 ) );
+
+  // set the layer name
+  soil.layerName = lname;
+
+  // add the source to the list of sources
+  _soils.push_back( soil );
+
+  //rebuild the scene
+  this->rebuildScene();
+
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

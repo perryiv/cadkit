@@ -139,18 +139,33 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   
   struct Soil
   {
-    std::string name, elevation, porosity, waterPorosity, organicCarbon, permeability, viscosity;
+    
+    std::string name, type, porosity, waterPorosity, permeability, viscosity, carbon;
+    std::string layerName;
+    std::string x, y, z, l, w, h;
     Usul::Math::Vec4f color;
 
-    Soil(): name(), elevation(), porosity(), waterPorosity(), organicCarbon(), permeability(), viscosity() {};
+    // SCS soil type, SCS soil name, Total porosity, water-filled porosity, effective soil gas permeability, 
+    // Gas phase dynamic viscosity,  Fraction of organic carbon
 
-    // Soil c ( name, elevation, porosity, h2oPorosity, organicC, perm, viscosity );
-    Soil( const std::string& n, const std::string& elev, const std::string& p, const std::string& wp,
-      const std::string& oc, const std::string& perm, const std::string& v ):
-    name( n ), elevation( elev ), porosity( p ), waterPorosity( wp ), organicCarbon( oc ), permeability( perm ), viscosity( v ) {};
+    Soil(): name(), type(), porosity(), waterPorosity(), permeability(), viscosity(), carbon() {};
+    Soil( const std::string& n, const std::string& t, const std::string& p, const std::string& wp,
+          const std::string& perm, const std::string& visc, const std::string& carb ):
+          name( n ), type( t ), porosity( p ), waterPorosity( wp ), 
+          permeability( perm ), viscosity( visc ), carbon( carb ) {};
+
+    void dimensions( const std::string& x1, const std::string& y1, const std::string& z1,
+                const std::string& l1, const std::string& w1, const std::string& h1 )
+              {  x = x1;  y = y1;  z = z1;  l = l1;  w = w1;  h = h1;  };
+
+    void attributes( const std::string& n, const std::string& t, const std::string& p, const std::string& wp,
+                     const std::string& perm, const std::string& visc, const std::string& carb )
+    { name = n; type = t; porosity = p; waterPorosity = wp; permeability = perm; viscosity = visc; carbon = carb; };
 
   };
   typedef std::vector< Soil > Soils;
+  typedef std::vector< Soil > SoilLibrary;
+
 
   struct Chemical
   {
@@ -353,6 +368,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual void                  soils( Soils s ) = 0;
   virtual Soils                 soils() = 0;
+  virtual void                  soilLibrary( SoilLibrary l ) = 0;
+  virtual SoilLibrary           soilLibrary() = 0;
 
   virtual void                  cracks( CracksPair c ) = 0;
   virtual CracksPair            cracks() = 0;

@@ -394,7 +394,7 @@ void VaporIntrusionGUIDelegateComponent::editGrid()
 void VaporIntrusionGUIDelegateComponent::editSoils()
 {
    // Make the dialog.
-  SoilDialog editor;
+  SoilLayerDialog editor;
 
   // Query the active document for IVaporIntrusionGUI
   VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
@@ -406,6 +406,9 @@ void VaporIntrusionGUIDelegateComponent::editSoils()
   // set the chemicals
   editor.soils( document->soils() );
 
+  // set the soil library
+  editor.library( document->soilLibrary() );
+
   // populate the chemical list
   editor.initialize();
 
@@ -413,8 +416,13 @@ void VaporIntrusionGUIDelegateComponent::editSoils()
   if ( QDialog::Accepted != editor.exec() )
     throw Usul::Exceptions::Canceled();
 
+  // set the document soils
   document->soils( editor.soils() );
 
+  // set the document soil library
+  document->soilLibrary( editor.library() );
+
+  // rebuild the scene
   document->rebuildScene();
 }
 

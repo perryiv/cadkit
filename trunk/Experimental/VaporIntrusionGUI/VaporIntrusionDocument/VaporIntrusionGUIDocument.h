@@ -230,6 +230,8 @@ public:
 
   virtual void                soils( Soils s );
   virtual Soils               soils();
+  virtual void                soilLibrary( SoilLibrary l );
+  virtual SoilLibrary         soilLibrary();
 
   virtual void                cracks( CracksPair c );
   virtual CracksPair          cracks();
@@ -287,6 +289,7 @@ public:
   // Object menu functions
   void                        objectMenuAddBuilding();
   void                        objectMenuAddSource();
+  void                        objectMenuAddSoil();
 
   void                        handleNewObject();
 
@@ -398,6 +401,8 @@ protected:
   // object creation methods
   void                        _createNewBuilding();
   void                        _createNewSource();
+  void                        _createNewSoil();
+
   void                        _setBuildingLocationFromClick( Usul::Math::Vec3f point );
 
   osg::Node *                 _createGridLabels2D();
@@ -446,6 +451,7 @@ private:
     Chemicals                 _chemicals;
     Chemicals                 _chemicalLibrary;
     Soils                     _soils;
+    SoilLibrary               _soilLibrary;
     CracksPair                _cracks;
     GridAxisPoints            _axisPoints;
     GridMap                   _originalToCurrentIndex;

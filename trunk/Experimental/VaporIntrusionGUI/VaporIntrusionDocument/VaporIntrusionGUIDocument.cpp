@@ -591,7 +591,7 @@ void VaporIntrusionGUIDocument::_build2DScene( Usul::Interfaces::IUnknown *calle
   this->_build2DObjects();
 
   // add any foundation cracks
-  // _root2D->addChild( this->_drawCracks2D() );
+  this->_rebuildCracks();
 
   // build the grid labels
   _root2D->addChild( this->_createGridLabels2D() );
@@ -791,7 +791,7 @@ void VaporIntrusionGUIDocument::_makeGrid( )
       for( unsigned int z = 0; z < zsize; ++z )
       {
         // Set the default ValueType
-        Color c ( 0.2, 0.2, 0.2, 0.2 );
+        Color c ( 0.15, 0.15, 0.15, 0.1 );
         osg::ref_ptr< osg::Material > material ( new osg::Material );
         material->setAmbient( osg::Material::FRONT_AND_BACK, c );
         material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
@@ -5567,7 +5567,17 @@ osg::Node* VaporIntrusionGUIDocument::_drawCracks2D()
 {
   Guard guard ( this );
 
+  // get the view mode
+  int viewMode ( this->getViewMode2D() );
+
+  // create the group to hold the cracks
   GroupPtr group ( new osg::Group );
+
+  // don't draw if the view is anything except xy
+  if( viewMode != IVPI::VIEW_MODE_2D_XY )
+  {
+    return group.release();
+  }  
 
   // Z Axis cracks
 	for( unsigned int i = 0; i < _cracks.first.size(); ++ i )

@@ -328,11 +328,13 @@ protected:
   osg::Node*                  _drawBuilding2D();
   osg::Node*                  _drawCracks2D();
   osg::Node*                  _drawSources2D();
+  osg::Node*                  _drawSoils2D();
 
   void                        _makeGrid();
   void                        _makeSymmetricalBuilding();
   void                        _makeBuilding();
   void                        _makeSource3D();
+  void                        _makeSoil3D();
   void                        _makeFoundation( osg::Vec3f ll );
   void						            _makeCracks();
 
@@ -465,6 +467,7 @@ private:
     bool                      _showBuilding;
     bool                      _showFoundation;
     bool                      _showSources;
+	bool                      _showSoils;
     bool                      _showCracks;
     bool                      _showLabels;
 

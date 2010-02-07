@@ -105,6 +105,7 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _showBuilding( true ),
   _showFoundation( true ),
   _showSources( true ),
+  _showSoils( true ),
   _showCracks( true ),
   _showLabels( true ),
   _maxCrackGridDistance( 0.2f ),
@@ -752,6 +753,12 @@ void VaporIntrusionGUIDocument::_build3DScene ( Unknown *caller )
     this->_makeSource3D();  
   }
 
+  if( true == _showSoils )
+  {
+    // build the chemical 3D element
+    this->_makeSoil3D();  
+  }
+
   if( true == _showGrid )
   {
     // add the grid padding points
@@ -1272,6 +1279,81 @@ void VaporIntrusionGUIDocument::_makeSource3D()
   {
     // get the chemical
     Source s ( _sources.at( i ) );
+
+    // color for the chemical
+    Color c ( s.color[0], s.color[1], s.color[2], 0.8 );
+   
+    // Material for the cube
+    osg::ref_ptr< osg::Material > material ( new osg::Material );
+    material->setAmbient( osg::Material::FRONT_AND_BACK, c );
+    material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
+
+    // get the lower left corner of the chemical
+    osg::Vec3f ll  ( StrToFloat::convert( s.x ), StrToFloat::convert( s.y ), StrToFloat::convert( s.z ) );
+
+    // snap to the grid
+    //ll = this->_snapToGrid3D( ll );
+
+    // update the source
+    //_sources.at( i ).x = ll.x();
+    //_sources.at( i ).y = ll.y();
+    //_sources.at( i ).z = ll.z();
+
+    // shrink
+    ll = osg::Vec3f ( ll.x() - 0.00001, ll.y() - 0.00001, ll.z() - 0.00001 );
+
+    // get the length, width, and height of the chemical
+    osg::Vec3f lwh ( StrToFloat::convert( s.l ), StrToFloat::convert( s.h ), StrToFloat::convert( s.w ) );
+
+    // create the points for the chemical
+    osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
+    p->push_back( osg::Vec3f ( ll.x()          , ll.y()          , ll.z()           ) );
+    p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y()          , ll.z()           ) );
+    p->push_back( osg::Vec3f ( ll.x()          , ll.y() + lwh.y(), ll.z()           ) );
+    p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y() + lwh.y(), ll.z()           ) );  
+    p->push_back( osg::Vec3f ( ll.x()          , ll.y()          , ll.z() + lwh.z() ) );
+    p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y()          , ll.z() + lwh.z() ) );
+    p->push_back( osg::Vec3f ( ll.x()          , ll.y() + lwh.y(), ll.z() + lwh.z() ) );
+    p->push_back( osg::Vec3f ( ll.x() + lwh.x(), ll.y() + lwh.y(), ll.z() + lwh.z() ) );
+
+    // location (not used in this context)
+    Usul::Math::Vec3ui location( 0, 0, 0 );
+
+    // group
+    osg::ref_ptr< osg::Group > group ( new osg::Group );
+
+    // build the cuve
+    group->addChild( this->_buildCube( p.get(), c, location ) );
+
+    // set the material of the cube
+    OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
+    OsgTools::State::StateSet::setAlpha( group.get(), c.a() );
+
+    // Add the cubre to the scene
+    _root->addChild( group.get() );
+
+  }
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Add the chemical 3D objects to the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_makeSoil3D()
+{
+  Guard guard ( this );
+
+  // useful typedefs
+  typedef Usul::Convert::Type< std::string, float > StrToFloat;
+
+  for( unsigned int i = 0; i < _soils.size(); ++i )
+  {
+    // get the chemical
+    Soil s ( _soils.at( i ) );
 
     // color for the chemical
     Color c ( s.color[0], s.color[1], s.color[2], 0.8 );
@@ -5785,6 +5867,72 @@ osg::Node* VaporIntrusionGUIDocument::_drawSources2D()
 }
 
 
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw the sources on the 2D grid
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* VaporIntrusionGUIDocument::_drawSoils2D()
+{
+  Guard guard( this );
+  
+  GroupPtr group ( new osg::Group );
+  
+  // get the view mode
+  int viewMode ( this->getViewMode2D() );
+
+  for( unsigned int i = 0; i < _soils.size(); ++i )
+  {
+    // get the current source
+    Soil s ( this->soils().at( i ) );
+
+    // osg of the source color
+    osg::Vec4f color ( s.color[0], s.color[1], s.color[2], s.color[3] );
+
+    // points of the plane
+    osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+
+
+    if( IVPI::VIEW_MODE_2D_XY == viewMode )
+    {
+
+      float sx ( StrToFloat::convert( s.x ) );
+      float sz ( StrToFloat::convert( s.z ) );
+      float ex ( StrToFloat::convert( s.x ) + StrToFloat::convert( s.l ) );
+      float ez ( StrToFloat::convert( s.z ) + StrToFloat::convert( s.w ) );
+      
+      points->push_back( osg::Vec3f ( sx, 0.001, sz ) );
+      points->push_back( osg::Vec3f ( ex, 0.001, sz ) );
+      points->push_back( osg::Vec3f ( ex, 0.001, ez ) );
+      points->push_back( osg::Vec3f ( sx, 0.001, ez ) );
+
+      group->addChild ( this->_buildPlane( points.get(), color ) );
+    }
+
+    if( IVPI::VIEW_MODE_2D_XZ == viewMode )
+    {
+      //set the points
+      float sx ( StrToFloat::convert( s.x ) );
+      float sy ( StrToFloat::convert( s.y ) );
+      float ex ( StrToFloat::convert( s.x ) + StrToFloat::convert( s.l ) );
+      float ey ( StrToFloat::convert( s.y ) + StrToFloat::convert( s.h ) );
+      
+      points->push_back( osg::Vec3f ( sx, sy, 0.001 ) );
+      points->push_back( osg::Vec3f ( ex, sy, 0.001 ) );
+      points->push_back( osg::Vec3f ( ex, ey, 0.001 ) );
+      points->push_back( osg::Vec3f ( sx, ey, 0.001 ) );
+
+      group->addChild ( this->_buildPlane( points.get(), color ) );
+    }
+  }
+  
+  return group.release();
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Build the 2D objects
@@ -5806,6 +5954,12 @@ void VaporIntrusionGUIDocument::_build2DObjects()
   {
     // add the sources
     _root2D->addChild( this->_drawSources2D() );
+  }
+
+  if( this->soils().size() > 0 )
+  {
+    // add the soils
+    _root2D->addChild( this->_drawSoils2D() );
   }
 
 }

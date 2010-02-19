@@ -33,6 +33,7 @@
 #include "GridSpaceDialog.h"
 #include "CracksDialog.h"
 #include "ModifyGridPointsDlg.h"
+#include "SettingsDialog.h"
 
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 
@@ -132,6 +133,9 @@ public:
 
   // edit the Soil values
   void                        editSoils();
+
+  // edit the Settings
+  void                        editSettings();
 
   // edit the Soil values
   void                        editCracks();

@@ -85,6 +85,8 @@ public:
   typedef IVaporIntrusionGUI::Soils                             Soils;
   typedef std::vector< std::string >                            StringVec;
   typedef std::map< std::string, unsigned int >                 GridMap;
+  typedef IVPI::ColorVec                                        ColorVec;
+  typedef Usul::Math::Vec4f                                     UsulColor;
 
   // function typedefs
   typedef Usul::Convert::Type< std::string, float > StrToFloat;
@@ -269,6 +271,9 @@ public:
 
   virtual void                setMouseCoords( Usul::Math::Vec3f point );
 
+  virtual ColorVec            colorInformation();
+  virtual void                colorInformation( ColorVec cv );
+
 
   // Show/Hide functions
   void                        showBuilding ( bool b );
@@ -276,6 +281,9 @@ public:
 
   void                        showGrid( bool b );
   bool                        isShowGrid () const;
+
+  void                        showGridWireframe( bool b );
+  bool                        isShowGridWireframe () const;
 
   void                        showCracks( bool b );
   bool                        isShowCracks () const;
@@ -465,10 +473,11 @@ private:
     GridPoints                _originalZValues;
 
     bool                      _showGrid;
+    bool                      _showGridWireframe;
     bool                      _showBuilding;
     bool                      _showFoundation;
     bool                      _showSources;
-	bool                      _showSoils;
+	  bool                      _showSoils;
     bool                      _showCracks;
     bool                      _showLabels;
 
@@ -492,6 +501,8 @@ private:
     unsigned int              _textYPos;
 
     Crack                     _placementCrack;
+    Usul::Math::Vec4f         _crackColor;
+    Usul::Math::Vec4f         _gridColor;
 
   
 };

@@ -28,6 +28,9 @@ NewVaporIntrusion::NewVaporIntrusion ( QWidget *parent ) : BaseClass ( parent )
 {
   // Initialize code from Designer.
   this->setupUi ( this );
+
+  // default to check the "new..." radio
+  this->newRadio->setChecked( true );
  
 }
 

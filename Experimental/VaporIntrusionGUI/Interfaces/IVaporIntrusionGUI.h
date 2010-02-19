@@ -31,6 +31,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   typedef std::pair < std::string, ActivatorValue > ActivatorPair; // expected < activator name, activator value >
   typedef std::vector< ActivatorPair > ActivatorPairs;
   typedef std::vector< Usul::Math::Vec4f > ColorVec;
+  typedef std::vector< float > FloatVec;
 
   /// Id for this interface.
   enum { IID = 1235852807u };
@@ -89,6 +90,13 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
 
   // structs
+  struct PressurePlane
+  {
+    ColorVec colors;
+    float alpha;
+
+    PressurePlane() : colors(), alpha( 0.2f ) {};
+  };
 
   struct Object2D
   {
@@ -404,6 +412,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual ColorVec              colorInformation() = 0;
   virtual void                  colorInformation( ColorVec cv ) = 0;
+
+  virtual FloatVec              transparencies() = 0;
+  virtual void                  transparencies( FloatVec cv ) = 0;
 
   // clear functions
   virtual void                  clearObject() = 0;

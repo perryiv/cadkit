@@ -87,6 +87,8 @@ public:
   typedef std::map< std::string, unsigned int >                 GridMap;
   typedef IVPI::ColorVec                                        ColorVec;
   typedef Usul::Math::Vec4f                                     UsulColor;
+  typedef IVPI::FloatVec                                        FloatVec;
+  typedef IVPI::PressurePlane                                   PressurePlane;
 
   // function typedefs
   typedef Usul::Convert::Type< std::string, float > StrToFloat;
@@ -274,6 +276,9 @@ public:
   virtual ColorVec            colorInformation();
   virtual void                colorInformation( ColorVec cv );
 
+  virtual FloatVec            transparencies();
+  virtual void                transparencies( FloatVec cv );
+
 
   // Show/Hide functions
   void                        showBuilding ( bool b );
@@ -345,6 +350,7 @@ protected:
   void                        _makeSoil3D();
   void                        _makeFoundation( osg::Vec3f ll );
   void						            _makeCracks();
+  void                        _makePressurePlane();
 
   void                        _initCubes();
 
@@ -368,6 +374,7 @@ protected:
   void                        _readSources( const std::string& filename );
   void                        _readSoils( const std::string& filename );
   void                        _readCracks( const std::string& filename );
+  void                        _readPressures( const std::string& filename );
   
   int                         _getComparitor( const std::string& comparitor );
 
@@ -439,6 +446,8 @@ protected:
   Usul::Math::Vec4f           _randomColor();
   Usul::Math::Vec4f           _randomColor( bool rR, bool rG, bool rB );
 
+  osg::Vec4f                  _getPressureColor( unsigned int x, unsigned int z );
+
   // update the source information for all sources
   void                        _updateSources();
 
@@ -480,6 +489,7 @@ private:
 	  bool                      _showSoils;
     bool                      _showCracks;
     bool                      _showLabels;
+    bool                      _showPressurePlane;
 
     float                     _maxCrackGridDistance;
     int                       _buildMode2D;
@@ -494,6 +504,7 @@ private:
     GroupPtr                  _object2D;
     GroupPtr                  _cracks2D;
     GroupPtr                  _labels2D;
+    GroupPtr                  _pressures;
 
     float                     _mouseXCoord;
     float                     _mouseYCoord;
@@ -503,6 +514,8 @@ private:
     Crack                     _placementCrack;
     Usul::Math::Vec4f         _crackColor;
     Usul::Math::Vec4f         _gridColor;
+
+    PressurePlane             _pressure;
 
   
 };

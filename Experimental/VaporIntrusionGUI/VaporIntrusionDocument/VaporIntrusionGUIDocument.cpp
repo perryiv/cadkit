@@ -109,6 +109,7 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _showSoils( true ),
   _showCracks( true ),
   _showLabels( true ),
+  _showPressurePlane( true ),
   _maxCrackGridDistance( 0.2f ),
   _buildMode2D( IVPI::BUILD_MODE_GRID_EDIT ),
   _editGridMode2D( IVPI::EDIT_MODE_IDLE ),
@@ -120,13 +121,15 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _object2D( new osg::Group ),
   _cracks2D( new osg::Group ),
   _labels2D( new osg::Group ),
+  _pressures( new osg::Group ),
   _mouseXCoord( 0.0f ),
   _mouseYCoord( 0.0f ),
   _textXPos( 0 ),
   _textYPos( 0 ),
   _placementCrack(),
   _crackColor( 0.0f, 1.0f, 0.0f, 0.5f ),
-  _gridColor ( 0.15f, 0.15f, 0.15f, 0.1f )
+  _gridColor ( 0.15f, 0.15f, 0.15f, 0.1f ),
+  _pressure()
 {
   USUL_TRACE_SCOPE;
 }
@@ -773,6 +776,10 @@ void VaporIntrusionGUIDocument::_build3DScene ( Unknown *caller )
     // build the Grid 3D element
     this->_makeGrid();
   }
+  if( true == _showPressurePlane )
+  {
+    this->_makePressurePlane();
+  }
 }
 
 
@@ -857,6 +864,98 @@ void VaporIntrusionGUIDocument::_makeGrid( )
   }
 }
 
+
+osg::Vec4f VaporIntrusionGUIDocument::_getPressureColor( unsigned int x, unsigned int z )
+{
+  // color
+  osg::Vec4f color ( 0.0f, 0.0f, 1.0f, _pressure.alpha );
+
+  // get the dimensions
+  unsigned int xSize ( _xValues.size() );
+  unsigned int zSize ( _zValues.size() );
+
+  if( _pressure.colors.size() >= ( xSize * zSize ) )
+  {
+    // get the index into the color vector
+    unsigned int index ( ( x * zSize ) + z );
+
+    // get the color value
+    UsulColor uc ( _pressure.colors.at( index ) );
+
+    // set the color values
+    color = osg::Vec4f ( uc[0], uc[1], uc[2], _pressure.alpha ); 
+
+  }
+
+  return color;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Create the grid and add it to the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_makePressurePlane()
+{
+  // get the size of the x domain
+  unsigned int xsize ( _xValues.size() - 1 );
+
+  // set the height
+  float y( _yValues.at( 0 ).first + 0.001f );
+
+  // Loop through the dimensions and build the cube
+  for( unsigned int x = 0; x < xsize; ++x )
+  {    
+    // get the size of the z domain at xy
+    unsigned int zsize ( _zValues.size() - 1);
+
+    for( unsigned int z = 0; z < zsize; ++z )
+    {
+      // Set the default ValueType
+      Color c ( this->_getPressureColor( x, z ) );
+
+      // create the material and set some properties
+      osg::ref_ptr< osg::Material > material ( new osg::Material );
+      material->setAmbient( osg::Material::FRONT_AND_BACK, c );
+      material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
+      
+      // set the x values
+      float sx ( _xValues.at( x ).first );
+      float ex ( sx + _xValues.at( x ).second );
+
+      //set the z values
+      float sd ( _zValues.at( z ).first );
+      float ed ( sd + _zValues.at( z ).second );
+
+      // points of the plane
+      osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+      points->push_back( osg::Vec3f ( sx, y, sd ) );
+      points->push_back( osg::Vec3f ( ex, y, sd ) );
+      points->push_back( osg::Vec3f ( ex, y, ed ) );
+      points->push_back( osg::Vec3f ( sx, y, ed ) );
+
+      // create an osg group to hold the plane
+      GroupPtr group ( new osg::Group );
+
+      // build the plane
+      group->addChild( this->_buildPlane( points.get(), c ) );
+
+      // set the material of the cube
+      OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
+      OsgTools::State::StateSet::setAlpha( group.get(), c.a() );
+      OsgTools::State::StateSet::setLighting( group.get(), false );
+
+      // Add the cubre to the scene
+      _root->addChild( group.get() );
+    }
+
+ 
+
+  }
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Build a plane from the given points
@@ -930,7 +1029,12 @@ void VaporIntrusionGUIDocument::_makeCracks()
   GridPoints zgrid ( this->_getGridFromAxis( "Z" ) );
 
   // get the crack color
-    Color cColor( _crackColor[0], _crackColor[1], _crackColor[2], _crackColor[3] );
+  Color cColor( _crackColor[0], _crackColor[1], _crackColor[2], _crackColor[3] );
+
+  // create and set the material properties for the color
+  osg::ref_ptr< osg::Material > material ( new osg::Material );
+  material->setAmbient( osg::Material::FRONT_AND_BACK, cColor );
+  material->setDiffuse( osg::Material::FRONT_AND_BACK, cColor );
 
   // create the visuals for the x direction cracks first
 	for( unsigned int i = 0; i < _cracks.first.size(); ++ i )
@@ -962,8 +1066,18 @@ void VaporIntrusionGUIDocument::_makeCracks()
     points->push_back( osg::Vec3f ( ex, ed, y ) );
     points->push_back( osg::Vec3f ( sx, ed, y ) );
 
+    // create an osg group to hold the plane
+    GroupPtr group ( new osg::Group );
+
+    // build the plane
+    group->addChild( this->_buildPlane( points.get(), cColor ) );
+
+    // set the material properties of the plane
+    OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
+    OsgTools::State::StateSet::setAlpha( group.get(), cColor.a() );
     
-    _root->addChild ( this->_buildPlane( points.get(), cColor ) );
+    // add the group to the scene
+    _root->addChild ( group.get() );
 
   }
 
@@ -1000,7 +1114,18 @@ void VaporIntrusionGUIDocument::_makeCracks()
     points->push_back( osg::Vec3f ( y, ed, ex ) );
     points->push_back( osg::Vec3f ( y, ed, sx ) );
 
-    _root->addChild ( this->_buildPlane( points.get(), cColor ) );
+    // create an osg group to hold the plane
+    GroupPtr group ( new osg::Group );
+
+    // build the plane
+    group->addChild( this->_buildPlane( points.get(), cColor ) );
+
+    // set the material of the plane
+    OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
+    OsgTools::State::StateSet::setAlpha( group.get(), cColor.a() );
+
+    // add the group to the scene
+    _root->addChild ( group.get() );
 
   }
 
@@ -6778,6 +6903,80 @@ void VaporIntrusionGUIDocument::colorInformation( ColorVec cv )
 
   // get the grid color
   _gridColor = UsulColor( gColor[0], gColor[1], gColor[2], _gridColor[3] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the transparency information
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::FloatVec VaporIntrusionGUIDocument::transparencies()
+{
+  Guard guard ( this );
+
+  // create the transparency information vector
+  FloatVec fv;
+
+  // get the building
+  Building b ( this->building() );
+
+  // add the building information
+  fv.push_back( b.bColor[3] );
+
+  // add the foundation information
+  fv.push_back( b.fColor[3] );
+
+  // add the crack information
+  fv.push_back( _crackColor[3] );
+
+  // add the grid information
+  fv.push_back( _gridColor[3] );
+
+  // set the pressure information
+  fv.push_back( _pressure.alpha );
+
+  return fv;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the transparency information
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::transparencies( FloatVec fv )
+{
+  Guard guard ( this );
+
+  // make sure the float vector has the required number of elements
+  if( fv.size() < 5 )
+  {
+    return;
+  }
+
+  // get the building
+  Building b ( this->building() );
+
+  // set the transparency for the building
+  b.bColor[3] = fv.at( 0 );
+
+  // set the transparency for the foundation
+  b.fColor[3] = fv.at( 1 );
+
+  // update the buildin
+  this->building( b );
+
+  // set the transparency for the cracks
+  _crackColor[3] = fv.at( 2 );
+
+  // set the transparency for the grid
+  _gridColor[3] = fv.at( 3 );
+
+  // set the transparency for the pressure
+  _pressure.alpha = fv.at( 4 );
 }
 
 

@@ -102,6 +102,7 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _originalToCurrentIndex(),
   _symmetricalGrid( false ),
   _showGrid( true ),
+  _showGridWireframe( false ),
   _showBuilding( true ),
   _showFoundation( true ),
   _showSources( true ),
@@ -123,7 +124,9 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _mouseYCoord( 0.0f ),
   _textXPos( 0 ),
   _textYPos( 0 ),
-  _placementCrack()
+  _placementCrack(),
+  _crackColor( 0.0f, 1.0f, 0.0f, 0.5f ),
+  _gridColor ( 0.15f, 0.15f, 0.15f, 0.1f )
 {
   USUL_TRACE_SCOPE;
 }
@@ -798,7 +801,7 @@ void VaporIntrusionGUIDocument::_makeGrid( )
       for( unsigned int z = 0; z < zsize; ++z )
       {
         // Set the default ValueType
-        Color c ( 0.15, 0.15, 0.15, 0.1 );
+        Color c ( _gridColor[0], _gridColor[1], _gridColor[2], _gridColor[3]  );
         osg::ref_ptr< osg::Material > material ( new osg::Material );
         material->setAmbient( osg::Material::FRONT_AND_BACK, c );
         material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
@@ -821,6 +824,7 @@ void VaporIntrusionGUIDocument::_makeGrid( )
         p->push_back( osg::Vec3( float( pos[0] )            , float( pos[1] + offset[1] ), float( pos[2] + offset[2] ) ) );
         p->push_back( osg::Vec3( float( pos[0] + offset[0] ), float( pos[1] + offset[1] ), float( pos[2] + offset[2] ) ) );
 
+        
         // build the sub cube
         osg::ref_ptr< osg::Group > group ( new osg::Group );
         
@@ -834,6 +838,15 @@ void VaporIntrusionGUIDocument::_makeGrid( )
 
         // Set the cube
         //_cubes.at( x ).at ( y ).at ( z ).group = group.get();
+
+        if( true == _showGridWireframe )
+        {
+          OsgTools::State::PolygonMode::set( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE, group->getOrCreateStateSet() );
+        }
+        else
+        {
+          OsgTools::State::PolygonMode::set( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL, group->getOrCreateStateSet() );
+        }
 
         // Add the cubre to the scene
         _root->addChild( group.get() );
@@ -915,6 +928,10 @@ void VaporIntrusionGUIDocument::_makeCracks()
 
   // get the z axis grid
   GridPoints zgrid ( this->_getGridFromAxis( "Z" ) );
+
+  // get the crack color
+    Color cColor( _crackColor[0], _crackColor[1], _crackColor[2], _crackColor[3] );
+
   // create the visuals for the x direction cracks first
 	for( unsigned int i = 0; i < _cracks.first.size(); ++ i )
 	{
@@ -927,11 +944,9 @@ void VaporIntrusionGUIDocument::_makeCracks()
     float end   ( StrToFloat::convert( c.end   ) );
 
     // set the corners
-    float y( /*StrToFloat::convert( _building.z ) +*/ value );
+    float y( value );
 
     // set the "z" corners
-    //float sx ( StrToFloat::convert( _building.x ) /*+ start*/ );
-    //float ex ( StrToFloat::convert( _building.x ) + StrToFloat::convert( _building.w ) );
     float sx ( start );
     float ex ( end );
 
@@ -942,59 +957,13 @@ void VaporIntrusionGUIDocument::_makeCracks()
     float sd ( StrToFloat::convert( _building.y  ) );
     float ed ( StrToFloat::convert( _building.y  ) + StrToFloat::convert( _building.h ) );
 
-    //points->push_back( osg::Vec3f ( sx, sd, y ) );
-    //points->push_back( osg::Vec3f ( ex, sd, y ) );
-    //points->push_back( osg::Vec3f ( ex, ed, y ) );
-    //points->push_back( osg::Vec3f ( sx, ed, y ) );
-
-#if 0
-    points->push_back( osg::Vec3f ( y, sd, sx ) );
-    points->push_back( osg::Vec3f ( y, sd, ex ) );
-    points->push_back( osg::Vec3f ( y, ed, ex ) );
-    points->push_back( osg::Vec3f ( y, ed, sx ) );
-#else
     points->push_back( osg::Vec3f ( sx, sd, y ) );
     points->push_back( osg::Vec3f ( ex, sd, y ) );
     points->push_back( osg::Vec3f ( ex, ed, y ) );
     points->push_back( osg::Vec3f ( sx, ed, y ) );
-#endif
 
-    _root->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
-
-    //// get the nearest grid point to the crack
-    //Usul::Math::Vec2ui ind ( this->_snapToGrid( y, zgrid ) );
-
-    //unsigned int nearIndex ( ind[0] );
-    //unsigned int farIndex ( ind[1] );
-
-    //// the point where the crack is
-    //float p ( y );
-    //float d ( Usul::Math::minimum<float>( abs ( y - zgrid.at( nearIndex ).first ), _maxCrackGridDistance ) );
-
-    //// p1 will be 2 grid units away from p toward the nearest grid point
-    //float p1 ( p + d );
-
-    //// P2 is 2 grid units away from p toward the farthest grid point
-    //float p2 ( p - d );
-
-    ////float d2 ( Usul::Math::minimum<float> ( zgrid.at( farIndex ).first - p2, _maxCrackGridDistance ) );  
-    //
-    //// half of the distance d
-    //float hd ( d / 2 );
-
-    //// p3 is halfway between p and p1
-    //float p3 ( p + hd );
-
-    //// p4 is halfway between p and p2
-    //float p4 ( p - hd );
-
-    //// add a grid point on the crack and sam distance from the crack and nearest point to the next
-    //// nearest point and the crack on the Y axis
-    //this->_insertGridPoint( "Z", p );
-    //this->_insertGridPoint( "Z", p1 );
-    //this->_insertGridPoint( "Z", p2 );
-    //this->_insertGridPoint( "Z", p3 );
-    //this->_insertGridPoint( "Z", p4 );
+    
+    _root->addChild ( this->_buildPlane( points.get(), cColor ) );
 
   }
 
@@ -1013,16 +982,12 @@ void VaporIntrusionGUIDocument::_makeCracks()
     float end   ( StrToFloat::convert( c.end   ) );
 
     // set the corners
-    float y( /*StrToFloat::convert( _building.x ) +*/ value );
+    float y( value );
 
     // set the "z" corners
-#if 0
-    float sx ( StrToFloat::convert( _building.z )  );
-    float ex ( StrToFloat::convert( _building.z ) + StrToFloat::convert( _building.l ) );
-#else
     float sx ( start  );
     float ex ( end );
-#endif
+
     // points of the plane
     osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
 
@@ -1030,19 +995,12 @@ void VaporIntrusionGUIDocument::_makeCracks()
     float sd ( StrToFloat::convert( _building.y  ) );
     float ed ( StrToFloat::convert( _building.y  ) + StrToFloat::convert( _building.h ) );
 
-#if 1
     points->push_back( osg::Vec3f ( y, sd, sx ) );
     points->push_back( osg::Vec3f ( y, sd, ex ) );
     points->push_back( osg::Vec3f ( y, ed, ex ) );
     points->push_back( osg::Vec3f ( y, ed, sx ) );
-#else
-    points->push_back( osg::Vec3f ( sx, sd, y ) );
-    points->push_back( osg::Vec3f ( ex, sd, y ) );
-    points->push_back( osg::Vec3f ( ex, ed, y ) );
-    points->push_back( osg::Vec3f ( sx, ed, y ) );
-#endif
 
-    _root->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
+    _root->addChild ( this->_buildPlane( points.get(), cColor ) );
 
   }
 
@@ -4108,10 +4066,15 @@ void VaporIntrusionGUIDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   MenuKit::Menu::RefPtr view ( menu.find ( "&View", true ) );
 
   view->append ( ToggleButton::create ( "Building", boost::bind ( &VaporIntrusionGUIDocument::showBuilding, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowBuilding, this ) ) );
-  view->append ( ToggleButton::create ( "Grid", boost::bind ( &VaporIntrusionGUIDocument::showGrid, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowGrid, this ) ) );
   view->append ( ToggleButton::create ( "Cracks", boost::bind ( &VaporIntrusionGUIDocument::showCracks, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowCracks, this ) ) );
   view->append ( ToggleButton::create ( "Foundation", boost::bind ( &VaporIntrusionGUIDocument::showFoundation, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowFoundation, this ) ) );
   view->append ( ToggleButton::create ( "Sources", boost::bind ( &VaporIntrusionGUIDocument::showSources, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowSources, this ) ) );
+
+  // Grid sub menu of the view menu
+  MenuKit::Menu::RefPtr gridSubMenu ( view->find ( "&Grid", true ) );
+  gridSubMenu->append ( ToggleButton::create ( "Visible", boost::bind ( &VaporIntrusionGUIDocument::showGrid, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowGrid, this ) ) );
+  gridSubMenu->append ( ToggleButton::create ( "Wireframe", boost::bind ( &VaporIntrusionGUIDocument::showGridWireframe, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowGridWireframe, this ) ) );
+  
 
   // Add to the objects menu.
   MenuKit::Menu::RefPtr objectMenu ( menu.find ( "&Objects", true ) );
@@ -4309,6 +4272,25 @@ bool VaporIntrusionGUIDocument::isShowBuilding() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Toggle the grid to wireframe
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::showGridWireframe ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( b != _showGridWireframe )
+  {
+    _showGridWireframe = b;
+
+    this->rebuildScene();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Draw the grid
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -4324,6 +4306,20 @@ void VaporIntrusionGUIDocument::showGrid ( bool b )
     this->rebuildScene();
   }
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show grid flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::isShowGridWireframe() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _showGridWireframe;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -6148,6 +6144,7 @@ void VaporIntrusionGUIDocument::objectMenuAddSource()
 
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Build the object
@@ -6704,6 +6701,83 @@ void VaporIntrusionGUIDocument::setMouseCoords( Usul::Math::Vec3f point )
     _mouseXCoord = point[0];
     _mouseYCoord = point[1];
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Update the status text
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::ColorVec VaporIntrusionGUIDocument::colorInformation()
+{
+  Guard guard ( this );
+
+  // get the building
+  Building b ( this->building() );
+
+  // get the building and foundation color
+  Usul::Math::Vec4f bColor ( b.bColor );
+  Usul::Math::Vec4f fColor ( b.fColor );
+
+  // create the color vec
+  ColorVec cv;
+
+  // set the colors
+  cv.push_back( bColor );
+  cv.push_back( fColor );
+  cv.push_back( _crackColor );
+  cv.push_back( _gridColor );
+
+  return cv;
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Update the status text
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::colorInformation( ColorVec cv )
+{
+  Guard guard ( this );  
+
+  // verify that the vector has the proper number of elements
+  if( cv.size() < 4 )
+  {
+    return;
+  }
+
+  // get the building
+  Building b ( this->building() );
+
+  // get the building color
+  UsulColor bColor ( cv.at( 0 ) );
+
+  // get the foundation color
+  UsulColor fColor ( cv.at( 1 ) );
+
+  // set the colors
+  b.bColor = UsulColor( bColor[0], bColor[1], bColor[2], b.bColor[3] );
+  b.fColor = UsulColor( fColor[0], fColor[1], fColor[2], b.fColor[3] );;
+
+  // update the building
+  this->building( b );
+
+  // get the crack color
+  UsulColor cColor ( cv.at( 2 ) );
+
+  // get the crack color
+  _crackColor = UsulColor( cColor[0], cColor[1], cColor[2], _crackColor[3] );
+
+  // get the grid color
+  UsulColor gColor ( cv.at( 3 ) );
+
+  // get the grid color
+  _gridColor = UsulColor( gColor[0], gColor[1], gColor[2], _gridColor[3] );
 }
 
 

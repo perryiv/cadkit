@@ -243,12 +243,6 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   // Make the menu.
   MenuKit::Menu::RefPtr variableMenu ( new MenuKit::Menu ( "Edit" ) );
   
-  // Add Window Grid button
-  //variableMenu->append ( MenuKit::Button::create ( "Grid", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid ) ) );
-
-  // Add Window Grid button
-  //variableMenu->append ( MenuKit::Button::create ( "Grid/Axis Points", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGridAxisPoints ) ) );
- 
   // Add Window Building button
   variableMenu->append ( MenuKit::Button::create ( "Building", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editBuilding) ) );
  
@@ -260,20 +254,9 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
  
   // Add Window Sources button
   variableMenu->append ( MenuKit::Button::create ( "Sources", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSources ) ) );
-  
-  
-  // add editAddChemicalsToSource button
-  // variableMenu->append ( MenuKit::Button::create ( "Source Contaminats", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editAddChemicalsToSource ) ) );
- 
-  
-  // add editAddChemicalsToSource button
-  // variableMenu->append ( MenuKit::Button::create ( "Cracks", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editCracks ) ) );
- 
-  // Add Scalar Editor button
-  // variableMenu->append ( MenuKit::Button::create ( "Scalar", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editScalar ) ) );
 
-   // Query the active document for IVaporIntrusionGUI
-  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  // add settings menu to the tools menu
+  variableMenu->append ( MenuKit::Button::create ( "Settings", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSettings ) ) );
 
   // Add the window menu to the main menu
   menu.append( variableMenu.get() );
@@ -646,6 +629,46 @@ void VaporIntrusionGUIDelegateComponent::editAddChemicalsToSource()
   //document->sources( dialog.sources() );
   //document->chemicals( dialog.chemicals() );
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Edit the grid space
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::editSettings()
+{
+  
+  // Make the dialog.
+  SettingsDialog editor;
+
+  // Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+  // set the colors in the dialog
+  editor.colors( document->colorInformation() );
+
+  // populate the chemical list
+  editor.initialize();
+
+  // Show the dialog.
+  if ( QDialog::Accepted != editor.exec() )
+    throw Usul::Exceptions::Canceled();
+
+  // finalize the dialog
+  editor.finalize();
+
+  // set the document color information
+  document->colorInformation( editor.colors() );
+
+  // rebuild the scene
+  document->rebuildScene();
 }
 
 

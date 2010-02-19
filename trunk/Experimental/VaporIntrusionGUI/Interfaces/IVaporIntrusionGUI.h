@@ -30,6 +30,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   typedef std::pair < int, std::string > ActivatorValue; // expected < comparison enumeration, value >
   typedef std::pair < std::string, ActivatorValue > ActivatorPair; // expected < activator name, activator value >
   typedef std::vector< ActivatorPair > ActivatorPairs;
+  typedef std::vector< Usul::Math::Vec4f > ColorVec;
 
   /// Id for this interface.
   enum { IID = 1235852807u };
@@ -130,7 +131,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
               const std::string& d, const std::string& vol,
               const std::string& xr, const std::string& th ):
     l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ),
-    depth( d ), v ( vol ), xrate ( xr ), thickness( th ), bColor( 0.4f, 0.0f, 0.4f, 1.0f ), fColor( 1.0f, 1.0f, 1.0f, 1.0f )
+    depth( d ), v ( vol ), xrate ( xr ), thickness( th ), bColor( 0.4f, 0.0f, 0.4f, 1.0f ), fColor( 1.0f, 1.0f, 1.0f, 0.3f )
     {};
 
     Building():
@@ -400,6 +401,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual void                  keyMovementChange( int x, int y ) = 0;
   virtual void                  handleNewObject() = 0;
+
+  virtual ColorVec              colorInformation() = 0;
+  virtual void                  colorInformation( ColorVec cv ) = 0;
 
   // clear functions
   virtual void                  clearObject() = 0;

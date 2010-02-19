@@ -654,6 +654,9 @@ void VaporIntrusionGUIDelegateComponent::editSettings()
   // set the colors in the dialog
   editor.colors( document->colorInformation() );
 
+  // set the transparencies
+  editor.transparencies( document->transparencies() );
+
   // populate the chemical list
   editor.initialize();
 
@@ -666,6 +669,9 @@ void VaporIntrusionGUIDelegateComponent::editSettings()
 
   // set the document color information
   document->colorInformation( editor.colors() );
+
+  // set the document transparency information
+  document->transparencies( editor.transparencies() );
 
   // rebuild the scene
   document->rebuildScene();

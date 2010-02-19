@@ -85,6 +85,38 @@ void SettingsDialog::initialize()
   // set the grid color
   gColor->color( this->_convertColor( _colors.at( 3 ) ) );
 
+  // make sure the transparencies have the required number of values
+  if( _transparencies.size() < 5 )
+  {
+    return;
+  }
+
+  // set the building values
+  this->_setValues( _transparencies.at( 0 ), bTrans, bSlider );
+
+  // set the foundation values
+  this->_setValues( _transparencies.at( 1 ), fTrans, fSlider );
+
+  // set the crack values
+  this->_setValues( _transparencies.at( 2 ), cTrans, cSlider );
+
+  // set the grid values
+  this->_setValues( _transparencies.at( 3 ), gTrans, gSlider );
+
+  // set the pressure values
+  this->_setValues( _transparencies.at( 4 ), pTrans, pSlider );
+
+  if( _transparencies.size() < 7 )
+  {
+    return;
+  }
+
+  // set the soil values
+  this->_setValues( _transparencies.at( 5 ), soilTrans, soilSlider );
+
+  // set the source values
+  this->_setValues( _transparencies.at( 6 ), sourceTrans, sourceSlider );
+
 }
 
 
@@ -110,6 +142,38 @@ void SettingsDialog::finalize()
 
   // set the building color
   _colors.push_back( this->_convertColor( gColor->color() ) );
+
+  // clear the transparencies
+  _transparencies.clear();
+
+  // set the building transparency
+  float bT ( Usul::Convert::Type< std::string, float >::convert( bTrans->text().toStdString() ) );
+  _transparencies.push_back( bT );
+
+  // set the foundation transparency
+  float fT ( Usul::Convert::Type< std::string, float >::convert( fTrans->text().toStdString() ) );
+  _transparencies.push_back( fT );
+
+  // set the building transparency
+  float cT ( Usul::Convert::Type< std::string, float >::convert( cTrans->text().toStdString() ) );
+  _transparencies.push_back( cT );
+
+  // set the building transparency
+  float gT ( Usul::Convert::Type< std::string, float >::convert( gTrans->text().toStdString() ) );
+  _transparencies.push_back( gT );
+
+  // set the building transparency
+  float pT ( Usul::Convert::Type< std::string, float >::convert( pTrans->text().toStdString() ) );
+  _transparencies.push_back( pT );
+
+  // set the soil transparency
+  float soilT ( Usul::Convert::Type< std::string, float >::convert( soilTrans->text().toStdString() ) ); 
+  _transparencies.push_back( soilT );
+
+  // set the soil transparency
+  float sourceT ( Usul::Convert::Type< std::string, float >::convert( sourceTrans->text().toStdString() ) ); 
+  _transparencies.push_back( sourceT );
+
 }
 
 
@@ -134,6 +198,30 @@ SettingsDialog::ColorVec SettingsDialog::colors()
 void SettingsDialog::colors( ColorVec cv )
 {
   _colors = cv;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the transparencies
+//
+///////////////////////////////////////////////////////////////////////////////
+
+SettingsDialog::FloatVec SettingsDialog::transparencies()
+{
+  return _transparencies;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the transparencies
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SettingsDialog::transparencies( FloatVec fv )
+{
+  _transparencies = fv;
 }
 
 
@@ -182,7 +270,7 @@ Usul::Math::Vec4f SettingsDialog::_convertColor ( QColor c )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert an Usul Vec4f to a QColor
+//  Update information when the user interacts with the building slider
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -201,7 +289,7 @@ void  SettingsDialog::on_bSlider_sliderMoved( int value )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert an Usul Vec4f to a QColor
+//  Update information when the user interacts with the foundation slider
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -222,7 +310,7 @@ void  SettingsDialog::on_fSlider_sliderMoved( int value )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert an Usul Vec4f to a QColor
+//  Update information when the user interacts with the crack slider
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -242,7 +330,7 @@ void  SettingsDialog::on_cSlider_sliderMoved( int value )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert an Usul Vec4f to a QColor
+//  Update information when the user interacts with the grid slider
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -259,9 +347,31 @@ void  SettingsDialog::on_gSlider_sliderMoved( int value )
 
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert an Usul Vec4f to a QColor
+//  Update information when the user interacts with the pressure slider
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void  SettingsDialog::on_pSlider_sliderMoved( int value )
+{
+  // convert the input value to a float
+  float fValue ( static_cast< float > ( value ) / 100.0f );
+
+  // conver the float to a string
+  std::string sValue ( Usul::Strings::format( fValue ) );
+
+  // update the corresponding edit field
+  pTrans->setText( sValue.c_str() );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update slider and text information when the user had edited the building
+//  edit box.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -273,20 +383,8 @@ void SettingsDialog::on_bTrans_editingFinished()
   // convert the value to a float
   float fValue ( Usul::Convert::Type< std::string, float >::convert( sValue ) );
 
-  // clamp the value
-  fValue = Usul::Math::clamp ( fValue, 0.0f, 1.0f );
-
-  // reset the text value
-  bTrans->setText( Usul::Strings::format( fValue ).c_str() );
-
-  // multiply the value by 100
-  fValue *= 100.0f;
-
-  // convert the value to an integer
-  int iValue ( static_cast< int > ( fValue ) );
-
-  // set the slider
-  bSlider->setValue( iValue );
+  // set the values
+  this->_setValues( fValue, bTrans, bSlider );
 
   
 }
@@ -294,7 +392,8 @@ void SettingsDialog::on_bTrans_editingFinished()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert an Usul Vec4f to a QColor
+//  Update slider and text information when the user had edited the foundation
+//  edit box.r
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -306,26 +405,15 @@ void SettingsDialog::on_fTrans_editingFinished()
   // convert the value to a float
   float fValue ( Usul::Convert::Type< std::string, float >::convert( sValue ) );
 
-  // clamp the value
-  fValue = Usul::Math::clamp ( fValue, 0.0f, 1.0f );
-
-  // reset the text value
-  fTrans->setText( Usul::Strings::format( fValue ).c_str() );
-
-  // multiply the value by 100
-  fValue *= 100.0f;
-
-  // convert the value to an integer
-  int iValue ( static_cast< int > ( fValue ) );
-
-  // set the slider
-  fSlider->setValue( iValue );
+  // set the values
+  this->_setValues( fValue, fTrans, fSlider );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert an Usul Vec4f to a QColor
+//  Update slider and text information when the user had edited the crack
+//  edit box.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -337,26 +425,15 @@ void SettingsDialog::on_cTrans_editingFinished()
   // convert the value to a float
   float fValue ( Usul::Convert::Type< std::string, float >::convert( sValue ) );
 
-  // clamp the value
-  fValue = Usul::Math::clamp ( fValue, 0.0f, 1.0f );
-
-  // reset the text value
-  cTrans->setText( Usul::Strings::format( fValue ).c_str() );
-
-  // multiply the value by 100
-  fValue *= 100.0f;
-
-  // convert the value to an integer
-  int iValue ( static_cast< int > ( fValue ) );
-
-  // set the slider
-  cSlider->setValue( iValue );
+  // set the values
+  this->_setValues( fValue, cTrans, cSlider );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert an Usul Vec4f to a QColor
+//  Update slider and text information when the user had edited the grid
+//  edit box.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -368,18 +445,46 @@ void SettingsDialog::on_gTrans_editingFinished()
   // convert the value to a float
   float fValue ( Usul::Convert::Type< std::string, float >::convert( sValue ) );
 
+  // set the values
+  this->_setValues( fValue, gTrans, gSlider );  
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update slider and text information when the user had edited the pressure
+//  edit box.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SettingsDialog::on_pTrans_editingFinished()
+{
+  // convert the value in the field to a std::string
+  std::string sValue ( gTrans->text().toStdString() );
+
+  // convert the value to a float
+  float fValue ( Usul::Convert::Type< std::string, float >::convert( sValue ) );
+
+  // set the values
+  this->_setValues( fValue, pTrans, pSlider );  
+}
+
+
+void SettingsDialog::_setValues( float value, QLineEdit* edit, QSlider* slider )
+{
   // clamp the value
-  fValue = Usul::Math::clamp ( fValue, 0.0f, 1.0f );
+  value = Usul::Math::clamp ( value, 0.0f, 1.0f );
 
   // reset the text value
-  gTrans->setText( Usul::Strings::format( fValue ).c_str() );
+  edit->setText( Usul::Strings::format( value ).c_str() );
 
   // multiply the value by 100
-  fValue *= 100.0f;
+  value *= 100.0f;
 
   // convert the value to an integer
-  int iValue ( static_cast< int > ( fValue ) );
+  int iValue ( static_cast< int > ( value ) );
 
   // set the slider
-  gSlider->setValue( iValue );
+  slider->setValue( iValue );
 }

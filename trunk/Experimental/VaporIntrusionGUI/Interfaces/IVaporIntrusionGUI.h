@@ -110,10 +110,10 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   struct Crack
   {
     std::string start, end, value;
-
-    Crack(): start(), end(), value(){};
+    Usul::Math::Vec4f color;
+    Crack(): start(), end(), value(), color( 0.0f, 1.0f, 0.0f, 1.0f ){};
     Crack( const std::string& s, const std::string& e, const std::string& v ):
-    start( s ), end( e ), value( v ){};
+    start( s ), end( e ), value( v ), color( 0.0f, 1.0f, 0.0f, 1.0f ){};
   };
   typedef std::vector< Crack > Cracks;
   typedef std::pair< Cracks, Cracks > CracksPair;
@@ -123,13 +123,14 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     std::string l,w,h;
     std::string x,y,z;
     std::string depth, v, xrate, thickness;
+    Usul::Math::Vec4f bColor, fColor;
 
     Building( const std::string& length, const std::string& width, const std::string& height,
               const std::string& xpos, const std::string& ypos, const std::string& zpos, 
               const std::string& d, const std::string& vol,
               const std::string& xr, const std::string& th ):
     l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ),
-    depth( d ), v ( vol ), xrate ( xr ), thickness( th )
+    depth( d ), v ( vol ), xrate ( xr ), thickness( th ), bColor( 0.4f, 0.0f, 0.4f, 1.0f ), fColor( 1.0f, 1.0f, 1.0f, 1.0f )
     {};
 
     Building():

@@ -1066,8 +1066,11 @@ void VaporIntrusionGUIDocument::_makeFoundation( osg::Vec3f ll )
   // slightly shorten ll
   ll = osg::Vec3f( ll.x() - 0.00001f, ll.y() - 0.00001f, ll.z() - 0.00001f );
 
+  // get the building
+  Building b ( this->building() );
+
    // color for the building
-  Color c ( 1.0, 0.0, 1.0, 0.5 );
+  Color c ( b.fColor[0], b.fColor[1], b.fColor[2], b.fColor[3] );
  
   // Material for the cube
   osg::ref_ptr< osg::Material > material ( new osg::Material );
@@ -1119,8 +1122,11 @@ void VaporIntrusionGUIDocument::_makeBuilding()
   // useful typedefs
   typedef Usul::Convert::Type< std::string, float > StrToFloat;
 
+  // get the building
+  Building b ( this->building() );
+
    // color for the building
-  Color c ( 0.0, 0.0, 1.0, 1.0 );
+  Color c ( b.bColor[0], b.bColor[1], b.bColor[2], b.bColor[3] );
  
   // Material for the cube
   osg::ref_ptr< osg::Material > material ( new osg::Material );
@@ -1128,13 +1134,13 @@ void VaporIntrusionGUIDocument::_makeBuilding()
   material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
 
   // get the lower left corner of the building
-  osg::Vec3f ll  ( StrToFloat::convert( _building.x ), StrToFloat::convert( _building.y ), StrToFloat::convert( _building.z ) );
+  osg::Vec3f ll  ( StrToFloat::convert( b.x ), StrToFloat::convert( b.y ), StrToFloat::convert( b.z ) );
 
   // snap the lower left to the grid
   osg::Vec2f corner ( ll.x(), ll.z() );
 
   // get the length, width, and height of the building
-  osg::Vec3f lhw ( StrToFloat::convert( _building.l ), StrToFloat::convert( "0.5" ), StrToFloat::convert( _building.w ) );
+  osg::Vec3f lhw ( StrToFloat::convert( b.l ), StrToFloat::convert( "0.5" ), StrToFloat::convert( b.w ) );
 
   // create the points for the building
   osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
@@ -5763,11 +5769,15 @@ osg::Node* VaporIntrusionGUIDocument::_drawBuilding2D()
   // get the view mode
   int viewMode ( this->getViewMode2D() );
 
-  if( IVPI::VIEW_MODE_2D_XY == viewMode )
-  {
-    Building b ( this-> building() );
-    //set the points
+  // get the building
+  Building b ( this-> building() );
 
+  // color from building object
+  osg::Vec4f color ( b.bColor[0], b.bColor[1], b.bColor[2], b.bColor[3] );
+
+  if( IVPI::VIEW_MODE_2D_XY == viewMode )
+  {    
+    //set the points
     float sx ( StrToFloat::convert( b.x ) );
     float sz ( StrToFloat::convert( b.z ) );
     float ex ( StrToFloat::convert( b.x ) + StrToFloat::convert( b.l ) );
@@ -5778,14 +5788,14 @@ osg::Node* VaporIntrusionGUIDocument::_drawBuilding2D()
     points->push_back( osg::Vec3f ( ex, 0.001, ez ) );
     points->push_back( osg::Vec3f ( sx, 0.001, ez ) );
 
-    group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 0.0f, 1.0f, 1.0f ) ) );
+    
+
+    group->addChild ( this->_buildPlane( points.get(), color ) );
   }
 
   if( IVPI::VIEW_MODE_2D_XZ == viewMode )
   {
-    Building b ( this-> building() );
     //set the points
-
     float sx ( StrToFloat::convert( b.x ) );
     float sy ( StrToFloat::convert( b.y ) );
     float ex ( StrToFloat::convert( b.x ) + StrToFloat::convert( b.l ) );
@@ -5796,7 +5806,7 @@ osg::Node* VaporIntrusionGUIDocument::_drawBuilding2D()
     points->push_back( osg::Vec3f ( ex, ey, 0.001 ) );
     points->push_back( osg::Vec3f ( sx, ey, 0.001 ) );
 
-    group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 0.0f, 1.0f, 1.0f ) ) );
+    group->addChild ( this->_buildPlane( points.get(), color ) );
   }
   
   return group.release();
@@ -6246,7 +6256,7 @@ void VaporIntrusionGUIDocument::_createNewSource()
                    "Untitled", c );
 
   // generate a random color for the source
-  s.color = this->_randomColor();
+  s.color = this->_randomColor( true, false, false );
 
   // add the source to the list of sources
   _sources.push_back( s );
@@ -6259,7 +6269,7 @@ void VaporIntrusionGUIDocument::_createNewSource()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Create a new source
+//  Create a new soil
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -6287,7 +6297,7 @@ void VaporIntrusionGUIDocument::_createNewSoil()
   IVPI::Soil soil;
 
   // generate a random color for the source
-  soil.color = this->_randomColor();
+  soil.color = this->_randomColor( true, true, false );
 
   // set the soil dimensions
   soil.dimensions( Usul::Strings::format ( sx ),
@@ -6298,7 +6308,7 @@ void VaporIntrusionGUIDocument::_createNewSoil()
                    Usul::Strings::format ( h  ) );
 
   // make the layer name
-  std::string lname ( Usul::Strings::format( "SoilLayer_", _soils.size() + 1 ) );
+  std::string lname ( Usul::Strings::format( "SoilBlock_", _soils.size() + 1 ) );
 
   // set the layer name
   soil.layerName = lname;
@@ -6309,6 +6319,53 @@ void VaporIntrusionGUIDocument::_createNewSoil()
   //rebuild the scene
   this->rebuildScene();
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Generate a random color
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec4f VaporIntrusionGUIDocument::_randomColor( bool rR, bool rG, bool rB )
+{
+ 
+  // seed the random number generator
+  srand( time( NULL ) );
+
+  // generate the channels of the color
+  float r ( static_cast< float > ( 1 + rand() % 100 ) + static_cast< float > ( 1 + rand() % 100 ) + static_cast< float > ( 1 + rand() % 100 ) );
+  float red   ( ( r / 3 ) / 100.0f );
+ 
+  float g ( static_cast< float > ( 1 + rand() % 100 ) + static_cast< float > ( 1 + rand() % 100 ) + static_cast< float > ( 1 + rand() % 100 ) ); 
+  float green ( ( g / 3 ) / 100.0f );
+
+  float b ( static_cast< float > ( 1 + rand() % 100 ) + static_cast< float > ( 1 + rand() % 100 ) + static_cast< float > ( 1 + rand() % 100 ) ); 
+  float blue  ( ( b / 3 ) / 100.0f );
+
+  // check to include Red component
+  if( false == rR )
+  {
+    red = 0.0f;
+  }
+
+  // check to include Green component
+  if( false == rG )
+  {
+    green = 0.0f;
+  }
+
+  // check to include Blue component
+  if( false == rB )
+  {
+    blue = 0.0f;
+  }  
+
+  // generate the color
+  Usul::Math::Vec4f color ( red, green, blue, 1.0f ); 
+
+  return color;
 }
 
 

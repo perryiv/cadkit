@@ -429,6 +429,7 @@ protected:
   bool                        _crackExists( Cracks cracks, Crack crack );
 
   Usul::Math::Vec4f           _randomColor();
+  Usul::Math::Vec4f           _randomColor( bool rR, bool rG, bool rB );
 
   // update the source information for all sources
   void                        _updateSources();

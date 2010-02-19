@@ -186,10 +186,6 @@ void SoilLayerDialog::_updateSoil( unsigned int index )
   QTableWidgetItem *item5 = new QTableWidgetItem;
   item5->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
 
-  // create an item widget for the sixth column
-  QTableWidgetItem *item6 = new QTableWidgetItem;
-  item6->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
-
   // insert the columns
   _soilTable->setItem( rowCount, 0, item0 );
   _soilTable->setItem( rowCount, 1, item1 );
@@ -197,7 +193,6 @@ void SoilLayerDialog::_updateSoil( unsigned int index )
   _soilTable->setItem( rowCount, 3, item3 );
   _soilTable->setItem( rowCount, 4, item4 );
   _soilTable->setItem( rowCount, 5, item5 ); 
-  _soilTable->setItem( rowCount, 6, item6 ); 
 
   // set the values of the row
   _soilTable->item( rowCount, 0 )->setText( s.name.c_str()       );
@@ -205,8 +200,7 @@ void SoilLayerDialog::_updateSoil( unsigned int index )
   _soilTable->item( rowCount, 2 )->setText( s.porosity.c_str()      );
   _soilTable->item( rowCount, 3 )->setText( s.waterPorosity.c_str()        );
   _soilTable->item( rowCount, 4 )->setText( s.permeability.c_str()    );
-  _soilTable->item( rowCount, 5 )->setText( s.viscosity.c_str()  );
-  _soilTable->item( rowCount, 6 )->setText( s.carbon.c_str()   );
+  _soilTable->item( rowCount, 5 )->setText( s.carbon.c_str()   );
 
   ++rowCount;
   
@@ -319,11 +313,10 @@ void SoilLayerDialog::finalize()
     std::string p    ( _soilTable->item( row, 2 )->text().toStdString() );
     std::string wp   ( _soilTable->item( row, 3 )->text().toStdString() );
     std::string perm ( _soilTable->item( row, 4 )->text().toStdString() );
-    std::string visc ( _soilTable->item( row, 5 )->text().toStdString() );
     std::string carb ( _soilTable->item( row, 6 )->text().toStdString() );
 
     // set the attributes
-    s.attributes( n, t, p, wp, perm, visc, carb );
+    s.attributes( n, t, p, wp, perm, "1.0", carb );
   }
 
   // set the soil

@@ -47,6 +47,9 @@ _chemicals()
 
   _chemicalTable->setHorizontalHeaderLabels( titles );
 
+  // size the columns
+  _chemicalTable->resizeColumnsToContents();
+
   //initialize the table view
   this->_initialize();
 }
@@ -171,6 +174,9 @@ void ChemicalDialog::_initialize()
 
     ++rowCount;
   }
+
+  // size the columns
+  _chemicalTable->resizeColumnsToContents();
 }
 
 

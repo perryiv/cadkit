@@ -340,6 +340,19 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
       }
         break;
 
+      case Qt::Key_I :
+      {
+        // set the edit mode to object placement
+        document->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_XY );
+
+        // set the correct build mode
+        document->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
+
+        // set the object type to building
+        document->setObjectMode( IVPI::OBJECT_SOIL );
+      }
+        break;
+
       case Qt::Key_S :
       {
         // set the edit mode to object placement

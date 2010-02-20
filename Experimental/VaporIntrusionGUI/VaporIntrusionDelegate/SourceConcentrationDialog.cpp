@@ -44,6 +44,9 @@ _currentSource ( 0 )
 
   _chemicalTable->setHorizontalHeaderLabels( chemicalTitles );
 
+  // size the columns
+  _chemicalTable->resizeColumnsToContents();
+
   //initialize the table view
   this->_initialize();
 }
@@ -122,6 +125,9 @@ void  SourceConcentrationDialog::_initialize()
 
   // initialize the chemicals
   this->_initContaminants();
+
+  // size the columns
+  _chemicalTable->resizeColumnsToContents();
 }
 
 

@@ -868,7 +868,7 @@ void VaporIntrusionGUIDocument::_makeGrid( )
 osg::Vec4f VaporIntrusionGUIDocument::_getPressureColor( unsigned int x, unsigned int z )
 {
   // color
-  osg::Vec4f color ( 0.0f, 0.0f, 1.0f, _pressure.alpha );
+  osg::Vec4f color ( 0.0f, 0.0f, 0.0f, _pressure.alpha );
 
   // get the dimensions
   unsigned int xSize ( _xValues.size() );
@@ -4194,6 +4194,8 @@ void VaporIntrusionGUIDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   view->append ( ToggleButton::create ( "Cracks", boost::bind ( &VaporIntrusionGUIDocument::showCracks, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowCracks, this ) ) );
   view->append ( ToggleButton::create ( "Foundation", boost::bind ( &VaporIntrusionGUIDocument::showFoundation, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowFoundation, this ) ) );
   view->append ( ToggleButton::create ( "Sources", boost::bind ( &VaporIntrusionGUIDocument::showSources, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowSources, this ) ) );
+  view->append ( ToggleButton::create ( "Soils", boost::bind ( &VaporIntrusionGUIDocument::showSoils, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowSoils, this ) ) );
+  view->append ( ToggleButton::create ( "Pressure Contour", boost::bind ( &VaporIntrusionGUIDocument::showPressure, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowPressure, this ) ) );
 
   // Grid sub menu of the view menu
   MenuKit::Menu::RefPtr gridSubMenu ( view->find ( "&Grid", true ) );
@@ -4553,6 +4555,72 @@ bool VaporIntrusionGUIDocument::isShowSources() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _showSources;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw the soils
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::showSoils ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( b != _showSoils )
+  {
+    _showSoils = b;
+
+    this->rebuildScene();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show Soils flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::isShowSoils() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _showSoils;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw the soils
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::showPressure( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( b != _showPressurePlane )
+  {
+    _showPressurePlane = b;
+
+    this->rebuildScene();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show Soils flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::isShowPressure() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _showPressurePlane;
 }
 
 

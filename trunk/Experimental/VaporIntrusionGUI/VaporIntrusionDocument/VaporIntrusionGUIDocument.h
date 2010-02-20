@@ -299,6 +299,12 @@ public:
   void                        showSources ( bool b );
   bool                        isShowSources () const;
 
+  void                        showSoils( bool b );
+  bool                        isShowSoils () const;
+
+  void                        showPressure( bool b );
+  bool                        isShowPressure() const;
+
   // Object menu functions
   void                        objectMenuAddBuilding();
   void                        objectMenuAddSource();

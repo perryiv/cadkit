@@ -40,6 +40,9 @@ BaseClass ( parent )
 
   _sourceTable->setHorizontalHeaderLabels( titles );
 
+  // size the columns
+  _sourceTable->resizeColumnsToContents();
+
   //initialize the table view
   this->_initialize();
 }
@@ -182,8 +185,9 @@ void SourceDialog::_initialize()
 
     ++rowCount;
   }
-  
 
+  // size the columns
+  _sourceTable->resizeColumnsToContents();
 }
 
 

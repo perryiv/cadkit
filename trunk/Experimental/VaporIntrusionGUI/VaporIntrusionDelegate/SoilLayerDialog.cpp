@@ -47,6 +47,9 @@ _currentSoil ( 0 )
 
   _soilTable->setHorizontalHeaderLabels( soilTitles );
 
+  // size the columns
+  _soilTable->resizeColumnsToContents();
+
   //initialize the table view
   this->_initialize();
 }
@@ -135,6 +138,9 @@ void  SoilLayerDialog::_initialize()
 {
   // initialize the soil drop down
   this->_initSoils();
+
+  // size the columns
+  _soilTable->resizeColumnsToContents();
 
 }
 

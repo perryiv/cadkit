@@ -92,10 +92,11 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   // structs
   struct PressurePlane
   {
+    FloatVec values;
     ColorVec colors;
     float alpha;
 
-    PressurePlane() : colors(), alpha( 0.2f ) {};
+    PressurePlane() : values(), colors(), alpha( 0.2f ) {};
   };
 
   struct Object2D

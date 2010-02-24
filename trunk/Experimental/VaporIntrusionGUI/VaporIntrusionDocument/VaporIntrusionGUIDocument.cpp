@@ -129,7 +129,11 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _placementCrack(),
   _crackColor( 0.0f, 1.0f, 0.0f, 0.5f ),
   _gridColor ( 0.15f, 0.15f, 0.15f, 0.1f ),
-  _pressure()
+  _minPressureColor( 0.0f, 0.0f, 0.0f, 1.0f ),
+  _maxPressureColor( 0.0f, 1.0f, 0.0f, 1.0f ),
+  _pressure(),
+  _pMap(),
+  _windDirection()
 {
   USUL_TRACE_SCOPE;
 }
@@ -2517,8 +2521,174 @@ void VaporIntrusionGUIDocument::initialize()
   // read the cracks file
   std::string cracksFilename ( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "cracks.vpi" );
   this->_readCracks( cracksFilename );
+
+  // read the pressure values
+  std::string pressureFilename( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "pressures.vpi" );
+  this->_readMasterPressureFile( pressureFilename );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the mater pressure file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readMasterPressureFile( const std::string& filename )
+{
+  Guard guard ( this );
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No Presets loaded for Pressures" ) << std::endl;
+    return;
+  }
+
+   // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // preface for names denoting the wind direction
+  unsigned int numFiles ( 0 );
+
+  // scoping this section
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string nf = std::string( buffer );
+
+    // set the number of files to read
+    numFiles = Usul::Convert::Type< std::string, unsigned int >::convert( nf );
+  }
+
+  for( unsigned int i = 0; i < numFiles; ++i )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string fn = std::string( buffer );
+
+    // prepend the config directory
+    fn = Usul::Strings::format( Usul::CommandLine::Arguments::instance().directory() + "/../configs/", fn );
+
+    // read the pressure file
+    this->_readPressureFile( fn );
+
+  }
+
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the pressure file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readPressureFile( const std::string& filename )
+{
+  Guard guard ( this );
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open pressure file: ", filename, ". " ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Loading Pressure Table: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // preface for names denoting the wind direction
+  std::string wind;
+
+  // scoping this section
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    wind = std::string( buffer );
+
+    // set the default wind direction if it is empty
+    if( true == _windDirection.empty() )
+    {
+      _windDirection = wind;
+    }
+  }
+  
+  // parse the file
+  while( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    // separate the strings
+    StringVec sv;
+    Usul::Strings::split( tStr, ",", false, sv );
+
+    // make sure there are exactly 3 elements in sv
+    if( sv.size() == 3 )
+    {
+      // create the map name
+      std::string name ( Usul::Strings::format ( wind, "[", sv[0], ",", sv[1],"]" ) );
+
+      // create the map value
+      float value ( Usul::Convert::Type< std::string, float >::convert( sv[2] ) );
+
+      // check the min
+      if( value < _pressure.min )
+      {
+        _pressure.min = value;
+      }
+
+      // check the max
+      if( value > _pressure.max )
+      {
+        _pressure.max = value;
+      }
+
+      // add the entry to the map
+      _pMap[ name ] = value;
+    }
+
+  }// end while read for file parsing
+
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -2574,9 +2744,6 @@ void VaporIntrusionGUIDocument::_readSources( const std::string& filename )
       StringVec sv;
       Usul::Strings::split( tStr, ",", false, sv );
 
-      // debugging
-      //std::cout << "Reading: " << tStr << std::endl;
-      
       // make sure all the columns are there
       if( sv.size() == 7 )
       {
@@ -6372,6 +6539,8 @@ void VaporIntrusionGUIDocument::handleNewObject()
   if( _objectMode == IVPI::OBJECT_BUILDING )
   {
     this->_createNewBuilding();
+
+    this->_updatePressure();
   }
 
   // create a new source
@@ -7085,4 +7254,200 @@ void VaporIntrusionGUIDocument::_setStatusText( const std::string message, unsig
   textYPos = static_cast< unsigned int > ( ypos );
 
   textMatrix->setText ( textXPos, textYPos, message, fcolor, bcolor );
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the wind direction and rebuild the color map
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::windDirection( const std::string& d )
+{
+  Guard guard ( this );
+  
+  //set the wind direction
+  _windDirection = d;
+
+  // rebuild the pressure values
+  this->_updatePressure();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the pressure values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int VaporIntrusionGUIDocument::_closestInt( float value )
+{
+  // get the whole int value
+  int iValue ( static_cast< int > ( value ) );
+
+  // get + 1
+  int iValue1 ( iValue + 1 );
+
+  // get the distance from value to iValue
+  float d1 ( value - static_cast< float > ( iValue ) );
+
+  // get the distance from value to iValue+1
+  float d2 ( static_cast< float > ( iValue1 ) - value );
+
+  if( d2 < d1 )
+  {
+    return iValue1;
+  }
+  else
+  {
+    return iValue;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the pressure values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec4f VaporIntrusionGUIDocument::_interpolatedPColor( float value )
+{
+  Guard guard ( this );
+
+  // if it is less than the min return the min
+  if( value < _pressure.min )
+  {
+    return _minPressureColor;
+  }
+
+  // if it is greater than the max return the max
+  if( value > _pressure.max )
+  {
+    return _maxPressureColor;
+  }
+
+  // get the percentage of the value
+  float denominator ( _pressure.max - _pressure.min );
+  float numerator   ( value - _pressure.min );
+  float percentage  ( numerator / denominator );
+
+  // apply the percentage to the red channel
+  float red ( abs( _maxPressureColor[0] - _minPressureColor[0] ) );
+  red *= percentage;
+
+  // apply the percentage to the red channel
+  float green ( abs( _maxPressureColor[1] - _minPressureColor[1] ) );
+  green *= percentage;
+
+  // apply the percentage to the red channel
+  float blue ( abs( _maxPressureColor[2] - _minPressureColor[2] ) );
+  blue *= percentage;
+
+  // apply the percentage to the red channel
+  float alpha ( _pressure.alpha );
+
+  return Usul::Math::Vec4f( red, green, blue, alpha );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the pressure values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_updatePressure()
+{
+  Guard guard ( this );
+
+  // make sure there is a building
+  if( false == this->useBuilding() )
+  {
+    return;
+  }
+
+  // get the dimensions
+  unsigned int xSize ( _xValues.size() );
+  unsigned int zSize ( _zValues.size() );
+
+  if( _pressure.colors.size() < ( xSize * zSize ) )
+  {
+    // clear the current data
+    _pressure.colors.clear();
+
+    // resize
+    _pressure.colors.resize( xSize * zSize );
+  }
+
+  // get the building
+  Building b ( this->building() );
+
+  // get the float value of the building parameters
+  float fsx ( Usul::Convert::Type< std::string, float >::convert( b.x ) );
+  float fsz ( Usul::Convert::Type< std::string, float >::convert( b.z ) );
+  float fsl ( Usul::Convert::Type< std::string, float >::convert( b.l ) );
+  float fsw ( Usul::Convert::Type< std::string, float >::convert( b.w ) );
+
+  // get the int values of the building corners
+  int isx ( this->_closestInt( fsx )        * 100 );
+  int isz ( this->_closestInt( fsz )        * 100);
+  int iex ( this->_closestInt( fsx + fsl )  * 100 );
+  int iez ( this->_closestInt( fsz + fsw )  * 100 );
+
+  for( unsigned int i = 0; i < xSize; ++i )
+  {
+    for( unsigned int j = 0; j < zSize; ++j )
+    {
+      // get the index into the color vector
+      unsigned int index ( ( i * zSize ) + j );  
+
+      // get the current x value
+      float x ( static_cast< float > ( _xValues.at( i ).first ) );
+
+      // get the current z value
+      float z ( static_cast< float > ( _zValues.at( j ).first ) );
+
+      // convert x and z to the closest int
+      int ix ( this->_closestInt( x ) * 100 );
+      int iz ( this->_closestInt( z ) * 100 );
+
+      // subtract out the building x corner
+      if( ix < isx )
+      {
+        ix = isx - ix;
+      }
+      else
+      {
+        ix = ix - isx;
+      }
+
+      // subtract out the building z corner
+      if( ix < isx )
+      {
+        iz = isz - iz;
+      }
+      else
+      {
+        iz = iz - isz;
+      }
+
+      // build the map lookup name
+      std::string name ( Usul::Strings::format ( _windDirection, "[", ix, ",", iz,"]" ) );
+
+      // get the value
+      float value = _pMap[ name ];
+
+      // get the interpolated color
+      UsulColor color ( this->_interpolatedPColor( value ) );      
+      
+      // set the color in the pressure map
+      _pressure.colors.at( index ) = color;
+      
+    }
+
+  }
+
 }

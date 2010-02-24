@@ -352,7 +352,7 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
         document->setObjectMode( IVPI::OBJECT_SOIL );
       }
         break;
-
+ 
       case Qt::Key_S :
       {
         // set the edit mode to object placement

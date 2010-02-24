@@ -16,6 +16,7 @@
 
 #include <vector>
 #include <map>
+#include <limits>
 
 namespace VaporIntrusionGUI {
 namespace Interfaces {
@@ -94,9 +95,11 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   {
     FloatVec values;
     ColorVec colors;
-    float alpha;
+    float alpha, min, max;
 
-    PressurePlane() : values(), colors(), alpha( 0.2f ) {};
+    PressurePlane() : values(), colors(), alpha( 0.2f ), 
+                      min( std::numeric_limits<float>::max() ), 
+                      max( std::numeric_limits<float>::min() ) {};
   };
 
   struct Object2D
@@ -419,6 +422,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   // clear functions
   virtual void                  clearObject() = 0;
+
+  // wind direction
+  virtual void                  windDirection( const std::string& d ) = 0;
 
   
 

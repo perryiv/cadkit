@@ -256,6 +256,9 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   variableMenu->append ( MenuKit::Button::create ( "Sources", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSources ) ) );
 
   // add settings menu to the tools menu
+  variableMenu->append ( MenuKit::Button::create ( "Wind", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editWind ) ) );
+
+  // add settings menu to the tools menu
   variableMenu->append ( MenuKit::Button::create ( "Settings", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSettings ) ) );
 
   // Add the window menu to the main menu
@@ -370,13 +373,46 @@ void VaporIntrusionGUIDelegateComponent::editGrid()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Edit the Wind values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::editWind()
+{
+  // Make the dialog.
+  WindDialog editor;
+
+  // Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+  // populate the chemical list
+  editor.initialize();
+
+  // Show the dialog.
+  if ( QDialog::Accepted != editor.exec() )
+    throw Usul::Exceptions::Canceled();
+
+  // set the document soils
+  document->windDirection( editor.direction() );
+
+  // rebuild the scene
+  document->rebuildScene();
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // edit the Soil values
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void VaporIntrusionGUIDelegateComponent::editSoils()
 {
-   // Make the dialog.
+  // Make the dialog.
   SoilLayerDialog editor;
 
   // Query the active document for IVaporIntrusionGUI

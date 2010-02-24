@@ -89,6 +89,7 @@ public:
   typedef Usul::Math::Vec4f                                     UsulColor;
   typedef IVPI::FloatVec                                        FloatVec;
   typedef IVPI::PressurePlane                                   PressurePlane;
+  typedef std::map< std::string, float >                        PressureMap;
 
   // function typedefs
   typedef Usul::Convert::Type< std::string, float > StrToFloat;
@@ -279,6 +280,8 @@ public:
   virtual FloatVec            transparencies();
   virtual void                transparencies( FloatVec cv );
 
+  virtual void                windDirection( const std::string& d );
+
 
   // Show/Hide functions
   void                        showBuilding ( bool b );
@@ -314,6 +317,8 @@ public:
 
   // clear functions
   void                        clearObject();
+
+
 
 
 
@@ -380,7 +385,8 @@ protected:
   void                        _readSources( const std::string& filename );
   void                        _readSoils( const std::string& filename );
   void                        _readCracks( const std::string& filename );
-  void                        _readPressures( const std::string& filename );
+  void                        _readPressureFile( const std::string& filename );
+  void                        _readMasterPressureFile( const std::string& filename );
   
   int                         _getComparitor( const std::string& comparitor );
 
@@ -414,6 +420,7 @@ protected:
   unsigned int                _closestGridPoint( float value, GridPoints grid );
   osg::Vec2f                  _snapToGrid2D( osg::Vec2f corner );
   osg::Vec3f                  _snapToGrid3D( osg::Vec3f corner );
+  int                         _closestInt( float value );
 
   void                        _addPoints();
   void                        _addGridPadding();
@@ -451,11 +458,16 @@ protected:
 
   Usul::Math::Vec4f           _randomColor();
   Usul::Math::Vec4f           _randomColor( bool rR, bool rG, bool rB );
+  Usul::Math::Vec4f           _interpolatedPColor( float value );
 
   osg::Vec4f                  _getPressureColor( unsigned int x, unsigned int z );
+  // update the pressure values
+  void                        _updatePressure();
 
   // update the source information for all sources
   void                        _updateSources();
+
+  
 
 private:
     GroupPtr                  _root;
@@ -520,8 +532,12 @@ private:
     Crack                     _placementCrack;
     Usul::Math::Vec4f         _crackColor;
     Usul::Math::Vec4f         _gridColor;
+    UsulColor                 _minPressureColor;
+    UsulColor                 _maxPressureColor;
 
     PressurePlane             _pressure;
+    PressureMap               _pMap;
+    std::string               _windDirection;
 
   
 };

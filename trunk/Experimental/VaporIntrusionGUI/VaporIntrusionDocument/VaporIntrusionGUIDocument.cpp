@@ -7329,9 +7329,18 @@ Usul::Math::Vec4f VaporIntrusionGUIDocument::_interpolatedPColor( float value )
     return _maxPressureColor;
   }
 
+  // get the min and max pressure
+  float maxP ( _pressure.max );
+  float minP ( _pressure.min );
+
+#if 0
+  maxP = 1.0f;
+  minP = -1.0f;
+#endif
+
   // get the percentage of the value
-  float denominator ( _pressure.max - _pressure.min );
-  float numerator   ( value - _pressure.min );
+  float denominator ( maxP - minP );
+  float numerator   ( value - minP );
   float percentage  ( numerator / denominator );
 
   // apply the percentage to the red channel
@@ -7352,6 +7361,33 @@ Usul::Math::Vec4f VaporIntrusionGUIDocument::_interpolatedPColor( float value )
   return Usul::Math::Vec4f( red, green, blue, alpha );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the pressure min/max values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::pressureMinMax( float min, float max )
+{
+  Guard guard ( this );
+
+  _pressure.min = min;
+  _pressure.max = max;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the pressure min/max values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::pair<float, float> VaporIntrusionGUIDocument::pressureMinMax()
+{
+  Guard guard ( this );
+  return std::pair<float, float>::pair( _pressure.min, _pressure.max );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

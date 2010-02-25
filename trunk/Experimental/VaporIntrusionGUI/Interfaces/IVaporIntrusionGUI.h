@@ -425,6 +425,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   // wind direction
   virtual void                  windDirection( const std::string& d ) = 0;
+  virtual void                  pressureMinMax( float min, float max ) = 0;
+  virtual std::pair<float, float> pressureMinMax() = 0;
 
   
 

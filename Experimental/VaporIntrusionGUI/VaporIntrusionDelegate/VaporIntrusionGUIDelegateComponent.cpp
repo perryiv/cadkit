@@ -389,12 +389,27 @@ void VaporIntrusionGUIDelegateComponent::editWind()
   if( false == document.valid() )
     return;
 
+  // get the min and max
+  std::pair< float, float > mm ( document->pressureMinMax() );
+
+  // set the min and max in the editor
+  editor.minMax( mm.first, mm.second );
+
   // populate the chemical list
   editor.initialize();
 
   // Show the dialog.
   if ( QDialog::Accepted != editor.exec() )
     throw Usul::Exceptions::Canceled();
+
+  // finalize the dialog
+  editor.finalize();
+
+  // update the min and max
+  mm = editor.minMax();
+
+  // set the document min and max
+  document->pressureMinMax( mm.first, mm.second );
 
   // set the document soils
   document->windDirection( editor.direction() );

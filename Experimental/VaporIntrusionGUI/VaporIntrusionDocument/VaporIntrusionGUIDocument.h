@@ -281,6 +281,8 @@ public:
   virtual void                transparencies( FloatVec cv );
 
   virtual void                windDirection( const std::string& d );
+  virtual void                pressureMinMax( float min, float max );
+  virtual std::pair<float, float> pressureMinMax();
 
 
   // Show/Hide functions

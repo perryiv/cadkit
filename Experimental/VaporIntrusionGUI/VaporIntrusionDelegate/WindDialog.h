@@ -42,9 +42,15 @@ public:
 
   
 
-  void                initialize();
+  void                  initialize();
+  void                  finalize();
+  
 
-  std::string         direction();
+  std::string           direction();
+
+  void                  minMax( float min, float max );
+  std::pair< float, float > minMax();
+
 
 protected:
 
@@ -52,6 +58,7 @@ protected:
 
 private:
   std::string         _wind;
+  float                 _min, _max;
 
 private slots:
 

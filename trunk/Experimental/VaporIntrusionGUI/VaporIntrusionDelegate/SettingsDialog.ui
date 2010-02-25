@@ -1,0 +1,489 @@
+<ui version="4.0" >
+ <class>SettingsDialog</class>
+ <widget class="QDialog" name="SettingsDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>672</width>
+    <height>467</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Settings</string>
+  </property>
+  <widget class="QDialogButtonBox" name="buttonBox" >
+   <property name="geometry" >
+    <rect>
+     <x>220</x>
+     <y>410</y>
+     <width>160</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox" >
+   <property name="geometry" >
+    <rect>
+     <x>30</x>
+     <y>40</y>
+     <width>171</width>
+     <height>201</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>Color Settings</string>
+   </property>
+   <widget class="QLabel" name="label_15" >
+    <property name="geometry" >
+     <rect>
+      <x>30</x>
+      <y>30</y>
+      <width>44</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Building</string>
+    </property>
+   </widget>
+   <widget class="QtTools::ColorButton" name="bColor" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>30</y>
+      <width>44</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_16" >
+    <property name="geometry" >
+     <rect>
+      <x>30</x>
+      <y>110</y>
+      <width>38</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Cracks</string>
+    </property>
+   </widget>
+   <widget class="QtTools::ColorButton" name="cColor" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>110</y>
+      <width>44</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_17" >
+    <property name="geometry" >
+     <rect>
+      <x>50</x>
+      <y>150</y>
+      <width>23</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Grid</string>
+    </property>
+   </widget>
+   <widget class="QtTools::ColorButton" name="gColor" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>150</y>
+      <width>44</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string/>
+    </property>
+   </widget>
+   <widget class="QtTools::ColorButton" name="fColor" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>70</y>
+      <width>44</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_18" >
+    <property name="geometry" >
+     <rect>
+      <x>11</x>
+      <y>70</y>
+      <width>63</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Foundation</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2" >
+   <property name="geometry" >
+    <rect>
+     <x>240</x>
+     <y>40</y>
+     <width>301</width>
+     <height>331</height>
+    </rect>
+   </property>
+   <property name="title" >
+    <string>Transparency Settings</string>
+   </property>
+   <widget class="QLabel" name="label_19" >
+    <property name="geometry" >
+     <rect>
+      <x>30</x>
+      <y>30</y>
+      <width>44</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Building</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_20" >
+    <property name="geometry" >
+     <rect>
+      <x>30</x>
+      <y>110</y>
+      <width>38</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Cracks</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_21" >
+    <property name="geometry" >
+     <rect>
+      <x>50</x>
+      <y>150</y>
+      <width>23</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Grid</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_22" >
+    <property name="geometry" >
+     <rect>
+      <x>11</x>
+      <y>70</y>
+      <width>63</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Foundation</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="bTrans" >
+    <property name="geometry" >
+     <rect>
+      <x>220</x>
+      <y>30</y>
+      <width>51</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="fTrans" >
+    <property name="geometry" >
+     <rect>
+      <x>220</x>
+      <y>70</y>
+      <width>51</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="cTrans" >
+    <property name="geometry" >
+     <rect>
+      <x>220</x>
+      <y>110</y>
+      <width>51</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="gTrans" >
+    <property name="geometry" >
+     <rect>
+      <x>220</x>
+      <y>150</y>
+      <width>51</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QSlider" name="bSlider" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>30</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="maximum" >
+     <number>100</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="fSlider" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>70</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="maximum" >
+     <number>100</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="cSlider" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>110</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="maximum" >
+     <number>100</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="gSlider" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>150</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="maximum" >
+     <number>100</number>
+    </property>
+    <property name="value" >
+     <number>0</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="soilSlider" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>190</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="maximum" >
+     <number>100</number>
+    </property>
+    <property name="value" >
+     <number>0</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_23" >
+    <property name="geometry" >
+     <rect>
+      <x>42</x>
+      <y>190</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Soils</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="soilTrans" >
+    <property name="geometry" >
+     <rect>
+      <x>220</x>
+      <y>190</y>
+      <width>51</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QSlider" name="sourceSlider" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>230</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="maximum" >
+     <number>100</number>
+    </property>
+    <property name="value" >
+     <number>0</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_24" >
+    <property name="geometry" >
+     <rect>
+      <x>27</x>
+      <y>230</y>
+      <width>46</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Sources</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="sourceTrans" >
+    <property name="geometry" >
+     <rect>
+      <x>220</x>
+      <y>230</y>
+      <width>51</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QSlider" name="pSlider" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>270</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="maximum" >
+     <number>100</number>
+    </property>
+    <property name="value" >
+     <number>0</number>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_25" >
+    <property name="geometry" >
+     <rect>
+      <x>22</x>
+      <y>270</y>
+      <width>51</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Pressure</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="pTrans" >
+    <property name="geometry" >
+     <rect>
+      <x>220</x>
+      <y>270</y>
+      <width>51</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtTools::ColorButton</class>
+   <extends>QPushButton</extends>
+   <header>QtTools/ColorButton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>SettingsDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>SettingsDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

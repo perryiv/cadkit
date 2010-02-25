@@ -1,0 +1,153 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: CadViewer", "CadViewer.vcproj", "{69DDA3AC-1653-47D9-98D0-51EF85C1DCA9}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
+		{2228A7FB-34E3-43F7-9C45-3C5F822245B2} = {2228A7FB-34E3-43F7-9C45-3C5F822245B2}
+		{8B99160D-5504-4A93-89DC-F4AE949501A4} = {8B99160D-5504-4A93-89DC-F4AE949501A4}
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+		{8F89DCDA-565D-4211-BAF6-2E35EFC4DDAF} = {8F89DCDA-565D-4211-BAF6-2E35EFC4DDAF}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: display_scene_stats", "Plugins\display_scene_stats\display_scene_stats.vcproj", "{9A4E43F0-5FC9-4095-B613-DE8B299A1BFB}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit MenuKit", "..\MenuKit\MenuKit.vcproj", "{8B99160D-5504-4A93-89DC-F4AE949501A4}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: MenuKit OSG", "..\MenuKit\OSG\OSG.vcproj", "{8F89DCDA-565D-4211-BAF6-2E35EFC4DDAF}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+		{8B99160D-5504-4A93-89DC-F4AE949501A4} = {8B99160D-5504-4A93-89DC-F4AE949501A4}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Usul", "..\Usul\Usul.vcproj", "{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit OsgTools", "..\OsgTools\OsgTools.vcproj", "{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit VRV Core", "..\VRV\Core\VRV.vcproj", "{2228A7FB-34E3-43F7-9C45-3C5F822245B2}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
+		{2AFAFF2F-1967-4124-A178-5F1B703C016F} = {2AFAFF2F-1967-4124-A178-5F1B703C016F}
+		{8B99160D-5504-4A93-89DC-F4AE949501A4} = {8B99160D-5504-4A93-89DC-F4AE949501A4}
+		{8F89DCDA-565D-4211-BAF6-2E35EFC4DDAF} = {8F89DCDA-565D-4211-BAF6-2E35EFC4DDAF}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit XmlTree", "..\XmlTree\XmlTree.vcproj", "{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Scene Model", "..\Helios\Plugins\SceneModel\SceneModel.vcproj", "{47535B21-6EAA-48F9-907D-E92F5F3DEB11}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Serialize XML", "..\Serialize\XML\SerializeXML.vcproj", "{2AFAFF2F-1967-4124-A178-5F1B703C016F}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{69DDA3AC-1653-47D9-98D0-51EF85C1DCA9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{69DDA3AC-1653-47D9-98D0-51EF85C1DCA9}.Debug|Win32.Build.0 = Debug|Win32
+		{69DDA3AC-1653-47D9-98D0-51EF85C1DCA9}.Release|Win32.ActiveCfg = Release|Win32
+		{69DDA3AC-1653-47D9-98D0-51EF85C1DCA9}.Release|Win32.Build.0 = Release|Win32
+		{9A4E43F0-5FC9-4095-B613-DE8B299A1BFB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9A4E43F0-5FC9-4095-B613-DE8B299A1BFB}.Debug|Win32.Build.0 = Debug|Win32
+		{9A4E43F0-5FC9-4095-B613-DE8B299A1BFB}.Release|Win32.ActiveCfg = Release|Win32
+		{9A4E43F0-5FC9-4095-B613-DE8B299A1BFB}.Release|Win32.Build.0 = Release|Win32
+		{8B99160D-5504-4A93-89DC-F4AE949501A4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8B99160D-5504-4A93-89DC-F4AE949501A4}.Debug|Win32.Build.0 = Debug|Win32
+		{8B99160D-5504-4A93-89DC-F4AE949501A4}.Release|Win32.ActiveCfg = Release|Win32
+		{8B99160D-5504-4A93-89DC-F4AE949501A4}.Release|Win32.Build.0 = Release|Win32
+		{8F89DCDA-565D-4211-BAF6-2E35EFC4DDAF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8F89DCDA-565D-4211-BAF6-2E35EFC4DDAF}.Debug|Win32.Build.0 = Debug|Win32
+		{8F89DCDA-565D-4211-BAF6-2E35EFC4DDAF}.Release|Win32.ActiveCfg = Release|Win32
+		{8F89DCDA-565D-4211-BAF6-2E35EFC4DDAF}.Release|Win32.Build.0 = Release|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Debug|Win32.ActiveCfg = Debug|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Debug|Win32.Build.0 = Debug|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Release|Win32.ActiveCfg = Release|Win32
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}.Release|Win32.Build.0 = Release|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Debug|Win32.Build.0 = Debug|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Release|Win32.ActiveCfg = Release|Win32
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Release|Win32.Build.0 = Release|Win32
+		{2228A7FB-34E3-43F7-9C45-3C5F822245B2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2228A7FB-34E3-43F7-9C45-3C5F822245B2}.Debug|Win32.Build.0 = Debug|Win32
+		{2228A7FB-34E3-43F7-9C45-3C5F822245B2}.Release|Win32.ActiveCfg = Release|Win32
+		{2228A7FB-34E3-43F7-9C45-3C5F822245B2}.Release|Win32.Build.0 = Release|Win32
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}.Debug|Win32.Build.0 = Debug|Win32
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}.Release|Win32.ActiveCfg = Release|Win32
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}.Release|Win32.Build.0 = Release|Win32
+		{47535B21-6EAA-48F9-907D-E92F5F3DEB11}.Debug|Win32.ActiveCfg = Debug|Win32
+		{47535B21-6EAA-48F9-907D-E92F5F3DEB11}.Debug|Win32.Build.0 = Debug|Win32
+		{47535B21-6EAA-48F9-907D-E92F5F3DEB11}.Release|Win32.ActiveCfg = Release|Win32
+		{47535B21-6EAA-48F9-907D-E92F5F3DEB11}.Release|Win32.Build.0 = Release|Win32
+		{2AFAFF2F-1967-4124-A178-5F1B703C016F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2AFAFF2F-1967-4124-A178-5F1B703C016F}.Debug|Win32.Build.0 = Debug|Win32
+		{2AFAFF2F-1967-4124-A178-5F1B703C016F}.Release|Win32.ActiveCfg = Release|Win32
+		{2AFAFF2F-1967-4124-A178-5F1B703C016F}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -294,6 +294,36 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\AddSoilDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\AddSoilDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_AddSoilDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\AddSoilDialog.ui -o .\ui_AddSoilDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AddSoilDialog.h&quot; -o &quot;.\GeneratedFiles\moc_AddSoilDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\AddSoilDialog.ui;$(QTDIR)\bin\moc.exe;.\AddSoilDialog.h"
+							Outputs=".\ui_AddSoilDialog.h;.\GeneratedFiles\moc_AddSoilDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_AddSoilDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\AddSoilDialog.ui -o .\ui_AddSoilDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AddSoilDialog.h&quot; -o &quot;.\GeneratedFiles\moc_AddSoilDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\AddSoilDialog.ui;$(QTDIR)\bin\moc.exe;.\AddSoilDialog.h"
+							Outputs=".\ui_AddSoilDialog.h;.\GeneratedFiles\moc_AddSoilDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\BuildingDialog.cpp"
 					>
 				</File>
@@ -869,6 +899,10 @@
 				>
 				<File
 					RelativePath=".\generatedfiles\moc_AddChemicalDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_AddSoilDialog.cpp"
 					>
 				</File>
 				<File

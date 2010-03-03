@@ -14,64 +14,51 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __VAPORINTRUSION_SOIL_LAYER_DIALOG_H__
-#define __VAPORINTRUSION_SOIL_LAYER_DIALOG_H__
+#ifndef __VAPORINTRUSION_ADD_SOIL_DIALOG_H__
+#define __VAPORINTRUSION_ADD_SOIL_DIALOG_H__
 
 #include "VaporIntrusionGUI/Interfaces/IVaporIntrusionGUI.h"
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/Math/Vector3.h"
 
-#include "ui_SoilLayerDialog.h"
+#include "ui_AddSoilDialog.h"
 
 #include "QtGui/QDialog"
 
-class SoilLayerDialog : public QDialog,
-                             private Ui::SoilLayerDialog
+
+class AddSoilDialog : public QDialog,
+                             private Ui::AddSoilDialog
 {
   Q_OBJECT;
 public:
   typedef QDialog BaseClass;
   typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI IVPI;
+  typedef IVPI::Soil  Soil;
   typedef IVPI::Soils Soils;
-  typedef IVPI::Soil Soil;
-  typedef IVPI::SoilLibrary SoilLibrary;
 
   // Useful typedefs  
 
-  SoilLayerDialog ( QWidget *parent = 0x0 );
-  virtual ~SoilLayerDialog();
-
-  Soils               soils();
-  void                soils( Soils s ); 
-  SoilLibrary         library();
-  void                library( SoilLibrary l );
+  AddSoilDialog ( QWidget *parent = 0x0 );
+  virtual ~AddSoilDialog();
 
   void                initialize();
-
-  void                finalize();
+  Soil                soil();
+  void                soil( Soil s );
+  Soil                createSoil();
 
 protected:
 
   void                _initialize();
-  void                _initSoils();
-  void                _updateSoil( unsigned int index );
-  
   void                _clearTable();
-private:
 
-  Soils               _soils;
-  SoilLibrary         _library;
-  unsigned int        _currentSoil;
+private:
+  Soil                _soil;
 
 private slots:
-  void on_soilDropDown_activated( int index );
-  void on_color_selected ( const QColor & color );
-  void on_applyButton_clicked();
-  void on_addButton_clicked();
-  void on_removeButton_clicked();
+
 };
 
 
 
-#endif // __VAPORINTRUSION_SOIL_LAYER_DIALOG_H__
+#endif // __VAPORINTRUSION_ADD_SOIL_DIALOG_H__

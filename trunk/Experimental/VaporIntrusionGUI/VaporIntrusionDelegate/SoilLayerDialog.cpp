@@ -15,8 +15,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SoilLayerDialog.h"
+#include "AddSoilDialog.h"
 
 #include "Usul/Strings/Format.h"
+#include "Usul/Exceptions/Canceled.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -319,7 +321,7 @@ void SoilLayerDialog::finalize()
     std::string p    ( _soilTable->item( row, 2 )->text().toStdString() );
     std::string wp   ( _soilTable->item( row, 3 )->text().toStdString() );
     std::string perm ( _soilTable->item( row, 4 )->text().toStdString() );
-    std::string carb ( _soilTable->item( row, 6 )->text().toStdString() );
+    std::string carb ( _soilTable->item( row, 5 )->text().toStdString() );
 
     // set the attributes
     s.attributes( n, t, p, wp, perm, "1.0", carb );
@@ -390,4 +392,181 @@ void SoilLayerDialog::_clearTable()
   {
     _soilTable->removeRow( i );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove button clicked
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SoilLayerDialog::on_removeButton_clicked()
+{
+   // get the currently selected chemicals
+  QList<QTableWidgetItem*> selectedItems ( _soilTable->selectedItems() );
+
+  std::vector< unsigned int > rowsToRemove;
+
+  // loop through the selected chemicals
+  for( int i = 0; i < selectedItems.size(); ++i )
+  {
+    // get the current item
+    QTableWidgetItem* item = selectedItems.at( i );
+
+    // get the row index
+    unsigned int row ( item->row() );
+
+    // add to the rows to remove list
+    rowsToRemove.push_back( row );
+  }
+
+  // remove from the active chemicals
+  {
+    // new building cracks
+    Soils newlist;
+
+    // old building cracks
+    Soils oldlist ( _soils );
+
+    for( unsigned int i = 0; i < oldlist.size(); ++i )
+    {
+      // remove the row or not
+      bool removeRow ( false );
+
+      for( unsigned int j = 0; j < rowsToRemove.size(); ++j )
+      {
+        if( i == rowsToRemove.at( j ) )
+        {
+          // this row is marked to be removed
+          removeRow = true;
+        }
+      }
+
+      // if the row is not to be removed then add it to the new cracks list
+      if( false == removeRow )
+      {
+        newlist.push_back( oldlist.at( i ) );
+      }
+    }
+
+    // update the building cracks
+    _soils = newlist;
+  } // end active chemical removal
+  
+  // remove from the chemical library
+  {
+    // new building cracks
+    Soils newlist;
+
+    // old building cracks
+    Soils oldlist ( _library );
+
+    for( unsigned int i = 0; i < oldlist.size(); ++i )
+    {
+      // remove the row or not
+      bool removeRow ( false );
+
+      for( unsigned int j = 0; j < rowsToRemove.size(); ++j )
+      {
+        if( i == rowsToRemove.at( j ) )
+        {
+          // this row is marked to be removed
+          removeRow = true;
+        }
+      }
+
+      // if the row is not to be removed then add it to the new cracks list
+      if( false == removeRow )
+      {
+        newlist.push_back( oldlist.at( i ) );
+      }
+    }
+
+    // update the building cracks
+    _library = newlist;
+  } // end library removal
+
+  // clear the cracks table
+  this->_clearTable();
+
+  // repopulate the table
+  this->_initialize();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add button clicked
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SoilLayerDialog::on_addButton_clicked()
+{
+  // create an instance of AddSoilDialog to handle the request
+  AddSoilDialog dialog;
+
+  // Show the dialog.
+  if ( QDialog::Accepted != dialog.exec() )
+    throw Usul::Exceptions::Canceled();
+
+  // get the chemical
+  Soil s ( dialog.createSoil() );
+
+  // add the Source to the list of contamimants
+  _library.push_back( s );
+
+  int rowCount ( _soilTable->rowCount() );
+
+  // add a row
+  _soilTable->insertRow( rowCount );
+
+  // create an item widget for the first column
+  QTableWidgetItem *item0 = new QTableWidgetItem;
+  item0->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+
+  // create an item widget for the second column
+  QTableWidgetItem *item1 = new QTableWidgetItem;
+  item1->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+
+  // create an item widget for the third column
+  QTableWidgetItem *item2 = new QTableWidgetItem;
+  item2->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+
+  // create an item widget for the fourth column
+  QTableWidgetItem *item3 = new QTableWidgetItem;
+  item3->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+
+  // create an item widget for the fifth column
+  QTableWidgetItem *item4 = new QTableWidgetItem;
+  item4->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+
+  // create an item widget for the sixth column
+  QTableWidgetItem *item5 = new QTableWidgetItem;
+  item5->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+
+  // create a checkbox widget for the seventh column
+  QTableWidgetItem *item6 = new QTableWidgetItem;
+  item6->data( Qt::CheckStateRole );
+  item6->setCheckState( Qt::Checked );
+
+  // set the current item
+  _soilTable->setCurrentItem( item0 );
+
+  // insert the columns
+  _soilTable->setItem( rowCount, 0, item0 );
+  _soilTable->setItem( rowCount, 1, item1 );
+  _soilTable->setItem( rowCount, 2, item2 );
+  _soilTable->setItem( rowCount, 3, item3 );
+  _soilTable->setItem( rowCount, 4, item4 );
+  _soilTable->setItem( rowCount, 5, item5 ); 
+
+  // set the values of the row
+  _soilTable->item( rowCount, 0 )->setText( s.name.c_str()       );
+  _soilTable->item( rowCount, 1 )->setText( s.type.c_str() );
+  _soilTable->item( rowCount, 2 )->setText( s.porosity.c_str()      );
+  _soilTable->item( rowCount, 3 )->setText( s.waterPorosity.c_str()        );
+  _soilTable->item( rowCount, 4 )->setText( s.permeability.c_str()    );
+  _soilTable->item( rowCount, 5 )->setText( s.carbon.c_str()   );
+ 
 }

@@ -56,6 +56,9 @@ protected:
   void                _initialize();
   void                _initSoils();
   void                _updateSoil( unsigned int index );
+
+  void                _updateLibrary();
+  void                _updateSoils( Soil s );
   
   void                _clearTable();
 private:

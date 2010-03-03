@@ -149,6 +149,18 @@ void  SoilLayerDialog::_initialize()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Update the experiment soils to match this soil if they contain it
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SoilLayerDialog::_updateSoils( Soil s )
+{
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Update the soil at index
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -332,6 +344,51 @@ void SoilLayerDialog::finalize()
 
   // upadte the soil name
   currentSoilName->setText( s.name.c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update any changes to the library through user edit
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void SoilLayerDialog::_updateLibrary()
+{
+  // make sure there is a library
+  if( static_cast< int > ( _library.size() ) != _soilTable->rowCount() )
+    return;
+
+  // check the table
+  for( int i = 0; i < _soilTable->rowCount(); ++ i )
+  {
+    // get the attributes
+    std::string n    ( _soilTable->itemAt( i, 0 )->text().toStdString() );
+    std::string t    ( _soilTable->itemAt( i, 1 )->text().toStdString() );
+    std::string p    ( _soilTable->itemAt( i, 2 )->text().toStdString() );
+    std::string wp   ( _soilTable->itemAt( i, 3 )->text().toStdString() );
+    std::string perm ( _soilTable->itemAt( i, 4 )->text().toStdString() );
+    std::string carb ( _soilTable->itemAt( i, 5 )->text().toStdString() );
+
+    // Create the soil from user input
+    Soil iSoil;
+
+    // set the attributes
+    iSoil.attributes( n, t, p, wp, perm, "1.0", carb );
+
+    // get the corresponding soil in the library
+    Soil lSoil ( _library.at( i ) );
+
+    // update the attributes
+    lSoil.attributes( n, t, p, wp, perm, "1.0", carb );
+
+    // set the soil
+    _library.at( i ) = lSoil;
+
+    // update the experiment soils
+    this->_updateSoils( lSoil );
+  }
+
 }
 
 

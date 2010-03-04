@@ -155,7 +155,24 @@ void  SoilLayerDialog::_initialize()
 
 void SoilLayerDialog::_updateSoils( Soil s )
 {
+  for( unsigned int i = 0; i < _soils.size(); ++i )
+  {
+    // get the soil
+    Soil soil ( _soils.at( i ) );
 
+    // get the soil name
+    std::string name ( soil.name );
+
+    // check to see if the names match
+    if( s.name == soil.name )
+    {
+      // replace the soul
+      _soils.at( i ) = s;
+
+      // break
+      break;
+    }
+  }
 }
 
 
@@ -293,6 +310,9 @@ void SoilLayerDialog::_initSoils()
 
 void SoilLayerDialog::finalize()
 {
+  // update the library
+  this->_updateLibrary();
+
   // make sure there is at least 1 soil
   if( _soils.size() <= 0 )
   {
@@ -363,12 +383,12 @@ void SoilLayerDialog::_updateLibrary()
   for( int i = 0; i < _soilTable->rowCount(); ++ i )
   {
     // get the attributes
-    std::string n    ( _soilTable->itemAt( i, 0 )->text().toStdString() );
-    std::string t    ( _soilTable->itemAt( i, 1 )->text().toStdString() );
-    std::string p    ( _soilTable->itemAt( i, 2 )->text().toStdString() );
-    std::string wp   ( _soilTable->itemAt( i, 3 )->text().toStdString() );
-    std::string perm ( _soilTable->itemAt( i, 4 )->text().toStdString() );
-    std::string carb ( _soilTable->itemAt( i, 5 )->text().toStdString() );
+    std::string n    ( _soilTable->item( i, 0 )->text().toStdString() );
+    std::string t    ( _soilTable->item( i, 1 )->text().toStdString() );
+    std::string p    ( _soilTable->item( i, 2 )->text().toStdString() );
+    std::string wp   ( _soilTable->item( i, 3 )->text().toStdString() );
+    std::string perm ( _soilTable->item( i, 4 )->text().toStdString() );
+    std::string carb ( _soilTable->item( i, 5 )->text().toStdString() );
 
     // Create the soil from user input
     Soil iSoil;

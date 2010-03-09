@@ -428,6 +428,10 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   virtual void                  pressureMinMax( float min, float max ) = 0;
   virtual std::pair<float, float> pressureMinMax() = 0;
 
+  // user settings
+  virtual void                readUserPreferences( const std::string& username ) = 0;
+  virtual void                writeUserPreferences( const std::string& username ) = 0;
+
   
 
     

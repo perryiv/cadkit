@@ -35,6 +35,7 @@
 #include "ModifyGridPointsDlg.h"
 #include "SettingsDialog.h"
 #include "WindDialog.h"
+#include "PrefSaveLoadDialog.h"
 
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 
@@ -146,6 +147,9 @@ public:
 
   // send the file to the server
   void                        sendFile();
+
+  // save or load user preferences
+  void                        saveLoadPrefs();
 
   // end the grid axis points
   void                        editGridAxisPoints();

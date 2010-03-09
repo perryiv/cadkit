@@ -241,28 +241,37 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
 void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller)
 {
   // Make the menu.
-  MenuKit::Menu::RefPtr variableMenu ( new MenuKit::Menu ( "Edit" ) );
-  
+  MenuKit::Menu::RefPtr fileMenu ( menu.find ( "File", true ) );
+
   // Add Window Building button
-  variableMenu->append ( MenuKit::Button::create ( "Building", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editBuilding) ) );
- 
-  // Add Window Chemicals button
-  variableMenu->append ( MenuKit::Button::create ( "Chemicals", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editChemicals ) ) );
- 
-  // add editAddChemicalsToSource button
-  variableMenu->append ( MenuKit::Button::create ( "Soils", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSoils ) ) );
- 
-  // Add Window Sources button
-  variableMenu->append ( MenuKit::Button::create ( "Sources", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSources ) ) );
-
-  // add settings menu to the tools menu
-  variableMenu->append ( MenuKit::Button::create ( "Wind", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editWind ) ) );
-
-  // add settings menu to the tools menu
-  variableMenu->append ( MenuKit::Button::create ( "Settings", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSettings ) ) );
+  fileMenu->append ( MenuKit::Button::create ( "Save/Load Preferences", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::saveLoadPrefs ) ) );
 
   // Add the window menu to the main menu
-  menu.append( variableMenu.get() );
+  // menu.append( fileMenu.get() );
+
+  // Make the menu.
+  MenuKit::Menu::RefPtr editMenu ( new MenuKit::Menu ( "Edit" ) );
+  
+  // Add Window Building button
+  editMenu->append ( MenuKit::Button::create ( "Building", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editBuilding) ) );
+ 
+  // Add Window Chemicals button
+  editMenu->append ( MenuKit::Button::create ( "Chemicals", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editChemicals ) ) );
+ 
+  // add editAddChemicalsToSource button
+  editMenu->append ( MenuKit::Button::create ( "Soils", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSoils ) ) );
+ 
+  // Add Window Sources button
+  editMenu->append ( MenuKit::Button::create ( "Sources", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSources ) ) );
+
+  // add settings menu to the tools menu
+  editMenu->append ( MenuKit::Button::create ( "Wind", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editWind ) ) );
+
+  // add settings menu to the tools menu
+  editMenu->append ( MenuKit::Button::create ( "Settings", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSettings ) ) );
+
+  // Add the window menu to the main menu
+  menu.append( editMenu.get() );
 
   // Make the run menu.
   MenuKit::Menu::RefPtr runMenu ( new MenuKit::Menu ( "Run" ) );
@@ -768,6 +777,30 @@ void VaporIntrusionGUIDelegateComponent::editSources()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Save or load user preferences
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::saveLoadPrefs()
+{
+  // Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+  // Make the dialog.
+  PrefSaveLoadDialog dialog;
+
+  // Show the dialog.
+  if ( QDialog::Accepted != dialog.exec() )
+    throw Usul::Exceptions::Canceled();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Edit the scalar values
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -783,38 +816,11 @@ void VaporIntrusionGUIDelegateComponent::editScalar()
     return;
 
   // Make the dialog.
-  ScalarEditorDialog dialog( document->dimensions() );
-
-  // get the currently checked materials
-  MaterialsMap mmap;// ( _materialContainers["Materials Container"]->getCheckedMaterials() );
-
-  //loop through the map of material containers and grab all the checked scalars
-  for( MaterialContainers::iterator iter = _materialContainers.begin(); iter != _materialContainers.end(); ++iter )
-  {
-    // get the checked items from the current material dialog
-    MaterialsMap imap ( (*iter).second->getCheckedMaterials() );
-
-    for( MaterialsMap::iterator iter2 = imap.begin(); iter2 != imap.end(); ++iter2 )
-    {
-      // get the name
-      std::string name ( (*iter2).first );
-
-      // get the value
-      std::string value ( (*iter2).second );
-
-      mmap[name] = value;
-    }
-
-  }
-
-  dialog.materials( mmap );
+  PrefSaveLoadDialog dialog;
 
   // Show the dialog.
   if ( QDialog::Accepted != dialog.exec() )
     throw Usul::Exceptions::Canceled();
-
-  // ok button was clicked...handle it
-  dialog.onOkClicked();
 
 }
 

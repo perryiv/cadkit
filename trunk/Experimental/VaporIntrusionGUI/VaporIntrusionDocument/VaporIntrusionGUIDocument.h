@@ -284,6 +284,10 @@ public:
   virtual void                pressureMinMax( float min, float max );
   virtual std::pair<float, float> pressureMinMax();
 
+  // user settings 
+  virtual void                readUserPreferences( const std::string& username );
+  virtual void                writeUserPreferences( const std::string& username );
+
 
   // Show/Hide functions
   void                        showBuilding ( bool b );
@@ -383,10 +387,7 @@ protected:
   // read layer file
   void                        _readConfigFile( const std::string& catName, const std::string& filename );
   void                        _readInitializationFile( const std::string& filename );
-  void                        _readChemicals( const std::string& filename );
-  void                        _readSources( const std::string& filename );
-  void                        _readSoils( const std::string& filename );
-  void                        _readCracks( const std::string& filename );
+  void                        _readCracks( const std::string& filename );  
   void                        _readPressureFile( const std::string& filename );
   void                        _readMasterPressureFile( const std::string& filename );
   
@@ -468,6 +469,23 @@ protected:
 
   // update the source information for all sources
   void                        _updateSources();
+
+  // write the user preference file for user <username>
+  void                        _writeUserPreferences( const std::string& username );
+  void                        _writeChemicals( const std::string& filename );
+  void                        _writeChemicalLibrary( const std::string& filename );
+  void                        _writeSources( const std::string& filename );
+  void                        _writeSoilLibrary( const std::string& filename );
+  void                        _writeSoils( const std::string& filename );
+
+
+  // read the user preference file for user <username>
+  void                        _readUserPreferences( const std::string& username );
+  void                        _readChemicals( const std::string& filename );
+  void                        _readSources( const std::string& filename );
+  void                        _readSoils( const std::string& filename );
+  void                        _readSoilLibrary( const std::string& filename );
+  void                        _readChemicalLibrary( const std::string& filename );
 
   
 

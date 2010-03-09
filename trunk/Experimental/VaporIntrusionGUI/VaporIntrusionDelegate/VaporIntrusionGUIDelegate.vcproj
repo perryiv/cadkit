@@ -624,6 +624,36 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\PrefSaveLoadDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PrefSaveLoadDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_PrefSaveLoadDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\PrefSaveLoadDialog.ui -o .\ui_PrefSaveLoadDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\PrefSaveLoadDialog.h&quot; -o &quot;.\GeneratedFiles\moc_PrefSaveLoadDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\PrefSaveLoadDialog.ui;$(QTDIR)\bin\moc.exe;.\PrefSaveLoadDialog.h"
+							Outputs=".\ui_PrefSaveLoadDialog.h;.\GeneratedFiles\moc_PrefSaveLoadDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_PrefSaveLoadDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\PrefSaveLoadDialog.ui -o .\ui_PrefSaveLoadDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\PrefSaveLoadDialog.h&quot; -o &quot;.\GeneratedFiles\moc_PrefSaveLoadDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\PrefSaveLoadDialog.ui;$(QTDIR)\bin\moc.exe;.\PrefSaveLoadDialog.h"
+							Outputs=".\ui_PrefSaveLoadDialog.h;.\GeneratedFiles\moc_PrefSaveLoadDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\ScalarEditorDialog.cpp"
 					>
 				</File>
@@ -943,6 +973,10 @@
 				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_NewVaporIntrusion.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_PrefSaveLoadDialog.cpp"
 					>
 				</File>
 				<File

@@ -1,0 +1,116 @@
+<ui version="4.0" >
+ <class>PrefSaveLoadDialog</class>
+ <widget class="QDialog" name="PrefSaveLoadDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>339</width>
+    <height>185</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>User Preferences</string>
+  </property>
+  <widget class="QDialogButtonBox" name="buttonBox" >
+   <property name="geometry" >
+    <rect>
+     <x>240</x>
+     <y>20</y>
+     <width>77</width>
+     <height>64</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Vertical</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="saveButton" >
+   <property name="geometry" >
+    <rect>
+     <x>240</x>
+     <y>90</y>
+     <width>77</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Save</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="loadButton" >
+   <property name="geometry" >
+    <rect>
+     <x>240</x>
+     <y>130</y>
+     <width>77</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Load</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="_username" >
+   <property name="geometry" >
+    <rect>
+     <x>90</x>
+     <y>20</y>
+     <width>113</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label" >
+   <property name="geometry" >
+    <rect>
+     <x>15</x>
+     <y>20</y>
+     <width>58</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Username</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>PrefSaveLoadDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>PrefSaveLoadDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

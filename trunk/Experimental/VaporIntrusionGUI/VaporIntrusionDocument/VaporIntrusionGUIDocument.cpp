@@ -2530,6 +2530,342 @@ void VaporIntrusionGUIDocument::initialize()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// read the user's preferences
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::readUserPreferences( const std::string& username )
+{
+  this->_readUserPreferences( username );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// write the user's preferences
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::writeUserPreferences( const std::string& username )
+{
+  this->_writeUserPreferences( username );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Write the user's preferences
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeUserPreferences( const std::string& username )
+{
+  Guard guard ( this );
+
+  // Source Filename
+  std::string sourcesFN( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + username + "_sources.pref" );
+  this->_writeSources( sourcesFN );
+
+  // Soil Filename
+  std::string soilsFN( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + username + "_soils.pref" );
+  this->_writeSoils( soilsFN );
+
+  // Soil Library Filename
+  std::string slFN( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + username + "_soilLibrary.pref" );
+  this->_writeSoilLibrary( slFN );
+
+  // Chemicals Filename
+  std::string chemicalsFN( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + username + "_chemicals.pref" );
+  this->_writeChemicals( chemicalsFN );
+
+  // Chemical Library Filename
+  std::string clFN( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + username + "_chemicalLibrary.pref" );
+  this->_writeChemicalLibrary( clFN );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the Sources file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeSources( const std::string& filename )
+{
+ Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No Presets loaded for Sources" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading Sources file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  for( unsigned int i = 0; i < _sources.size(); ++i )
+  {
+    // get the source
+    Source s ( _sources.at( i ) );
+
+    // output to the file
+    std::cout << ofs << s.name << "," << 
+      s.x << "," << s.y << "," << s.z << "," <<
+      s.l << "," << s.w << "," << s.h << std::endl;
+  }
+
+  // close file
+  ofs.close();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the Soils file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeSoilLibrary( const std::string& filename )
+{
+Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No user settings found for Soil Library" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading Sources file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  for( unsigned int i = 0; i < _soilLibrary.size(); ++i )
+  {
+
+    // get the source
+    Soil s ( _soilLibrary.at( i ) );
+
+    // output to the file
+    std::cout << ofs << s.type << "," << s.name << "," << 
+      s.porosity << "," << s.waterPorosity << "," << s.viscosity << "," << 
+      s.permeability << "," << s.carbon << "," << 
+      s.x << "," << s.y << "," << s.z << "," <<
+      s.l << "," << s.w << "," << s.h << std::endl;
+  }
+
+  // close file
+  ofs.close();
+        
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the Soils file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeSoils( const std::string& filename )
+{
+Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No user settings found for Soil Library" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading Sources file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  for( unsigned int i = 0; i < _soils.size(); ++i )
+  {
+
+    // get the source
+    Soil s ( _soils.at( i ) );
+
+    // output to the file
+    std::cout << ofs << s.type << "," << s.name << "," << 
+      s.porosity << "," << s.waterPorosity << "," << s.viscosity << "," << 
+      s.permeability << "," << s.carbon << "," << 
+      s.x << "," << s.y << "," << s.z << "," <<
+      s.l << "," << s.w << "," << s.h << std::endl;
+  }
+
+  // close file
+  ofs.close();
+        
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the Soils file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeChemicalLibrary( const std::string& filename )
+{
+Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No user settings found for Soil Library" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading Sources file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  for( unsigned int i = 0; i < _chemicalLibrary.size(); ++i )
+  {
+    // get the chemical
+    Chemical c ( _chemicalLibrary.at( i ) );
+
+    // output to the file
+    std::cout << ofs << c.name << "," << c.henry << "," << 
+      c.koc << "," << c.airDiff << "," << c.waterDiff << "," << c.atmoConc << std::endl;
+  }
+
+  // close file
+  ofs.close();
+        
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the Soils file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeChemicals( const std::string& filename )
+{
+Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No user settings found for Soil Library" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading Sources file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  for( unsigned int i = 0; i < _chemicals.size(); ++i )
+  {
+    // get the chemical
+    Chemical c ( _chemicals.at( i ) );
+
+    // output to the file
+    std::cout << ofs << c.name << "," << c.henry << "," << 
+      c.koc << "," << c.airDiff << "," << c.waterDiff << "," << c.atmoConc << std::endl;
+  }
+
+  // close file
+  ofs.close();
+        
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Write the user's preferences
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readUserPreferences( const std::string& username )
+{
+  Guard guard ( this );
+
+  // Master preference filename
+  std::string mPrefFN( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + username + ".pref" );
+
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // Read the mater pressure file
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2881,82 +3217,7 @@ void VaporIntrusionGUIDocument::_readSoils( const std::string& filename )
 
 void VaporIntrusionGUIDocument::_readCracks( const std::string& filename )
 {
- //Guard guard ( this );
-
- // // useful typedef
- // typedef std::vector< std::string > StringVec;
-
- // // create a file handle
- // std::ifstream ifs;
-
- // // open the file
- // ifs.open( filename.c_str() );
-
- // /// make sure the file was opened
- // if( false == ifs.is_open() )
- // {
- //   std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No Presets loaded for Cracks" ) << std::endl;
- //   return;
- // }
-
- // // feedback.
- // std::cout << "Reading Cracks file: " << filename << std::endl;
-
- // // buffer size
- // const unsigned long int bufSize ( 4095 );
-
- // // line number
- // unsigned int lineNumber ( 0 );
-
- // // parse the file
- // while( EOF != ifs.peek() )
- // {
- //   // create a buffer
- //   char buffer[bufSize+1];
-
- //   // get a line
- //   ifs.getline ( buffer, bufSize );
-
- //   // create a string from the buffer
- //   std::string tStr ( buffer );
-
- //   if( tStr.at( 0 ) != '#' )
- //   {
-
- //     // separate the strings
- //     StringVec sv;
- //     Usul::Strings::split( tStr, ",", false, sv );
-
- //     // debugging
- //     //std::cout << "Reading: " << tStr << std::endl;
- //     
- //     // make sure all the columns are there
- //     if( sv.size() == 5 )
- //     {
- //       // temp column to hold the input line
- //       // #Name,Value,Description,Type,Activators
- //       std::string sx    ( sv.at( 0 ) );
- //       std::string sy    ( sv.at( 1 ) );
- //       std::string ex    ( sv.at( 2 ) );
- //       std::string ey    ( sv.at( 3 ) );
- //       std::string w     ( sv.at( 4 ) );
-
- //       // create a temp chemical
- //       Crack c ( sx, sy, ex, ey, w );
-
- //       // add to the list of chemicals
- //       _cracks.push_back( c );
-
- //       // increment the number of chemicals read
- //       ++lineNumber;
-
- //     }// end for for activators read   
-
- //   }// end if for valid entry found
-
- // }// end while read for file parsing
-
- // ifs.close();
+ 
 
 }
 

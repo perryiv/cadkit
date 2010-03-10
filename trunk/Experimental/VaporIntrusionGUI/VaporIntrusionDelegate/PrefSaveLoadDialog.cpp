@@ -65,6 +65,9 @@ void PrefSaveLoadDialog::on_saveButton_clicked()
   // get the username
   std::string username ( this->_username->text().toStdString() );
 
+  // tell the document to save the preferences
+  document->writeUserPreferences( username );
+
 }
 
 
@@ -82,4 +85,10 @@ void PrefSaveLoadDialog::on_loadButton_clicked()
   // Check for a valid document
   if( false == document.valid() )
     return;
+
+  // get the username
+  std::string username ( this->_username->text().toStdString() );
+
+  // tell the document to save the preferences
+  document->readUserPreferences( username );
 }

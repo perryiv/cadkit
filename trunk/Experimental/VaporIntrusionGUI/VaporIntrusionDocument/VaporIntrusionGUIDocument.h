@@ -474,7 +474,8 @@ protected:
   void                        _writeUserPreferences( const std::string& username );
   void                        _writeChemicals( const std::string& filename );
   void                        _writeChemicalLibrary( const std::string& filename );
-  void                        _writeSources( const std::string& filename );
+  void                        _writeSourceChemicals( const std::string& filename, Chemicals chemicals );  
+  void                        _writeSources( const std::string username, const std::string& filename );
   void                        _writeSoilLibrary( const std::string& filename );
   void                        _writeSoils( const std::string& filename );
 
@@ -482,10 +483,11 @@ protected:
   // read the user preference file for user <username>
   void                        _readUserPreferences( const std::string& username );
   void                        _readChemicals( const std::string& filename );
+  void                        _readExperimentChemicals( const std::string& filename );
+  Chemicals                   _readSourceChemicals( const std::string& filename );
   void                        _readSources( const std::string& filename );
   void                        _readSoils( const std::string& filename );
-  void                        _readSoilLibrary( const std::string& filename );
-  void                        _readChemicalLibrary( const std::string& filename );
+  void                        _readExperimentSoils( const std::string& filename );
 
   
 

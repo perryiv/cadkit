@@ -41,6 +41,11 @@
 #include "Usul/Math/MinMax.h"
 #include "Usul/CommandLine/Arguments.h"
 
+#include "Usul/Functions/SafeCall.h"
+#include "Usul/File/Temp.h"
+#include "Usul/File/Make.h"
+#include "Usul/File/Remove.h"
+
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Group.h"
 #include "OsgTools/Convert.h"
@@ -2562,25 +2567,36 @@ void VaporIntrusionGUIDocument::_writeUserPreferences( const std::string& userna
 {
   Guard guard ( this );
 
-  // Source Filename
-  std::string sourcesFN( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + username + "_sources.pref" );
-  this->_writeSources( sourcesFN );
+  // create a temp directory in the temp directory location
+  const std::string tempDir ( Usul::File::Temp::directory ( false ) ); 
+  const std::string path ( Usul::Strings::format ( tempDir, '/', username, '/' ) );
+  Usul::Functions::safeCallV1 ( &Usul::File::make, path, "1336095872" );
 
-  // Soil Filename
-  std::string soilsFN( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + username + "_soils.pref" );
-  this->_writeSoils( soilsFN );
+  { // Source 
+    std::string fn( path + username + "_sources.pref" );
+    this->_writeSources( username, fn );
+  }
 
-  // Soil Library Filename
-  std::string slFN( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + username + "_soilLibrary.pref" );
-  this->_writeSoilLibrary( slFN );
+  { // Soil
+    std::string fn( path + username + "_soils.pref" );
+    this->_writeSoils( fn );
+  }
 
-  // Chemicals Filename
-  std::string chemicalsFN( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + username + "_chemicals.pref" );
-  this->_writeChemicals( chemicalsFN );
+  { // Soil Library 
+    std::string fn( path + username + "_soilLibrary.pref" );
+    this->_writeSoilLibrary( fn );
+  }
 
-  // Chemical Library Filename
-  std::string clFN( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + username + "_chemicalLibrary.pref" );
-  this->_writeChemicalLibrary( clFN );
+  { // Chemicals 
+    std::string fn( path + username + "_chemicals.pref" );
+    this->_writeChemicals( fn );
+  }
+
+  { // Chemical Library
+    std::string fn( path + username + "_chemicalLibrary.pref" );
+    this->_writeChemicalLibrary( fn );
+  }
+
 }
 
 
@@ -2590,7 +2606,7 @@ void VaporIntrusionGUIDocument::_writeUserPreferences( const std::string& userna
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_writeSources( const std::string& filename )
+void VaporIntrusionGUIDocument::_writeSources( const std::string username, const std::string& filename )
 {
  Guard guard ( this );
 
@@ -2624,10 +2640,19 @@ void VaporIntrusionGUIDocument::_writeSources( const std::string& filename )
     // get the source
     Source s ( _sources.at( i ) );
 
+    // write the source chemicals
+    std::string directory ( Usul::File::directory( filename, true ) );
+    std::string path ( directory + username + "_" + s.name + ".chemicals" );
+    this->_writeSourceChemicals( path, s.chemicals );
+
+    // output string
+    std::string str ( Usul::Strings::format( s.name , "," , s.x , "," , s.y , "," , s.z , 
+                                                      "," ,s .l , "," , s.w , "," , s.h, ",", path, "\n" ) );
+
     // output to the file
-    std::cout << ofs << s.name << "," << 
-      s.x << "," << s.y << "," << s.z << "," <<
-      s.l << "," << s.w << "," << s.h << std::endl;
+    ofs << str << std::endl;
+
+    
   }
 
   // close file
@@ -2677,7 +2702,7 @@ Guard guard ( this );
     Soil s ( _soilLibrary.at( i ) );
 
     // output to the file
-    std::cout << ofs << s.type << "," << s.name << "," << 
+    ofs << s.type << "," << s.name << "," << 
       s.porosity << "," << s.waterPorosity << "," << s.viscosity << "," << 
       s.permeability << "," << s.carbon << "," << 
       s.x << "," << s.y << "," << s.z << "," <<
@@ -2732,7 +2757,7 @@ Guard guard ( this );
     Soil s ( _soils.at( i ) );
 
     // output to the file
-    std::cout << ofs << s.type << "," << s.name << "," << 
+    ofs << s.type << "," << s.name << "," << 
       s.porosity << "," << s.waterPorosity << "," << s.viscosity << "," << 
       s.permeability << "," << s.carbon << "," << 
       s.x << "," << s.y << "," << s.z << "," <<
@@ -2753,7 +2778,7 @@ Guard guard ( this );
 
 void VaporIntrusionGUIDocument::_writeChemicalLibrary( const std::string& filename )
 {
-Guard guard ( this );
+  Guard guard ( this );
 
   // useful typedef
   typedef std::vector< std::string > StringVec;
@@ -2786,13 +2811,65 @@ Guard guard ( this );
     Chemical c ( _chemicalLibrary.at( i ) );
 
     // output to the file
-    std::cout << ofs << c.name << "," << c.henry << "," << 
-      c.koc << "," << c.airDiff << "," << c.waterDiff << "," << c.atmoConc << std::endl;
+    ofs << c.name << "|" << c.henry << "|" << 
+      c.koc << "|" << c.airDiff << "|" << c.waterDiff << "|" << c.atmoConc << std::endl;
   }
 
   // close file
   ofs.close();
         
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the Soils file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeSourceChemicals( const std::string& filename, Chemicals chemicals )
+{
+
+  Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No user settings found for Soil Library" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading Sources file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  for( unsigned int i = 0; i < chemicals.size(); ++i )
+  {
+    // get the chemical
+    Chemical c ( chemicals.at( i ) );
+
+    // output to the file
+    ofs << c.name << "|" << c.henry << "|" << 
+      c.koc << "|" << c.airDiff << "|" << c.waterDiff << "|" << c.atmoConc << "|" << c.sourceConc << std::endl;
+  }
+
+  // close file
+  ofs.close();
+
 }
 
 
@@ -2837,7 +2914,7 @@ Guard guard ( this );
     Chemical c ( _chemicals.at( i ) );
 
     // output to the file
-    std::cout << ofs << c.name << "," << c.henry << "," << 
+    ofs << c.name << "," << c.henry << "," << 
       c.koc << "," << c.airDiff << "," << c.waterDiff << "," << c.atmoConc << std::endl;
   }
 
@@ -2857,10 +2934,99 @@ void VaporIntrusionGUIDocument::_readUserPreferences( const std::string& usernam
 {
   Guard guard ( this );
 
-  // Master preference filename
-  std::string mPrefFN( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + username + ".pref" );
+  // create a temp directory in the temp directory location
+  const std::string tempDir ( Usul::File::Temp::directory ( false ) ); 
+  const std::string path ( Usul::Strings::format ( tempDir, '/', username, '/' ) );
 
-  
+  { // Source 
+    std::string fn( path + username + "_sources.pref" );
+    this->_readSources( fn );
+  }
+
+  { // Soil 
+    std::string fn( path + username + "_soilsLibrary.pref" );
+    this->_readSoils( fn );
+  }
+
+  { // Soil Library 
+    std::string fn( path + username + "_soils.pref" );
+    this->_readExperimentSoils( fn );
+  }
+
+  { // Chemical Library
+    std::string fn( path + username + "_chemicalsLibrary.pref" );
+    this->_readChemicals( fn );
+  }
+
+  { // Chemicals 
+    std::string fn( path + username + "_chemicals.pref" );
+    this->_readExperimentChemicals( fn );
+  }
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the mater pressure file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readExperimentSoils( const std::string& filename )
+{
+ Guard guard ( this );
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to soil file: ", filename, ". " ) << std::endl;
+    return;
+  }
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // parse the file
+  while( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    // separate the strings
+    StringVec sv;
+    Usul::Strings::split( tStr, ",", false, sv );
+
+    if( tStr.at( 0 ) != '#' )
+    {
+      // make sure there are exactly 13 elements in sv
+      if( sv.size() == 13 )
+      {
+        // create the soil
+        Soil s ( sv[1], sv[0], sv[2], sv[3], sv[5], sv[4], sv[6] );
+
+        // set the dimensions
+        s.dimensions( sv[7], sv[8], sv[9], sv[10], sv[11], sv[12] );
+
+        // add to the soil collection
+        _soils.push_back( s );
+        
+      }// end if size check for sv
+
+    }// end of if comment check for "#"
+
+  }// end while read for file parsing
 }
 
 
@@ -3036,6 +3202,9 @@ void VaporIntrusionGUIDocument::_readSources( const std::string& filename )
 {
  Guard guard ( this );
 
+   // clear out the sources vector
+   _sources.clear();
+
   // useful typedef
   typedef std::vector< std::string > StringVec;
 
@@ -3081,7 +3250,7 @@ void VaporIntrusionGUIDocument::_readSources( const std::string& filename )
       Usul::Strings::split( tStr, ",", false, sv );
 
       // make sure all the columns are there
-      if( sv.size() == 7 )
+      if( sv.size() >= 7 )
       {
         // temp column to hold the input line
         std::string name    ( sv.at( 0 ) );
@@ -3098,6 +3267,14 @@ void VaporIntrusionGUIDocument::_readSources( const std::string& filename )
 
         // create a temp chemical
         Chemicals c;
+
+        // if there are chemicals for this source
+        if( sv.size() == 8 )
+        {
+          c = this->_readSourceChemicals( sv.at( 8 ) );
+        }
+
+        // create the source
         Source s ( l, w, h, xpos, ypos, zpos, name, c );
 
         // add to the list of chemicals
@@ -3125,6 +3302,9 @@ void VaporIntrusionGUIDocument::_readSources( const std::string& filename )
 void VaporIntrusionGUIDocument::_readSoils( const std::string& filename )
 {
  Guard guard ( this );
+
+ // clear the soil Library
+ _soilLibrary.clear();
 
   // useful typedef
   typedef std::vector< std::string > StringVec;
@@ -3222,6 +3402,193 @@ void VaporIntrusionGUIDocument::_readCracks( const std::string& filename )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the source chemicals file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::Chemicals VaporIntrusionGUIDocument::_readSourceChemicals( const std::string& filename )
+{  
+  Guard guard ( this );
+
+  // create the chemicals set
+  Chemicals chemicals;
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No Presets loaded for Chemicals" ) << std::endl;
+    return chemicals;
+  }
+
+  // feedback.
+  std::cout << "Reading Chemicals file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  // parse the file
+  while( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    if( tStr.at( 0 ) != '#' )
+    {
+
+      // separate the strings
+      StringVec sv;
+      Usul::Strings::split( tStr, "|", false, sv );
+      
+      // make sure all the columns are there
+      if( sv.size() == 7 )
+      {
+        // chemical values
+        std::string name      ( sv.at( 0 ) );
+        std::string henry     ( sv.at( 1 ) );
+        std::string koc       ( sv.at( 2 ) );
+        std::string diffair   ( sv.at( 3 ) );
+        std::string diffh2o   ( sv.at( 4 ) );
+        std::string atmoconc  ( sv.at( 5 ) );
+
+        // create a temp chemical
+        Chemical c ( lineNumber, name, henry, koc, diffair, diffh2o, atmoconc );
+
+        // set the initial source concentration level
+        c.sourceConc = sv.at( 6 );
+
+        // add to the list of chemicals
+        chemicals.push_back( c );
+
+        // increment the number of chemicals read
+        ++lineNumber;
+
+      }// end for for activators read   
+
+    }// end if for valid entry found
+
+  }// end while read for file parsing
+
+  ifs.close();
+
+
+  return chemicals;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the chemicals file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readExperimentChemicals( const std::string& filename )
+{
+  Guard guard ( this );
+
+  // clear the chemicals
+  _chemicals.clear();
+
+   // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No Presets loaded for Chemicals" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading Chemicals file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  // parse the file
+  while( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    if( tStr.at( 0 ) != '#' )
+    {
+
+      // separate the strings
+      StringVec sv;
+      Usul::Strings::split( tStr, "|", false, sv );
+      
+      // make sure all the columns are there
+      if( sv.size() == 5 )
+      {
+        // temp column to hold the input line
+        // #Name,Value,Description,Type,Activators
+        std::string name      ( sv.at( 0 ) );
+        std::string henry     ( sv.at( 1 ) );
+        std::string koc       ( sv.at( 2 ) );
+        std::string diffair   ( sv.at( 3 ) );
+        std::string diffh2o   ( sv.at( 4 ) );
+        //std::string atmoconc  ( sv.at( 5 ) );
+        std::string atmoconc  ( "0" );
+
+        // trim trailing and leading white space
+        Usul::Strings::trimLeft( name, ' ' );
+        Usul::Strings::trimRight( name, ' ' );
+
+        // create a temp chemical
+        Chemical c ( lineNumber, name, henry, koc, diffair, diffh2o, atmoconc );
+
+        // set the initial source concentration level
+        c.sourceConc = "0";
+
+        // add to the list of chemicals
+        _chemicals.push_back( c );
+
+        // increment the number of chemicals read
+        ++lineNumber;
+
+      }// end for for activators read   
+
+    }// end if for valid entry found
+
+  }// end while read for file parsing
+
+  ifs.close();
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -3232,6 +3599,9 @@ void VaporIntrusionGUIDocument::_readCracks( const std::string& filename )
 void VaporIntrusionGUIDocument::_readChemicals( const std::string& filename )
 {
   Guard guard ( this );
+
+  // clear the library
+  _chemicalLibrary.clear();
 
   // useful typedef
   typedef std::vector< std::string > StringVec;

@@ -246,9 +246,6 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   // Add Window Building button
   fileMenu->append ( MenuKit::Button::create ( "Save/Load Preferences", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::saveLoadPrefs ) ) );
 
-  // Add the window menu to the main menu
-  // menu.append( fileMenu.get() );
-
   // Make the menu.
   MenuKit::Menu::RefPtr editMenu ( new MenuKit::Menu ( "Edit" ) );
   

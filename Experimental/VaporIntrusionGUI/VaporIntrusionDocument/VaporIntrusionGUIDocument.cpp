@@ -2627,7 +2627,7 @@ void VaporIntrusionGUIDocument::_writeSources( const std::string username, const
   }
 
   // feedback.
-  std::cout << "Reading Sources file: " << filename << std::endl;
+  std::cout << "Writing Sources file: " << filename << std::endl;
 
   // buffer size
   const unsigned long int bufSize ( 4095 );
@@ -2646,11 +2646,13 @@ void VaporIntrusionGUIDocument::_writeSources( const std::string username, const
     this->_writeSourceChemicals( path, s.chemicals );
 
     // output string
-    std::string str ( Usul::Strings::format( s.name , "," , s.x , "," , s.y , "," , s.z , 
-                                                      "," ,s .l , "," , s.w , "," , s.h, ",", path, "\n" ) );
+    std::string str1 ( Usul::Strings::format( s.name , "," , s.x , "," , s.y , "," , s.z , 
+                                                      "," ,s .l , "," , s.w , "," , s.h ) );
+    std::string str2 ( Usul::Strings::format( ",", s.color[0], ",", s.color[1], ",", s.color[2], ",", s.color[3], 
+                                              ",", path, "\n" ) );
 
     // output to the file
-    ofs << str << std::endl;
+    ofs << str1 << str2 << std::endl;
 
     
   }
@@ -2687,7 +2689,7 @@ Guard guard ( this );
   }
 
   // feedback.
-  std::cout << "Reading Sources file: " << filename << std::endl;
+  std::cout << "Writing Soil Library: " << filename << std::endl;
 
   // buffer size
   const unsigned long int bufSize ( 4095 );
@@ -2702,11 +2704,11 @@ Guard guard ( this );
     Soil s ( _soilLibrary.at( i ) );
 
     // output to the file
-    ofs << s.type << "," << s.name << "," << 
-      s.porosity << "," << s.waterPorosity << "," << s.viscosity << "," << 
-      s.permeability << "," << s.carbon << "," << 
-      s.x << "," << s.y << "," << s.z << "," <<
-      s.l << "," << s.w << "," << s.h << std::endl;
+    ofs << s.type << "|" << s.name << "|" << 
+      s.porosity << "|" << s.waterPorosity << "|" << s.viscosity << "|" << 
+      s.permeability << "|" << s.carbon << "|" << 
+      s.x << "|" << s.y << "|" << s.z << "|" <<
+      s.l << "|" << s.w << "|" << s.h << std::endl;
   }
 
   // close file
@@ -2742,7 +2744,7 @@ Guard guard ( this );
   }
 
   // feedback.
-  std::cout << "Reading Sources file: " << filename << std::endl;
+  std::cout << "Writing soils in experiment to file: " << filename << std::endl;
 
   // buffer size
   const unsigned long int bufSize ( 4095 );
@@ -2797,7 +2799,7 @@ void VaporIntrusionGUIDocument::_writeChemicalLibrary( const std::string& filena
   }
 
   // feedback.
-  std::cout << "Reading Sources file: " << filename << std::endl;
+  std::cout << "Writing Chemical Library to: " << filename << std::endl;
 
   // buffer size
   const unsigned long int bufSize ( 4095 );
@@ -2848,9 +2850,6 @@ void VaporIntrusionGUIDocument::_writeSourceChemicals( const std::string& filena
     return;
   }
 
-  // feedback.
-  std::cout << "Reading Sources file: " << filename << std::endl;
-
   // buffer size
   const unsigned long int bufSize ( 4095 );
 
@@ -2900,7 +2899,7 @@ Guard guard ( this );
   }
 
   // feedback.
-  std::cout << "Reading Sources file: " << filename << std::endl;
+  std::cout << "Writing Chemicals in the experiment to: " << filename << std::endl;
 
   // buffer size
   const unsigned long int bufSize ( 4095 );
@@ -2914,8 +2913,8 @@ Guard guard ( this );
     Chemical c ( _chemicals.at( i ) );
 
     // output to the file
-    ofs << c.name << "," << c.henry << "," << 
-      c.koc << "," << c.airDiff << "," << c.waterDiff << "," << c.atmoConc << std::endl;
+    ofs << c.name << "|" << c.henry << "|" << 
+      c.koc << "|" << c.airDiff << "|" << c.waterDiff << "|" << c.atmoConc << std::endl;
   }
 
   // close file
@@ -2944,7 +2943,7 @@ void VaporIntrusionGUIDocument::_readUserPreferences( const std::string& usernam
   }
 
   { // Soil 
-    std::string fn( path + username + "_soilsLibrary.pref" );
+    std::string fn( path + username + "_soilLibrary.pref" );
     this->_readSoils( fn );
   }
 
@@ -2954,7 +2953,7 @@ void VaporIntrusionGUIDocument::_readUserPreferences( const std::string& usernam
   }
 
   { // Chemical Library
-    std::string fn( path + username + "_chemicalsLibrary.pref" );
+    std::string fn( path + username + "_chemicalLibrary.pref" );
     this->_readChemicals( fn );
   }
 
@@ -3268,14 +3267,31 @@ void VaporIntrusionGUIDocument::_readSources( const std::string& filename )
         // create a temp chemical
         Chemicals c;
 
-        // if there are chemicals for this source
-        if( sv.size() == 8 )
+        if( sv.size() >= 12 )
         {
-          c = this->_readSourceChemicals( sv.at( 8 ) );
+          c = this->_readSourceChemicals( sv.at( 11 ) );
         }
 
         // create the source
         Source s ( l, w, h, xpos, ypos, zpos, name, c );
+
+        // if there are chemicals for this source
+        if( sv.size() >= 11 )
+        {              
+          // get the color
+          UsulColor color ( Usul::Convert::Type< std::string, float >::convert( sv.at( 7 ) ),
+                            Usul::Convert::Type< std::string, float >::convert( sv.at( 8 ) ),
+                            Usul::Convert::Type< std::string, float >::convert( sv.at( 9 ) ),
+                            Usul::Convert::Type< std::string, float >::convert( sv.at( 10 ) ) );
+
+          // set the color
+          s.color = color;
+
+        }
+
+        
+
+        
 
         // add to the list of chemicals
         _sources.push_back( s );
@@ -3432,7 +3448,7 @@ VaporIntrusionGUIDocument::Chemicals VaporIntrusionGUIDocument::_readSourceChemi
   }
 
   // feedback.
-  std::cout << "Reading Chemicals file: " << filename << std::endl;
+  std::cout << "Reading Source Chemicals file: " << filename << std::endl;
 
   // buffer size
   const unsigned long int bufSize ( 4095 );
@@ -3525,7 +3541,7 @@ void VaporIntrusionGUIDocument::_readExperimentChemicals( const std::string& fil
   }
 
   // feedback.
-  std::cout << "Reading Chemicals file: " << filename << std::endl;
+  std::cout << "Reading chemicals selected for experiment from file: " << filename << std::endl;
 
   // buffer size
   const unsigned long int bufSize ( 4095 );
@@ -3553,7 +3569,7 @@ void VaporIntrusionGUIDocument::_readExperimentChemicals( const std::string& fil
       Usul::Strings::split( tStr, "|", false, sv );
       
       // make sure all the columns are there
-      if( sv.size() == 5 )
+      if( sv.size() >= 5 )
       {
         // temp column to hold the input line
         // #Name,Value,Description,Type,Activators
@@ -3600,7 +3616,7 @@ void VaporIntrusionGUIDocument::_readChemicals( const std::string& filename )
 {
   Guard guard ( this );
 
-  // clear the library
+  // clear the library and chemicals
   _chemicalLibrary.clear();
 
   // useful typedef
@@ -3620,7 +3636,7 @@ void VaporIntrusionGUIDocument::_readChemicals( const std::string& filename )
   }
 
   // feedback.
-  std::cout << "Reading Chemicals file: " << filename << std::endl;
+  std::cout << "Reading chemical library file: " << filename << std::endl;
 
   // buffer size
   const unsigned long int bufSize ( 4095 );
@@ -3651,7 +3667,7 @@ void VaporIntrusionGUIDocument::_readChemicals( const std::string& filename )
       //std::cout << "Reading: " << tStr << std::endl;
       
       // make sure all the columns are there
-      if( sv.size() == 5 )
+      if( sv.size() >= 5 )
       {
         // temp column to hold the input line
         // #Name,Value,Description,Type,Activators
@@ -3674,10 +3690,16 @@ void VaporIntrusionGUIDocument::_readChemicals( const std::string& filename )
         c.sourceConc = "0";
 
         // add to the list of chemicals
-        _chemicals.push_back( c );
+        _chemicalLibrary.push_back( c );
 
         // increment the number of chemicals read
         ++lineNumber;
+
+        //DEBUGGING: REMOVE
+        if( lineNumber == 108 )
+        {
+          std::cout << std::endl;
+        }
 
       }// end for for activators read   
 
@@ -3686,7 +3708,7 @@ void VaporIntrusionGUIDocument::_readChemicals( const std::string& filename )
   }// end while read for file parsing
 
   // seed the library
-  _chemicalLibrary = _chemicals;
+  // _chemicals = _chemicalLibrary;
 
   ifs.close();
 }

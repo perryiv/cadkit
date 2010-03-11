@@ -2642,16 +2642,16 @@ void VaporIntrusionGUIDocument::_writeSettings( const std::string& filename )
   Usul::Math::Vec4f fColor ( b.fColor );
 
   // building color as a string
-  std::string bcStr ( Usul::Strings::format( bColor[0], ",", bColor[0], ",", bColor[0], ",", bColor[0] ) );
+  std::string bcStr ( Usul::Strings::format( bColor[0], ",", bColor[1], ",", bColor[2], ",", bColor[3] ) );
 
   // foundation color as a string
-  std::string fcStr ( Usul::Strings::format( fColor[0], ",", fColor[0], ",", fColor[0], ",", fColor[0] ) );
+  std::string fcStr ( Usul::Strings::format( fColor[0], ",", fColor[1], ",", fColor[2], ",", fColor[3] ) );
 
   // crack color as a string
-  std::string ccStr ( Usul::Strings::format( _crackColor[0], ",", _crackColor[0], ",", _crackColor[0], ",", _crackColor[0] ) );
+  std::string ccStr ( Usul::Strings::format( _crackColor[0], ",", _crackColor[1], ",", _crackColor[2], ",", _crackColor[3] ) );
 
   // grid color as a string
-  std::string gcStr ( Usul::Strings::format( _gridColor[0], ",", _gridColor[0], ",", _gridColor[0], ",", _gridColor[0] ) );
+  std::string gcStr ( Usul::Strings::format( _gridColor[0], ",", _gridColor[1], ",", _gridColor[2], ",", _gridColor[3] ) );
 
   // pressure alpha as a string
   std::string pAlphaStr ( Usul::Strings::format( _pressure.alpha ) );
@@ -3036,6 +3036,9 @@ void VaporIntrusionGUIDocument::_readUserPreferences( const std::string& usernam
     std::string fn( path + username + "_settings.pref" );
     this->_readSettings( fn );
   }
+
+  // rebuild the scene
+  this->rebuildScene();
 }
 
 
@@ -3127,6 +3130,9 @@ void VaporIntrusionGUIDocument::_readSettings( const std::string& filename )
 	}
 
   }
+
+  // set the building
+  this->building( b );
 
   // read the crack color
   if( EOF != ifs.peek() )

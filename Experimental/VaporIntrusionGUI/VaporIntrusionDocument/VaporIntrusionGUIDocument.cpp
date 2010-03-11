@@ -2597,6 +2597,76 @@ void VaporIntrusionGUIDocument::_writeUserPreferences( const std::string& userna
     this->_writeChemicalLibrary( fn );
   }
 
+  { // Settings
+    std::string fn( path + username + "_settings.pref" );
+    this->_writeSettings( fn );
+  }
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Write the settings file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeSettings( const std::string& filename )
+{
+	Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open settings file: ", filename ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Writing settings to: " << filename << std::endl;
+
+  // get the building
+  Building b ( this->building() );
+
+  // get the building and foundation color
+  Usul::Math::Vec4f bColor ( b.bColor );
+  Usul::Math::Vec4f fColor ( b.fColor );
+
+  // building color as a string
+  std::string bcStr ( Usul::Strings::format( bColor[0], ",", bColor[0], ",", bColor[0], ",", bColor[0] ) );
+
+  // foundation color as a string
+  std::string fcStr ( Usul::Strings::format( fColor[0], ",", fColor[0], ",", fColor[0], ",", fColor[0] ) );
+
+  // crack color as a string
+  std::string ccStr ( Usul::Strings::format( _crackColor[0], ",", _crackColor[0], ",", _crackColor[0], ",", _crackColor[0] ) );
+
+  // grid color as a string
+  std::string gcStr ( Usul::Strings::format( _gridColor[0], ",", _gridColor[0], ",", _gridColor[0], ",", _gridColor[0] ) );
+
+  // pressure alpha as a string
+  std::string pAlphaStr ( Usul::Strings::format( _pressure.alpha ) );
+
+  // output to the settings file
+  ofs << bcStr << "\n" << fcStr << "\n" << ccStr << "\n" << gcStr << "\n" << pAlphaStr << std::flush;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  // close file
+  ofs.close();
 }
 
 
@@ -2960,6 +3030,184 @@ void VaporIntrusionGUIDocument::_readUserPreferences( const std::string& usernam
   { // Chemicals 
     std::string fn( path + username + "_chemicals.pref" );
     this->_readExperimentChemicals( fn );
+  }
+
+  { // Settings
+    std::string fn( path + username + "_settings.pref" );
+    this->_readSettings( fn );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the settings file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readSettings( const std::string& filename )
+{
+	Guard guard ( this );
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to soil file: ", filename, ". " ) << std::endl;
+    return;
+  }
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+   // get the building
+  Building b ( this->building() );
+
+  // read the building color
+  if( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    // separate the strings
+    StringVec sv;
+    Usul::Strings::split( tStr, ",", false, sv );
+
+	if( sv.size() == 4 )
+	{
+		// read the color
+		UsulColor color ( Usul::Convert::Type< std::string, float >::convert( sv.at( 0 ) ),
+						  Usul::Convert::Type< std::string, float >::convert( sv.at( 1 ) ),
+						  Usul::Convert::Type< std::string, float >::convert( sv.at( 2 ) ),
+						  Usul::Convert::Type< std::string, float >::convert( sv.at( 3 ) ) );
+
+		// set the building color
+		b.bColor = color;
+	}
+
+  }
+
+  // read the foundation color
+  if( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    // separate the strings
+    StringVec sv;
+    Usul::Strings::split( tStr, ",", false, sv );
+
+	if( sv.size() == 4 )
+	{
+		// read the color
+		UsulColor color ( Usul::Convert::Type< std::string, float >::convert( sv.at( 0 ) ),
+						  Usul::Convert::Type< std::string, float >::convert( sv.at( 1 ) ),
+						  Usul::Convert::Type< std::string, float >::convert( sv.at( 2 ) ),
+						  Usul::Convert::Type< std::string, float >::convert( sv.at( 3 ) ) );
+
+		// set the building color
+		b.fColor = color;
+	}
+
+  }
+
+  // read the crack color
+  if( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    // separate the strings
+    StringVec sv;
+    Usul::Strings::split( tStr, ",", false, sv );
+
+	if( sv.size() == 4 )
+	{
+		// read the color
+		UsulColor color ( Usul::Convert::Type< std::string, float >::convert( sv.at( 0 ) ),
+						  Usul::Convert::Type< std::string, float >::convert( sv.at( 1 ) ),
+						  Usul::Convert::Type< std::string, float >::convert( sv.at( 2 ) ),
+						  Usul::Convert::Type< std::string, float >::convert( sv.at( 3 ) ) );
+
+		// set the building color
+		_crackColor = color;
+	}
+
+  }
+
+  // read the grid color
+  if( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    // separate the strings
+    StringVec sv;
+    Usul::Strings::split( tStr, ",", false, sv );
+
+	if( sv.size() == 4 )
+	{
+		// read the color
+		UsulColor color ( Usul::Convert::Type< std::string, float >::convert( sv.at( 0 ) ),
+						  Usul::Convert::Type< std::string, float >::convert( sv.at( 1 ) ),
+						  Usul::Convert::Type< std::string, float >::convert( sv.at( 2 ) ),
+						  Usul::Convert::Type< std::string, float >::convert( sv.at( 3 ) ) );
+
+		_gridColor = color;
+	}
+
+  }
+
+  // read the pressure alpha
+  if( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    // separate the strings
+    StringVec sv;
+    Usul::Strings::split( tStr, ",", false, sv );
+
+	if( sv.size() == 1 )
+	{
+		_pressure.alpha = Usul::Convert::Type< std::string, float >::convert( sv.at( 0 ) );
+	}
+
   }
 
 }

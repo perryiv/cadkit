@@ -3049,10 +3049,16 @@ void Application::_readFunctorFile ()
       if( "menu" == cmd )
       {
         _menuButtonID = uiid;
+
+		// debugging REMOVE
+		std::cout << "Menu mapped to button: " << uiid << std::endl;
       }
       else if( "trigger" == cmd )
       {
         _selectButtonID = uiid;
+
+		// debugging REMOVE
+		std::cout << "Trigger mapped to button: " << uiid << std::endl;
       }
       else if( "menu_navigation" == cmd )
       {

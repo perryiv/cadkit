@@ -2833,7 +2833,9 @@ Guard guard ( this );
       s.porosity << "," << s.waterPorosity << "," << s.viscosity << "," << 
       s.permeability << "," << s.carbon << "," << 
       s.x << "," << s.y << "," << s.z << "," <<
-      s.l << "," << s.w << "," << s.h << std::endl;
+      s.l << "," << s.w << "," << s.h << "," <<
+			s.color[0] << "," << s.color[1] << "," << s.color[2] << "," << s.color[3] << "," <<
+			s.layerName << std::endl;
   }
 
   // close file
@@ -3261,16 +3263,26 @@ void VaporIntrusionGUIDocument::_readExperimentSoils( const std::string& filenam
     StringVec sv;
     Usul::Strings::split( tStr, ",", false, sv );
 
-    if( tStr.at( 0 ) != '#' )
+    if( tStr.size() > 0 && tStr.at( 0 ) != '#' )
     {
       // make sure there are exactly 13 elements in sv
-      if( sv.size() == 13 )
+      if( sv.size() == 18 )
       {
         // create the soil
         Soil s ( sv[1], sv[0], sv[2], sv[3], sv[5], sv[4], sv[6] );
 
         // set the dimensions
         s.dimensions( sv[7], sv[8], sv[9], sv[10], sv[11], sv[12] );
+
+				// set the color
+				UsulColor color ( Usul::Convert::Type< std::string, float >::convert( sv[13] ),
+													Usul::Convert::Type< std::string, float >::convert( sv[14] ),
+													Usul::Convert::Type< std::string, float >::convert( sv[15] ),
+													Usul::Convert::Type< std::string, float >::convert( sv[16] ) );
+				s.color = color;
+
+				// set the soil layer name
+				s.layerName = sv[17];
 
         // add to the soil collection
         _soils.push_back( s );
@@ -3495,7 +3507,7 @@ void VaporIntrusionGUIDocument::_readSources( const std::string& filename )
     // create a string from the buffer
     std::string tStr ( buffer );
 
-    if( tStr.at( 0 ) != '#' )
+    if( tStr.size() > 0 && tStr.at( 0 ) != '#' )
     {
 
       // separate the strings
@@ -3613,7 +3625,7 @@ void VaporIntrusionGUIDocument::_readSoils( const std::string& filename )
     // create a string from the buffer
     std::string tStr ( buffer );
 
-    if( tStr.at( 0 ) != '#' )
+    if( tStr.size() > 0 && tStr.at( 0 ) != '#' )
     {
 
       // separate the strings
@@ -3722,7 +3734,7 @@ VaporIntrusionGUIDocument::Chemicals VaporIntrusionGUIDocument::_readSourceChemi
     // create a string from the buffer
     std::string tStr ( buffer );
 
-    if( tStr.at( 0 ) != '#' )
+    if( tStr.size() > 0 && tStr.at( 0 ) != '#' )
     {
 
       // separate the strings
@@ -3815,7 +3827,7 @@ void VaporIntrusionGUIDocument::_readExperimentChemicals( const std::string& fil
     // create a string from the buffer
     std::string tStr ( buffer );
 
-    if( tStr.at( 0 ) != '#' )
+    if( tStr.size() > 0 && tStr.at( 0 ) != '#' )
     {
 
       // separate the strings
@@ -3910,7 +3922,7 @@ void VaporIntrusionGUIDocument::_readChemicals( const std::string& filename )
     // create a string from the buffer
     std::string tStr ( buffer );
 
-    if( tStr.at( 0 ) != '#' )
+    if( tStr.size() > 0 && tStr.at( 0 ) != '#' )
     {
 
       // separate the strings
@@ -6924,6 +6936,9 @@ osg::Node* VaporIntrusionGUIDocument::_drawCracks2D()
   // create the group to hold the cracks
   GroupPtr group ( new osg::Group );
 
+	// Convert the crack color from usul to osg
+	Color color ( _crackColor[0], _crackColor[1], _crackColor[2], _crackColor[3] );
+
   // don't draw if the view is anything except xy
   if( viewMode != IVPI::VIEW_MODE_2D_XY )
   {
@@ -6951,19 +6966,12 @@ osg::Node* VaporIntrusionGUIDocument::_drawCracks2D()
     // points of the plane
     osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
 
-#if 1
-    points->push_back( osg::Vec3f ( sx, 0.0001, y ) );
+		points->push_back( osg::Vec3f ( sx, 0.0001, y ) );
     points->push_back( osg::Vec3f ( ex, 0.0001, y ) );
     points->push_back( osg::Vec3f ( ex, 0.0001, y ) );
     points->push_back( osg::Vec3f ( sx, 0.0001, y ) );
-#else
-    points->push_back( osg::Vec3f ( y, 0.0001, sx ) );
-    points->push_back( osg::Vec3f ( y, 0.0001, ex ) );
-    points->push_back( osg::Vec3f ( y, 0.0001, ex ) );
-    points->push_back( osg::Vec3f ( y, 0.0001, sx ) );
-#endif
 
-    group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
+    group->addChild ( this->_buildPlane( points.get(), color ) );
 
   }
 
@@ -6988,24 +6996,12 @@ osg::Node* VaporIntrusionGUIDocument::_drawCracks2D()
     // points of the plane
     osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
 
-#if 0
-    points->push_back( osg::Vec3f ( sx, 0.0001, y ) );
-    points->push_back( osg::Vec3f ( ex, 0.0001, y ) );
-    points->push_back( osg::Vec3f ( ex, 0.0001, y ) );
-    points->push_back( osg::Vec3f ( sx, 0.0001, y ) );
-#else
     points->push_back( osg::Vec3f ( y, 0.0001, sx ) );
     points->push_back( osg::Vec3f ( y, 0.0001, ex ) );
     points->push_back( osg::Vec3f ( y, 0.0001, ex ) );
     points->push_back( osg::Vec3f ( y, 0.0001, sx ) );
-#endif
 
-    //points->push_back( osg::Vec3f ( y, 0.0001, sx ) );
-    //points->push_back( osg::Vec3f ( y, 0.0001, ex ) );
-    //points->push_back( osg::Vec3f ( y, 0.0001, ex ) );
-    //points->push_back( osg::Vec3f ( y, 0.0001, sx ) );
-
-    group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.0f, 1.0f, 0.0f, 1.0f ) ) );
+    group->addChild ( this->_buildPlane( points.get(), color ) );
 
   }
 

@@ -478,7 +478,8 @@ protected:
   void                        _writeSources( const std::string username, const std::string& filename );
   void                        _writeSoilLibrary( const std::string& filename );
   void                        _writeSoils( const std::string& filename );
-  void						  _writeSettings( const std::string& filename );
+  void												_writeSettings( const std::string& filename );
+	void												_writeBuilding( const std::string& filename );
 
 
   // read the user preference file for user <username>
@@ -489,7 +490,8 @@ protected:
   void                        _readSources( const std::string& filename );
   void                        _readSoils( const std::string& filename );
   void                        _readExperimentSoils( const std::string& filename );
-  void						  _readSettings( const std::string& filename );
+  void												_readSettings( const std::string& filename );
+	void												_readBuilding( const std::string& filename );
 
   
 

@@ -166,8 +166,11 @@ void SoilLayerDialog::_updateSoils( Soil s )
     // check to see if the names match
     if( s.name == soil.name )
     {
+			// set the updated soil attributes
+			soil.attributes( s.name, s.type, s.porosity, s.waterPorosity, s.permeability, s.viscosity, s.carbon );
+
       // replace the soul
-      _soils.at( i ) = s;
+      _soils.at( i ) = soil;
 
       // break
       break;

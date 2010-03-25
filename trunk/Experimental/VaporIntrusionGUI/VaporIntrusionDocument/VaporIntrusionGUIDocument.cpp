@@ -2597,6 +2597,11 @@ void VaporIntrusionGUIDocument::_writeUserPreferences( const std::string& userna
     this->_writeChemicalLibrary( fn );
   }
 
+	{ // Building
+    std::string fn( path + username + "_building.pref" );
+    this->_writeBuilding( fn );
+  }
+
   { // Settings
     std::string fn( path + username + "_settings.pref" );
     this->_writeSettings( fn );
@@ -2846,6 +2851,58 @@ Guard guard ( this );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Read the building file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeBuilding( const std::string& filename )
+{
+Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No user settings found for the building" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Writing building information to file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+ 
+    // get the building
+    Building b ( this->building() );
+
+    // output to the file
+    ofs << 
+      b.x << "," << b.y << "," << b.z << "," <<
+      b.l << "," << b.w << "," << b.h << "," <<
+			b.depth << "," << b.thickness << "," << b.xrate << "," << b.v << std::endl;
+  
+
+  // close file
+  ofs.close();
+        
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // Read the Soils file
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -3034,6 +3091,11 @@ void VaporIntrusionGUIDocument::_readUserPreferences( const std::string& usernam
     this->_readExperimentChemicals( fn );
   }
 
+	{ // Building 
+    std::string fn( path + username + "_building.pref" );
+    this->_readBuilding( fn );
+  }
+
   { // Settings
     std::string fn( path + username + "_settings.pref" );
     this->_readSettings( fn );
@@ -3063,7 +3125,7 @@ void VaporIntrusionGUIDocument::_readSettings( const std::string& filename )
   // make sure the file was opened
   if( false == ifs.is_open() )
   {
-    std::cout << Usul::Strings::format ( "Failed to soil file: ", filename, ". " ) << std::endl;
+    std::cout << Usul::Strings::format ( "Failed to settings file: ", filename, ". " ) << std::endl;
     return;
   }
 
@@ -3660,6 +3722,79 @@ void VaporIntrusionGUIDocument::_readSoils( const std::string& filename )
 
         // increment the number of chemicals read
         ++lineNumber;
+
+      }// end for for activators read   
+
+    }// end if for valid entry found
+
+  }// end while read for file parsing
+
+  ifs.close();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the Soils file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readBuilding( const std::string& filename )
+{
+ Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No Presets loaded for the building" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading building file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  // parse the file
+  while( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    if( tStr.size() > 0 && tStr.at( 0 ) != '#' )
+    {
+
+      // separate the strings
+      StringVec sv;
+      Usul::Strings::split( tStr, ",", false, sv );
+      
+      // make sure all the columns are there
+      if( sv.size() == 10 )
+      {
+				// make the building
+        Building b ( sv[3], sv[4], sv[5], sv[0], sv[1], sv[2], sv[6], sv[9], sv[7], sv[8] );
+
+				// set the building
+				this->building( b );
 
       }// end for for activators read   
 

@@ -2603,14 +2603,14 @@ void VaporIntrusionGUIDocument::_writeUserPreferences( const std::string& userna
   }
 
 	{ // Original Grid
-    std::string fn( path + username + "_originalGrid.pref" );
+    std::string fn( path + username + "_grid.pref" );
     this->_writeGrid( fn, _originalXValues, _originalYValues, _originalZValues );
   }
 
 
-	{ // Current Grid
-    std::string fn( path + username + "_currentGrid.pref" );
-    this->_writeGrid( fn, _xValues, _yValues, _zValues );
+	{ // Additional user defined points
+    std::string fn( path + username + "_points.pref" );
+    this->_writeGridAxis( fn );
   }
 
 
@@ -2974,7 +2974,55 @@ Guard guard ( this );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Read the Soils file
+// Read the additional grid points file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeGridAxis( const std::string& filename )
+{
+Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No user settings found for the additional grid points" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Writing additional grip point information to file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+	// write the grid values
+  for( unsigned int i = 0; i < _axisPoints.size(); ++i )
+	{
+		// get the point
+		GridAxisPoint gap ( _axisPoints.at( i ) );
+
+		// write the point
+		ofs << gap.axis << "," << gap.value << std::endl;
+	}
+	
+  // close file
+  ofs.close();
+        
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Write the chemical library
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -3025,7 +3073,7 @@ void VaporIntrusionGUIDocument::_writeChemicalLibrary( const std::string& filena
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Read the Soils file
+// Write source chemicals
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -3074,7 +3122,7 @@ void VaporIntrusionGUIDocument::_writeSourceChemicals( const std::string& filena
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Read the Soils file
+// Write the current experiment chemicals
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -3173,7 +3221,7 @@ void VaporIntrusionGUIDocument::_readUserPreferences( const std::string& usernam
   }
 
 	{ // Original Grid
-    std::string fn( path + username + "_originalGrid.pref" );
+    std::string fn( path + username + "_grid.pref" );
 
 		// clear out the original grid values
 		_originalXValues.clear();
@@ -3183,16 +3231,9 @@ void VaporIntrusionGUIDocument::_readUserPreferences( const std::string& usernam
     this->_readGrid( fn, _originalXValues, _originalYValues, _originalZValues );
   }
 
-
-	{ // Current Grid
-    std::string fn( path + username + "_currentGrid.pref" );
-
-		// clear out the current grid values
-		_xValues.clear();
-		_yValues.clear();
-		_zValues.clear();
-
-    this->_readGrid( fn, _xValues, _yValues, _zValues );
+	{ // Additional grid points
+    std::string fn( path + username + "_points.pref" );
+    this->_readGridAxis( fn );
   }
 
   // rebuild the scene
@@ -3900,8 +3941,6 @@ void VaporIntrusionGUIDocument::_readBuilding( const std::string& filename )
 }
 
 
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Read the Soils file
@@ -4078,6 +4117,76 @@ void VaporIntrusionGUIDocument::_readGrid( const std::string& filename, GridPoin
 			}
 		}// endif for EOF 
 	}// end of zGrid for loop
+
+  ifs.close();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the source chemicals file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readGridAxis( const std::string& filename )
+{  
+  Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No additional grid points" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading additional grid points from: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // parse the file
+  while( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    if( tStr.size() > 0 && tStr.at( 0 ) != '#' )
+    {
+
+      // separate the strings
+      StringVec sv;
+      Usul::Strings::split( tStr, ",", false, sv );
+      
+      // make sure all the columns are there
+      if( sv.size() == 2 )
+      {
+				// create the grid point
+        GridAxisPoint gap ( sv[0], sv[1] );
+
+				// add the grid point to the list of points
+				_axisPoints.push_back( gap );
+
+      } 
+
+    }// end if for valid entry found
+
+  }// end while read for file parsing
 
   ifs.close();
 }

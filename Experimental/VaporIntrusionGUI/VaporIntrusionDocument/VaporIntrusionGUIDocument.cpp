@@ -2602,6 +2602,18 @@ void VaporIntrusionGUIDocument::_writeUserPreferences( const std::string& userna
     this->_writeBuilding( fn );
   }
 
+	{ // Original Grid
+    std::string fn( path + username + "_originalGrid.pref" );
+    this->_writeGrid( fn, _originalXValues, _originalYValues, _originalZValues );
+  }
+
+
+	{ // Current Grid
+    std::string fn( path + username + "_currentGrid.pref" );
+    this->_writeGrid( fn, _xValues, _yValues, _zValues );
+  }
+
+
   { // Settings
     std::string fn( path + username + "_settings.pref" );
     this->_writeSettings( fn );
@@ -2903,6 +2915,65 @@ Guard guard ( this );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Read the grid file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeGrid( const std::string& filename, GridPoints xGrid, GridPoints yGrid, GridPoints zGrid )
+{
+Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No user settings found for the grid" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Writing grid information to file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+	// write the grid dimensions
+	ofs << xGrid.size() << "," << yGrid.size() << "," << zGrid.size() << std::endl;
+
+	// write the grid values
+  for( unsigned int i = 0; i < xGrid.size(); ++i )
+	{
+		ofs << xGrid.at( i ).first << "," << xGrid.at( i ).second << std::endl;
+	}
+	for( unsigned int j = 0; j < yGrid.size(); ++j )
+	{
+		ofs << yGrid.at( j ).first << "," << yGrid.at( j ).second << std::endl;
+	}
+
+	for( unsigned int k = 0; k < zGrid.size(); ++k )
+	{
+		ofs << zGrid.at( k ).first << "," << zGrid.at( k ).second << std::endl;
+	}
+
+  // close file
+  ofs.close();
+        
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // Read the Soils file
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -3099,6 +3170,29 @@ void VaporIntrusionGUIDocument::_readUserPreferences( const std::string& usernam
   { // Settings
     std::string fn( path + username + "_settings.pref" );
     this->_readSettings( fn );
+  }
+
+	{ // Original Grid
+    std::string fn( path + username + "_originalGrid.pref" );
+
+		// clear out the original grid values
+		_originalXValues.clear();
+		_originalYValues.clear();
+		_originalZValues.clear();
+
+    this->_readGrid( fn, _originalXValues, _originalYValues, _originalZValues );
+  }
+
+
+	{ // Current Grid
+    std::string fn( path + username + "_currentGrid.pref" );
+
+		// clear out the current grid values
+		_xValues.clear();
+		_yValues.clear();
+		_zValues.clear();
+
+    this->_readGrid( fn, _xValues, _yValues, _zValues );
   }
 
   // rebuild the scene
@@ -3801,6 +3895,189 @@ void VaporIntrusionGUIDocument::_readBuilding( const std::string& filename )
     }// end if for valid entry found
 
   }// end while read for file parsing
+
+  ifs.close();
+}
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the Soils file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readGrid( const std::string& filename, GridPoints& xGrid, GridPoints& yGrid, GridPoints& zGrid )
+{
+ Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No Presets loaded for the building" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading building file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+	// grid dimensions
+	unsigned int xSize ( 0 );
+	unsigned int ySize ( 0 );
+	unsigned int zSize ( 0 );
+
+	if( EOF != ifs.peek() )
+  {
+		 // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    if( tStr.size() > 0 && tStr.at( 0 ) != '#' )
+    {
+
+      // separate the strings
+      StringVec sv;
+      Usul::Strings::split( tStr, ",", false, sv );
+
+			if( sv.size() == 3 )
+      {
+				// get the grid sizes
+				xSize = Usul::Convert::Type< std::string, unsigned int >::convert( sv[0] );
+				ySize = Usul::Convert::Type< std::string, unsigned int >::convert( sv[1] );
+				zSize = Usul::Convert::Type< std::string, unsigned int >::convert( sv[2] );
+			}
+
+		}
+	}
+
+	// read the x grid
+	for( unsigned int i = 0; i < xSize; ++i ) 
+	{
+		if( EOF != ifs.peek() )
+		{
+			 // create a buffer
+			char buffer[bufSize+1];
+
+			// get a line
+			ifs.getline ( buffer, bufSize );
+
+			// create a string from the buffer
+			std::string tStr ( buffer );
+
+			if( tStr.size() > 0 && tStr.at( 0 ) != '#' )
+			{
+
+				// separate the strings
+				StringVec sv;
+				Usul::Strings::split( tStr, ",", false, sv );
+
+				if( sv.size() == 2 )
+				{
+					// convert the pos
+					double pos ( Usul::Convert::Type< std::string, double >::convert( sv[0] ) );
+
+					// convert the offset
+					double offset ( Usul::Convert::Type< std::string, double >::convert( sv[1] ) );
+
+					// add the pos/offset to the xGrid
+					xGrid.push_back( GridPoint( pos, offset ) );
+				}
+			}
+		}// endif for EOF 
+	}// end of xGrid for loop
+	
+ // read the y grid
+	for( unsigned int i = 0; i < ySize; ++i ) 
+	{
+		if( EOF != ifs.peek() )
+		{
+			 // create a buffer
+			char buffer[bufSize+1];
+
+			// get a line
+			ifs.getline ( buffer, bufSize );
+
+			// create a string from the buffer
+			std::string tStr ( buffer );
+
+			if( tStr.size() > 0 && tStr.at( 0 ) != '#' )
+			{
+
+				// separate the strings
+				StringVec sv;
+				Usul::Strings::split( tStr, ",", false, sv );
+
+				if( sv.size() == 2 )
+				{
+					// convert the pos
+					double pos ( Usul::Convert::Type< std::string, double >::convert( sv[0] ) );
+
+					// convert the offset
+					double offset ( Usul::Convert::Type< std::string, double >::convert( sv[1] ) );
+
+					// add the pos/offset to the xGrid
+					yGrid.push_back( GridPoint( pos, offset ) );
+				}
+			}
+		}// endif for EOF 
+	}// end of yGrid for loop
+
+	// read the z grid
+	for( unsigned int i = 0; i < zSize; ++i ) 
+	{
+		if( EOF != ifs.peek() )
+		{
+			 // create a buffer
+			char buffer[bufSize+1];
+
+			// get a line
+			ifs.getline ( buffer, bufSize );
+
+			// create a string from the buffer
+			std::string tStr ( buffer );
+
+			if( tStr.size() > 0 && tStr.at( 0 ) != '#' )
+			{
+
+				// separate the strings
+				StringVec sv;
+				Usul::Strings::split( tStr, ",", false, sv );
+
+				if( sv.size() == 2 )
+				{
+					// convert the pos
+					double pos ( Usul::Convert::Type< std::string, double >::convert( sv[0] ) );
+
+					// convert the offset
+					double offset ( Usul::Convert::Type< std::string, double >::convert( sv[1] ) );
+
+					// add the pos/offset to the xGrid
+					zGrid.push_back( GridPoint( pos, offset ) );
+				}
+			}
+		}// endif for EOF 
+	}// end of zGrid for loop
 
   ifs.close();
 }

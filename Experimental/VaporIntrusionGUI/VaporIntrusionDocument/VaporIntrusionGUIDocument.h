@@ -481,6 +481,7 @@ protected:
   void												_writeSettings( const std::string& filename );
 	void												_writeBuilding( const std::string& filename );
 	void												_writeGrid( const std::string& filename, GridPoints xGrid, GridPoints yGrid, GridPoints zGrid );
+	void												_writeGridAxis( const std::string& filename );
 
 
   // read the user preference file for user <username>
@@ -494,6 +495,7 @@ protected:
   void												_readSettings( const std::string& filename );
 	void												_readBuilding( const std::string& filename );
 	void												_readGrid( const std::string& filename, GridPoints& xGrid, GridPoints& yGrid, GridPoints& zGrid );
+	void												_readGridAxis( const std::string& filename );
 
   
 
@@ -532,7 +534,7 @@ private:
     bool                      _showBuilding;
     bool                      _showFoundation;
     bool                      _showSources;
-	bool                      _showSoils;
+		bool                      _showSoils;
     bool                      _showCracks;
     bool                      _showLabels;
     bool                      _showPressurePlane;

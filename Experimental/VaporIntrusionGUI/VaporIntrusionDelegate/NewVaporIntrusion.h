@@ -36,6 +36,8 @@ public:
   NewVaporIntrusion ( QWidget *parent = 0x0 );
   virtual ~NewVaporIntrusion();
 
+	bool newOrLoad();
+
 
 private:
 

@@ -138,7 +138,8 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _maxPressureColor( 0.0f, 1.0f, 0.0f, 1.0f ),
   _pressure(),
   _pMap(),
-  _windDirection()
+  _windDirection(),
+	_enablePressure( false )
 {
   USUL_TRACE_SCOPE;
 }
@@ -785,7 +786,7 @@ void VaporIntrusionGUIDocument::_build3DScene ( Unknown *caller )
     // build the Grid 3D element
     this->_makeGrid();
   }
-  if( true == _showPressurePlane )
+  if( true == _showPressurePlane && true == _enablePressure )
   {
     this->_makePressurePlane();
   }
@@ -2523,10 +2524,6 @@ void VaporIntrusionGUIDocument::initialize()
   std::string soilFilename ( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "soils.vpi" );
   this->_readSoils( soilFilename );
 
-  // read the cracks file
-  std::string cracksFilename ( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "cracks.vpi" );
-  this->_readCracks( cracksFilename );
-
   // read the pressure values
   std::string pressureFilename( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "pressures.vpi" );
   this->_readMasterPressureFile( pressureFilename );
@@ -2607,16 +2604,22 @@ void VaporIntrusionGUIDocument::_writeUserPreferences( const std::string& userna
     this->_writeGrid( fn, _originalXValues, _originalYValues, _originalZValues );
   }
 
-
 	{ // Additional user defined points
     std::string fn( path + username + "_points.pref" );
     this->_writeGridAxis( fn );
   }
 
-
   { // Settings
     std::string fn( path + username + "_settings.pref" );
     this->_writeSettings( fn );
+  }
+
+	{ // Write the cracks files
+    std::string fn1( path + username + "_cracks1.pref" );
+		std::string fn2( path + username + "_cracks2.pref" );
+
+    this->_writeCracks( fn1, _cracks.first );
+		this->_writeCracks( fn2, _cracks.second );
   }
 
 }
@@ -3020,6 +3023,55 @@ Guard guard ( this );
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the additional grid points file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeCracks( const std::string& filename, Cracks cracks )
+{
+Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No user settings found for the cracks" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Writing cracks information to file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+	// write the grid values
+  for( unsigned int i = 0; i < cracks.size(); ++i )
+	{
+		// get the crack
+		Crack crack ( cracks.at( i ) );
+
+		// write the crack
+		ofs << crack.start << "," << crack.end << "," << crack.value << std::endl;
+	}
+	
+  // close file
+  ofs.close();
+        
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Write the chemical library
@@ -3234,6 +3286,14 @@ void VaporIntrusionGUIDocument::_readUserPreferences( const std::string& usernam
 	{ // Additional grid points
     std::string fn( path + username + "_points.pref" );
     this->_readGridAxis( fn );
+  }
+
+	{ // Write the cracks files
+    std::string fn1( path + username + "_cracks1.pref" );
+		std::string fn2( path + username + "_cracks2.pref" );
+
+    this->_readCracks( fn1, _cracks.first );
+		this->_readCracks( fn2, _cracks.second );
   }
 
   // rebuild the scene
@@ -4192,17 +4252,76 @@ void VaporIntrusionGUIDocument::_readGridAxis( const std::string& filename )
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Read the Cracks file
+// Read the source chemicals file
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_readCracks( const std::string& filename )
-{
- 
+void VaporIntrusionGUIDocument::_readCracks( const std::string& filename, Cracks& cracks )
+{  
+  Guard guard ( this );
 
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename, ". No cracks information" ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading cracks information from: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // parse the file
+  while( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    if( tStr.size() > 0 && tStr.at( 0 ) != '#' )
+    {
+
+      // separate the strings
+      StringVec sv;
+      Usul::Strings::split( tStr, ",", false, sv );
+      
+      // make sure all the columns are there
+      if( sv.size() == 3 )
+      {
+				// create the grid point
+        Crack crack ( sv[0], sv[1], sv[2] );
+
+				// add the grid point to the list of points
+				cracks.push_back( crack );
+
+      } 
+
+    }// end if for valid entry found
+
+  }// end while read for file parsing
+
+  ifs.close();
 }
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -5821,6 +5940,8 @@ void VaporIntrusionGUIDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   // Create the tools menu.
   MenuKit::Menu::RefPtr toolsMenu ( menu.find ( "&Tools", true ) );
 
+	toolsMenu->append ( ToggleButton::create ( "Enable Pressure Plane", boost::bind ( &VaporIntrusionGUIDocument::enablePressure, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isEnablePressure, this ) ) );
+
   // Add the view sub menu
   MenuKit::Menu::RefPtr viewMenu  ( toolsMenu->find ( "&Views", true ) );
   viewMenu->append ( new ToggleButton ( genericIndexToggle( caller, Usul::Adaptors::memberFunction<bool> ( this, &VaporIntrusionGUIDocument::isViewMode ), 
@@ -6003,6 +6124,39 @@ bool VaporIntrusionGUIDocument::isShowBuilding() const
   Guard guard ( this->mutex() );
   return _showBuilding;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw the building
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::enablePressure ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( b != _enablePressure )
+  {
+    _enablePressure = b;
+
+    this->rebuildScene();
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show building flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::isEnablePressure() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _enablePressure;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

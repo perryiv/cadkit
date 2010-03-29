@@ -47,3 +47,20 @@ NewVaporIntrusion::~NewVaporIntrusion()
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return whether new or load has been selected
+//  New = true		Load = false
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool NewVaporIntrusion::newOrLoad()
+{
+	if( true == loadRadio->isChecked() )
+	{
+		return false;
+	}
+
+	return true;
+}
+

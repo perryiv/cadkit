@@ -314,6 +314,9 @@ public:
   void                        showPressure( bool b );
   bool                        isShowPressure() const;
 
+	void                        enablePressure ( bool b );
+  bool                        isEnablePressure () const;
+
   // Object menu functions
   void                        objectMenuAddBuilding();
   void                        objectMenuAddSource();
@@ -387,7 +390,6 @@ protected:
   // read layer file
   void                        _readConfigFile( const std::string& catName, const std::string& filename );
   void                        _readInitializationFile( const std::string& filename );
-  void                        _readCracks( const std::string& filename );  
   void                        _readPressureFile( const std::string& filename );
   void                        _readMasterPressureFile( const std::string& filename );
   
@@ -482,6 +484,7 @@ protected:
 	void												_writeBuilding( const std::string& filename );
 	void												_writeGrid( const std::string& filename, GridPoints xGrid, GridPoints yGrid, GridPoints zGrid );
 	void												_writeGridAxis( const std::string& filename );
+	void												_writeCracks( const std::string& filename, Cracks cracks );
 
 
   // read the user preference file for user <username>
@@ -496,6 +499,7 @@ protected:
 	void												_readBuilding( const std::string& filename );
 	void												_readGrid( const std::string& filename, GridPoints& xGrid, GridPoints& yGrid, GridPoints& zGrid );
 	void												_readGridAxis( const std::string& filename );
+	void												_readCracks( const std::string& filename, Cracks& cracks );
 
   
 
@@ -568,6 +572,8 @@ private:
     PressurePlane             _pressure;
     PressureMap               _pMap;
     std::string               _windDirection;
+
+		bool											_enablePressure;
 
   
 };

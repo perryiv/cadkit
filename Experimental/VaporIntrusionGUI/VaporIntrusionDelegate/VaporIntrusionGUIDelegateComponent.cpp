@@ -314,32 +314,39 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   if ( QDialog::Accepted != nd.exec() )
     throw Usul::Exceptions::Canceled();
 
-  // Make the dialog.
-  GridSpaceDialog dialog ( parent );
+	/*if( false == nd.newOrLoad() )
+	{
+		this->saveLoadPrefs();
+	}
+	else*/
+	{
+		// Make the dialog.
+		GridSpaceDialog dialog ( parent );
 
-  // Show the dialog.
-  if ( QDialog::Accepted != dialog.exec() )
-    throw Usul::Exceptions::Canceled();
-  
-  
-  Usul::Math::Vec3ui d ( dialog.x(), static_cast< unsigned int > ( dialog.depth() * 100 ), dialog.y() );
-  Usul::Math::Vec3f spacing( 1.6f, 0.8f, 1.6f );
+		// Show the dialog.
+		if ( QDialog::Accepted != dialog.exec() )
+			throw Usul::Exceptions::Canceled();
+	  
+	  
+		Usul::Math::Vec3ui d ( dialog.x(), static_cast< unsigned int > ( dialog.depth() * 100 ), dialog.y() );
+		Usul::Math::Vec3f spacing( 1.6f, 0.8f, 1.6f );
 
-  // get the document
-  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr doc ( document );
+		// get the document
+		VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr doc ( document );
 
-  if( true == doc.valid() )
-  {    
-    // set the initial grid spacing
-    doc->setInitialSpacing( spacing );
+		if( true == doc.valid() )
+		{    
+			// set the initial grid spacing
+			doc->setInitialSpacing( spacing );
 
-    // set the dimensions
-    doc->dimensions( d );    
+			// set the dimensions
+			doc->dimensions( d );    
 
-    // initialize the document
-    doc->initialize();
+			// initialize the document
+			doc->initialize();
 
-  }
+		}
+	}
   
 }
 

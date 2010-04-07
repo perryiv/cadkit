@@ -350,7 +350,7 @@ protected:
 
   // Test method for multiview verification
   osg::Node*                  _buildCube( osg::Vec3Array* points, Color c, Usul::Math::Vec3ui location );
-  osg::Node*				          _buildPlane ( osg::Vec3Array* points, osg::Vec4f color );
+  osg::Node*				          _buildPlane ( osg::Vec3Array* points, osg::Vec4f color, unsigned int thickness );
 
   // 2d build methods
   osg::Node*                  _buildXYScene();
@@ -575,6 +575,8 @@ private:
     std::string               _windDirection;
 
 		bool											_enablePressure;
+
+    unsigned int              _objectThickness;
 
   
 };

@@ -272,7 +272,7 @@ public:
 
   virtual void                keyMovementChange( int x, int y );
 
-  virtual void                setMouseCoords( Usul::Math::Vec3f point );
+  virtual void                setMouseCoords( Usul::Math::Vec3f point, int xpos, int ypos );
 
   virtual ColorVec            colorInformation();
   virtual void                colorInformation( ColorVec cv );
@@ -449,8 +449,7 @@ protected:
   bool                        _checkBuildingInterior( const std::string& axis, float point );
 
   
-  void                        _setStatusText( const std::string message, unsigned int &textXPos, unsigned int &textYPos,
-                                              double xmult, double ymult, Usul::Interfaces::IUnknown *caller );
+  void                        _setStatusText( const std::string message, double xmult, double ymult, Usul::Interfaces::IUnknown *caller );
 
 
   void                        _handleCrackAdd( Usul::Math::Vec3f point );
@@ -562,6 +561,8 @@ private:
     float                     _mouseYCoord;
     unsigned int              _textXPos;
     unsigned int              _textYPos;
+    int                       _screenXCoord;
+    int                       _screenYCoord;
 
     Crack                     _placementCrack;
     Usul::Math::Vec4f         _crackColor;

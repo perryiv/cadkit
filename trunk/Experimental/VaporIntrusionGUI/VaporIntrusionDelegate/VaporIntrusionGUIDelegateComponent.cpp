@@ -185,7 +185,8 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     _xyzView->setTitle( "3D Scene View" );
 
     _xyView->setTitle ( "2D Grid View" );
-    _xyView->viewer()->camera( OsgTools::Render::Viewer::TOP );
+    _xyView->viewer()->camera( OsgTools::Render::Viewer::BOTTOM );
+    _xyView->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_Y_P45 );
 
     // the color white
     osg::Vec4 white ( 1.0f, 1.0f, 1.0f, 1.0f );

@@ -44,7 +44,8 @@ _mouseWheelPosition( 0 ),
 _mouseWheelSensitivity( 10.0f ),
 _materialContainers( matContainers )
 {
-  
+  this->installEventFilter(this);
+  this->setMouseTracking(true);
 }
 
 
@@ -76,7 +77,7 @@ void VaporIntrusionGUIViewer::mouseMoveEvent ( QMouseEvent * event )
   osg::Vec3d p ( this->_getIntersectPoint( event ) );
 
   // set the mouse coords
-  //document->setMouseCoords( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
+  document->setMouseCoords( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ), event->globalX(), event->globalY() );
 
   const bool left   ( ( true == event->buttons().testFlag ( Qt::LeftButton  ) ) );
   const bool right  ( ( true == event->buttons().testFlag ( Qt::RightButton ) ) );

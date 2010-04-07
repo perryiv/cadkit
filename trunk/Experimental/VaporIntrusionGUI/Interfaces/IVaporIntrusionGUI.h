@@ -396,7 +396,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual void                  handleLeftMouseClick( Usul::Math::Vec3f point ) = 0;
   virtual void                  handleRightMouseClick( Usul::Math::Vec3f point ) = 0;
-  virtual void                  setMouseCoords( Usul::Math::Vec3f point ) = 0;
+  virtual void                  setMouseCoords( Usul::Math::Vec3f point, int xpos, int ypos ) = 0;
 
   // edit modes for the 2D grid
   virtual void                  setEditMode2D( int mode ) = 0;

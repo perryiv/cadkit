@@ -404,9 +404,9 @@ osg::Node *VaporIntrusionGUIDocument::buildScene ( const BaseClass::Options &opt
 
 void VaporIntrusionGUIDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
-  //std::string message ( Usul::Strings::format( "Cursor: ( ", _mouseXCoord, ", ", _mouseYCoord, " )" )  );
-  //this->_setStatusText( message, _textXPos, _textYPos, 0.20, 0.05, caller );
-  //this->requestRedraw();
+  std::string message ( Usul::Strings::format( "[ ", _mouseXCoord, ", ", _mouseYCoord, " ]" )  );
+  this->_setStatusText( message, 0.20, 0.05, caller );
+  this->requestRedraw();
 }
 
 
@@ -8013,7 +8013,8 @@ void VaporIntrusionGUIDocument::_setCameraFromViewMode( int mode )
       Usul::Interfaces::ICamera::QueryPtr camera ( Usul::Documents::Manager::instance().activeView() );
       if( true == camera.valid() )
       {
-        camera->camera( OsgTools::Render::Viewer::TOP );
+        camera->camera ( OsgTools::Render::Viewer::BOTTOM );
+        camera->camera ( OsgTools::Render::Viewer::ROTATE_Y_P45 );
       }
       
       // feedback
@@ -8405,16 +8406,16 @@ osg::Node * VaporIntrusionGUIDocument::_createGridLabels2D()
       // get the component values
       float x ( _originalXValues.at( 0 ).first );        
       float y ( 0.0f );
-      float z ( _originalZValues.at( _originalZValues.size() - 1 ).first );
+      float z ( _originalZValues.at( 0 ).first );
 
       // adjust z position modifier
-      float zMod ( 1.05 );
+      float zMod ( 0.25 * abs( _originalZValues.at( 1 ).first - z ) );
 
       // adjust the x so it is outside the grid
       float xMod (  0.25 * abs( _originalXValues.at( 1 ).first - x ) );
 
       // add the vector of positions
-      positions->push_back( osg::Vec3 ( x - xMod, y, z * zMod ) );
+      positions->push_back( osg::Vec3 ( x - xMod, y, z - zMod ) );
 
       // add the label
       labels.push_back( Usul::Strings::format( "(", z, ")(", x, ")" ) );
@@ -8425,7 +8426,7 @@ osg::Node * VaporIntrusionGUIDocument::_createGridLabels2D()
         x = _originalXValues.at( i ).first; 
 
         // add the vector of positions
-        positions->push_back( osg::Vec3 ( x, y, z * zMod ) );
+        positions->push_back( osg::Vec3 ( x, y, z - zMod ) );
 
         // add the label
         labels.push_back( Usul::Strings::format( x ) );
@@ -8623,12 +8624,16 @@ osg::Node * VaporIntrusionGUIDocument::_createText( osg::Vec3Array* positions, S
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::setMouseCoords( Usul::Math::Vec3f point )
+void VaporIntrusionGUIDocument::setMouseCoords( Usul::Math::Vec3f point, int xpos, int ypos )
 {
   Guard guard ( this );
 
   // get the current view mode
   int viewMode ( this->getViewMode2D() );
+
+  // set the global xy positions
+  _screenXCoord = xpos;
+  _screenYCoord = ypos;
 
   if( viewMode == IVPI::VIEW_MODE_2D_XY )
   {
@@ -8801,8 +8806,7 @@ void VaporIntrusionGUIDocument::transparencies( FloatVec fv )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_setStatusText( const std::string message, unsigned int &textXPos, unsigned int &textYPos,
-                                                double xmult, double ymult, Usul::Interfaces::IUnknown *caller )
+void VaporIntrusionGUIDocument::_setStatusText( const std::string message, double xmult, double ymult, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this ); 
@@ -8819,19 +8823,24 @@ void VaporIntrusionGUIDocument::_setStatusText( const std::string message, unsig
   if( false == viewPort.valid() )
     throw std::runtime_error ( "Error 2482359443: Failed to find a valid interface to Usul::Interfaces::IViewport " );
 
-  textMatrix->removeText( static_cast< unsigned int > ( textXPos ),
-                          static_cast< unsigned int > ( textYPos ) );
-   
+  textMatrix->removeText( static_cast< unsigned int > ( _textXPos ),
+                          static_cast< unsigned int > ( _textYPos ) );
+
+  // get the screen coordinates of the mouse cursor
   const double xpos ( ::floor( viewPort->width()  * xmult ) );
   const double ypos ( ::floor( viewPort->height() * ymult ) );
 
-  osg::Vec4f fcolor (  1.0, 1.0, 1.0, 1 );
-  osg::Vec4f bcolor (  0.0, 0.0, 0.0, 1 );
+  osg::Vec4f fcolor (  0.0, 0.0, 0.0, 1 );
+  osg::Vec4f bcolor (  1.0, 1.0, 1.0, 1 );
 
-  textXPos = static_cast< unsigned int > ( xpos );
-  textYPos = static_cast< unsigned int > ( ypos );
+  unsigned int textXPos = static_cast< unsigned int > ( xpos );
+  unsigned int textYPos = static_cast< unsigned int > ( ypos );
 
   textMatrix->setText ( textXPos, textYPos, message, fcolor, bcolor );
+
+  // update the stored text coords
+  _textXPos = textXPos;
+  _textYPos = textYPos;
 }
 
 

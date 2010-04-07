@@ -139,7 +139,8 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _pressure(),
   _pMap(),
   _windDirection(),
-	_enablePressure( false )
+	_enablePressure( false ),
+  _objectThickness( 3 )
 {
   USUL_TRACE_SCOPE;
 }
@@ -649,7 +650,7 @@ osg::Node* VaporIntrusionGUIDocument::_buildXYScene()
       points->push_back( osg::Vec3f ( sx, 0, ez ) );
 
       // add the plane
-      group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.5f, 0.5f, 0.5f, 1.0f ) ) );
+      group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.5f, 0.5f, 0.5f, 1.0f ), 1 ) );
 
     }
   }
@@ -696,7 +697,7 @@ osg::Node* VaporIntrusionGUIDocument::_buildZScene()
       points->push_back( osg::Vec3f ( sx, 0, ez ) );
 #endif
       // add the plane
-      group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.5f, 0.5f, 0.5f, 1.0f ) ) );
+      group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.5f, 0.5f, 0.5f, 1.0f ), 1 ) );
 
     }
   }
@@ -949,7 +950,7 @@ void VaporIntrusionGUIDocument::_makePressurePlane()
       GroupPtr group ( new osg::Group );
 
       // build the plane
-      group->addChild( this->_buildPlane( points.get(), c ) );
+      group->addChild( this->_buildPlane( points.get(), c, 1 ) );
 
       // set the material of the cube
       OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
@@ -972,7 +973,7 @@ void VaporIntrusionGUIDocument::_makePressurePlane()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node*	VaporIntrusionGUIDocument::_buildPlane ( osg::Vec3Array* points, osg::Vec4f color )
+osg::Node*	VaporIntrusionGUIDocument::_buildPlane ( osg::Vec3Array* points, osg::Vec4f color, unsigned int thickness )
 {
 	Guard guard ( this );
 
@@ -1006,6 +1007,9 @@ osg::Node*	VaporIntrusionGUIDocument::_buildPlane ( osg::Vec3Array* points, osg:
 
   // Colors
   colors->push_back( color );
+
+  // set the line thickness
+  OsgTools::State::StateSet::setLineWidth( geometry->getOrCreateStateSet(), thickness );
 
   // set the colors and set binding to per vertex
   geometry->setColorArray( colors.get() );
@@ -1080,7 +1084,7 @@ void VaporIntrusionGUIDocument::_makeCracks()
     GroupPtr group ( new osg::Group );
 
     // build the plane
-    group->addChild( this->_buildPlane( points.get(), cColor ) );
+    group->addChild( this->_buildPlane( points.get(), cColor, _objectThickness ) );
 
     // set the material properties of the plane
     OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
@@ -1128,7 +1132,7 @@ void VaporIntrusionGUIDocument::_makeCracks()
     GroupPtr group ( new osg::Group );
 
     // build the plane
-    group->addChild( this->_buildPlane( points.get(), cColor ) );
+    group->addChild( this->_buildPlane( points.get(), cColor, _objectThickness ) );
 
     // set the material of the plane
     OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
@@ -7289,6 +7293,14 @@ int VaporIntrusionGUIDocument::getBuildMode2D()
 void VaporIntrusionGUIDocument::setViewMode2D( int mode )
 {
   Guard guard ( this );
+
+  //check the current view mode
+  if( _viewMode2D == mode )
+  {
+    return;
+  }
+
+  // mode is different than the current view mode
   _viewMode2D = mode;
   
   // rebuild the scene
@@ -7446,9 +7458,9 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
   {
     // update the position of the object
     _currentObject.sx += x;
-    _currentObject.sz += y;
+    _currentObject.sz += -y;
     _currentObject.ex += x;
-    _currentObject.ez += y;
+    _currentObject.ez += -y;
 
     // make sure the object is within the grid bounds still
     // First check the x values
@@ -7646,7 +7658,7 @@ osg::Node* VaporIntrusionGUIDocument::_drawCracks2D()
     points->push_back( osg::Vec3f ( ex, 0.0001, y ) );
     points->push_back( osg::Vec3f ( sx, 0.0001, y ) );
 
-    group->addChild ( this->_buildPlane( points.get(), color ) );
+    group->addChild ( this->_buildPlane( points.get(), color, _objectThickness ) );
 
   }
 
@@ -7676,7 +7688,7 @@ osg::Node* VaporIntrusionGUIDocument::_drawCracks2D()
     points->push_back( osg::Vec3f ( y, 0.0001, ex ) );
     points->push_back( osg::Vec3f ( y, 0.0001, sx ) );
 
-    group->addChild ( this->_buildPlane( points.get(), color ) );
+    group->addChild ( this->_buildPlane( points.get(), color, _objectThickness ) );
 
   }
 
@@ -7724,7 +7736,7 @@ osg::Node* VaporIntrusionGUIDocument::_drawBuilding2D()
 
     
 
-    group->addChild ( this->_buildPlane( points.get(), color ) );
+    group->addChild ( this->_buildPlane( points.get(), color, _objectThickness ) );
   }
 
   if( IVPI::VIEW_MODE_2D_XZ == viewMode )
@@ -7740,7 +7752,7 @@ osg::Node* VaporIntrusionGUIDocument::_drawBuilding2D()
     points->push_back( osg::Vec3f ( ex, ey, 0.001 ) );
     points->push_back( osg::Vec3f ( sx, ey, 0.001 ) );
 
-    group->addChild ( this->_buildPlane( points.get(), color ) );
+    group->addChild ( this->_buildPlane( points.get(), color, _objectThickness ) );
   }
   
   return group.release();
@@ -7787,7 +7799,7 @@ osg::Node* VaporIntrusionGUIDocument::_drawSources2D()
       points->push_back( osg::Vec3f ( ex, 0.001, ez ) );
       points->push_back( osg::Vec3f ( sx, 0.001, ez ) );
 
-      group->addChild ( this->_buildPlane( points.get(), color ) );
+      group->addChild ( this->_buildPlane( points.get(), color, _objectThickness ) );
     }
 
     if( IVPI::VIEW_MODE_2D_XZ == viewMode )
@@ -7803,7 +7815,7 @@ osg::Node* VaporIntrusionGUIDocument::_drawSources2D()
       points->push_back( osg::Vec3f ( ex, ey, 0.001 ) );
       points->push_back( osg::Vec3f ( sx, ey, 0.001 ) );
 
-      group->addChild ( this->_buildPlane( points.get(), color ) );
+      group->addChild ( this->_buildPlane( points.get(), color, _objectThickness ) );
     }
   }
   
@@ -7853,7 +7865,7 @@ osg::Node* VaporIntrusionGUIDocument::_drawSoils2D()
       points->push_back( osg::Vec3f ( ex, 0.001, ez ) );
       points->push_back( osg::Vec3f ( sx, 0.001, ez ) );
 
-      group->addChild ( this->_buildPlane( points.get(), color ) );
+      group->addChild ( this->_buildPlane( points.get(), color, _objectThickness ) );
     }
 
     if( IVPI::VIEW_MODE_2D_XZ == viewMode )
@@ -7869,7 +7881,7 @@ osg::Node* VaporIntrusionGUIDocument::_drawSoils2D()
       points->push_back( osg::Vec3f ( ex, ey, 0.001 ) );
       points->push_back( osg::Vec3f ( sx, ey, 0.001 ) );
 
-      group->addChild ( this->_buildPlane( points.get(), color ) );
+      group->addChild ( this->_buildPlane( points.get(), color, _objectThickness ) );
     }
   }
   
@@ -7969,7 +7981,7 @@ osg::Node* VaporIntrusionGUIDocument::_buildObject()
     points->push_back( osg::Vec3f ( ex, 0.001, ez ) );
     points->push_back( osg::Vec3f ( sx, 0.001, ez ) );
 
-    group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 1.0f, 0.0f, 0.0f, 1.0f ) ) );
+    group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 1.0f, 0.0f, 0.0f, 1.0f ), _objectThickness ) );
   }
 
   if( buildMode == IVPI::BUILD_MODE_OBJECT_SIZE_XZ || buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_XZ )
@@ -7986,7 +7998,7 @@ osg::Node* VaporIntrusionGUIDocument::_buildObject()
     points->push_back( osg::Vec3f ( ex, ey, 0.001 ) );
     points->push_back( osg::Vec3f ( sx, ey, 0.001 ) );
 
-    group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 1.0f, 0.0f, 0.0f, 1.0f ) ) );
+    group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 1.0f, 0.0f, 0.0f, 1.0f ), _objectThickness ) );
   }
 
 

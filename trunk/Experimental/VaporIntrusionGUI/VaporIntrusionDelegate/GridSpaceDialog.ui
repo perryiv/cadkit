@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>GridSpaceDialog</class>
- <widget class="QDialog" name="GridSpaceDialog" >
-  <property name="geometry" >
+ <widget class="QDialog" name="GridSpaceDialog">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,11 +10,11 @@
     <height>404</height>
    </rect>
   </property>
-  <property name="windowTitle" >
-   <string>Define the Grid Space</string>
+  <property name="windowTitle">
+   <string>Define the Model Domain</string>
   </property>
-  <widget class="QDialogButtonBox" name="okCancelButtons" >
-   <property name="geometry" >
+  <widget class="QDialogButtonBox" name="okCancelButtons">
+   <property name="geometry">
     <rect>
      <x>60</x>
      <y>360</y>
@@ -21,97 +22,113 @@
      <height>32</height>
     </rect>
    </property>
-   <property name="orientation" >
+   <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
-   <property name="standardButtons" >
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QGroupBox" name="groupBox" >
-   <property name="geometry" >
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
     <rect>
      <x>30</x>
-     <y>100</y>
+     <y>90</y>
      <width>251</width>
-     <height>221</height>
+     <height>241</height>
     </rect>
    </property>
-   <property name="title" >
-    <string>Define the experiment space in meters</string>
+   <property name="title">
+    <string>Define the model domain in meters</string>
    </property>
-   <widget class="QLineEdit" name="_xSpacing" >
-    <property name="geometry" >
+   <widget class="QLineEdit" name="_xSpacing">
+    <property name="geometry">
      <rect>
       <x>10</x>
-      <y>50</y>
+      <y>90</y>
       <width>81</width>
       <height>23</height>
      </rect>
     </property>
    </widget>
-   <widget class="QLabel" name="label" >
-    <property name="geometry" >
+   <widget class="QLabel" name="label">
+    <property name="geometry">
      <rect>
       <x>10</x>
-      <y>30</y>
+      <y>70</y>
       <width>205</width>
       <height>18</height>
      </rect>
     </property>
-    <property name="text" >
-     <string>Width (X) in multiples of 1.6 meters</string>
+    <property name="text">
+     <string>Length (X) in meters</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2" >
-    <property name="geometry" >
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
      <rect>
       <x>10</x>
-      <y>90</y>
+      <y>130</y>
       <width>207</width>
       <height>18</height>
      </rect>
     </property>
-    <property name="text" >
-     <string>Height (Y) in multiples of 1.6 meters</string>
+    <property name="text">
+     <string>Width (Y) in meters</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="_ySpacing" >
-    <property name="geometry" >
+   <widget class="QLineEdit" name="_ySpacing">
+    <property name="geometry">
      <rect>
       <x>10</x>
-      <y>110</y>
+      <y>150</y>
       <width>81</width>
       <height>23</height>
      </rect>
     </property>
    </widget>
-   <widget class="QLabel" name="label_3" >
-    <property name="geometry" >
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
      <rect>
       <x>10</x>
-      <y>150</y>
+      <y>190</y>
       <width>131</width>
       <height>18</height>
      </rect>
     </property>
-    <property name="text" >
+    <property name="text">
      <string>Depth (Z) total meters</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="_depth" >
-    <property name="geometry" >
+   <widget class="QLineEdit" name="_depth">
+    <property name="geometry">
      <rect>
       <x>10</x>
-      <y>170</y>
+      <y>210</y>
       <width>81</width>
       <height>23</height>
      </rect>
     </property>
    </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>221</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Enter the total meters for length and width.  Totals will be rounded to be a multiple of 1.6 meters </string>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
-  <widget class="QLabel" name="label_4" >
-   <property name="geometry" >
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
     <rect>
      <x>70</x>
      <y>20</y>
@@ -119,12 +136,12 @@
      <height>18</height>
     </rect>
    </property>
-   <property name="text" >
-    <string>Name for this experiment</string>
+   <property name="text">
+    <string>Name for this simulation</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="spaceName" >
-   <property name="geometry" >
+  <widget class="QLineEdit" name="spaceName">
+   <property name="geometry">
     <rect>
      <x>70</x>
      <y>50</y>
@@ -142,11 +159,11 @@
    <receiver>GridSpaceDialog</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>248</x>
      <y>254</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
@@ -158,11 +175,11 @@
    <receiver>GridSpaceDialog</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>316</x>
      <y>260</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
     </hint>

@@ -107,7 +107,7 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _originalToCurrentIndex(),
   _symmetricalGrid( false ),
   _showGrid( true ),
-  _showGridWireframe( false ),
+  _showGridWireframe( true ),
   _showBuilding( true ),
   _showFoundation( true ),
   _showSources( true ),
@@ -2520,10 +2520,6 @@ void VaporIntrusionGUIDocument::initialize()
   std::string contamintantFilename ( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "chemicals.vpi" );
   this->_readChemicals( contamintantFilename );
 
-  // read the sources file
-  std::string sourceFilename ( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "sources.vpi" );
-  this->_readSources( sourceFilename );
-
   // read the soils file
   std::string soilFilename ( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "soils.vpi" );
   this->_readSoils( soilFilename );
@@ -3687,7 +3683,7 @@ void VaporIntrusionGUIDocument::_readPressureFile( const std::string& filename )
 
     // separate the strings
     StringVec sv;
-    Usul::Strings::split( tStr, ",", false, sv );
+    Usul::Strings::split( tStr, "\t", false, sv );
 
     // make sure there are exactly 3 elements in sv
     if( sv.size() == 3 )
@@ -7529,7 +7525,7 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
 
     // update the position of the object
     _currentObject.ex += x;
-    _currentObject.ez += y;
+    _currentObject.ez += -y;
 
     // make sure the object is within the grid bounds still
     // First check the x values

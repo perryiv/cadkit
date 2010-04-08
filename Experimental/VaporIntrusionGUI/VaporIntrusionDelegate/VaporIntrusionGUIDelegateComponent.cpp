@@ -327,9 +327,16 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
 		// Show the dialog.
 		if ( QDialog::Accepted != dialog.exec() )
 			throw Usul::Exceptions::Canceled();
+
+		unsigned int dx ( dialog.x() );
+		dx *= 100;
+		dx /= 160;
 	  
+		unsigned int dy ( dialog.y() );
+		dy *= 100;
+		dy /= 160;
 	  
-		Usul::Math::Vec3ui d ( dialog.x(), static_cast< unsigned int > ( dialog.depth() * 100 ), dialog.y() );
+		Usul::Math::Vec3ui d ( dx, static_cast< unsigned int > ( dialog.depth() * 100 ), dy );
 		Usul::Math::Vec3f spacing( 1.6f, 0.8f, 1.6f );
 
 		// get the document

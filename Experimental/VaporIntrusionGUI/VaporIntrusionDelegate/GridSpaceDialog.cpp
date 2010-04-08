@@ -36,8 +36,8 @@ _defaultValue ( 4 )
   _depth->setText( defaultValue.c_str() );
 
   // set the default spacing to unit length
-  _xSpacing->setText( "5" );
-  _ySpacing->setText( "5" );
+  _xSpacing->setText( "8" );
+  _ySpacing->setText( "8" );
 
   // set the text field for the experiment name
   spaceName->setText( "Untitled" );

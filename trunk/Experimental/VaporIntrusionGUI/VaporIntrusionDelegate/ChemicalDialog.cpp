@@ -39,9 +39,9 @@ _chemicals()
 
   titles.push_back( "Chemical" );
   titles.push_back( "H. Law" );
-  titles.push_back( "Koc" );
-  titles.push_back( "Diff in Air" );
-  titles.push_back( "Diff in H2O" );
+  titles.push_back( "Koc (cm3/g)" );
+  titles.push_back( "Diff in Air (cm2/s)" );
+  titles.push_back( "Diff in H2O (cm2/s)" );
   titles.push_back( "Initial Conc." );
   titles.push_back( "Present" );
 

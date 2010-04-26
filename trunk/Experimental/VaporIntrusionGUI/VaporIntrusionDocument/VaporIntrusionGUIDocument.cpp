@@ -409,7 +409,13 @@ osg::Node *VaporIntrusionGUIDocument::buildScene ( const BaseClass::Options &opt
 
 void VaporIntrusionGUIDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
-  std::string message ( Usul::Strings::format( "[ ", _mouseXCoord, ", ", _mouseYCoord, " ]" )  );
+	int ix ( static_cast< int > ( _mouseXCoord * 100 ) );
+	int iy ( static_cast< int > ( _mouseYCoord * 100 ) );
+
+	float fx ( static_cast< float > ( ix ) / 100 );
+	float fy ( static_cast< float > ( iy ) / 100 );
+
+  std::string message ( Usul::Strings::format( "[ ", fx, ", ", fy, " ]" )  );
   this->_setStatusText( message, 0.20, 0.05, caller );
   this->requestRedraw();
 }

@@ -71,6 +71,8 @@
 #include "osg/BoundingBox"
 #include "osgManipulator/TabBoxDragger"
 #include "osg/PolygonMode"
+#include "osg/ShapeDrawable"
+#include "osg/Point"
 
 #include <iterator>
 #include <vector>
@@ -140,7 +142,9 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _pMap(),
   _windDirection(),
 	_enablePressure( false ),
-  _objectThickness( 3 )
+  _objectThickness( 3 ),
+	_crackMarker( 0, 0, 0 ),
+	_showCrackMarker( false )
 {
   USUL_TRACE_SCOPE;
 }
@@ -596,13 +600,6 @@ void VaporIntrusionGUIDocument::_build2DScene( Usul::Interfaces::IUnknown *calle
   {
     _root2D->addChild( this->_buildZScene() );
   }
-
-  //if( _editGridMode2D == IVPI::OBJECT_PLACEMENT_2D || 
-  //    _editGridMode2D == IVPI::OBJECT_SIZE_XY      ||
-  //    _editGridMode2D == IVPI::OBJECT_SIZE_XZ        )
-  //{
-  //  _root2D->addChild( this->_buildObject() );
-  //}
 
   // build the 2d objects and add them to the scene
   // Building, sources, soils, etc.
@@ -6517,6 +6514,15 @@ void VaporIntrusionGUIDocument::_handleCrackAdd( Usul::Math::Vec3f point )
 
       index = this->_closestGridPoint( point[2], perpGrid );
       _placementCrack.start = Usul::Strings::format( perpGrid.at( index ).first );
+
+			// make the crack marker
+			_crackMarker = osg::Vec3 ( StrToFloat::convert( _placementCrack.value ),
+																 -0.1f,
+																 StrToFloat::convert( _placementCrack.start ) );
+
+			// toggle to show the crack marker
+			_showCrackMarker = true;
+
     }
     if( buildMode == IVPI::BUILD_MODE_CRACK_PLACE2 )
     {
@@ -6540,8 +6546,8 @@ void VaporIntrusionGUIDocument::_handleCrackAdd( Usul::Math::Vec3f point )
 
       // add the crack, rebuild the cracks visual, rebuild the scene
       this->_addCrack( "X", "Z", _placementCrack, paraWI1, paraWI2, perpWI1, perpWI2 );
-      this->_rebuildCracks();
-      this->_rebuildScene3D();
+      //this->_rebuildCracks();
+      //this->_rebuildScene3D();
 
       // clear out the placement crack
       _placementCrack = Crack();
@@ -6565,6 +6571,14 @@ void VaporIntrusionGUIDocument::_handleCrackAdd( Usul::Math::Vec3f point )
       //grid = this->_getGridFromAxis( "X" );
       index = this->_closestGridPoint( point[0], perpGrid );
       _placementCrack.start = Usul::Strings::format( perpGrid.at( index ).first );
+
+			// make the crack marker
+			_crackMarker = osg::Vec3 ( StrToFloat::convert( _placementCrack.start ),
+																 -0.1f,
+																 StrToFloat::convert( _placementCrack.value ) );
+
+			// toggle to show the crack marker
+			_showCrackMarker = true;
     }
     if( buildMode == IVPI::BUILD_MODE_CRACK_PLACE2 )
     {
@@ -6574,20 +6588,6 @@ void VaporIntrusionGUIDocument::_handleCrackAdd( Usul::Math::Vec3f point )
 
       // set the crack end point
       _placementCrack.end = Usul::Strings::format( perpGrid.at( index ).first );
-
-      // get the z grid
-      //grid = this->_getGridFromAxis( "Z" );
-
-      //// Building side walls 
-      //float bsw1 ( StrToFloat::convert( _building.x ) );
-      //float bsw2 ( bsw1 + StrToFloat::convert( _building.w ) );
-
-      //// indices of the sidewalls
-      //unsigned int bswi1( this->_closestGridPoint( bsw1, grid ) );
-      //unsigned int bswi2( this->_closestGridPoint( bsw2, grid ) );
-
-      //// add the crack, rebuild the cracks visual, rebuild the scene
-      //this->_addCrack( "Z", _placementCrack, bswi1, bswi2 );
 
       // Building side walls 
       float paraW1 ( StrToFloat::convert( _building.z ) );
@@ -6603,8 +6603,7 @@ void VaporIntrusionGUIDocument::_handleCrackAdd( Usul::Math::Vec3f point )
 
       // add the crack, rebuild the cracks visual, rebuild the scene
       this->_addCrack( "Z", "X", _placementCrack, paraWI1, paraWI2, perpWI1, perpWI2 );
-      this->_rebuildCracks();
-      this->_rebuildScene3D();
+      
 
       // clear out the placement crack
       _placementCrack = Crack();
@@ -6614,6 +6613,7 @@ void VaporIntrusionGUIDocument::_handleCrackAdd( Usul::Math::Vec3f point )
   // change the crack build mode
   if( buildMode == IVPI::BUILD_MODE_CRACK_PLACE1 )
   {
+		this->_rebuildCracks();
     this->setBuildMode2D( IVPI::BUILD_MODE_CRACK_PLACE2 );
   }
   else
@@ -6621,6 +6621,12 @@ void VaporIntrusionGUIDocument::_handleCrackAdd( Usul::Math::Vec3f point )
     if( buildMode == IVPI::BUILD_MODE_CRACK_PLACE2 )
     {
       this->setBuildMode2D( IVPI::BUILD_MODE_CRACK_PLACE1 );
+
+			// toggle to hide the crack marker
+			_showCrackMarker = false;
+
+			this->_rebuildCracks();
+      this->_rebuildScene3D();
     }
   }
 
@@ -6803,6 +6809,15 @@ void VaporIntrusionGUIDocument::_rebuildCracks()
 
   // rebuild the cracks
   _cracks2D->addChild( this->_drawCracks2D() );
+
+	// get teh current build mode
+	int buildMode ( this->getBuildMode2D() );
+
+	// draw the crack markers
+	if( true == _showCrackMarker )
+	{
+		_cracks2D->addChild( this->_drawCrackMarkers() );
+	}
 
   // redraw the scene
   this->requestRedraw();
@@ -8553,6 +8568,7 @@ osg::Node * VaporIntrusionGUIDocument::_createGridLabels2D()
   return group.release();
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Create text objects from the input positions
@@ -8612,6 +8628,69 @@ osg::Node * VaporIntrusionGUIDocument::_createText( osg::Vec3Array* positions, S
     geode->addDrawable( text.get() );
 
   }
+
+  // make sure the stateset is set to fill and is protected
+  osg::ref_ptr<osg::PolygonMode> mode ( new osg::PolygonMode );
+  mode->setMode ( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL );
+  stateset->setAttributeAndModes ( mode.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+
+  // set the geode stateset
+  geode->setStateSet( stateset.get() );
+  
+  // return the geode
+  return geode.release();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create text objects from the input positions
+//  Used to label the grid points.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node * VaporIntrusionGUIDocument::_createText( osg::Vec3 position, const std::string& label )
+{
+  Guard guard( this );
+
+  // create the font for the text
+  osg::ref_ptr< osgText::Font > font ( osgText::readFontFile ( "fonts/arial.ttf" ) );
+
+  // create the geode
+  osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+
+  // create the stateset
+  osg::ref_ptr< osg::StateSet > stateset ( geode->getOrCreateStateSet() );
+
+ 
+  // create the text object
+  osg::ref_ptr< osgText::Text  > text ( new osgText::Text() );
+
+  // set the font, color, size mode
+  text->setFont( font.get() );
+  text->setColor( osg::Vec4f( 0, 0, 0, 1 ) );
+  text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
+
+  // don't use display lists
+  text->setUseDisplayList( false );
+
+  // get the vec2 of this position
+  osg::Vec3 p ( position );
+  
+  // set the character size, position, layout, resolution and height
+  text->setCharacterSize( 20 );
+  text->setPosition( p );
+  text->setLayout( osgText::Text::LEFT_TO_RIGHT );
+  text->setFontResolution ( 32, 32 );
+  text->setMaximumHeight( 50 );
+  
+  // set the text and set to autorotate to the screen
+  text->setText( label );
+  text->setAutoRotateToScreen( true );
+
+  // add the text object to the geode
+  geode->addDrawable( text.get() );
 
   // make sure the stateset is set to fill and is protected
   osg::ref_ptr<osg::PolygonMode> mode ( new osg::PolygonMode );
@@ -8983,6 +9062,61 @@ std::pair<float, float> VaporIntrusionGUIDocument::pressureMinMax()
   Guard guard ( this );
   return std::pair<float, float>::pair( _pressure.min, _pressure.max );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw the crack markers when placing a crack
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* VaporIntrusionGUIDocument::_drawCrackMarkers()
+{
+	Guard guard ( this );
+
+	// Convert the crack color from usul to osg
+	Color color ( _crackColor[0], _crackColor[1], _crackColor[2], 1.0f );
+
+	// group pointer for the scene
+	GroupPtr group ( new osg::Group );
+
+	 // Create the vertices
+	osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
+  osg::ref_ptr< osg::Vec4Array > colors ( new osg::Vec4Array );
+
+	// add the point
+	vertices->push_back( _crackMarker );
+
+  // Geometry
+  osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
+  
+  // Set the vertices
+  geometry->setVertexArray( vertices.get() );
+
+  // Colors
+  colors->push_back( color );
+
+  // set the point size
+	geometry->getOrCreateStateSet()->setAttribute( new osg::Point ( 5.0f ), osg::StateAttribute::ON );
+
+  // set the colors and set binding to per vertex
+  geometry->setColorArray( colors.get() );
+  geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+  
+  // Add the primitive
+	geometry->addPrimitiveSet( new osg::DrawArrays ( osg::PrimitiveSet::POINTS, 0, vertices->size() ) );
+  
+  // Create the geode and add the geometry
+  osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+  geode->addDrawable( geometry.get() );
+
+	// add the geode to the group
+	group->addChild( geode.get() );
+
+	// return
+	return group.release();
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

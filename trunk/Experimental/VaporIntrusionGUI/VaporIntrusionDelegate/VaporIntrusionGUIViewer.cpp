@@ -190,8 +190,16 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
 
   if( true == left )
   {
-    // add the new grid point
-    document->handleLeftMouseClick( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
+		if( true == event->modifiers().testFlag( Qt::ShiftModifier ) )
+		{
+			// remove the new grid point
+			document->handleRightMouseClick( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
+		}
+		else
+		{
+			// add the new grid point
+			document->handleLeftMouseClick( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
+		}
   }
   if( true == right )
   {
@@ -376,13 +384,13 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
       case Qt::Key_C:
       {
         document->setBuildMode2D( IVPI::BUILD_MODE_CRACK_PLACE1 );
-        std::cout << "Setting edit mode to foundation cracks.  Right and left clicks will add/remove cracks" << std::endl;
+        std::cout << "Setting edit mode to foundation cracks.  Left and right clicks will add/remove cracks" << std::endl;
       }
         break;
       case Qt::Key_G:
       {
         document->setBuildMode2D( IVPI::BUILD_MODE_GRID_EDIT );
-        std::cout << "Setting edit mode to grid lines.  Right and left clicks will add/remove grid lines" << std::endl;
+        std::cout << "Setting edit mode to grid lines.  Left and right clicks will add/remove grid lines" << std::endl;
       }
         break;
       case Qt::Key_Return:

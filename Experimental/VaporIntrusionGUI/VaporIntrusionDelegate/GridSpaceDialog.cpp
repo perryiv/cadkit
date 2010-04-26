@@ -77,16 +77,16 @@ std::string GridSpaceDialog::name()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int GridSpaceDialog::x()
+float GridSpaceDialog::x()
 {
   std::string value ( _xSpacing->text().toStdString() );
 
   // s value
-  unsigned int s ( 1 );
+  float s ( 1 );
 
   if( value.length() > 0 )
   {
-    s = Usul::Convert::Type< std::string, unsigned int >::convert( value );
+    s = Usul::Convert::Type< std::string, float >::convert( value );
   }
 
   return s;
@@ -99,16 +99,16 @@ unsigned int GridSpaceDialog::x()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int GridSpaceDialog::y()
+float GridSpaceDialog::y()
 {
   std::string value ( _ySpacing->text().toStdString() );
 
   // t value
-  unsigned int t ( 1 );
+  float t ( 1 );
 
   if( value.length() > 0 )
   {
-    t = Usul::Convert::Type< std::string, unsigned int >::convert( value );
+    t = Usul::Convert::Type< std::string, float >::convert( value );
   }
 
   return t;

@@ -37,8 +37,8 @@ public:
   virtual ~GridSpaceDialog();
 
   std::string         name();
-  unsigned int        x();
-  unsigned int        y();
+  float								x();
+  float								y();
   float               depth();
 
 private:

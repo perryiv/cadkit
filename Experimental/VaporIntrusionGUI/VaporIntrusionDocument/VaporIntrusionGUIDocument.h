@@ -83,6 +83,7 @@ public:
   typedef IVaporIntrusionGUI::Sources                           Sources;
   typedef IVaporIntrusionGUI::Soil                              Soil;
   typedef IVaporIntrusionGUI::Soils                             Soils;
+	typedef osg::Vec3 																						CrackMarker;
   typedef std::vector< std::string >                            StringVec;
   typedef std::map< std::string, unsigned int >                 GridMap;
   typedef IVPI::ColorVec                                        ColorVec;
@@ -360,6 +361,7 @@ protected:
 
   osg::Node*                  _drawBuilding2D();
   osg::Node*                  _drawCracks2D();
+	osg::Node*                  _drawCrackMarkers();
   osg::Node*                  _drawSources2D();
   osg::Node*                  _drawSoils2D();
 
@@ -442,6 +444,7 @@ protected:
 
   osg::Node *                 _createGridLabels2D();
   osg::Node *                 _createText( osg::Vec3Array* positions, StringVec labels );
+	osg::Node *									_createText( osg::Vec3 position, const std::string& label );
 
 
   bool                        _checkGridForObject( const std::string& axis, float point );
@@ -577,6 +580,8 @@ private:
 		bool											_enablePressure;
 
     unsigned int              _objectThickness;
+		CrackMarker								_crackMarker;
+		bool											_showCrackMarker;
 
   
 };

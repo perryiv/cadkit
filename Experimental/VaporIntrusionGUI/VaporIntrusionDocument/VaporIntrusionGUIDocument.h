@@ -327,6 +327,7 @@ public:
 
   // clear functions
   void                        clearObject();
+	virtual void								rebuildObject();
 
 
 
@@ -454,6 +455,7 @@ protected:
   
   void                        _setStatusText( const std::string message, double xmult, double ymult, Usul::Interfaces::IUnknown *caller );
 
+	void												_handleObjectCreatePosition(  int x, int y );
 
   void                        _handleCrackAdd( Usul::Math::Vec3f point );
   void                        _handleCrackRemove( Usul::Math::Vec3f point );
@@ -582,6 +584,9 @@ private:
     unsigned int              _objectThickness;
 		CrackMarker								_crackMarker;
 		bool											_showCrackMarker;
+
+		Source										_storedSource;
+		Soil											_storedSoil;
 
   
 };

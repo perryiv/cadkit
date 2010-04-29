@@ -86,7 +86,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     OBJECT_SOIL,
     OBJECT_SOURCE,
     OBJECT_FOUNDATION,
-    OBJECT_CRACK
+    OBJECT_CRACK,
+		OBJECT_SOURCE_RELOAD,
+		OBJECT_SOIL_RELOAD
   };
 
 
@@ -431,6 +433,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   // user settings
   virtual void                readUserPreferences( const std::string& username ) = 0;
   virtual void                writeUserPreferences( const std::string& username ) = 0;
+
+	virtual void								rebuildObject() = 0;
 
   
 

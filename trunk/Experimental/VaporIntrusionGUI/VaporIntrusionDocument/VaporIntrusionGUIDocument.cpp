@@ -144,7 +144,9 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
 	_enablePressure( false ),
   _objectThickness( 3 ),
 	_crackMarker( 0, 0, 0 ),
-	_showCrackMarker( false )
+	_showCrackMarker( false ),
+	_storedSource(),
+	_storedSoil()
 {
   USUL_TRACE_SCOPE;
 }
@@ -7461,9 +7463,9 @@ void VaporIntrusionGUIDocument::_setBuildingLocationFromClick( Usul::Math::Vec3f
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
+void VaporIntrusionGUIDocument::_handleObjectCreatePosition(  int x, int y )
 {
-  Guard guard ( this );
+ Guard guard ( this );
 
   int xsize ( static_cast< int > ( _xValues.size() ) );
   int ysize ( static_cast< int > ( _yValues.size() ) );
@@ -7604,6 +7606,37 @@ void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
   // rebuild the scene
   this->_rebuildObject();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the movement change
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::keyMovementChange( int x, int y )
+{
+  Guard guard ( this );
+
+	this->_handleObjectCreatePosition( x, y );
+
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Redraw the current object
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::rebuildObject()
+{
+	Guard guard ( this );
+
+	this->_rebuildObject();
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

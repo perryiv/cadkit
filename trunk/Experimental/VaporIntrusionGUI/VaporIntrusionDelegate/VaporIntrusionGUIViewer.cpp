@@ -425,6 +425,9 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
             document->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_XZ );
           }
 
+					// rebuild the temp object
+					document->rebuildObject();
+
         }
 
         // toggle the mode
@@ -440,14 +443,71 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
           document->setBuildMode2D( IVPI::BUILD_MODE_NONE );
 
           document->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
-          std::cout << "Setting 2D Grid Domain to the XY Grid" << std::endl;
-          //this->viewer()->camera( OsgTools::Render::Viewer::TOP );
 
           // clear the temp
           document->clearObject();
 
           // set the object type to nothing
           document->setObjectMode( IVPI::OBJECT_NOTHING );
+        }
+        
+        std::cout << "Setting 2D Grid Size Object Mode" << std::endl;
+      }
+        break;
+
+			case Qt::Key_Backspace:
+      {
+        // toggle the mode
+        if( buildMode == IVPI::BUILD_MODE_OBJECT_SIZE_XY )
+        {
+					// go back to placement mode
+          document->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_XY );          
+        }
+
+        // toggle the mode
+        if( buildMode == IVPI::BUILD_MODE_OBJECT_PLACEMENT_XZ )
+        {
+					// clear the temp object
+          document->clearObject();
+
+          // change the view mode and provide feedback to the user
+          document->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
+         
+					// go back to the xy view
+          document->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_SIZE_XY );
+
+					// rebuild the temp object
+					document->rebuildObject();
+        }
+
+        // tell the document to create the object
+        if( buildMode == IVPI::BUILD_MODE_OBJECT_SIZE_XZ )
+        {
+					// get the object mode
+          int objectMode ( document->getObjectMode() );
+
+					// if this is a building
+          if( objectMode == IVPI::OBJECT_BUILDING )
+          {
+						// clear the temp object
+						document->clearObject();
+
+						// set the build mode to size xy
+            document->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_SIZE_XY );
+
+						// set the view mode to xy
+						document->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
+
+						// rebuild the temp object
+						document->rebuildObject();
+          }
+          // if it is not
+          else
+          {
+            document->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_XZ );
+          }
+
+
         }
         
         std::cout << "Setting 2D Grid Size Object Mode" << std::endl;

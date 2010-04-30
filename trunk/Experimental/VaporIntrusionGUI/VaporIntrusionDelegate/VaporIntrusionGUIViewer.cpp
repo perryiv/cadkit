@@ -211,7 +211,7 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
 		// pick soils
 		else if( false == ctrl && true == alt )
 		{
-			document->objectPick( point, IVPI::OBJECT_MODIFIER_SOURCE );
+			document->objectPick( point, IVPI::OBJECT_MODIFIER_SOIL );
 		}
 		// pick the building
 		else if( true == ctrl && true == alt )

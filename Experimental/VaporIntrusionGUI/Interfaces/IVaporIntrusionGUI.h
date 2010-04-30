@@ -175,7 +175,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     // SCS soil type, SCS soil name, Total porosity, water-filled porosity, effective soil gas permeability, 
     // Gas phase dynamic viscosity,  Fraction of organic carbon
 
-    Soil(): name(), type(), porosity(), waterPorosity(), permeability(), viscosity(), carbon(), index( 0 ), render( true ) {};
+    Soil(): name("N/A"), type("N/A"), porosity("N/A"), waterPorosity("N/A"), permeability("N/A"), viscosity("N/A"), carbon("N/A"), index( 0 ), render( true ) {};
     Soil( const std::string& n, const std::string& t, const std::string& p, const std::string& wp,
           const std::string& perm, const std::string& visc, const std::string& carb ):
           name( n ), type( t ), porosity( p ), waterPorosity( wp ), 

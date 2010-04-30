@@ -344,18 +344,8 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
 
       case Qt::Key_Escape :
       {
-        // reset edit mode to idle
-        document->setEditMode2D( IVPI::EDIT_MODE_IDLE );
-
-        // reset to teh default view
-        std::cout << "Setting 2D Grid Domain to the XY Grid" << std::endl;
-        document->setViewMode2D( IVPI::VIEW_MODE_2D_XY ); 
-
-        // set the object type to nothing
-        document->setObjectMode( IVPI::OBJECT_NOTHING );
-
-        // clear the temp object
-        document->clearObject();
+				// cancel object create or modify actions
+				document->cancelObjectCreate();
       }
       break;
 

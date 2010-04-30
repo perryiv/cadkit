@@ -331,10 +331,7 @@ public:
 
 	virtual void								objectPick( Usul::Math::Vec3f p, int modifier );
 													
-
-
-
-
+	virtual void								cancelObjectCreate();
 
 
 protected:
@@ -518,6 +515,7 @@ protected:
 	osg::BoundingBox  					_makeBoundingBoxFromXYZLWH( float x, float y, float z, float l, float w, float h );
 
 	void												_initCurrentObject( Object2D o );
+	void												_enableObjectRender();
 
 private:
     GroupPtr                  _root;

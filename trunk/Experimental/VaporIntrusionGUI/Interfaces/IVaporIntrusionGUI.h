@@ -451,6 +451,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
 	virtual void									objectPick( Usul::Math::Vec3f p, int modifier ) = 0;
 
+	virtual void									cancelObjectCreate() = 0;
+
   
 
     

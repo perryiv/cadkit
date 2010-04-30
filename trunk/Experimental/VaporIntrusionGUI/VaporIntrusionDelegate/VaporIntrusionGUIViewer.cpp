@@ -183,28 +183,51 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
   const bool right  ( ( true == event->buttons().testFlag ( Qt::RightButton ) ) );
   const bool middle ( ( true == event->buttons().testFlag ( Qt::MidButton   ) ) );
 
+	const bool shift ( ( true == event->modifiers().testFlag( Qt::ShiftModifier		) ) );
+	const bool ctrl  ( ( true == event->modifiers().testFlag( Qt::ControlModifier ) ) );
+	const bool alt   ( ( true == event->modifiers().testFlag( Qt::AltModifier			) ) );
+
+
   osg::Vec3d p ( this->_getIntersectPoint( event ) );
+
+	Usul::Math::Vec3f point ( p.x(), p.y(), p.z() );
 
   // set the mouse coords
   // document->setMouseCoords( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
 
   if( true == left )
   {
-		if( true == event->modifiers().testFlag( Qt::ShiftModifier ) )
+		// simulate right click
+		if( true == shift )
 		{
 			// remove the new grid point
-			document->handleRightMouseClick( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
+			document->handleRightMouseClick( point );
+		}
+		// pick sources
+		else if( true == ctrl && false == alt )
+		{
+			document->objectPick( point, IVPI::OBJECT_MODIFIER_SOURCE );
+		}
+		// pick soils
+		else if( false == ctrl && true == alt )
+		{
+			document->objectPick( point, IVPI::OBJECT_MODIFIER_SOURCE );
+		}
+		// pick the building
+		else if( true == ctrl && true == alt )
+		{
+			document->objectPick( point, IVPI::OBJECT_MODIFIER_BUILDING );
 		}
 		else
 		{
 			// add the new grid point
-			document->handleLeftMouseClick( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
+			document->handleLeftMouseClick( point );
 		}
   }
   if( true == right )
   {
     // remove the new grid point
-    document->handleRightMouseClick( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
+    document->handleRightMouseClick( point );
   }
 
   // rebuild the scene

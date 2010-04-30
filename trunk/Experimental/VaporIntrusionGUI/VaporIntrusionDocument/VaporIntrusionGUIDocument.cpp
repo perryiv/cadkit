@@ -7637,6 +7637,160 @@ void VaporIntrusionGUIDocument::rebuildObject()
 	this->_rebuildObject();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the current object to <o>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_initCurrentObject( Object2D o )
+{
+	Guard guard ( this );
+
+	// set the current object
+	_currentObject = o;
+
+	// rebuild the scene
+  this->_rebuildObject();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a bounding box from xyz and lwh
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::BoundingBox VaporIntrusionGUIDocument::_makeBoundingBoxFromXYZLWH( float x, float y, float z, float l, float w, float h )
+{
+	// make a bounding box from the source dimensions
+	osg::BoundingBox bb ( x, y, z, x+w, y+h, z+l );
+
+	return bb;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Source selection
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_pickSource( Usul::Math::Vec3f p )
+{
+	Guard guard ( this );
+
+	for( unsigned int i = 0; i < _sources.size(); ++i )
+	{
+		// get the current source
+		Source s ( _sources.at( i ) );
+
+		// make a bounding box from the dimensions
+		osg::BoundingBox bb ( this->_makeBoundingBoxFromXYZLWH( StrToFloat::convert( s.x ),
+																														-1.0f, 
+																														StrToFloat::convert( s.z ),
+																														StrToFloat::convert( s.w ),
+																														StrToFloat::convert( s.l ), 
+																														2.0f ) );
+
+		// make and osg::vec3 from p
+		osg::Vec3f point ( p[0], 0.0f, p[2] );
+
+		// check for intersection
+		if( true == bb.contains( point ) )
+		{
+			// get the bound
+			unsigned int sx ( this->_closestGridPoint( bb.xMin(), _xValues ) );
+			unsigned int ex ( this->_closestGridPoint( bb.xMax(), _xValues ) );
+			unsigned int sy ( this->_closestGridPoint( StrToFloat::convert ( s.y ), _yValues ) );
+			unsigned int ey ( this->_closestGridPoint( StrToFloat::convert ( s.y ) + StrToFloat::convert ( s.h ), _yValues ) );
+			unsigned int sz ( this->_closestGridPoint( bb.zMin(), _zValues ) );
+			unsigned int ez ( this->_closestGridPoint( bb.zMax(), _zValues ) );
+
+			// set the edit mode to object placement
+      this->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_XY );
+
+      // set the correct build mode
+      this->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
+
+      // set the object type to building
+      this->setObjectMode( IVPI::OBJECT_SOURCE_RELOAD );
+
+			// create an object from the source bounds
+			Object2D o ( sx, sy, sz, ex, ey, ez );
+
+			// init the current object
+			this->_initCurrentObject( o );
+
+			// store the source
+			_storedSource = s;
+
+			// don't render the current source
+			_sources.at( i ).render = false;
+
+			// don't loop anymore
+			break;
+		}
+	}
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Soil selection
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_pickSoil( Usul::Math::Vec3f p )
+{
+	Guard guard ( this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Building selection
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_pickBuilding()
+{
+	Guard guard ( this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Object selection
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::objectPick( Usul::Math::Vec3f p, int modifier )
+{
+	Guard guard ( this );
+
+	// select the building
+	if( modifier == IVPI::OBJECT_MODIFIER_BUILDING )
+	{
+		
+	}
+
+	// select sources
+	if( modifier == IVPI::OBJECT_MODIFIER_SOURCE )
+	{
+		this->_pickSource( p );
+	}
+
+	// select soild
+	if( modifier == IVPI::OBJECT_MODIFIER_SOIL )
+	{
+
+	}
+
+	this->rebuildScene();
+	
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -7829,44 +7983,47 @@ osg::Node* VaporIntrusionGUIDocument::_drawSources2D()
     // get the current source
     Source s ( this->sources().at( i ) );
 
-    // osg of the source color
-    osg::Vec4f color ( s.color[0], s.color[1], s.color[2], s.color[3] );
+		if( true == s.render )
+		{
 
-    // points of the plane
-    osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+			// osg of the source color
+			osg::Vec4f color ( s.color[0], s.color[1], s.color[2], s.color[3] );
+
+			// points of the plane
+			osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
 
 
-    if( IVPI::VIEW_MODE_2D_XY == viewMode )
-    {
+			if( IVPI::VIEW_MODE_2D_XY == viewMode )
+			{
 
-      float sx ( StrToFloat::convert( s.x ) );
-      float sz ( StrToFloat::convert( s.z ) );
-      float ex ( StrToFloat::convert( s.x ) + StrToFloat::convert( s.l ) );
-      float ez ( StrToFloat::convert( s.z ) + StrToFloat::convert( s.w ) );
-      
-      points->push_back( osg::Vec3f ( sx, 0.001, sz ) );
-      points->push_back( osg::Vec3f ( ex, 0.001, sz ) );
-      points->push_back( osg::Vec3f ( ex, 0.001, ez ) );
-      points->push_back( osg::Vec3f ( sx, 0.001, ez ) );
+				float sx ( StrToFloat::convert( s.x ) );
+				float sz ( StrToFloat::convert( s.z ) );
+				float ex ( StrToFloat::convert( s.x ) + StrToFloat::convert( s.l ) );
+				float ez ( StrToFloat::convert( s.z ) + StrToFloat::convert( s.w ) );
+	      
+				points->push_back( osg::Vec3f ( sx, 0.001, sz ) );
+				points->push_back( osg::Vec3f ( ex, 0.001, sz ) );
+				points->push_back( osg::Vec3f ( ex, 0.001, ez ) );
+				points->push_back( osg::Vec3f ( sx, 0.001, ez ) );
+			}
 
-      group->addChild ( this->_buildPlane( points.get(), color, _objectThickness ) );
-    }
+			if( IVPI::VIEW_MODE_2D_XZ == viewMode )
+			{
+				//set the points
+				float sx ( StrToFloat::convert( s.x ) );
+				float sy ( StrToFloat::convert( s.y ) );
+				float ex ( StrToFloat::convert( s.x ) + StrToFloat::convert( s.l ) );
+				float ey ( StrToFloat::convert( s.y ) + StrToFloat::convert( s.h ) );
+	      
+				points->push_back( osg::Vec3f ( sx, sy, 0.001 ) );
+				points->push_back( osg::Vec3f ( ex, sy, 0.001 ) );
+				points->push_back( osg::Vec3f ( ex, ey, 0.001 ) );
+				points->push_back( osg::Vec3f ( sx, ey, 0.001 ) );
+			}
 
-    if( IVPI::VIEW_MODE_2D_XZ == viewMode )
-    {
-      //set the points
-      float sx ( StrToFloat::convert( s.x ) );
-      float sy ( StrToFloat::convert( s.y ) );
-      float ex ( StrToFloat::convert( s.x ) + StrToFloat::convert( s.l ) );
-      float ey ( StrToFloat::convert( s.y ) + StrToFloat::convert( s.h ) );
-      
-      points->push_back( osg::Vec3f ( sx, sy, 0.001 ) );
-      points->push_back( osg::Vec3f ( ex, sy, 0.001 ) );
-      points->push_back( osg::Vec3f ( ex, ey, 0.001 ) );
-      points->push_back( osg::Vec3f ( sx, ey, 0.001 ) );
+			group->addChild ( this->_buildPlane( points.get(), color, _objectThickness ) );
+		}
 
-      group->addChild ( this->_buildPlane( points.get(), color, _objectThickness ) );
-    }
   }
   
   return group.release();
@@ -8189,22 +8346,14 @@ void VaporIntrusionGUIDocument::handleNewObject()
   {
     // create the source
     this->_createNewSource();
+    
+  }
 
-    //// launch properties dialog for newly made source
-    //SourcePropertiesDialog spd;
-
-    //// set the default source 
-    //spd.source( _sources.at( _sources.size() - 1 ) );
-
-    //// Show the dialog.
-    //if ( QDialog::Accepted != spd.exec() )
-    //throw Usul::Exceptions::Canceled();
-
-    //// get the modified source
-    //Source s ( spd.source() );
-
-    //// update the source
-    //_sources.at( _sources.size() - 1 ) = s;
+	// modify an existing source
+  if( _objectMode == IVPI::OBJECT_SOURCE_RELOAD )
+  {
+    // create the source
+    this->_modifySource();
     
   }
 
@@ -8260,6 +8409,63 @@ void VaporIntrusionGUIDocument::_createNewSource()
 
   // add the source to the list of sources
   _sources.push_back( s );
+
+  //rebuild the scene
+  this->rebuildScene();
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a new source
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_modifySource()
+{
+  Guard guard ( this );
+
+  // useful typedefs
+  typedef Usul::Convert::Type< float, std::string > FTS;
+
+  // get the corners
+  float sx ( _xValues.at( _currentObject.sx ).first );
+  float ex ( _xValues.at( _currentObject.ex ).first );
+  float sy ( _yValues.at( _currentObject.sy ).first );
+  float ey ( _yValues.at( _currentObject.ey ).first );
+  float sz ( _zValues.at( _currentObject.sz ).first );
+  float ez ( _zValues.at( _currentObject.ez ).first );
+
+  // Calculate the lwh
+  float l ( ex - sx );
+  float w ( ez - sz );
+  float h ( ey - sy );
+
+  IVPI::Chemicals c ( _storedSource.chemicals );
+
+  // create a building object with the parameters entered in the 2D window
+  IVPI::Source s ( Usul::Strings::format ( l ),
+                   Usul::Strings::format ( w ),
+                   Usul::Strings::format ( h ),
+                   Usul::Strings::format ( sx ),
+                   Usul::Strings::format ( sy ),
+                   Usul::Strings::format ( sz ),
+                   _storedSource.name, c );
+
+	s.concentrations = _storedSource.concentrations;
+
+  // generate a random color for the source
+  s.color = _storedSource.color;
+
+	// set the index
+	s.index = _storedSource.index;
+
+	// flag to render
+	s.render = true;
+
+  // add the source to the list of sources
+  _sources.at( _storedSource.index ) = s;
 
   //rebuild the scene
   this->rebuildScene();

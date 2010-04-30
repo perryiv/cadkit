@@ -329,6 +329,9 @@ public:
   void                        clearObject();
 	virtual void								rebuildObject();
 
+	virtual void								objectPick( Usul::Math::Vec3f p, int modifier );
+													
+
 
 
 
@@ -438,8 +441,11 @@ protected:
 
   // object creation methods
   void                        _createNewBuilding();
+	void                        _modifyBuilding();
   void                        _createNewSource();
+	void                        _modifySource();
   void                        _createNewSoil();
+	void                        _modifySoil();
 
   void                        _setBuildingLocationFromClick( Usul::Math::Vec3f point );
 
@@ -505,7 +511,13 @@ protected:
 	void												_readGridAxis( const std::string& filename );
 	void												_readCracks( const std::string& filename, Cracks& cracks );
 
-  
+  // object picking
+	void												_pickSource( Usul::Math::Vec3f p );
+	void												_pickSoil( Usul::Math::Vec3f p );
+	void												_pickBuilding();
+	osg::BoundingBox  					_makeBoundingBoxFromXYZLWH( float x, float y, float z, float l, float w, float h );
+
+	void												_initCurrentObject( Object2D o );
 
 private:
     GroupPtr                  _root;

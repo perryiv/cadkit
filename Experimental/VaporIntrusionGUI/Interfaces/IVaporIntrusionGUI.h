@@ -88,8 +88,17 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     OBJECT_FOUNDATION,
     OBJECT_CRACK,
 		OBJECT_SOURCE_RELOAD,
-		OBJECT_SOIL_RELOAD
+		OBJECT_SOIL_RELOAD,
+		OBJECT_BUILDING_RELOAD
   };
+
+	// Modifiers
+	enum
+	{
+		OBJECT_MODIFIER_SOURCE,
+		OBJECT_MODIFIER_SOIL,
+		OBJECT_MODIFIER_BUILDING
+	};
 
 
   // structs
@@ -160,15 +169,17 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     std::string layerName;
     std::string x, y, z, l, w, h;
     Usul::Math::Vec4f color;
+		unsigned int index;
+		bool render;
 
     // SCS soil type, SCS soil name, Total porosity, water-filled porosity, effective soil gas permeability, 
     // Gas phase dynamic viscosity,  Fraction of organic carbon
 
-    Soil(): name(), type(), porosity(), waterPorosity(), permeability(), viscosity(), carbon() {};
+    Soil(): name(), type(), porosity(), waterPorosity(), permeability(), viscosity(), carbon(), index( 0 ), render( true ) {};
     Soil( const std::string& n, const std::string& t, const std::string& p, const std::string& wp,
           const std::string& perm, const std::string& visc, const std::string& carb ):
           name( n ), type( t ), porosity( p ), waterPorosity( wp ), 
-          permeability( perm ), viscosity( visc ), carbon( carb ) {};
+          permeability( perm ), viscosity( visc ), carbon( carb ), index( 0 ), render( true ) {};
 
     void dimensions( const std::string& x1, const std::string& y1, const std::string& z1,
                 const std::string& l1, const std::string& w1, const std::string& h1 )
@@ -215,15 +226,17 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     Chemicals chemicals;
     Concentrations concentrations;
     Usul::Math::Vec4f color;
+		unsigned int index;
+		bool render;
 
     Source():
-    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" ), name ( "" ), chemicals()
+    l ( "1" ), w ( "1" ), h ( "1" ), x ( "0" ), y ( "0" ), z ( "0" ), name ( "" ), chemicals(), index( 0 ), render( true )
     {};
 
     Source( const std::string& length, const std::string& width, const std::string& height,
                  const std::string& xpos, const std::string& ypos, const std::string& zpos,
                  const std::string& n, Chemicals c ):
-    l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ), name( n ), chemicals( c )
+    l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ), name( n ), chemicals( c ), index( 0 ), render( true )
     {};
 
   };
@@ -431,10 +444,12 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   virtual std::pair<float, float> pressureMinMax() = 0;
 
   // user settings
-  virtual void                readUserPreferences( const std::string& username ) = 0;
-  virtual void                writeUserPreferences( const std::string& username ) = 0;
+  virtual void									readUserPreferences( const std::string& username ) = 0;
+  virtual void									writeUserPreferences( const std::string& username ) = 0;
 
-	virtual void								rebuildObject() = 0;
+	virtual void									rebuildObject() = 0;
+
+	virtual void									objectPick( Usul::Math::Vec3f p, int modifier ) = 0;
 
   
 

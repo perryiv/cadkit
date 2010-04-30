@@ -7684,6 +7684,8 @@ void VaporIntrusionGUIDocument::_pickSource( Usul::Math::Vec3f p )
 		// get the current source
 		Source s ( _sources.at( i ) );
 
+		s.index = i;
+
 		// make a bounding box from the dimensions
 		osg::BoundingBox bb ( this->_makeBoundingBoxFromXYZLWH( StrToFloat::convert( s.x ),
 																														-1.0f, 
@@ -7726,6 +7728,9 @@ void VaporIntrusionGUIDocument::_pickSource( Usul::Math::Vec3f p )
 
 			// don't render the current source
 			_sources.at( i ).render = false;
+
+			// feedback
+			std::cout << Usul::Strings::format( "Source [", s.name, "] selected for editing." ) << std::endl;
 
 			// don't loop anymore
 			break;
@@ -9459,5 +9464,50 @@ void VaporIntrusionGUIDocument::_updatePressure()
     }
 
   }
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the pressure values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_enableObjectRender()
+{
+	// enable the stored source to render
+	_sources.at( _storedSource.index ).render = true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the pressure values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::cancelObjectCreate()
+{
+	Guard guard ( this );
+
+	 // reset edit mode to idle
+    this->setEditMode2D( IVPI::EDIT_MODE_IDLE );
+
+    // reset to teh default view
+    std::cout << "Setting 2D Grid Domain to the XY Grid" << std::endl;
+    this->setViewMode2D( IVPI::VIEW_MODE_2D_XY ); 
+
+    // set the object type to nothing
+    this->setObjectMode( IVPI::OBJECT_NOTHING );
+
+		// reset render options
+		this->_enableObjectRender();
+
+    // clear the temp object
+    this->clearObject();
+
+		// rebuild the scene
+		this->rebuildScene();
 
 }

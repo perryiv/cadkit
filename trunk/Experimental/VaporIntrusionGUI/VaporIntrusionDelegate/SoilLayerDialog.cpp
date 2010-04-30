@@ -431,6 +431,20 @@ void SoilLayerDialog::on_soilDropDown_activated( int index )
 
   // update the current index
   _currentSoil = nextIndex;
+
+	// get the color
+	Usul::Math::Vec4f fColor ( _soils.at( nextIndex ).color );
+  Usul::Math::Vec4i iColor (   static_cast< int > ( fColor[0] * 255 ),
+                               static_cast< int > ( fColor[1] * 255 ),
+                               static_cast< int > ( fColor[2] * 255 ),
+                               static_cast< int > ( fColor[3] * 255 ) );
+
+	// set the color in the color box
+  QColor c ( iColor[0], iColor[1], iColor[2], iColor[3] );
+  color->color( c );
+
+	// set the name in the edit box
+	this->currentSoilName->setText( _soils.at( nextIndex ).name.c_str() );
   
 }
 

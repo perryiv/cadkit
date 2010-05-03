@@ -44,22 +44,29 @@ public:
   SourcePropertiesDialog ( QWidget *parent = 0x0 );
   virtual ~SourcePropertiesDialog();
 
-  Source              source();
-  void                source( Source s );  
-  
+  Source             source();
+  void               source( Source s );  
 
   void                initialize();
+
+  void                finalize();
 
 protected:
 
   void                _initialize();
+  void                _initContaminants();
+  void                _initSource();
+  void                _updateSource();
+  
   void                _clearTable();
 
 private:
-  Source             _source;
+  
+	Source             _source;
 
 private slots:
 
+	void on_sourceName_editingFinished();
 };
 
 

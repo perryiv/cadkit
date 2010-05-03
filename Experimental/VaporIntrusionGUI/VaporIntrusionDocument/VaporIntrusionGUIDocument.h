@@ -330,6 +330,7 @@ public:
 	virtual void								rebuildObject();
 
 	virtual void								objectPick( Usul::Math::Vec3f p, int modifier );
+	virtual void								objectProperties( Usul::Math::Vec3f p, int modifier );
 													
 	virtual void								cancelObjectCreate();
 
@@ -513,6 +514,10 @@ protected:
 	void												_pickSoil( Usul::Math::Vec3f p );
 	void												_pickBuilding();
 	osg::BoundingBox  					_makeBoundingBoxFromXYZLWH( float x, float y, float z, float l, float w, float h );
+
+	void												_propertiesSource( Usul::Math::Vec3f p );
+	void												_propertiesSoil( Usul::Math::Vec3f p );
+	void												_propertiesBuilding( Usul::Math::Vec3f p );
 
 	void												_initCurrentObject( Object2D o );
 	void												_enableObjectRender();

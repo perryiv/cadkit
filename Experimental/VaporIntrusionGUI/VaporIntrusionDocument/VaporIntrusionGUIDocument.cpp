@@ -146,7 +146,9 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
 	_crackMarker( 0, 0, 0 ),
 	_showCrackMarker( false ),
 	_storedSource(),
-	_storedSoil()
+	_storedSoil(),
+	_soilTransparency( 1.0f ),
+	_sourceTransparency( 1.0f )
 {
   USUL_TRACE_SCOPE;
 }
@@ -1389,7 +1391,7 @@ void VaporIntrusionGUIDocument::_makeSource3D()
     Source s ( _sources.at( i ) );
 
     // color for the chemical
-    Color c ( s.color[0], s.color[1], s.color[2], 0.8 );
+    Color c ( s.color[0], s.color[1], s.color[2], _sourceTransparency );
    
     // Material for the cube
     osg::ref_ptr< osg::Material > material ( new osg::Material );
@@ -1464,7 +1466,7 @@ void VaporIntrusionGUIDocument::_makeSoil3D()
     Soil s ( _soils.at( i ) );
 
     // color for the chemical
-    Color c ( s.color[0], s.color[1], s.color[2], 0.8 );
+    Color c ( s.color[0], s.color[1], s.color[2], _soilTransparency );
    
     // Material for the cube
     osg::ref_ptr< osg::Material > material ( new osg::Material );
@@ -8117,7 +8119,7 @@ osg::Node* VaporIntrusionGUIDocument::_drawSources2D()
 		{
 
 			// osg of the source color
-			osg::Vec4f color ( s.color[0], s.color[1], s.color[2], s.color[3] );
+			osg::Vec4f color ( s.color[0], s.color[1], s.color[2], 1.0f );
 
 			// points of the plane
 			osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
@@ -8186,7 +8188,7 @@ osg::Node* VaporIntrusionGUIDocument::_drawSoils2D()
 		{
 
 			// osg of the source color
-			osg::Vec4f color ( s.color[0], s.color[1], s.color[2], s.color[3] );
+			osg::Vec4f color ( s.color[0], s.color[1], s.color[2], 1.0f );
 
 			// points of the plane
 			osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
@@ -8544,7 +8546,7 @@ void VaporIntrusionGUIDocument::_createNewSource()
                    "Untitled", c );
 
   // generate a random color for the source
-  s.color = this->_randomColor( true, false, false );
+  s.color = this->_randomColor( true, false, false, _sourceTransparency );
 
   // add the source to the list of sources
   _sources.push_back( s );
@@ -8642,7 +8644,7 @@ void VaporIntrusionGUIDocument::_createNewSoil()
   IVPI::Soil soil;
 
   // generate a random color for the source
-  soil.color = this->_randomColor( true, true, false );
+  soil.color = this->_randomColor( true, true, false, _soilTransparency );
 
   // set the soil dimensions
   soil.dimensions( Usul::Strings::format ( sx ),
@@ -8732,7 +8734,7 @@ void VaporIntrusionGUIDocument::_modifySoil()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Math::Vec4f VaporIntrusionGUIDocument::_randomColor( bool rR, bool rG, bool rB )
+Usul::Math::Vec4f VaporIntrusionGUIDocument::_randomColor( bool rR, bool rG, bool rB, float alpha )
 {
  
   // seed the random number generator
@@ -8767,7 +8769,7 @@ Usul::Math::Vec4f VaporIntrusionGUIDocument::_randomColor( bool rR, bool rG, boo
   }  
 
   // generate the color
-  Usul::Math::Vec4f color ( red, green, blue, 1.0f ); 
+  Usul::Math::Vec4f color ( red, green, blue, alpha ); 
 
   return color;
 }
@@ -9287,6 +9289,12 @@ VaporIntrusionGUIDocument::FloatVec VaporIntrusionGUIDocument::transparencies()
   // set the pressure information
   fv.push_back( _pressure.alpha );
 
+	// set the soil information
+	fv.push_back( _soilTransparency );
+
+	// set the source information
+	fv.push_back( _sourceTransparency );
+
   return fv;
 }
 
@@ -9302,7 +9310,7 @@ void VaporIntrusionGUIDocument::transparencies( FloatVec fv )
   Guard guard ( this );
 
   // make sure the float vector has the required number of elements
-  if( fv.size() < 5 )
+  if( fv.size() < 7 )
   {
     return;
   }
@@ -9327,6 +9335,12 @@ void VaporIntrusionGUIDocument::transparencies( FloatVec fv )
 
   // set the transparency for the pressure
   _pressure.alpha = fv.at( 4 );
+
+	// set the transparency for the soil
+  _soilTransparency = fv.at( 5 );
+
+	// set the transparency for the source
+  _sourceTransparency = fv.at( 6 );
 }
 
 

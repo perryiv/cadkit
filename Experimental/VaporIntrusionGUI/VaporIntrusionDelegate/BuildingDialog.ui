@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>BuildingDialog</class>
- <widget class="QDialog" name="BuildingDialog" >
-  <property name="geometry" >
+ <widget class="QDialog" name="BuildingDialog">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,11 +10,11 @@
     <height>398</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Building Parameters</string>
   </property>
-  <widget class="QDialogButtonBox" name="okCancelButtons" >
-   <property name="geometry" >
+  <widget class="QDialogButtonBox" name="okCancelButtons">
+   <property name="geometry">
     <rect>
      <x>110</x>
      <y>350</y>
@@ -21,15 +22,15 @@
      <height>32</height>
     </rect>
    </property>
-   <property name="orientation" >
+   <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
-   <property name="standardButtons" >
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QGroupBox" name="_buildingGroup" >
-   <property name="geometry" >
+  <widget class="QGroupBox" name="_buildingGroup">
+   <property name="geometry">
     <rect>
      <x>30</x>
      <y>20</y>
@@ -37,11 +38,11 @@
      <height>291</height>
     </rect>
    </property>
-   <property name="title" >
+   <property name="title">
     <string>Building Parameters</string>
    </property>
-   <widget class="QGroupBox" name="groupBox_3" >
-    <property name="geometry" >
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
      <rect>
       <x>40</x>
       <y>80</y>
@@ -49,11 +50,11 @@
       <height>191</height>
      </rect>
     </property>
-    <property name="title" >
+    <property name="title">
      <string/>
     </property>
-    <widget class="QLineEdit" name="_depth" >
-     <property name="geometry" >
+    <widget class="QLineEdit" name="_depth">
+     <property name="geometry">
       <rect>
        <x>140</x>
        <y>30</y>
@@ -62,8 +63,8 @@
       </rect>
      </property>
     </widget>
-    <widget class="QLineEdit" name="_thickness" >
-     <property name="geometry" >
+    <widget class="QLineEdit" name="_thickness">
+     <property name="geometry">
       <rect>
        <x>140</x>
        <y>60</y>
@@ -72,8 +73,8 @@
       </rect>
      </property>
     </widget>
-    <widget class="QLabel" name="label_4" >
-     <property name="geometry" >
+    <widget class="QLabel" name="label_4">
+     <property name="geometry">
       <rect>
        <x>10</x>
        <y>60</y>
@@ -81,25 +82,25 @@
        <height>20</height>
       </rect>
      </property>
-     <property name="text" >
+     <property name="text">
       <string>Thickness of the Slab</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_9" >
-     <property name="geometry" >
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>8</x>
        <y>30</y>
-       <width>109</width>
+       <width>121</width>
        <height>20</height>
       </rect>
      </property>
-     <property name="text" >
-      <string>Depth Below Grade</string>
+     <property name="text">
+      <string>Foundation depth in soil</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_11" >
-     <property name="geometry" >
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
       <rect>
        <x>50</x>
        <y>90</y>
@@ -107,12 +108,12 @@
        <height>20</height>
       </rect>
      </property>
-     <property name="text" >
+     <property name="text">
       <string>Exchange Rate</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="_exchangeRate" >
-     <property name="geometry" >
+    <widget class="QLineEdit" name="_exchangeRate">
+     <property name="geometry">
       <rect>
        <x>141</x>
        <y>90</y>
@@ -121,8 +122,8 @@
       </rect>
      </property>
     </widget>
-    <widget class="QLabel" name="label_10" >
-     <property name="geometry" >
+    <widget class="QLabel" name="label_10">
+     <property name="geometry">
       <rect>
        <x>90</x>
        <y>120</y>
@@ -130,12 +131,12 @@
        <height>18</height>
       </rect>
      </property>
-     <property name="text" >
+     <property name="text">
       <string>Volume</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="_volume" >
-     <property name="geometry" >
+    <widget class="QLineEdit" name="_volume">
+     <property name="geometry">
       <rect>
        <x>140</x>
        <y>120</y>
@@ -144,9 +145,61 @@
       </rect>
      </property>
     </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>30</y>
+       <width>16</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>m</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>60</y>
+       <width>16</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>cm</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>90</y>
+       <width>21</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>1/hr</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>120</y>
+       <width>16</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>m3</string>
+     </property>
+    </widget>
    </widget>
-   <widget class="QCheckBox" name="_useBuilding" >
-    <property name="geometry" >
+   <widget class="QCheckBox" name="_useBuilding">
+    <property name="geometry">
      <rect>
       <x>50</x>
       <y>40</y>
@@ -154,7 +207,7 @@
       <height>22</height>
      </rect>
     </property>
-    <property name="text" >
+    <property name="text">
      <string>Building is present in experiment</string>
     </property>
    </widget>
@@ -168,11 +221,11 @@
    <receiver>BuildingDialog</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>248</x>
      <y>254</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
@@ -184,11 +237,11 @@
    <receiver>BuildingDialog</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>316</x>
      <y>260</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
     </hint>

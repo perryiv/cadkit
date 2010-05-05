@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>NewVaporIntrusion</class>
- <widget class="QDialog" name="NewVaporIntrusion" >
-  <property name="geometry" >
+ <widget class="QDialog" name="NewVaporIntrusion">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,11 +10,11 @@
     <height>135</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Vapor Intrusion Modeling</string>
   </property>
-  <widget class="QDialogButtonBox" name="okCancelButtons" >
-   <property name="geometry" >
+  <widget class="QDialogButtonBox" name="okCancelButtons">
+   <property name="geometry">
     <rect>
      <x>70</x>
      <y>80</y>
@@ -21,15 +22,15 @@
      <height>32</height>
     </rect>
    </property>
-   <property name="orientation" >
+   <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
-   <property name="standardButtons" >
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QRadioButton" name="newRadio" >
-   <property name="geometry" >
+  <widget class="QRadioButton" name="newRadio">
+   <property name="geometry">
     <rect>
      <x>30</x>
      <y>20</y>
@@ -37,12 +38,12 @@
      <height>22</height>
     </rect>
    </property>
-   <property name="text" >
-    <string>New Vapor Intrusion Experiment</string>
+   <property name="text">
+    <string>New Vapor Intrusion Simulation</string>
    </property>
   </widget>
-  <widget class="QRadioButton" name="loadRadio" >
-   <property name="geometry" >
+  <widget class="QRadioButton" name="loadRadio">
+   <property name="geometry">
     <rect>
      <x>30</x>
      <y>40</y>
@@ -50,8 +51,8 @@
      <height>22</height>
     </rect>
    </property>
-   <property name="text" >
-    <string>Load Saved Vapor Intrusion Experiment</string>
+   <property name="text">
+    <string>Load Saved Vapor Intrusion Simulation</string>
    </property>
   </widget>
  </widget>
@@ -63,11 +64,11 @@
    <receiver>NewVaporIntrusion</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>248</x>
      <y>254</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
@@ -79,11 +80,11 @@
    <receiver>NewVaporIntrusion</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>316</x>
      <y>260</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
     </hint>

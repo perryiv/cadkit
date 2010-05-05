@@ -35,11 +35,11 @@ _currentSource ( 0 )
   QStringList chemicalTitles;
   
   chemicalTitles.push_back( "Name" );
-  chemicalTitles.push_back( "Concentration" );
+  chemicalTitles.push_back( "Source Concentration" );
   chemicalTitles.push_back( "H. Law" );
-  chemicalTitles.push_back( "Koc" );
-  chemicalTitles.push_back( "Diff in Air" );
-  chemicalTitles.push_back( "Diff in H2O" );
+  chemicalTitles.push_back( "Koc (cm3/g)" );
+  chemicalTitles.push_back( "Diff in Air (cm2/s)" );
+  chemicalTitles.push_back( "Diff in H2O (cm2/s)" );
   chemicalTitles.push_back( "Atmo. Conc." );
 
   _chemicalTable->setHorizontalHeaderLabels( chemicalTitles );

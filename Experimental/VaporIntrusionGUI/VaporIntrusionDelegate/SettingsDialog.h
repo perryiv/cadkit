@@ -68,6 +68,9 @@ private slots:
   void  on_cSlider_sliderMoved( int value );
   void  on_gSlider_sliderMoved( int value );
   void  on_pSlider_sliderMoved( int value );
+	void  on_soilSlider_sliderMoved( int value );
+	void  on_sourceSlider_sliderMoved( int value );
+
 
   void on_bTrans_editingFinished();
   void on_fTrans_editingFinished();

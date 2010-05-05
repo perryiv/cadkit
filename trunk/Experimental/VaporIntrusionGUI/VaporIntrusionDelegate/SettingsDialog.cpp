@@ -370,6 +370,46 @@ void  SettingsDialog::on_pSlider_sliderMoved( int value )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Update information when the user interacts with the pressure slider
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void  SettingsDialog::on_soilSlider_sliderMoved( int value )
+{
+  // convert the input value to a float
+  float fValue ( static_cast< float > ( value ) / 100.0f );
+
+  // conver the float to a string
+  std::string sValue ( Usul::Strings::format( fValue ) );
+
+  // update the corresponding edit field
+  soilTrans->setText( sValue.c_str() );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update information when the user interacts with the pressure slider
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void  SettingsDialog::on_sourceSlider_sliderMoved( int value )
+{
+  // convert the input value to a float
+  float fValue ( static_cast< float > ( value ) / 100.0f );
+
+  // conver the float to a string
+  std::string sValue ( Usul::Strings::format( fValue ) );
+
+  // update the corresponding edit field
+  sourceTrans->setText( sValue.c_str() );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Update slider and text information when the user had edited the building
 //  edit box.
 //

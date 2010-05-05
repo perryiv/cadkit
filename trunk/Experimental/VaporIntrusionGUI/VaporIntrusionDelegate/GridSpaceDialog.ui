@@ -97,7 +97,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Depth (Z) total meters</string>
+     <string>Depth (Z) in meters</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="_depth">

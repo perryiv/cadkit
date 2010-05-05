@@ -470,7 +470,7 @@ protected:
   bool                        _crackExists( Cracks cracks, Crack crack );
 
   Usul::Math::Vec4f           _randomColor();
-  Usul::Math::Vec4f           _randomColor( bool rR, bool rG, bool rB );
+  Usul::Math::Vec4f           _randomColor( bool rR, bool rG, bool rB, float alpha );
   Usul::Math::Vec4f           _interpolatedPColor( float value );
 
   osg::Vec4f                  _getPressureColor( unsigned int x, unsigned int z );
@@ -602,6 +602,9 @@ private:
 
 		Source										_storedSource;
 		Soil											_storedSoil;
+
+		float											_soilTransparency;
+		float											_sourceTransparency;
 
   
 };

@@ -38,11 +38,11 @@ _chemicals()
   QStringList titles;
 
   titles.push_back( "Chemical" );
-  titles.push_back( "H. Law" );
+  titles.push_back( "Henry's Constant (cm3/cm3)" );
   titles.push_back( "Koc (cm3/g)" );
   titles.push_back( "Diff in Air (cm2/s)" );
   titles.push_back( "Diff in H2O (cm2/s)" );
-  titles.push_back( "Initial Conc." );
+  titles.push_back( "Initial Conc. in soil gas (g/cm3)" );
   titles.push_back( "Present" );
 
   _chemicalTable->setHorizontalHeaderLabels( titles );

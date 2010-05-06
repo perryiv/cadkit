@@ -2683,8 +2683,14 @@ void VaporIntrusionGUIDocument::_writeSettings( const std::string& filename )
   // pressure alpha as a string
   std::string pAlphaStr ( Usul::Strings::format( _pressure.alpha ) );
 
+	// pressure alpha as a string
+  std::string soilAlphaStr ( Usul::Strings::format( _soilTransparency ) );
+
+	// pressure alpha as a string
+  std::string sourceAlphaStr ( Usul::Strings::format( _sourceTransparency ) );
+
   // output to the settings file
-  ofs << bcStr << "\n" << fcStr << "\n" << ccStr << "\n" << gcStr << "\n" << pAlphaStr << std::flush;
+  ofs << bcStr << "\n" << fcStr << "\n" << ccStr << "\n" << gcStr << "\n" << pAlphaStr<< "\n"  << soilAlphaStr << "\n"  << sourceAlphaStr << std::flush;
 
   // buffer size
   const unsigned long int bufSize ( 4095 );
@@ -3475,12 +3481,56 @@ void VaporIntrusionGUIDocument::_readSettings( const std::string& filename )
     StringVec sv;
     Usul::Strings::split( tStr, ",", false, sv );
 
-	if( sv.size() == 1 )
-	{
-		_pressure.alpha = Usul::Convert::Type< std::string, float >::convert( sv.at( 0 ) );
+		if( sv.size() == 1 )
+		{
+			_pressure.alpha = Usul::Convert::Type< std::string, float >::convert( sv.at( 0 ) );
+		}
 	}
 
-  }
+	// read the soil alpha
+  if( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    // separate the strings
+    StringVec sv;
+    Usul::Strings::split( tStr, ",", false, sv );
+
+		if( sv.size() == 1 )
+		{
+			_soilTransparency = Usul::Convert::Type< std::string, float >::convert( sv.at( 0 ) );
+		}
+	}
+
+	// read the source alpha
+  if( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    // separate the strings
+    StringVec sv;
+    Usul::Strings::split( tStr, ",", false, sv );
+
+		if( sv.size() == 1 )
+		{
+			_sourceTransparency = Usul::Convert::Type< std::string, float >::convert( sv.at( 0 ) );
+		}
+
+	}
 
 }
 
@@ -3997,6 +4047,9 @@ void VaporIntrusionGUIDocument::_readBuilding( const std::string& filename )
 
 				// set the building
 				this->building( b );
+
+				// set the building present parameter
+				this->useBuilding( true );
 
       }// end for for activators read   
 

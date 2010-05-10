@@ -7871,9 +7871,46 @@ void VaporIntrusionGUIDocument::_pickSoil( Usul::Math::Vec3f p )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_pickBuilding()
+void VaporIntrusionGUIDocument::_pickBuilding( Usul::Math::Vec3f p )
 {
 	Guard guard ( this );
+	
+	// set the edit mode to object placement
+  this->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_XY );
+
+  // set the correct build mode
+  this->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
+
+  // set the object type to building
+  this->setObjectMode( IVPI::OBJECT_BUILDING_RELOAD );
+
+	Building b ( this->building() );
+
+	// make a bounding box from the dimensions
+	osg::BoundingBox bb ( this->_makeBoundingBoxFromXYZLWH( StrToFloat::convert( b.x ),
+																													StrToFloat::convert( b.y ), 
+																													StrToFloat::convert( b.z ),
+																													StrToFloat::convert( b.w ),
+																													StrToFloat::convert( b.l ), 
+																													StrToFloat::convert( b.h ) ) );
+
+	// get the bound
+	unsigned int sx ( this->_closestGridPoint( bb.xMin(), _xValues ) );
+	unsigned int ex ( this->_closestGridPoint( bb.xMax(), _xValues ) );
+	unsigned int sy ( this->_closestGridPoint( bb.yMin(), _yValues ) );
+	unsigned int ey ( this->_closestGridPoint( bb.yMax(), _yValues ) );
+	unsigned int sz ( this->_closestGridPoint( bb.zMin(), _zValues ) );
+	unsigned int ez ( this->_closestGridPoint( bb.zMax(), _zValues ) );
+
+	// create an object from the source bounds
+	Object2D o ( sx, sy, sz, ex, ey, ez );
+
+	// init the current object
+	this->_initCurrentObject( o );
+
+	// feedback
+	std::cout << Usul::Strings::format( "Building selected for editing." ) << std::endl;
+
 }
 
 
@@ -7957,7 +7994,7 @@ void VaporIntrusionGUIDocument::objectPick( Usul::Math::Vec3f p, int modifier )
 	// select the building
 	if( modifier == IVPI::OBJECT_MODIFIER_BUILDING )
 	{
-		
+		this->_pickBuilding( p );
 	}
 
 	// select sources
@@ -8285,6 +8322,30 @@ osg::Node* VaporIntrusionGUIDocument::_drawSoils2D()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Render the building?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::_renderBuilding()
+{
+	Guard guard ( this );
+
+	bool render ( true );
+
+	// get the object mode to test whether or not to render the building
+	int objectMode ( this->getObjectMode() );
+
+	if( IVPI::OBJECT_BUILDING_RELOAD == objectMode )
+	{
+		render = false;
+	}
+
+	return render;
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the 2D objects
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -8293,11 +8354,10 @@ void VaporIntrusionGUIDocument::_build2DObjects()
 {
    Guard guard ( this );
 
-  if( true == _useBuilding )
+  if( true == _useBuilding && true == this->_renderBuilding()  )
   {
     // add the building
     _root2D->addChild( this->_drawBuilding2D() );
-
   }
 
   if( this->sources().size() > 0 )
@@ -8521,12 +8581,18 @@ void VaporIntrusionGUIDocument::handleNewObject()
   Guard guard ( this );
 
   // create a new building
-	if( _objectMode == IVPI::OBJECT_BUILDING || _objectMode == IVPI::OBJECT_BUILDING_RELOAD )
+	if( _objectMode == IVPI::OBJECT_BUILDING )
   {
     this->_createNewBuilding();
 
     this->_updatePressure();
   }
+
+	// modify the existing building
+	if( _objectMode == IVPI::OBJECT_BUILDING_RELOAD )
+  {
+		this->_modifyBuilding();
+	}
 
   // create a new source
   if( _objectMode == IVPI::OBJECT_SOURCE )
@@ -8889,6 +8955,50 @@ void VaporIntrusionGUIDocument::_createNewBuilding()
 
   // set the building
   _building = b;
+
+  // tell the document that there is a building
+  this->useBuilding( true );
+
+  //rebuild the scene
+  this->rebuildScene();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a new building
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_modifyBuilding()
+{
+  Guard guard ( this );
+
+  // useful typedefs
+  typedef Usul::Convert::Type< float, std::string > FTS;
+
+  // get the building corners
+  float sx ( _xValues.at( _currentObject.sx ).first );
+  float ex ( _xValues.at( _currentObject.ex ).first );
+  float sy ( _yValues.at( _currentObject.sy ).first );
+  float ey ( _yValues.at( _currentObject.ey ).first );
+  float sz ( _zValues.at( _currentObject.sz ).first );
+  float ez ( _zValues.at( _currentObject.ez ).first );
+
+  // Calculate the lwh
+  float l ( ex - sx );
+  float w ( ez - sz );
+  float h ( ey - sy );
+
+	// get the current building
+	Building cBuilding ( this->building() );
+
+  // create a building object with the parameters entered in the 2D window
+  Building nBuilding ( FTS::convert( l ), FTS::convert( w ), FTS::convert( h ), FTS::convert( sx ), FTS::convert( sy ), FTS::convert( sz ), 
+											 cBuilding.depth, cBuilding.v, cBuilding.xrate, cBuilding.thickness );
+
+  // set the building
+  this->building( nBuilding );
 
   // tell the document that there is a building
   this->useBuilding( true );

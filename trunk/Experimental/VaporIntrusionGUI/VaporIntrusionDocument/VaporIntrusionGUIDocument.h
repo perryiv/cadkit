@@ -512,7 +512,7 @@ protected:
   // object picking
 	void												_pickSource( Usul::Math::Vec3f p );
 	void												_pickSoil( Usul::Math::Vec3f p );
-	void												_pickBuilding();
+	void												_pickBuilding(  Usul::Math::Vec3f p );
 	osg::BoundingBox  					_makeBoundingBoxFromXYZLWH( float x, float y, float z, float l, float w, float h );
 
 	void												_propertiesSource( Usul::Math::Vec3f p );
@@ -521,6 +521,8 @@ protected:
 
 	void												_initCurrentObject( Object2D o );
 	void												_enableObjectRender();
+
+	bool												_renderBuilding();
 
 private:
     GroupPtr                  _root;

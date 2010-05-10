@@ -428,7 +428,7 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
           std::cout << "Setting 2D Grid Domain Mode to the Z (Basement/Soil) Grid" << std::endl;
 
           // if this is a building
-          if( objectMode == IVPI::OBJECT_BUILDING )
+					if( objectMode == IVPI::OBJECT_BUILDING || objectMode == IVPI::OBJECT_BUILDING_RELOAD )
           {
             document->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_SIZE_XZ );
           }
@@ -500,7 +500,7 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
           int objectMode ( document->getObjectMode() );
 
 					// if this is a building
-          if( objectMode == IVPI::OBJECT_BUILDING )
+          if( objectMode == IVPI::OBJECT_BUILDING  || objectMode == IVPI::OBJECT_BUILDING_RELOAD )
           {
 						// clear the temp object
 						document->clearObject();

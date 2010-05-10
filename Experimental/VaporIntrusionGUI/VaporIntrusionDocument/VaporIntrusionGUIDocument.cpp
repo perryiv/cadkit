@@ -6563,6 +6563,9 @@ void VaporIntrusionGUIDocument::_handleCrackAdd( Usul::Math::Vec3f point )
   // get the build mode
   int buildMode ( this->getBuildMode2D() );
 
+	// Grid top level
+	float gridTop ( static_cast< float > ( _yValues.at( 0 ).first ) );
+
   // X axis selected
   if( editMode == IVPI::EDIT_Y_GRID_2D )
   {
@@ -6580,7 +6583,7 @@ void VaporIntrusionGUIDocument::_handleCrackAdd( Usul::Math::Vec3f point )
 
 			// make the crack marker
 			_crackMarker = osg::Vec3 ( StrToFloat::convert( _placementCrack.value ),
-																 -0.1f,
+																 gridTop,
 																 StrToFloat::convert( _placementCrack.start ) );
 
 			// toggle to show the crack marker
@@ -6637,7 +6640,7 @@ void VaporIntrusionGUIDocument::_handleCrackAdd( Usul::Math::Vec3f point )
 
 			// make the crack marker
 			_crackMarker = osg::Vec3 ( StrToFloat::convert( _placementCrack.start ),
-																 -0.1f,
+																 gridTop,
 																 StrToFloat::convert( _placementCrack.value ) );
 
 			// toggle to show the crack marker
@@ -9717,7 +9720,7 @@ osg::Node* VaporIntrusionGUIDocument::_drawCrackMarkers()
   colors->push_back( color );
 
   // set the point size
-	geometry->getOrCreateStateSet()->setAttribute( new osg::Point ( 5.0f ), osg::StateAttribute::ON );
+	geometry->getOrCreateStateSet()->setAttribute( new osg::Point ( 10.0f ), osg::StateAttribute::ON );
 
   // set the colors and set binding to per vertex
   geometry->setColorArray( colors.get() );

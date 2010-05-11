@@ -194,49 +194,124 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
 
   // set the mouse coords
   // document->setMouseCoords( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
-
-  if( true == left )
+	if( true == left )
   {
+		
 		// simulate right click
 		if( true == shift )
 		{
 			// remove the new grid point
-			document->handleRightMouseClick( point );
+			this->_checkRightClick( event );
 		}
-		// pick sources
-		else if( true == ctrl && false == alt )
-		{
-			document->objectPick( point, IVPI::OBJECT_MODIFIER_SOURCE );
-		}
-		// pick soils
-		else if( false == ctrl && true == alt )
-		{
-			document->objectPick( point, IVPI::OBJECT_MODIFIER_SOIL );
-		}
-		// pick the building
-		else if( true == ctrl && true == alt )
-		{
-			document->objectPick( point, IVPI::OBJECT_MODIFIER_BUILDING );
-		}
+		
 		else
 		{
 			// add the new grid point
-			document->handleLeftMouseClick( point );
+			this->_checkLeftClick( event );
 		}
   }
+
   if( true == right )
   {
     // remove the new grid point
-    document->handleRightMouseClick( point );
+		this->_checkRightClick( event );
   }
-
-  // rebuild the scene
-  //document->rebuildScene();
 
   if( true == middle )
   {
     BaseClass::mousePressEvent( event );
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  A mouse button has been released.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIViewer::_checkLeftClick(  QMouseEvent * event )
+{
+	// Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument()->queryInterface( VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::IID ) );
+   
+  // Check for a valid pointer
+  if( false == document.valid() )
+    return;
+
+	const bool shift ( ( true == event->modifiers().testFlag( Qt::ShiftModifier		) ) );
+	const bool ctrl  ( ( true == event->modifiers().testFlag( Qt::ControlModifier ) ) );
+	const bool alt   ( ( true == event->modifiers().testFlag( Qt::AltModifier			) ) );
+
+	osg::Vec3d p ( this->_getIntersectPoint( event ) );
+
+	Usul::Math::Vec3f point ( p.x(), p.y(), p.z() );
+
+	// pick sources
+	if( true == ctrl && false == alt )
+	{
+		document->objectPick( point, IVPI::OBJECT_MODIFIER_SOURCE );
+	}
+	// pick soils
+	else if( false == ctrl && true == alt )
+	{
+		document->objectPick( point, IVPI::OBJECT_MODIFIER_SOIL );
+	}
+	// pick the building
+	else if( true == ctrl && true == alt )
+	{
+		document->objectPick( point, IVPI::OBJECT_MODIFIER_BUILDING );
+	}
+	else
+	{
+		// add the new grid point
+		document->handleLeftMouseClick( point );
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  A mouse button has been released.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIViewer::_checkRightClick(  QMouseEvent * event )
+{
+	// Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument()->queryInterface( VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::IID ) );
+   
+  // Check for a valid pointer
+  if( false == document.valid() )
+    return;
+
+	const bool shift ( ( true == event->modifiers().testFlag( Qt::ShiftModifier		) ) );
+	const bool ctrl  ( ( true == event->modifiers().testFlag( Qt::ControlModifier ) ) );
+	const bool alt   ( ( true == event->modifiers().testFlag( Qt::AltModifier			) ) );
+
+	osg::Vec3d p ( this->_getIntersectPoint( event ) );
+
+	Usul::Math::Vec3f point ( p.x(), p.y(), p.z() );
+
+	// pick sources
+	if( true == ctrl && false == alt )
+	{
+		document->objectDelete( point, IVPI::OBJECT_MODIFIER_SOURCE );
+	}
+	// pick soils
+	else if( false == ctrl && true == alt )
+	{
+		document->objectDelete( point, IVPI::OBJECT_MODIFIER_SOIL );
+	}
+	// pick the building
+	else if( true == ctrl && true == alt )
+	{
+		document->objectDelete( point, IVPI::OBJECT_MODIFIER_BUILDING );
+	}
+	else
+	{
+		// add the new grid point
+		document->handleRightMouseClick( point );
+	}
 }
 
 

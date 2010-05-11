@@ -7918,6 +7918,110 @@ void VaporIntrusionGUIDocument::_pickBuilding( Usul::Math::Vec3f p )
 
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Source selection
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_deleteSource( Usul::Math::Vec3f p )
+{
+	Guard guard ( this );
+
+	for( unsigned int i = 0; i < _sources.size(); ++i )
+	{
+		// get the current source
+		Source s ( _sources.at( i ) );
+
+		s.index = i;
+
+		// make a bounding box from the dimensions
+		osg::BoundingBox bb ( this->_makeBoundingBoxFromXYZLWH( StrToFloat::convert( s.x ),
+																														-1.0f, 
+																														StrToFloat::convert( s.z ),
+																														StrToFloat::convert( s.w ),
+																														StrToFloat::convert( s.l ), 
+																														2.0f ) );
+
+		// make and osg::vec3 from p
+		osg::Vec3f point ( p[0], 0.0f, p[2] );
+
+		// check for intersection
+		if( true == bb.contains( point ) )
+		{
+		
+			Sources::iterator iter = _sources.begin() + i;
+			// remove the source
+			_sources.erase( iter );
+
+			// feedback
+			std::cout << Usul::Strings::format( "Source [", s.name, "] has been deleted." ) << std::endl;
+
+			// don't loop anymore
+			break;
+		}
+	}
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Soil selection
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_deleteSoil( Usul::Math::Vec3f p )
+{
+		Guard guard ( this );
+
+	for( unsigned int i = 0; i < _soils.size(); ++i )
+	{
+		// get the current source
+		Soil s ( _soils.at( i ) );
+
+		s.index = i;
+
+		// make a bounding box from the dimensions
+		osg::BoundingBox bb ( this->_makeBoundingBoxFromXYZLWH( StrToFloat::convert( s.x ),
+																														-1.0f, 
+																														StrToFloat::convert( s.z ),
+																														StrToFloat::convert( s.w ),
+																														StrToFloat::convert( s.l ), 
+																														2.0f ) );
+
+		// make and osg::vec3 from p
+		osg::Vec3f point ( p[0], 0.0f, p[2] );
+
+		// check for intersection
+		if( true == bb.contains( point ) )
+		{
+			Soils::iterator iter = _soils.begin() + i;
+
+			// remove the soil
+			_soils.erase( iter );
+
+			// feedback
+			std::cout << Usul::Strings::format( "Soil [", s.layerName, "] has been deleted." ) << std::endl;
+
+			// don't loop anymore
+			break;
+		}
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Building selection
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_deleteBuilding( Usul::Math::Vec3f p )
+{
+	Guard guard ( this );
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -8010,6 +8114,39 @@ void VaporIntrusionGUIDocument::objectPick( Usul::Math::Vec3f p, int modifier )
 	if( modifier == IVPI::OBJECT_MODIFIER_SOIL )
 	{
 		this->_pickSoil( p );
+	}
+
+	this->rebuildScene();
+	
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Object selection
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::objectDelete( Usul::Math::Vec3f p, int modifier )
+{
+	Guard guard ( this );
+
+	// select the building
+	if( modifier == IVPI::OBJECT_MODIFIER_BUILDING )
+	{
+		this->_deleteBuilding( p );
+	}
+
+	// select sources
+	if( modifier == IVPI::OBJECT_MODIFIER_SOURCE )
+	{
+		this->_deleteSource( p );
+	}
+
+	// select soild
+	if( modifier == IVPI::OBJECT_MODIFIER_SOIL )
+	{
+		this->_deleteSoil( p );
 	}
 
 	this->rebuildScene();

@@ -331,6 +331,7 @@ public:
 
 	virtual void								objectPick( Usul::Math::Vec3f p, int modifier );
 	virtual void								objectProperties( Usul::Math::Vec3f p, int modifier );
+	virtual void								objectDelete( Usul::Math::Vec3f p, int modifier  );
 													
 	virtual void								cancelObjectCreate();
 
@@ -513,6 +514,9 @@ protected:
 	void												_pickSource( Usul::Math::Vec3f p );
 	void												_pickSoil( Usul::Math::Vec3f p );
 	void												_pickBuilding(  Usul::Math::Vec3f p );
+	void												_deleteSource( Usul::Math::Vec3f p );
+	void												_deleteSoil( Usul::Math::Vec3f p );
+	void												_deleteBuilding(  Usul::Math::Vec3f p );
 	osg::BoundingBox  					_makeBoundingBoxFromXYZLWH( float x, float y, float z, float l, float w, float h );
 
 	void												_propertiesSource( Usul::Math::Vec3f p );

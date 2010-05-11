@@ -56,6 +56,8 @@ protected:
   void                            _handleArrowKeys( int key, IVPI::QueryPtr document );
   osg::Vec3d                      _getIntersectPoint( QMouseEvent * event );
 
+	void														_checkLeftClick(  QMouseEvent * event );
+	void														_checkRightClick(  QMouseEvent * event );
  private:
  
   IUnknown*                       _caller;

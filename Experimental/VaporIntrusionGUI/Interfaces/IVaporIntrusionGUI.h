@@ -450,6 +450,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 	virtual void									rebuildObject() = 0;
 
 	virtual void									objectPick( Usul::Math::Vec3f p, int modifier ) = 0;
+	virtual void									objectDelete( Usul::Math::Vec3f p, int modifier  ) = 0;
 	virtual void									objectProperties( Usul::Math::Vec3f p, int modifier ) = 0;
 	
 	virtual void									cancelObjectCreate() = 0;

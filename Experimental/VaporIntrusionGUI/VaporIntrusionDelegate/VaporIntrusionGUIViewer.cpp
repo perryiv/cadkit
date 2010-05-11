@@ -83,7 +83,7 @@ void VaporIntrusionGUIViewer::mouseMoveEvent ( QMouseEvent * event )
   const bool right  ( ( true == event->buttons().testFlag ( Qt::RightButton ) ) );
   const bool middle ( ( true == event->buttons().testFlag ( Qt::MidButton   ) ) );
 
-  if( false == left && false == right )
+  if( true == left && true == right || true == middle )
   {
     BaseClass::mouseMoveEvent( event );
   }
@@ -194,7 +194,7 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
 
   // set the mouse coords
   // document->setMouseCoords( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
-	if( true == left )
+	if( true == left && false == right )
   {
 		
 		// simulate right click
@@ -211,16 +211,17 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
 		}
   }
 
-  if( true == right )
+  if( true == right && false == left )
   {
     // remove the new grid point
 		this->_checkRightClick( event );
   }
 
-  if( true == middle )
+  if( true == middle || ( true == right && true == left ))
   {
     BaseClass::mousePressEvent( event );
   }
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////

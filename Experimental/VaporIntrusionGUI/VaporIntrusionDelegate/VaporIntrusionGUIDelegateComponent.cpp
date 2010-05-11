@@ -308,55 +308,43 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
   QWidget *parent ( mainWindow.valid() ? mainWindow->mainWindow() : 0x0 );
 
-  // Make the dialog.
-  NewVaporIntrusion nd ( parent );
+	
+	// Make the dialog.
+	GridSpaceDialog dialog ( parent );
 
-  // Show the dialog.
-  if ( QDialog::Accepted != nd.exec() )
-    throw Usul::Exceptions::Canceled();
+	// Show the dialog.
+	if ( QDialog::Accepted != dialog.exec() )
+		throw Usul::Exceptions::Canceled();
 
-	/*if( false == nd.newOrLoad() )
-	{
-		this->saveLoadPrefs();
+	float fdx ( dialog.x() );
+	fdx *= 100;
+	unsigned int dx ( static_cast< unsigned int > ( fdx ) );
+	dx /= 160;
+  
+	float fdy ( dialog.y() );
+	fdy *= 100;
+	unsigned int dy ( static_cast< unsigned int > ( fdy ) );
+	dy /= 160;
+  
+	Usul::Math::Vec3ui d ( dx, static_cast< unsigned int > ( dialog.depth() * 100 ), dy );
+	Usul::Math::Vec3f spacing( 1.6f, 0.8f, 1.6f );
+
+	// get the document
+	VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr doc ( document );
+
+	if( true == doc.valid() )
+	{    
+		// set the initial grid spacing
+		doc->setInitialSpacing( spacing );
+
+		// set the dimensions
+		doc->dimensions( d );    
+
+		// initialize the document
+		doc->initialize();
+
 	}
-	else*/
-	{
-		// Make the dialog.
-		GridSpaceDialog dialog ( parent );
-
-		// Show the dialog.
-		if ( QDialog::Accepted != dialog.exec() )
-			throw Usul::Exceptions::Canceled();
-
-		float fdx ( dialog.x() );
-		fdx *= 100;
-		unsigned int dx ( static_cast< unsigned int > ( fdx ) );
-		dx /= 160;
-	  
-		float fdy ( dialog.y() );
-		fdy *= 100;
-		unsigned int dy ( static_cast< unsigned int > ( fdy ) );
-		dy /= 160;
-	  
-		Usul::Math::Vec3ui d ( dx, static_cast< unsigned int > ( dialog.depth() * 100 ), dy );
-		Usul::Math::Vec3f spacing( 1.6f, 0.8f, 1.6f );
-
-		// get the document
-		VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr doc ( document );
-
-		if( true == doc.valid() )
-		{    
-			// set the initial grid spacing
-			doc->setInitialSpacing( spacing );
-
-			// set the dimensions
-			doc->dimensions( d );    
-
-			// initialize the document
-			doc->initialize();
-
-		}
-	}
+	
   
 }
 

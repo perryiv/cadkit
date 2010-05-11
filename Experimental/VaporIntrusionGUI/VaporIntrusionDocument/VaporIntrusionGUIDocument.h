@@ -482,22 +482,23 @@ protected:
   void                        _updateSources();
 
   // write the user preference file for user <username>
-  void                        _writeUserPreferences( const std::string& username );
-  void                        _writeChemicals( const std::string& filename );
-  void                        _writeChemicalLibrary( const std::string& filename );
-  void                        _writeSourceChemicals( const std::string& filename, Chemicals chemicals );  
-  void                        _writeSources( const std::string username, const std::string& filename );
-  void                        _writeSoilLibrary( const std::string& filename );
-  void                        _writeSoils( const std::string& filename );
-  void												_writeSettings( const std::string& filename );
-	void												_writeBuilding( const std::string& filename );
-	void												_writeGrid( const std::string& filename, GridPoints xGrid, GridPoints yGrid, GridPoints zGrid );
-	void												_writeGridAxis( const std::string& filename );
-	void												_writeCracks( const std::string& filename, Cracks cracks );
+	void                        _writeUserPreferences( const std::string& username, const std::string& directory ) const;
+  void                        _writeChemicals( const std::string& filename ) const;
+  void                        _writeChemicalLibrary( const std::string& filename ) const;
+  void                        _writeSourceChemicals( const std::string& filename, Chemicals chemicals ) const;  
+  void                        _writeSources( const std::string username, const std::string& filename ) const;
+  void                        _writeSoilLibrary( const std::string& filename ) const;
+  void                        _writeSoils( const std::string& filename ) const;
+  void												_writeSettings( const std::string& filename ) const;
+	void												_writeBuilding( const std::string& filename ) const;
+	void												_writeGrid( const std::string& filename, GridPoints xGrid, GridPoints yGrid, GridPoints zGrid ) const;
+	void												_writeGridAxis( const std::string& filename ) const;
+	void												_writeCracks( const std::string& filename, Cracks cracks ) const;
+	void												_writeMasterFile( const std::string& filename, std::string& username, std::string& directory ) const;
 
 
   // read the user preference file for user <username>
-  void                        _readUserPreferences( const std::string& username );
+  void                        _readUserPreferences( const std::string& username, const std::string& directory );
   void                        _readChemicals( const std::string& filename );
   void                        _readExperimentChemicals( const std::string& filename );
   Chemicals                   _readSourceChemicals( const std::string& filename );
@@ -509,6 +510,7 @@ protected:
 	void												_readGrid( const std::string& filename, GridPoints& xGrid, GridPoints& yGrid, GridPoints& zGrid );
 	void												_readGridAxis( const std::string& filename );
 	void												_readCracks( const std::string& filename, Cracks& cracks );
+	void												_readMasterFile( const std::string& filename, std::string& username, std::string& directory );
 
   // object picking
 	void												_pickSource( Usul::Math::Vec3f p );

@@ -271,6 +271,92 @@ void VaporIntrusionGUIDocument::read ( const std::string &name, Unknown *caller,
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
+	// get the directory
+  std::string directory ( Usul::File::directory( name, true ) );
+
+  // get the base
+  std::string base ( Usul::File::base( name ) );
+
+	// read the master file
+	//this->_readMasterFile( name, base, directory );
+
+	// read everything else
+	this->_readUserPreferences( base, directory );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readMasterFile( const std::string& filename, std::string& username, std::string& directory )
+{
+	Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Reading master file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  // parse the file
+  while( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    if( tStr.size() > 0 && tStr.at( 0 ) != '#' )
+    {
+
+      // separate the strings
+      StringVec sv;
+      Usul::Strings::split( tStr, ",", false, sv );
+
+      // debugging
+      //std::cout << "Reading: " << tStr << std::endl;
+      
+      // make sure all the columns are there
+      if( sv.size() == 2 )
+      {
+        // read the username and directory
+        username = sv.at( 0 );
+				directory = sv.at( 1 );
+
+			}// end for for activators read   
+
+		}// end if for valid entry found
+
+  }// end while read for file parsing
+
+  ifs.close();
 }
 
 
@@ -1838,15 +1924,53 @@ void VaporIntrusionGUIDocument::_write( const std::string &filename, Unknown *ca
   // get the base
   std::string base ( Usul::File::base( filename ) );
 
-  // Make sure it exists.
-  // Usul::File::make ( directory );
+	// write the master file
+	this->_writeMasterFile( filename, base, directory );
 
-  // write the Layers.txt file
-  this->_writeLayerFile2( directory );
+	// make the folder for the preferences and experiment settings
+  const std::string path ( Usul::Strings::format ( directory, '/', base, '/' ) );
+  Usul::Functions::safeCallV1 ( &Usul::File::make, path, "1336095872" );
 
-  // write the coordinates files
-  this->_writeCoordinatesFiles( directory );
-  
+	// write everything else
+	this->_writeUserPreferences( base, directory );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the x grid points
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeMasterFile( const std::string& filename, std::string& username, std::string& directory ) const
+{
+	Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Writing Master File: " << filename << std::endl;
+
+  // output to the file
+  ofs << username << "," << directory << std::endl;
+
+  // close file
+  ofs.close();
 }
 
 
@@ -2545,7 +2669,11 @@ void VaporIntrusionGUIDocument::initialize()
 
 void VaporIntrusionGUIDocument::readUserPreferences( const std::string& username )
 {
-  this->_readUserPreferences( username );
+	const std::string tempDir ( Usul::File::Temp::directory ( false ) );
+
+  this->_readUserPreferences( username, tempDir );
+
+	
 }
 
 
@@ -2557,7 +2685,12 @@ void VaporIntrusionGUIDocument::readUserPreferences( const std::string& username
 
 void VaporIntrusionGUIDocument::writeUserPreferences( const std::string& username )
 {
-  this->_writeUserPreferences( username );
+	// create a temp directory in the temp directory location
+  const std::string tempDir ( Usul::File::Temp::directory ( false ) ); 
+  const std::string path ( Usul::Strings::format ( tempDir, '/', username, '/' ) );
+  Usul::Functions::safeCallV1 ( &Usul::File::make, path, "1336095872" );
+
+  this->_writeUserPreferences( username , tempDir );
 }
 
 
@@ -2567,14 +2700,11 @@ void VaporIntrusionGUIDocument::writeUserPreferences( const std::string& usernam
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_writeUserPreferences( const std::string& username )
+void VaporIntrusionGUIDocument::_writeUserPreferences( const std::string& username, const std::string& directory ) const
 {
   Guard guard ( this );
 
-  // create a temp directory in the temp directory location
-  const std::string tempDir ( Usul::File::Temp::directory ( false ) ); 
-  const std::string path ( Usul::Strings::format ( tempDir, '/', username, '/' ) );
-  Usul::Functions::safeCallV1 ( &Usul::File::make, path, "1336095872" );
+	const std::string path ( Usul::Strings::format ( directory, '/', username, '/' ) );
 
   { // Source 
     std::string fn( path + username + "_sources.pref" );
@@ -2638,7 +2768,7 @@ void VaporIntrusionGUIDocument::_writeUserPreferences( const std::string& userna
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_writeSettings( const std::string& filename )
+void VaporIntrusionGUIDocument::_writeSettings( const std::string& filename ) const
 {
 	Guard guard ( this );
 
@@ -2662,7 +2792,7 @@ void VaporIntrusionGUIDocument::_writeSettings( const std::string& filename )
   std::cout << "Writing settings to: " << filename << std::endl;
 
   // get the building
-  Building b ( this->building() );
+  Building b ( _building );
 
   // get the building and foundation color
   Usul::Math::Vec4f bColor ( b.bColor );
@@ -2709,7 +2839,7 @@ void VaporIntrusionGUIDocument::_writeSettings( const std::string& filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_writeSources( const std::string username, const std::string& filename )
+void VaporIntrusionGUIDocument::_writeSources( const std::string username, const std::string& filename ) const
 {
  Guard guard ( this );
 
@@ -2771,9 +2901,9 @@ void VaporIntrusionGUIDocument::_writeSources( const std::string username, const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_writeSoilLibrary( const std::string& filename )
+void VaporIntrusionGUIDocument::_writeSoilLibrary( const std::string& filename ) const
 {
-Guard guard ( this );
+	Guard guard ( this );
 
   // useful typedef
   typedef std::vector< std::string > StringVec;
@@ -2826,7 +2956,7 @@ Guard guard ( this );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_writeSoils( const std::string& filename )
+void VaporIntrusionGUIDocument::_writeSoils( const std::string& filename ) const
 {
 Guard guard ( this );
 
@@ -2883,7 +3013,7 @@ Guard guard ( this );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_writeBuilding( const std::string& filename )
+void VaporIntrusionGUIDocument::_writeBuilding( const std::string& filename ) const
 {
 Guard guard ( this );
 
@@ -2914,7 +3044,7 @@ Guard guard ( this );
 
  
     // get the building
-    Building b ( this->building() );
+    Building b ( _building );
 
     // output to the file
     ofs << 
@@ -2935,7 +3065,7 @@ Guard guard ( this );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_writeGrid( const std::string& filename, GridPoints xGrid, GridPoints yGrid, GridPoints zGrid )
+void VaporIntrusionGUIDocument::_writeGrid( const std::string& filename, GridPoints xGrid, GridPoints yGrid, GridPoints zGrid ) const
 {
 Guard guard ( this );
 
@@ -2994,7 +3124,7 @@ Guard guard ( this );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_writeGridAxis( const std::string& filename )
+void VaporIntrusionGUIDocument::_writeGridAxis( const std::string& filename ) const
 {
 Guard guard ( this );
 
@@ -3043,7 +3173,7 @@ Guard guard ( this );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_writeCracks( const std::string& filename, Cracks cracks )
+void VaporIntrusionGUIDocument::_writeCracks( const std::string& filename, Cracks cracks ) const
 {
 Guard guard ( this );
 
@@ -3091,7 +3221,7 @@ Guard guard ( this );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_writeChemicalLibrary( const std::string& filename )
+void VaporIntrusionGUIDocument::_writeChemicalLibrary( const std::string& filename ) const
 {
   Guard guard ( this );
 
@@ -3142,7 +3272,7 @@ void VaporIntrusionGUIDocument::_writeChemicalLibrary( const std::string& filena
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_writeSourceChemicals( const std::string& filename, Chemicals chemicals )
+void VaporIntrusionGUIDocument::_writeSourceChemicals( const std::string& filename, Chemicals chemicals ) const
 {
 
   Guard guard ( this );
@@ -3191,7 +3321,7 @@ void VaporIntrusionGUIDocument::_writeSourceChemicals( const std::string& filena
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_writeChemicals( const std::string& filename )
+void VaporIntrusionGUIDocument::_writeChemicals( const std::string& filename ) const
 {
 Guard guard ( this );
 
@@ -3242,12 +3372,12 @@ Guard guard ( this );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_readUserPreferences( const std::string& username )
+void VaporIntrusionGUIDocument::_readUserPreferences( const std::string& username, const std::string& directory )
 {
   Guard guard ( this );
 
   // create a temp directory in the temp directory location
-  const std::string tempDir ( Usul::File::Temp::directory ( false ) ); 
+  const std::string tempDir ( directory ); 
   const std::string path ( Usul::Strings::format ( tempDir, '/', username, '/' ) );
 
   { // Source 

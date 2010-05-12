@@ -9234,6 +9234,10 @@ void VaporIntrusionGUIDocument::_createNewBuilding()
   GridAxisPoint gap ( "Y", Usul::Convert::Type< float, std::string >::convert( ey - _minimumGridDistance ) );
   _axisPoints.push_back( gap );
 
+	// delete the cracks
+	_cracks.first.clear();
+	_cracks.second.clear();
+
   //rebuild the scene
   this->rebuildScene();
 }

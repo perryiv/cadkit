@@ -1143,6 +1143,15 @@ void VaporIntrusionGUIDocument::_makeCracks()
   material->setAmbient( osg::Material::FRONT_AND_BACK, cColor );
   material->setDiffuse( osg::Material::FRONT_AND_BACK, cColor );
 
+	//set the points
+#if 0
+  float sd ( StrToFloat::convert( _building.y  ) );
+  float ed ( StrToFloat::convert( _building.y  ) + StrToFloat::convert( _building.h ) );
+#else
+	float sd ( StrToFloat::convert( _building.y  ) + StrToFloat::convert( _building.h ) );
+  float ed ( sd - 0.1f );
+#endif
+
   // create the visuals for the x direction cracks first
 	for( unsigned int i = 0; i < _cracks.first.size(); ++ i )
 	{
@@ -1163,10 +1172,6 @@ void VaporIntrusionGUIDocument::_makeCracks()
 
     // points of the plane
     osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
-
-    //set the points
-    float sd ( StrToFloat::convert( _building.y  ) );
-    float ed ( StrToFloat::convert( _building.y  ) + StrToFloat::convert( _building.h ) );
 
     points->push_back( osg::Vec3f ( sx, sd, y ) );
     points->push_back( osg::Vec3f ( ex, sd, y ) );
@@ -1211,10 +1216,6 @@ void VaporIntrusionGUIDocument::_makeCracks()
 
     // points of the plane
     osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
-
-    //set the points
-    float sd ( StrToFloat::convert( _building.y  ) );
-    float ed ( StrToFloat::convert( _building.y  ) + StrToFloat::convert( _building.h ) );
 
     points->push_back( osg::Vec3f ( y, sd, sx ) );
     points->push_back( osg::Vec3f ( y, sd, ex ) );
@@ -1268,7 +1269,7 @@ void VaporIntrusionGUIDocument::_makeFoundation( osg::Vec3f ll )
   material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
 
   // get the length, width, and height of the building
-  osg::Vec3f lhw ( StrToFloat::convert( _building.l ), StrToFloat::convert( _building.h ), StrToFloat::convert( _building.w ) );
+  osg::Vec3f lhw ( StrToFloat::convert( _building.l ), -0.1f, StrToFloat::convert( _building.w ) );
 
   // create the points for the building
   osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
@@ -1324,13 +1325,13 @@ void VaporIntrusionGUIDocument::_makeBuilding()
   material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
 
   // get the lower left corner of the building
-  osg::Vec3f ll  ( StrToFloat::convert( b.x ), StrToFloat::convert( b.y ), StrToFloat::convert( b.z ) );
+	osg::Vec3f ll  ( StrToFloat::convert( b.x ), StrToFloat::convert( b.y ) + StrToFloat::convert( b.h ), StrToFloat::convert( b.z ) );
 
   // snap the lower left to the grid
   osg::Vec2f corner ( ll.x(), ll.z() );
 
   // get the length, width, and height of the building
-  osg::Vec3f lhw ( StrToFloat::convert( b.l ), StrToFloat::convert( "0.5" ), StrToFloat::convert( b.w ) );
+  osg::Vec3f lhw ( StrToFloat::convert( b.l ), abs( ll.y() ) + 0.5f, StrToFloat::convert( b.w ) );
 
   // create the points for the building
   osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );

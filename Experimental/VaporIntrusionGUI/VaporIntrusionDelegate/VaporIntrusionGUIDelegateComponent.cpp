@@ -227,6 +227,14 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     // swap the y and Z axis labels on the 3d viewer
     _xyzView->viewer()->axesLabels( "X", "Z", "Y" );
 
+		// Fit both scenes
+		_xyView->viewer()->camera( OsgTools::Render::Viewer::FIT );
+    _xyzView->viewer()->camera( OsgTools::Render::Viewer::FIT );
+
+		// rotate the XY view to the proper position
+		_xyView->viewer()->camera ( OsgTools::Render::Viewer::BOTTOM );
+    _xyView->viewer()->camera ( OsgTools::Render::Viewer::ROTATE_Y_P45 );
+
     // Start with all windows tiled
     parent->tile();
 }

@@ -7900,7 +7900,7 @@ void VaporIntrusionGUIDocument::_pickSource( Usul::Math::Vec3f p )
       this->setBuildMode2D( IVPI::BUILD_MODE_OBJECT_PLACEMENT_XY );
 
       // set the correct build mode
-      this->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
+			this->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
 
       // set the object type to building
       this->setObjectMode( IVPI::OBJECT_SOURCE_RELOAD );

@@ -421,6 +421,7 @@ protected:
   void                        _fixDimensions();
   void                        _addGridPointFromViewer( Usul::Math::Vec3f point );
   void                        _removeGridPointFromViewer( Usul::Math::Vec3f point );
+	void                        _insertPermanentGridPoint( const std::string& axis, float pos );
   
 
   GridPoints                  _getGridFromAxis( const std::string& axis );

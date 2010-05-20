@@ -36,6 +36,7 @@
 #include "SettingsDialog.h"
 #include "WindDialog.h"
 #include "PrefSaveLoadDialog.h"
+#include "SourcePropertiesDialog.h"
 
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 
@@ -160,6 +161,12 @@ public:
   // IVPIDelegate
   virtual void                addDock( const std::string& name );
   virtual void                addToDock( const std::string& dockName, const std::string& name, const std::string& value );
+
+	// call edit source in input source
+	virtual void		editSource ( IVPI::Source source, unsigned int index  );
+
+	// call edit soil on input soil
+	virtual void		editSoil ( IVPI::Soil soil, unsigned int index  );
 
 protected: 
 

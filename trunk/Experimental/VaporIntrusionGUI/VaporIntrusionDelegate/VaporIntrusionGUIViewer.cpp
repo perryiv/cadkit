@@ -192,11 +192,8 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
 
 	Usul::Math::Vec3f point ( p.x(), p.y(), p.z() );
 
-  // set the mouse coords
-  // document->setMouseCoords( Usul::Math::Vec3f ( p.x(), p.y(), p.z() ) );
 	if( true == left && false == right )
   {
-		
 		// simulate right click
 		if( true == shift )
 		{
@@ -247,20 +244,44 @@ void VaporIntrusionGUIViewer::_checkLeftClick(  QMouseEvent * event )
 
 	Usul::Math::Vec3f point ( p.x(), p.y(), p.z() );
 
+	// get the edit mode
+	int editMode ( document->getEditMode2D() );
+
 	// pick sources
 	if( true == ctrl && false == alt )
 	{
-		document->objectPick( point, IVPI::OBJECT_MODIFIER_SOURCE );
+		if( editMode == IVPI::EDIT_MODE_OBJECT )
+		{
+			document->objectProperties( point, IVPI::OBJECT_MODIFIER_SOURCE );
+		}
+		else
+		{
+			document->objectPick( point, IVPI::OBJECT_MODIFIER_SOURCE );
+		}
 	}
 	// pick soils
 	else if( false == ctrl && true == alt )
 	{
-		document->objectPick( point, IVPI::OBJECT_MODIFIER_SOIL );
+		if( editMode == IVPI::EDIT_MODE_OBJECT )
+		{
+			document->objectProperties( point, IVPI::OBJECT_MODIFIER_SOIL );
+		}
+		else
+		{
+			document->objectPick( point, IVPI::OBJECT_MODIFIER_SOIL );
+		}
 	}
 	// pick the building
 	else if( true == ctrl && true == alt )
 	{
-		document->objectPick( point, IVPI::OBJECT_MODIFIER_BUILDING );
+		if( editMode == IVPI::EDIT_MODE_OBJECT )
+		{
+			document->objectProperties( point, IVPI::OBJECT_MODIFIER_BUILDING );
+		}
+		else
+		{
+			document->objectPick( point, IVPI::OBJECT_MODIFIER_BUILDING );
+		}
 	}
 	else
 	{
@@ -421,9 +442,25 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
       case Qt::Key_Escape :
       {
 				// cancel object create or modify actions
-				document->cancelObjectCreate();
+				document->cancelAll();
       }
       break;
+
+			case Qt::Key_E :
+      {
+        // set the edit mode to object placement
+        document->setBuildMode2D( IVPI::BUILD_MODE_NONE );
+
+        // set the correct build mode
+        document->setViewMode2D( IVPI::VIEW_MODE_2D_XY );
+
+        // set the object type to building
+        document->setObjectMode( IVPI::OBJECT_NOTHING );
+
+				// set the edit mode to objects
+				document->setEditMode2D( IVPI::EDIT_MODE_OBJECT );
+      }
+        break;
 
       case Qt::Key_B :
       {

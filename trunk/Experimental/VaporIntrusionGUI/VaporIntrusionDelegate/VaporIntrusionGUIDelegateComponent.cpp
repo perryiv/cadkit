@@ -936,6 +936,13 @@ void VaporIntrusionGUIDelegateComponent::addDock( const std::string& name )
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Add a dock to the main window
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void VaporIntrusionGUIDelegateComponent::addToDock( const std::string& dockName, const std::string& name, const std::string& value )
 {
   // check for validity
@@ -944,4 +951,56 @@ void VaporIntrusionGUIDelegateComponent::addToDock( const std::string& dockName,
 
   // add the material to the dock
   _materialContainers[dockName]->add( name, value );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Edit a source
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::editSource ( IVPI::Source source, unsigned int index )
+{
+
+	// Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+	// create the dialog
+	SourcePropertiesDialog dialog;
+
+	// set the source
+	dialog.source( source );
+
+	// initialize
+	dialog.initialize();
+
+	// Show the dialog.
+  if ( QDialog::Accepted != dialog.exec() )
+    throw Usul::Exceptions::Canceled();
+
+	// finalize the dialog
+	dialog.finalize();
+
+	// get the source
+	IVPI::Source s ( dialog.source() );
+
+	document->addSourceAtIndex( s, index );
+
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Edit a soil
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::editSoil ( IVPI::Soil soil, unsigned int index  )
+{
+
 }

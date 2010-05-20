@@ -75,7 +75,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     EDIT_MODE_IDLE,
     EDIT_X_GRID_2D,
     EDIT_Y_GRID_2D,
-    EDIT_Z_GRID_2D
+    EDIT_Z_GRID_2D,
+		EDIT_MODE_OBJECT
   };
 
   // Objects
@@ -453,9 +454,10 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 	virtual void									objectDelete( Usul::Math::Vec3f p, int modifier  ) = 0;
 	virtual void									objectProperties( Usul::Math::Vec3f p, int modifier ) = 0;
 	
-	virtual void									cancelObjectCreate() = 0;
+	virtual void									cancelAll() = 0;
 
-  
+	virtual void									addSourceAtIndex( Source s, unsigned int i ) = 0;
+	virtual void									addSoilAtIndex( Soil s, unsigned int i ) = 0;
 
     
 }; // struct IVaporIntrusionGUI

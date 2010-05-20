@@ -13,9 +13,6 @@
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 #include "GenericIndexToggle.h"
 
-// Dialogs
-#include "VaporIntrusionGUI/VaporIntrusionDelegate/SourcePropertiesDialog.h"
-
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IViewPort.h"
 #include "Usul/Interfaces/ITextMatrix.h"
@@ -8163,6 +8160,42 @@ void VaporIntrusionGUIDocument::_deleteBuilding( Usul::Math::Vec3f p )
 void VaporIntrusionGUIDocument::_propertiesSource( Usul::Math::Vec3f p )
 {
 	Guard guard ( this );
+
+	for( unsigned int i = 0; i < _sources.size(); ++i )
+	{
+		// get the current source
+		Source s ( _sources.at( i ) );
+
+		s.index = i;
+
+		// make a bounding box from the dimensions
+		osg::BoundingBox bb ( this->_makeBoundingBoxFromXYZLWH( StrToFloat::convert( s.x ),
+																														-1.0f, 
+																														StrToFloat::convert( s.z ),
+																														StrToFloat::convert( s.w ),
+																														StrToFloat::convert( s.l ), 
+																														2.0f ) );
+
+		// make and osg::vec3 from p
+		osg::Vec3f point ( p[0], 0.0f, p[2] );
+
+		// check for intersection
+		if( true == bb.contains( point ) )
+		{
+			// query for the delegate interface
+			VaporIntrusionGUI::Interfaces::IVPIDelegate::QueryPtr delegatePtr ( this->delegate() );
+		  
+			// check for valid
+			if( false == delegatePtr.valid() )
+				return;
+
+			// add to the dock
+			delegatePtr->editSource( s, i );
+
+			// don't loop anymore
+			break;
+		}
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -10139,19 +10172,22 @@ void VaporIntrusionGUIDocument::_enableObjectRender()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::cancelObjectCreate()
+void VaporIntrusionGUIDocument::cancelAll()
 {
 	Guard guard ( this );
 
 	 // reset edit mode to idle
     this->setEditMode2D( IVPI::EDIT_MODE_IDLE );
 
-    // reset to teh default view
+    // reset to the default view
     std::cout << "Setting 2D Grid Domain to the XY Grid" << std::endl;
     this->setViewMode2D( IVPI::VIEW_MODE_2D_XY ); 
 
     // set the object type to nothing
     this->setObjectMode( IVPI::OBJECT_NOTHING );
+
+		// reset the build mode
+		this->setBuildMode2D( IVPI::BUILD_MODE_NONE );
 
 		// reset render options
 		this->_enableObjectRender();
@@ -10162,3 +10198,44 @@ void VaporIntrusionGUIDocument::cancelObjectCreate()
 		// rebuild the scene
 		this->rebuildScene();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the pressure values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::addSourceAtIndex( Source s, unsigned int i )
+{
+	Guard guard ( this );
+
+	if( _sources.size() <= i )
+	{
+		// throw an error
+		return;
+	}
+
+	_sources.at( i ) = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the pressure values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::addSoilAtIndex( Soil s, unsigned int i )
+{
+	Guard guard ( this );
+
+	if( _soils.size() <= i )
+	{
+		// throw an error
+		return;
+	}
+
+	_soils.at( i ) = s;
+}
+

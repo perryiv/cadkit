@@ -289,6 +289,9 @@ public:
   virtual void                readUserPreferences( const std::string& username );
   virtual void                writeUserPreferences( const std::string& username );
 
+	virtual void									addSourceAtIndex( Source s, unsigned int i );
+	virtual void									addSoilAtIndex( Soil s, unsigned int i );
+
 
   // Show/Hide functions
   void                        showBuilding ( bool b );
@@ -333,7 +336,7 @@ public:
 	virtual void								objectProperties( Usul::Math::Vec3f p, int modifier );
 	virtual void								objectDelete( Usul::Math::Vec3f p, int modifier  );
 													
-	virtual void								cancelObjectCreate();
+	virtual void								cancelAll();
 
 
 protected:

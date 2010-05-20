@@ -11,6 +11,7 @@
 #define __USUL_INTERFACES_IVPIDELEGATE_H__
 
 #include "Usul/Interfaces/IUnknown.h"
+#include "VaporIntrusionGUI/Interfaces/IVaporIntrusionGUI.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector4.h"
 
@@ -29,11 +30,20 @@ struct IVPIDelegate : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1235852807u };
 
+	// useful typedef
+	typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI IVPI;
+
   // Add a dock
   virtual void    addDock( const std::string& name ) = 0;
 
   // add a material to a dock
   virtual void    addToDock( const std::string& dockName, const std::string& name, const std::string& value ) = 0;
+
+	// call edit source in input source
+	virtual void		editSource ( IVPI::Source source, unsigned int index  ) = 0;
+
+	// call edit soil on input soil
+	virtual void		editSoil ( IVPI::Soil soil, unsigned int index  ) = 0;
     
 }; // struct IVPIDelegate
 

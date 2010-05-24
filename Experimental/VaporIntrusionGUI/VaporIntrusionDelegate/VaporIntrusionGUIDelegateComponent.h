@@ -37,6 +37,7 @@
 #include "WindDialog.h"
 #include "PrefSaveLoadDialog.h"
 #include "SourcePropertiesDialog.h"
+#include "SoilPropertiesDialog.h"
 
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 

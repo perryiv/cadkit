@@ -1002,5 +1002,37 @@ void VaporIntrusionGUIDelegateComponent::editSource ( IVPI::Source source, unsig
 
 void VaporIntrusionGUIDelegateComponent::editSoil ( IVPI::Soil soil, unsigned int index  )
 {
+	// Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+	// create the dialog
+	SoilPropertiesDialog dialog;
+
+	// set the source
+	dialog.soil( soil );
+
+	 // set the soil library
+  dialog.library( document->soilLibrary() );
+
+	// initialize
+	dialog.initialize();
+
+	// Show the dialog.
+  if ( QDialog::Accepted != dialog.exec() )
+    throw Usul::Exceptions::Canceled();
+
+	// finalize the dialog
+	dialog.finalize();
+
+	// get the source
+	IVPI::Soil s ( dialog.soil() );
+
+	document->soilLibrary( dialog.library() );
+
+	document->addSoilAtIndex( s, index );
 
 }

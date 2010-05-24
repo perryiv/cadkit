@@ -8207,6 +8207,42 @@ void VaporIntrusionGUIDocument::_propertiesSource( Usul::Math::Vec3f p )
 void VaporIntrusionGUIDocument::_propertiesSoil( Usul::Math::Vec3f p )
 {
 	Guard guard ( this );
+
+	for( unsigned int i = 0; i < _soils.size(); ++i )
+	{
+		// get the current source
+		Soil s ( _soils.at( i ) );
+
+		s.index = i;
+
+		// make a bounding box from the dimensions
+		osg::BoundingBox bb ( this->_makeBoundingBoxFromXYZLWH( StrToFloat::convert( s.x ),
+																														-1.0f, 
+																														StrToFloat::convert( s.z ),
+																														StrToFloat::convert( s.w ),
+																														StrToFloat::convert( s.l ), 
+																														2.0f ) );
+
+		// make and osg::vec3 from p
+		osg::Vec3f point ( p[0], 0.0f, p[2] );
+
+		// check for intersection
+		if( true == bb.contains( point ) )
+		{
+			// query for the delegate interface
+			VaporIntrusionGUI::Interfaces::IVPIDelegate::QueryPtr delegatePtr ( this->delegate() );
+		  
+			// check for valid
+			if( false == delegatePtr.valid() )
+				return;
+
+			// add to the dock
+			delegatePtr->editSoil( s, i );
+
+			// don't loop anymore
+			break;
+		}
+	}
 }
 
 

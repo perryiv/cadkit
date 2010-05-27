@@ -130,6 +130,8 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _mouseYCoord( 0.0f ),
   _textXPos( 0 ),
   _textYPos( 0 ),
+	_modeXPos( 0 ),
+  _modeYPos( 0 ),
   _placementCrack(),
   _crackColor( 0.0f, 1.0f, 0.0f, 0.5f ),
   _gridColor ( 0.15f, 0.15f, 0.15f, 0.1f ),
@@ -503,8 +505,51 @@ void VaporIntrusionGUIDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
 	float fy ( static_cast< float > ( iy ) / 100 );
 
   std::string message ( Usul::Strings::format( "[ ", fx, ", ", fy, " ]" )  );
-  this->_setStatusText( message, 0.20, 0.05, caller );
+  
+	// set cursor position text
+	this->_setStatusText( message, _textXPos, _textYPos, 0.20, 0.05, caller );
+
+	// set mode text
+	this->_setStatusText( this->_getModeMessage(), _modeXPos, _modeYPos, 0.0, 0.95, caller );
+
   this->requestRedraw();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  set the initial grid spacing
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string VaporIntrusionGUIDocument::_getModeMessage()
+{
+	// get the edit mode
+	int editMode ( this->getEditMode2D() );
+
+	// get the build mode
+	int buildMode ( this->getBuildMode2D() );
+
+	// check to see if we are in object property edit mode
+	if( editMode == IVPI::EDIT_MODE_OBJECT )
+	{
+		return std::string( "Edit" );
+	}
+
+	// check for grid edit mode
+	if( buildMode == IVPI::BUILD_MODE_GRID_EDIT )
+	{
+		return std::string( "Grid" );
+	}
+
+	// check for crack edit mode
+	if( buildMode == IVPI::BUILD_MODE_CRACK_PLACE1 || buildMode == IVPI::BUILD_MODE_CRACK_PLACE2 )
+	{
+		return std::string( "Crack" );
+	}
+
+	return std::string( "Idle" );
+
 }
 
 
@@ -9861,7 +9906,7 @@ void VaporIntrusionGUIDocument::transparencies( FloatVec fv )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_setStatusText( const std::string message, double xmult, double ymult, Usul::Interfaces::IUnknown *caller )
+void VaporIntrusionGUIDocument::_setStatusText( const std::string message, unsigned int &xpos, unsigned int &ypos, double xmult, double ymult, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this ); 
@@ -9878,24 +9923,17 @@ void VaporIntrusionGUIDocument::_setStatusText( const std::string message, doubl
   if( false == viewPort.valid() )
     throw std::runtime_error ( "Error 2482359443: Failed to find a valid interface to Usul::Interfaces::IViewport " );
 
-  textMatrix->removeText( static_cast< unsigned int > ( _textXPos ),
-                          static_cast< unsigned int > ( _textYPos ) );
+  textMatrix->removeText( static_cast< unsigned int > ( xpos ),
+                          static_cast< unsigned int > ( ypos ) );
 
   // get the screen coordinates of the mouse cursor
-  const double xpos ( ::floor( viewPort->width()  * xmult ) );
-  const double ypos ( ::floor( viewPort->height() * ymult ) );
+  xpos = ( ::floor( viewPort->width()  * xmult ) );
+  ypos = ( ::floor( viewPort->height() * ymult ) );
 
   osg::Vec4f fcolor (  0.0, 0.0, 0.0, 1 );
   osg::Vec4f bcolor (  1.0, 1.0, 1.0, 1 );
 
-  unsigned int textXPos = static_cast< unsigned int > ( xpos );
-  unsigned int textYPos = static_cast< unsigned int > ( ypos );
-
-  textMatrix->setText ( textXPos, textYPos, message, fcolor, bcolor );
-
-  // update the stored text coords
-  _textXPos = textXPos;
-  _textYPos = textYPos;
+  textMatrix->setText ( xpos, ypos, message, fcolor, bcolor );
 }
 
 
@@ -10194,11 +10232,17 @@ void VaporIntrusionGUIDocument::_updatePressure()
 
 void VaporIntrusionGUIDocument::_enableObjectRender()
 {
-	// enable the stored source to render
-	_sources.at( _storedSource.index ).render = true;
+	if( _sources.size() > 0 )
+	{
+		// enable the stored source to render
+		_sources.at( _storedSource.index ).render = true;
+	}
 
-	// enable the stored soil to render
-	_soils.at( _storedSoil.index ).render = true;
+	if( _soils.size() > 0 )
+	{
+		// enable the stored soil to render
+		_soils.at( _storedSoil.index ).render = true;
+	}
 }
 
 

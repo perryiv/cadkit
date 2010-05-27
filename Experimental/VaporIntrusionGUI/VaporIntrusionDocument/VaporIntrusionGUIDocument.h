@@ -462,7 +462,8 @@ protected:
   bool                        _checkBuildingInterior( const std::string& axis, float point );
 
   
-  void                        _setStatusText( const std::string message, double xmult, double ymult, Usul::Interfaces::IUnknown *caller );
+  void                        _setStatusText( const std::string message, unsigned int &xpos, unsigned int &ypos, double xmult, double ymult, Usul::Interfaces::IUnknown *caller );
+	std::string                 _getModeMessage();
 
 	void												_handleObjectCreatePosition(  int x, int y );
 
@@ -593,6 +594,8 @@ private:
     float                     _mouseYCoord;
     unsigned int              _textXPos;
     unsigned int              _textYPos;
+		unsigned int              _modeXPos;
+    unsigned int              _modeYPos;
     int                       _screenXCoord;
     int                       _screenYCoord;
 

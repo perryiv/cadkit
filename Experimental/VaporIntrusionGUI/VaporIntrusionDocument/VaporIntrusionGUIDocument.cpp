@@ -539,13 +539,36 @@ std::string VaporIntrusionGUIDocument::_getModeMessage()
 	// check for grid edit mode
 	if( buildMode == IVPI::BUILD_MODE_GRID_EDIT )
 	{
-		return std::string( "Grid" );
+		if( editMode == IVPI::EDIT_X_GRID_2D )
+		{
+			return std::string( "Grid (X)" );
+		}
+		else if( editMode == IVPI::EDIT_Y_GRID_2D )
+		{
+			return std::string( "Grid (Y)" );
+		}
+		else
+		{
+			return std::string( "Grid (No Axis)" );
+		}
+
 	}
 
 	// check for crack edit mode
 	if( buildMode == IVPI::BUILD_MODE_CRACK_PLACE1 || buildMode == IVPI::BUILD_MODE_CRACK_PLACE2 )
 	{
-		return std::string( "Crack" );
+		if( editMode == IVPI::EDIT_X_GRID_2D )
+		{
+			return std::string( "Crack (X)" );
+		}
+		else if( editMode == IVPI::EDIT_Y_GRID_2D )
+		{
+			return std::string( "Crack (Y)" );
+		}
+		else
+		{
+			return std::string( "Crack (No Axis)" );
+		}
 	}
 
 	return std::string( "Idle" );

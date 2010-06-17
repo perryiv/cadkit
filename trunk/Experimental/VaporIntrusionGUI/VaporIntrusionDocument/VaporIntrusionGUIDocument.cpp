@@ -6796,9 +6796,9 @@ void VaporIntrusionGUIDocument::_handleCrackAdd( Usul::Math::Vec3f point )
 
       // Building side walls 
       float paraW1 ( StrToFloat::convert( _building.x ) );
-      float paraW2 ( paraW1 + StrToFloat::convert( _building.w ) );
+      float paraW2 ( paraW1 + StrToFloat::convert( _building.l ) );
       float perpW1 ( StrToFloat::convert( _building.z ) );
-      float perpW2 ( perpW1 + StrToFloat::convert( _building.l ) );
+      float perpW2 ( perpW1 + StrToFloat::convert( _building.w ) );
 
       // indices of the sidewalls
       unsigned int paraWI1( this->_closestGridPoint( paraW1, paraGrid ) );
@@ -6853,9 +6853,9 @@ void VaporIntrusionGUIDocument::_handleCrackAdd( Usul::Math::Vec3f point )
 
       // Building side walls 
       float paraW1 ( StrToFloat::convert( _building.z ) );
-      float paraW2 ( paraW1 + StrToFloat::convert( _building.l ) );
+      float paraW2 ( paraW1 + StrToFloat::convert( _building.w ) );
       float perpW1 ( StrToFloat::convert( _building.x ) );
-      float perpW2 ( perpW1 + StrToFloat::convert( _building.w ) );
+      float perpW2 ( perpW1 + StrToFloat::convert( _building.l ) );
 
       // indices of the sidewalls
       unsigned int paraWI1( this->_closestGridPoint( paraW1, paraGrid ) );

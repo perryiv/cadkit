@@ -39,6 +39,7 @@
 #include "osg/LineSegment"
 #include "osg/Group"
 #include "osg/Material"
+#include "osg/Plane"
 
 #include <string>
 #include <memory>

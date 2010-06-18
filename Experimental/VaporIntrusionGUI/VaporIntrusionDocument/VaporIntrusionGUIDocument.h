@@ -322,6 +322,9 @@ public:
 	void                        enablePressure ( bool b );
   bool                        isEnablePressure () const;
 
+	void                        enableLighting3D ( bool b );
+  bool                        isEnableLighting3D () const;
+
   // Object menu functions
   void                        objectMenuAddBuilding();
   void                        objectMenuAddSource();
@@ -621,6 +624,8 @@ private:
 
 		float											_soilTransparency;
 		float											_sourceTransparency;
+
+		bool											_useLighting3D;
 
   
 };

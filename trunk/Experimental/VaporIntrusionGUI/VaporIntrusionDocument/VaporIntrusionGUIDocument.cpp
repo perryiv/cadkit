@@ -147,7 +147,8 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
 	_storedSource(),
 	_storedSoil(),
 	_soilTransparency( 1.0f ),
-	_sourceTransparency( 1.0f )
+	_sourceTransparency( 1.0f ),
+	_useLighting3D( true )
 {
   USUL_TRACE_SCOPE;
 }
@@ -949,6 +950,9 @@ void VaporIntrusionGUIDocument::_build3DScene ( Unknown *caller )
   {
     this->_makePressurePlane();
   }
+
+	// set the lighting
+	OsgTools::State::StateSet::setLighting( _root.get(), _useLighting3D );
 }
 
 
@@ -6177,8 +6181,9 @@ void VaporIntrusionGUIDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   view->append ( ToggleButton::create ( "Foundation", boost::bind ( &VaporIntrusionGUIDocument::showFoundation, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowFoundation, this ) ) );
   view->append ( ToggleButton::create ( "Sources", boost::bind ( &VaporIntrusionGUIDocument::showSources, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowSources, this ) ) );
   view->append ( ToggleButton::create ( "Soils", boost::bind ( &VaporIntrusionGUIDocument::showSoils, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowSoils, this ) ) );
-  view->append ( ToggleButton::create ( "Pressure Contour", boost::bind ( &VaporIntrusionGUIDocument::showPressure, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowPressure, this ) ) );
-
+  view->append ( ToggleButton::create ( "Lighting (3D)", boost::bind ( &VaporIntrusionGUIDocument::enableLighting3D, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isEnableLighting3D, this ) ) );
+	view->append ( ToggleButton::create ( "Enable Wind Induced Surface Pressure Distribution", boost::bind ( &VaporIntrusionGUIDocument::showPressure, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowPressure, this ) ) );
+	
   // Grid sub menu of the view menu
   MenuKit::Menu::RefPtr gridSubMenu ( view->find ( "&Grid", true ) );
   gridSubMenu->append ( ToggleButton::create ( "Visible", boost::bind ( &VaporIntrusionGUIDocument::showGrid, this, _1 ), boost::bind ( &VaporIntrusionGUIDocument::isShowGrid, this ) ) );
@@ -6427,6 +6432,39 @@ void VaporIntrusionGUIDocument::showGridWireframe ( bool b )
   if ( b != _showGridWireframe )
   {
     _showGridWireframe = b;
+
+    this->rebuildScene();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show building flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::isEnableLighting3D() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _useLighting3D;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Toggle the grid to wireframe
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::enableLighting3D ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( b != _useLighting3D )
+  {
+    _useLighting3D = b;
 
     this->rebuildScene();
   }
@@ -9418,6 +9456,9 @@ void VaporIntrusionGUIDocument::_modifyBuilding()
 
   // tell the document that there is a building
   this->useBuilding( true );
+
+	// done modifying the building so reset the object mode
+	this->setObjectMode( IVPI::OBJECT_NOTHING );
 
   //rebuild the scene
   this->rebuildScene();

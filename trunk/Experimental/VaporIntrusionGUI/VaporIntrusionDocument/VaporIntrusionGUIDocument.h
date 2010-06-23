@@ -503,7 +503,7 @@ protected:
 	void												_writeGrid( const std::string& filename, GridPoints xGrid, GridPoints yGrid, GridPoints zGrid ) const;
 	void												_writeGridAxis( const std::string& filename ) const;
 	void												_writeCracks( const std::string& filename, Cracks cracks ) const;
-	void												_writeMasterFile( const std::string& filename, std::string& username, std::string& directory ) const;
+	void												_writeMasterFile( const std::string& filename, const std::string& username, const std::string& directory ) const;
 
 
   // read the user preference file for user <username>

@@ -1994,12 +1994,14 @@ void VaporIntrusionGUIDocument::_write( const std::string &filename, Unknown *ca
   // get the base
   std::string base ( Usul::File::base( filename ) );
 
-	// write the master file
-	this->_writeMasterFile( filename, base, directory );
+	
 
 	// make the folder for the preferences and experiment settings
   const std::string path ( Usul::Strings::format ( directory, '/', base, '/' ) );
   Usul::Functions::safeCallV1 ( &Usul::File::make, path, "1336095872" );
+
+	// write the master file
+	this->_writeMasterFile( filename, base, path );
 
 	// write everything else
 	this->_writeUserPreferences( base, directory );
@@ -2013,18 +2015,21 @@ void VaporIntrusionGUIDocument::_write( const std::string &filename, Unknown *ca
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_writeMasterFile( const std::string& filename, std::string& username, std::string& directory ) const
+void VaporIntrusionGUIDocument::_writeMasterFile( const std::string& filename, const std::string& username, const std::string& directory ) const
 {
 	Guard guard ( this );
 
   // useful typedef
   typedef std::vector< std::string > StringVec;
 
+	// full path to internal directory
+	std::string fullPath ( Usul::Strings::format( directory, username, ".vig" ) );
+
   // create a file handle
   std::ofstream ofs;
 
   // open the file
-  ofs.open( filename.c_str() );
+  ofs.open( fullPath.c_str() );
 
   // make sure the file was opened
   if( false == ofs.is_open() )
@@ -3448,7 +3453,7 @@ void VaporIntrusionGUIDocument::_readUserPreferences( const std::string& usernam
 
   // create a temp directory in the temp directory location
   const std::string tempDir ( directory ); 
-  const std::string path ( Usul::Strings::format ( tempDir, '/', username, '/' ) );
+  const std::string path ( Usul::Strings::format ( tempDir, '/' ) );
 
   { // Source 
     std::string fn( path + username + "_sources.pref" );

@@ -148,7 +148,7 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
 	_storedSoil(),
 	_soilTransparency( 1.0f ),
 	_sourceTransparency( 1.0f ),
-	_useLighting3D( true )
+	_useLighting3D( false )
 {
   USUL_TRACE_SCOPE;
 }
@@ -1338,7 +1338,7 @@ void VaporIntrusionGUIDocument::_makeFoundation( osg::Vec3f ll )
   material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
 
   // get the length, width, and height of the building
-  osg::Vec3f lhw ( StrToFloat::convert( _building.l ), -0.1f, StrToFloat::convert( _building.w ) );
+  osg::Vec3f lhw ( StrToFloat::convert( _building.l ), -_minimumGridDistance, StrToFloat::convert( _building.w ) );
 
   // create the points for the building
   osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
@@ -1395,6 +1395,9 @@ void VaporIntrusionGUIDocument::_makeBuilding()
 
   // get the lower left corner of the building
 	osg::Vec3f ll  ( StrToFloat::convert( b.x ), StrToFloat::convert( b.y ) + StrToFloat::convert( b.h ), StrToFloat::convert( b.z ) );
+
+	// shift up the minimum distance to make room for the foundation slab
+	ll.y() += _minimumGridDistance;
 
   // snap the lower left to the grid
   osg::Vec2f corner ( ll.x(), ll.z() );
@@ -9411,8 +9414,8 @@ void VaporIntrusionGUIDocument::_createNewBuilding()
   this->useBuilding( true );
 
 	// add an additional grid point for the foundation
-  GridAxisPoint gap ( "Y", Usul::Convert::Type< float, std::string >::convert( ey - _minimumGridDistance ) );
-  _axisPoints.push_back( gap );
+  //GridAxisPoint gap ( "Y", Usul::Convert::Type< float, std::string >::convert( ey - _minimumGridDistance ) );
+  //_axisPoints.push_back( gap );
 
 	// delete the cracks
 	_cracks.first.clear();

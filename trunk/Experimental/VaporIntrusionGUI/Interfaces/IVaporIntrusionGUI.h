@@ -155,7 +155,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
               const std::string& d, const std::string& vol,
               const std::string& xr, const std::string& th ):
     l ( length ), w ( width ), h ( height ), x ( xpos ), y ( ypos ), z ( zpos ),
-    depth( d ), v ( vol ), xrate ( xr ), thickness( th ), bColor( 0.4f, 0.0f, 0.4f, 1.0f ), fColor( 1.0f, 1.0f, 1.0f, 0.3f )
+    depth( d ), v ( vol ), xrate ( xr ), thickness( th ), bColor( 0.4f, 0.0f, 0.4f, 1.0f ), fColor( 0.38f, 0.38f, 0.38f, 0.5f )
     {};
 
     Building():

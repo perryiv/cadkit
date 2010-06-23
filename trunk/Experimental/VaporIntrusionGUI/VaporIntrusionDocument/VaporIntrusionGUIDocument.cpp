@@ -9413,10 +9413,6 @@ void VaporIntrusionGUIDocument::_createNewBuilding()
   // tell the document that there is a building
   this->useBuilding( true );
 
-	// add an additional grid point for the foundation
-  //GridAxisPoint gap ( "Y", Usul::Convert::Type< float, std::string >::convert( ey - _minimumGridDistance ) );
-  //_axisPoints.push_back( gap );
-
 	// delete the cracks
 	_cracks.first.clear();
 	_cracks.second.clear();

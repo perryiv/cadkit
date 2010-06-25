@@ -369,6 +369,9 @@ protected:
   osg::Node*                  _buildObject();
   void                        _build2DObjects();
 
+	osg::Node*                  _buildXYScene2();
+  osg::Node*                  _buildZScene2();
+
   osg::Node*                  _drawBuilding2D();
   osg::Node*                  _drawCracks2D();
 	osg::Node*                  _drawCrackMarkers();
@@ -376,6 +379,7 @@ protected:
   osg::Node*                  _drawSoils2D();
 
   void                        _makeGrid();
+	void                        _makeGrid2();
   void                        _makeSymmetricalBuilding();
   void                        _makeBuilding();
   void                        _makeSource3D();

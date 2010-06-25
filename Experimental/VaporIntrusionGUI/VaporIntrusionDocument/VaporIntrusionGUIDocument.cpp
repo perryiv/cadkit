@@ -755,12 +755,20 @@ void VaporIntrusionGUIDocument::_build2DScene( Usul::Interfaces::IUnknown *calle
 
   if( viewMode == IVPI::VIEW_MODE_2D_XY )
   {
+#if 0
     _root2D->addChild( this->_buildXYScene() );
+#else
+		_root2D->addChild( this->_buildXYScene2() );
+#endif
   }
   
   if( viewMode == IVPI::VIEW_MODE_2D_XZ )
   {
+#if 0
     _root2D->addChild( this->_buildZScene() );
+#else
+		_root2D->addChild( this->_buildZScene2() );
+#endif
   }
 
   // build the 2d objects and add them to the scene
@@ -820,6 +828,127 @@ osg::Node* VaporIntrusionGUIDocument::_buildXYScene()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Build an optimized 2D XY scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* VaporIntrusionGUIDocument::_buildXYScene2()
+{
+  Guard guard ( this );
+
+	// get the grid sizes
+	unsigned int xsize ( _xValues.size() );
+	unsigned int zsize ( _zValues.size() );
+
+	// bounds
+	double xmin ( _xValues.at( 0 ).first );
+	double xmax ( _xValues.at( xsize - 1 ).first );
+	double zmin ( _zValues.at( 0 ).first );
+	double zmax ( _zValues.at( zsize - 1 ).first );
+
+	 
+
+	// create a group to hold the lines
+	osg::ref_ptr< osg::Group > group ( new osg::Group );
+
+	// geometry
+	osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
+
+	// geode
+	osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+
+	// vertices
+	osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
+
+	// indices
+	osg::ref_ptr< osg::DrawElementsUInt > indices ( new osg::DrawElementsUInt( GL_LINES ) );
+
+	// vertex/index position count
+	unsigned int indexCount ( 0 );
+
+	for( unsigned int i = 0; i < zsize; ++i )
+  {
+		// first point
+    Usul::Math::Vec3f p1 ( xmin, 0.0f, _zValues.at( i ).first );
+
+		// second point
+    Usul::Math::Vec3f p2 ( xmax, 0.0f, _zValues.at( i ).first );
+
+		// add the vertices to teh vertex array
+		vertices->push_back( osg::Vec3f ( p1[0], p1[1], p1[2] ) );
+		vertices->push_back( osg::Vec3f ( p2[0], p2[1], p2[2] ) );
+
+		// set the index count
+		indices->push_back( indexCount );
+    indices->push_back( indexCount + 1 );
+
+		// increment the index count
+		indexCount += 2;
+	}
+	
+	for( unsigned int i = 0; i < xsize - 1; ++i )
+  {
+		// first point
+    Usul::Math::Vec3f p1 ( _xValues.at( i ).first, 0.0f, zmin  );
+
+		// second point
+    Usul::Math::Vec3f p2 ( _xValues.at( i ).first, 0.0f, zmax );
+
+		// add the vertices to teh vertex array
+		vertices->push_back( osg::Vec3f ( p1[0], p1[1], p1[2] ) );
+		vertices->push_back( osg::Vec3f ( p2[0], p2[1], p2[2] ) );
+
+		// set the index count
+		indices->push_back( indexCount );
+    indices->push_back( indexCount + 1 );
+
+		// increment the index count
+		indexCount += 2;
+	}
+
+	// Color information
+  Color c ( _gridColor[0], _gridColor[1], _gridColor[2], _gridColor[3]  );
+	osg::ref_ptr< osg::Vec4Array > colors ( new osg::Vec4Array() );
+	colors->push_back( c );
+	// OsgTools::State::StateSet::setLineWidth( geometry->getOrCreateStateSet(), 2 );
+  
+	// set the geometry information
+  geometry->setColorArray( colors.get() );
+	geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+  geometry->addPrimitiveSet( indices.get() );
+  geometry->setVertexArray( vertices.get() );
+
+	// add the geometry to the geode
+  geode->addDrawable( geometry.get() );
+
+	// add the geode
+  group->addChild( geode.get() );
+
+	// set the material of the lines
+	osg::ref_ptr< osg::Material > material ( new osg::Material );
+  material->setAmbient( osg::Material::FRONT_AND_BACK, c );
+  material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
+  OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
+  OsgTools::State::StateSet::setAlpha( group.get(), 1.0f );
+
+	// points of the plane
+  osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+
+	// add the points to the list of points
+  points->push_back( osg::Vec3f ( xmin, 0, zmin ) );
+  points->push_back( osg::Vec3f ( xmax, 0, zmin ) );
+  points->push_back( osg::Vec3f ( xmax, 0, zmax ) );
+  points->push_back( osg::Vec3f ( xmin, 0, zmax ) );
+
+  // add the scan plane
+  group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.5f, 0.5f, 0.5f, 1.0f ), 1 ) );
+
+  return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the 2D Z scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -863,6 +992,126 @@ osg::Node* VaporIntrusionGUIDocument::_buildZScene()
 
   return group.release();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build an optimized 2D XY scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* VaporIntrusionGUIDocument::_buildZScene2()
+{
+  Guard guard ( this );
+
+	// get the grid sizes
+	unsigned int xsize ( _xValues.size() );
+	unsigned int ysize ( _yValues.size() );
+
+	// bounds
+	double xmin ( _xValues.at( 0 ).first );
+	double xmax ( _xValues.at( xsize - 1 ).first );
+	double ymin ( _yValues.at( 0 ).first );
+	double ymax ( _yValues.at( ysize - 1 ).first );
+
+	// create a group to hold the lines
+	osg::ref_ptr< osg::Group > group ( new osg::Group );
+
+	// geometry
+	osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
+
+	// geode
+	osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+
+	// vertices
+	osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
+
+	// indices
+	osg::ref_ptr< osg::DrawElementsUInt > indices ( new osg::DrawElementsUInt( GL_LINES ) );
+
+	// vertex/index position count
+	unsigned int indexCount ( 0 );
+
+	for( unsigned int i = 0; i < ysize; ++i )
+  {
+		// first point
+    Usul::Math::Vec3f p1 ( xmin, _yValues.at( i ).first, 0.0f );
+
+		// second point
+    Usul::Math::Vec3f p2 ( xmax, _yValues.at( i ).first, 0.0f );
+
+		// add the vertices to teh vertex array
+		vertices->push_back( osg::Vec3f ( p1[0], p1[1], p1[2] ) );
+		vertices->push_back( osg::Vec3f ( p2[0], p2[1], p2[2] ) );
+
+		// set the index count
+		indices->push_back( indexCount );
+    indices->push_back( indexCount + 1 );
+
+		// increment the index count
+		indexCount += 2;
+	}
+	
+	for( unsigned int i = 0; i < xsize - 1; ++i )
+  {
+		// first point
+    Usul::Math::Vec3f p1 ( _xValues.at( i ).first, ymin, 0.0f );
+
+		// second point
+    Usul::Math::Vec3f p2 ( _xValues.at( i ).first, ymax, 0.0f );
+
+		// add the vertices to teh vertex array
+		vertices->push_back( osg::Vec3f ( p1[0], p1[1], p1[2] ) );
+		vertices->push_back( osg::Vec3f ( p2[0], p2[1], p2[2] ) );
+
+		// set the index count
+		indices->push_back( indexCount );
+    indices->push_back( indexCount + 1 );
+
+		// increment the index count
+		indexCount += 2;
+	}
+
+	// Color information
+  Color c ( _gridColor[0], _gridColor[1], _gridColor[2], _gridColor[3]  );
+	osg::ref_ptr< osg::Vec4Array > colors ( new osg::Vec4Array() );
+	colors->push_back( c );
+	// OsgTools::State::StateSet::setLineWidth( geometry->getOrCreateStateSet(), 2 );
+  
+	// set the geometry information
+  geometry->setColorArray( colors.get() );
+	geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+  geometry->addPrimitiveSet( indices.get() );
+  geometry->setVertexArray( vertices.get() );
+
+	// add the geometry to the geode
+  geode->addDrawable( geometry.get() );
+
+	// add the geode
+  group->addChild( geode.get() );
+
+	// set the material of the lines
+	osg::ref_ptr< osg::Material > material ( new osg::Material );
+  material->setAmbient( osg::Material::FRONT_AND_BACK, c );
+  material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
+  OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
+  OsgTools::State::StateSet::setAlpha( group.get(), 1.0f );
+
+	// points of the plane
+  osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
+
+	// add the points to the list of points
+  points->push_back( osg::Vec3f ( xmin, ymin, 0.0f ) );
+  points->push_back( osg::Vec3f ( xmax, ymin, 0.0f ) );
+  points->push_back( osg::Vec3f ( xmax, ymax, 0.0f ) );
+  points->push_back( osg::Vec3f ( xmin, ymax, 0.0f ) );
+
+  // add the scan plane
+  group->addChild ( this->_buildPlane( points.get(), osg::Vec4f ( 0.5f, 0.5f, 0.5f, 1.0f ), 1 ) );
+
+  return group.release();
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -944,7 +1193,11 @@ void VaporIntrusionGUIDocument::_build3DScene ( Unknown *caller )
     this->_addPoints();
 
     // build the Grid 3D element
+#if 0
     this->_makeGrid();
+#else
+		this->_makeGrid2();
+#endif
   }
   if( true == _showPressurePlane && true == _enablePressure )
   {
@@ -1035,6 +1288,147 @@ void VaporIntrusionGUIDocument::_makeGrid( )
     }
 
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Create an optimized 3D grid and add it to the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_makeGrid2( )
+{
+	// get the grid sizes
+	unsigned int xsize ( _xValues.size() );
+	unsigned int ysize ( _yValues.size() );
+	unsigned int zsize ( _zValues.size() );
+
+	// bounds
+	double xmin ( _xValues.at( 0 ).first );
+	double xmax ( _xValues.at( xsize - 1 ).first );
+	double ymin ( _yValues.at( 0 ).first );
+	double ymax ( _yValues.at( ysize - 1 ).first );
+	double zmin ( _zValues.at( 0 ).first );
+	double zmax ( _zValues.at( zsize - 1 ).first );
+
+	// create a group to hold the lines
+	osg::ref_ptr< osg::Group > group ( new osg::Group );
+
+	// geometry
+	osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
+
+	// geode
+	osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+
+	// vertices
+	osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
+
+	// indices
+	osg::ref_ptr< osg::DrawElementsUInt > indices ( new osg::DrawElementsUInt( GL_LINES ) );
+
+	// vertex/index position count
+	unsigned int indexCount ( 0 );
+
+	// create the "x" lines
+  for( unsigned int i = 0; i < ysize; ++i )
+	{
+		for( unsigned int j = 0; j < zsize; ++j )
+		{
+			// first point
+      Usul::Math::Vec3f p1 ( xmin, _yValues.at( i ).first, _zValues.at( j ).first );
+
+			// second point
+      Usul::Math::Vec3f p2 ( xmax, _yValues.at( i ).first, _zValues.at( j ).first );
+
+			// add the vertices to teh vertex array
+			vertices->push_back( osg::Vec3f ( p1[0], p1[1], p1[2] ) );
+			vertices->push_back( osg::Vec3f ( p2[0], p2[1], p2[2] ) );
+
+			// set the index count
+			indices->push_back( indexCount );
+      indices->push_back( indexCount + 1 );
+
+			// increment the index count
+			indexCount += 2;
+		}
+	}
+
+	// create the "y" lines
+  for( unsigned int i = 0; i < xsize; ++i )
+	{
+		for( unsigned int j = 0; j < zsize; ++j )
+		{
+			// first point
+      Usul::Math::Vec3f p1 ( _xValues.at( i ).first, ymin, _zValues.at( j ).first );
+
+			// second point
+      Usul::Math::Vec3f p2 ( _xValues.at( i ).first, ymax, _zValues.at( j ).first );
+
+			// add the vertices to teh vertex array
+			vertices->push_back( osg::Vec3f ( p1[0], p1[1], p1[2] ) );
+			vertices->push_back( osg::Vec3f ( p2[0], p2[1], p2[2] ) );
+
+			// set the index count
+			indices->push_back( indexCount );
+      indices->push_back( indexCount + 1 );
+
+			// increment the index count
+			indexCount += 2;
+		}
+	}
+
+	// create the "z" lines
+  for( unsigned int i = 0; i < xsize; ++i )
+	{
+		for( unsigned int j = 0; j < ysize; ++j )
+		{
+			// first point
+      Usul::Math::Vec3f p1 ( _xValues.at( i ).first, _yValues.at( j ).first, zmin );
+
+			// second point
+      Usul::Math::Vec3f p2 ( _xValues.at( i ).first, _yValues.at( j ).first, zmax );
+
+			// add the vertices to teh vertex array
+			vertices->push_back( osg::Vec3f ( p1[0], p1[1], p1[2] ) );
+			vertices->push_back( osg::Vec3f ( p2[0], p2[1], p2[2] ) );
+
+			// set the index count
+			indices->push_back( indexCount );
+      indices->push_back( indexCount + 1 );
+
+			// increment the index count
+			indexCount += 2;
+		}
+	}
+
+	// Color information
+  Color c ( _gridColor[0], _gridColor[1], _gridColor[2], _gridColor[3]  );
+	osg::ref_ptr< osg::Vec4Array > colors ( new osg::Vec4Array() );
+	colors->push_back( c );
+	// OsgTools::State::StateSet::setLineWidth( geometry->getOrCreateStateSet(), 2 );
+  
+	// set the geometry information
+  geometry->setColorArray( colors.get() );
+	geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+  geometry->addPrimitiveSet( indices.get() );
+  geometry->setVertexArray( vertices.get() );
+
+	// add the geometry to the geode
+  geode->addDrawable( geometry.get() );
+
+	// add the geode
+  group->addChild( geode.get() );
+
+	// set the material of the lines
+	osg::ref_ptr< osg::Material > material ( new osg::Material );
+  material->setAmbient( osg::Material::FRONT_AND_BACK, c );
+  material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
+  OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
+  OsgTools::State::StateSet::setAlpha( group.get(), c.a() );
+
+	// add the group to the root
+	_root->addChild( group.get() );
+
 }
 
 

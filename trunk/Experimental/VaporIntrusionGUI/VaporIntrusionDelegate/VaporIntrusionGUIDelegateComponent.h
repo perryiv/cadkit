@@ -38,6 +38,7 @@
 #include "PrefSaveLoadDialog.h"
 #include "SourcePropertiesDialog.h"
 #include "SoilPropertiesDialog.h"
+#include "GlobalParametersDialog.h"
 
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 
@@ -144,8 +145,11 @@ public:
   // edit the Settings
   void                        editSettings();
 
-  // edit the Soil values
+  // edit the Crack values
   void                        editCracks();
+
+	// edit the Soil values
+  void                        editGlobalParameters();
 
   // send the file to the server
   void                        sendFile();

@@ -276,6 +276,9 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   // add settings menu to the tools menu
   editMenu->append ( MenuKit::Button::create ( "Settings", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSettings ) ) );
 
+	 // add settings menu to the tools menu
+  editMenu->append ( MenuKit::Button::create ( "Global Parameters", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGlobalParameters ) ) );
+
   // Add the window menu to the main menu
   menu.append( editMenu.get() );
 
@@ -742,6 +745,45 @@ void VaporIntrusionGUIDelegateComponent::editSettings()
 
   // set the document transparency information
   document->transparencies( editor.transparencies() );
+
+  // rebuild the scene
+  document->rebuildScene();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Edit the grid space
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::editGlobalParameters()
+{
+  // Make the dialog.
+  GlobalParametersDialog editor;
+
+  // Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+  // set the transparencies
+  editor.chemicals( document->oxygenCO2() );
+
+  // populate the chemical list
+  editor.initialize();
+
+  // Show the dialog.
+  if ( QDialog::Accepted != editor.exec() )
+    throw Usul::Exceptions::Canceled();
+
+  // finalize the dialog
+  editor.finalize();
+
+  // set the document color information
+  document->oxygenCO2( editor.chemicals() );
 
   // rebuild the scene
   document->rebuildScene();

@@ -200,6 +200,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     unsigned int index;
     std::string name, henry, koc, airDiff, waterDiff, atmoConc;
     std::string sourceConc;
+		std::string ambient, indoor;
     bool present;
     
     Chemical():
@@ -217,6 +218,7 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   };
   typedef std::vector< Chemical > Chemicals;
+	typedef std::pair< Chemical, Chemical > ChemicalPair;
 
   typedef std::vector< std::string > Concentrations;
   struct Source
@@ -393,6 +395,10 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual void                  chemicals( Chemicals c ) = 0;
   virtual Chemicals             chemicals() = 0;
+
+	virtual ChemicalPair          oxygenCO2() = 0;
+	virtual void									oxygenCO2( ChemicalPair c ) = 0;
+
   virtual Chemicals             library() = 0;
   virtual void                  library( Chemicals l ) = 0;
 

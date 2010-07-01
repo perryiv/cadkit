@@ -148,9 +148,15 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
 	_storedSoil(),
 	_soilTransparency( 1.0f ),
 	_sourceTransparency( 1.0f ),
-	_useLighting3D( false )
+	_useLighting3D( false ),
+	_oxygenCO2()
 {
   USUL_TRACE_SCOPE;
+
+	Chemical oxygen ( 0, "Oxygen", "31.6", "0.0", "0.2", "2.41E-05", "0" );
+	Chemical co2 ( 1, "Carbon Dioxide", "1.2", "0.0", "0.16", "1.6E-05", "0" );
+
+	_oxygenCO2 = ChemicalPair( oxygen, co2 );
 }
  
 
@@ -10759,6 +10765,34 @@ void VaporIntrusionGUIDocument::addSourceAtIndex( Source s, unsigned int i )
 	}
 
 	_sources.at( i ) = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the oxygen and CO2 values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::ChemicalPair VaporIntrusionGUIDocument::oxygenCO2()
+{
+	Guard guard ( this );
+
+	return _oxygenCO2;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the oxygen and CO2 values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::oxygenCO2( ChemicalPair c )
+{
+	Guard guard ( this );
+
+	_oxygenCO2 = c;
 }
 
 

@@ -232,6 +232,10 @@ public:
 
   virtual void                chemicals( Chemicals c );
   virtual Chemicals           chemicals();
+
+	virtual ChemicalPair        oxygenCO2();
+	virtual void								oxygenCO2( ChemicalPair c );
+
   virtual Chemicals           library();
   virtual void                library( Chemicals l );
 
@@ -630,6 +634,8 @@ private:
 		float											_sourceTransparency;
 
 		bool											_useLighting3D;
+
+		ChemicalPair							_oxygenCO2;
 
   
 };

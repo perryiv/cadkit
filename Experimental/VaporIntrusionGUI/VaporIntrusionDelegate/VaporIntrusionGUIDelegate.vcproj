@@ -414,6 +414,36 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\GlobalParametersDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\GlobalParametersDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_GlobalParametersDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\GlobalParametersDialog.ui -o .\ui_GlobalParametersDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\GlobalParametersDialog.h&quot; -o &quot;.\GeneratedFiles\moc_GlobalParametersDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\GlobalParametersDialog.ui;$(QTDIR)\bin\moc.exe;.\GlobalParametersDialog.h"
+							Outputs=".\ui_GlobalParametersDialog.h;.\GeneratedFiles\moc_GlobalParametersDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_GlobalParametersDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\GlobalParametersDialog.ui -o .\ui_GlobalParametersDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\GlobalParametersDialog.h&quot; -o &quot;.\GeneratedFiles\moc_GlobalParametersDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\GlobalParametersDialog.ui;$(QTDIR)\bin\moc.exe;.\GlobalParametersDialog.h"
+							Outputs=".\ui_GlobalParametersDialog.h;.\GeneratedFiles\moc_GlobalParametersDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\GridEditorDialog.cpp"
 					>
 				</File>
@@ -975,6 +1005,10 @@
 				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_CracksDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_GlobalParametersDialog.cpp"
 					>
 				</File>
 				<File

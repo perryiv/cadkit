@@ -14,47 +14,45 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __VAPORINTRUSION_GLOBAL_PARAMETERS_DIALOG_H__
-#define __VAPORINTRUSION_GLOBAL_PARAMETERS_DIALOG_H__
+#ifndef __VAPORINTRUSION_REACTION_DIALOG_H__
+#define __VAPORINTRUSION_REACTION_DIALOG_H__
 
 #include "VaporIntrusionGUI/Interfaces/IVaporIntrusionGUI.h"
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/Math/Vector3.h"
 
-#include "ui_GlobalParametersDialog.h"
+#include "ui_ReactionDialog.h"
 
 #include "QtGui/QDialog"
 
 
-class GlobalParametersDialog : public QDialog,
-															 private Ui::GlobalParametersDialog
+class ReactionDialog : public QDialog,
+                       private Ui::ReactionDialog
 {
   Q_OBJECT;
 public:
-  typedef QDialog																							BaseClass;
-  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI		IVPI;
-  typedef IVPI::Chemical																			Chemical;
-  typedef IVPI::ChemicalPair																	ChemicalPair;
-
+  typedef QDialog BaseClass;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI IVPI;
+  typedef IVPI::Reaction  Reaction;
+  typedef IVPI::Reactions Reactions;
   // Useful typedefs  
 
-  GlobalParametersDialog ( QWidget *parent = 0x0 );
-  virtual ~GlobalParametersDialog();
+  ReactionDialog ( QWidget *parent = 0x0 );
+  virtual ~ReactionDialog();
 
   void                initialize();
-  ChemicalPair        chemicals();
-  void                chemicals( ChemicalPair c );
-	void								finalize();
+  Reactions           reactions();
+  void                reactions( Reactions c );
+
 
 protected:
 
   void                _initialize();
-	void								_initDropDown();
   void                _clearTable();
 
 private:
-  ChemicalPair        _chemicals;
+  Reactions						_reactions;
 
 private slots:
 
@@ -62,4 +60,4 @@ private slots:
 
 
 
-#endif // __VAPORINTRUSION_GLOBAL_PARAMETERS_DIALOG_H__
+#endif // __VAPORINTRUSION_REACTION_DIALOG_H__

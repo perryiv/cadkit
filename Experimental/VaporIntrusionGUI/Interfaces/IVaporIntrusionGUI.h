@@ -101,6 +101,12 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 		OBJECT_MODIFIER_BUILDING
 	};
 
+	// reaction types: will add zero order and 2nd order in a future version
+	enum
+	{
+		REACTION_TYPE_NONE,
+		REACTION_TYPE_1ST_ORDER
+	};
 
   // structs
   struct PressurePlane
@@ -207,6 +213,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     index( 0 ), name(), henry(), koc(), airDiff(), waterDiff(), atmoConc(), present( true )
     {
       sourceConc = "0";
+			ambient = "0";
+			indoor = "0";
     };
 
     Chemical( unsigned int i, const std::string& n, const std::string& h, const std::string& k,
@@ -214,11 +222,24 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     index( i ), name( n ), henry( h ), koc( k ), airDiff( ad ), waterDiff( wd ), atmoConc( ac ), present( true )
     {
       sourceConc = "0";
+			ambient = "0";
+			indoor = "0";
     };
 
   };
   typedef std::vector< Chemical > Chemicals;
 	typedef std::pair< Chemical, Chemical > ChemicalPair;
+
+	struct Reaction
+	{
+		std::string name, type, firstOrderRateConstant, oxygenSRatio, co2SRatio;
+
+		Reaction(): name( "Unknown" ), type( 0 ), firstOrderRateConstant(), oxygenSRatio(), co2SRatio(){};
+
+		Reaction( const std::string& n, const std::string& t, const std::string& forc, const std::string& osr, const std::string& cosr ):
+		name( n ), type( t ), firstOrderRateConstant( forc ), oxygenSRatio( osr ), co2SRatio( cosr ){};
+	};
+	typedef std::vector< Reaction > Reactions;
 
   typedef std::vector< std::string > Concentrations;
   struct Source
@@ -401,6 +422,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual Chemicals             library() = 0;
   virtual void                  library( Chemicals l ) = 0;
+
+	virtual Reactions             reactions() = 0;
+  virtual void                  reactions( Reactions r ) = 0;
 
   virtual void                  soils( Soils s ) = 0;
   virtual Soils                 soils() = 0;

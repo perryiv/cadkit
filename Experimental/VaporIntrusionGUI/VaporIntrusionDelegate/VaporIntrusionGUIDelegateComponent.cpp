@@ -263,6 +263,10 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
  
   // Add Window Chemicals button
   editMenu->append ( MenuKit::Button::create ( "Chemicals", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editChemicals ) ) );
+
+	// Add Chemical reaction menu item
+  editMenu->append ( MenuKit::Button::create ( "Chemical Reactions", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editReactions) ) );
+ 
  
   // add editAddChemicalsToSource button
   editMenu->append ( MenuKit::Button::create ( "Soils", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSoils ) ) );
@@ -515,6 +519,8 @@ void VaporIntrusionGUIDelegateComponent::editCracks()
 
   document->rebuildScene();
 }
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Edit the Chemical values
@@ -549,6 +555,42 @@ void VaporIntrusionGUIDelegateComponent::editChemicals()
   // set the chemicals and library
   document->chemicals( editor.getSelectedChemicals() );
   document->library( editor.library() );
+
+  document->rebuildScene();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Edit the Chemical values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::editReactions()
+{
+  // Make the dialog.
+  ReactionDialog editor;
+
+  // Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+  // set the chemicals
+  editor.reactions( document->reactions() );
+
+  // populate the chemical list
+  editor.initialize();
+
+  // Show the dialog.
+  if ( QDialog::Accepted != editor.exec() )
+    throw Usul::Exceptions::Canceled();
+
+  // set the chemicals and library
+  document->reactions( editor.reactions() );
 
   document->rebuildScene();
 }

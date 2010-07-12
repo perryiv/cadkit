@@ -102,6 +102,7 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _soils(),
   _soilLibrary(),
   _cracks(),
+	_reactions(),
   _axisPoints(),
   _originalToCurrentIndex(),
   _symmetricalGrid( false ),
@@ -3136,6 +3137,9 @@ void VaporIntrusionGUIDocument::initialize()
   // read the pressure values
   std::string pressureFilename( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "pressures.vpi" );
   this->_readMasterPressureFile( pressureFilename );
+
+	// initialize the reaction list
+	this->_updateReactions();
 }
 
 
@@ -5831,6 +5835,9 @@ void VaporIntrusionGUIDocument::chemicals( Chemicals c )
 
   // update the sources
   this->_updateSources();
+
+	// update the reactions
+  this->_updateReactions();
 }
 
 
@@ -5918,6 +5925,55 @@ void VaporIntrusionGUIDocument::_updateSources()
     _sources.at( i ) = source;
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Update the source information related to the current set of chemicals
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_updateReactions()
+{
+  Guard guard ( this );
+
+	// get the source chemical set
+  Chemicals chemicals ( this->chemicals() );
+
+	// temporary placeholder for the updated reactions
+	Reactions trx;
+
+  for( unsigned int i = 0; i < chemicals.size(); ++i )
+  {
+		// get the reaction
+		Chemical c ( chemicals.at( i ) );
+
+		Reaction rx ( c.name, "0", "", "", "" );
+
+    // loop first through the source chemicals and check
+    // for changes in the current chemical set
+    for( unsigned int j = 0; j < _reactions.size(); ++j )
+    {
+      // get the current chemical reaction
+      Reaction r ( _reactions.at( i ) );
+
+      //check to see if the reaction chemical is present
+			if( c.name == r.name )
+			{
+				rx = r;
+			}
+
+    }
+
+		// add the reaction to the list of reactions
+		trx.push_back( rx );
+	}
+
+		// update the reactions
+		_reactions = trx;
+
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -10813,5 +10869,33 @@ void VaporIntrusionGUIDocument::addSoilAtIndex( Soil s, unsigned int i )
 	}
 
 	_soils.at( i ) = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the color value at a given magnitude value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::Reactions VaporIntrusionGUIDocument::reactions()
+{
+	Guard guard ( this );
+
+	return _reactions;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the color value at a given magnitude value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::reactions( Reactions r )
+{
+	Guard guard ( this );
+
+	_reactions = r;
 }
 

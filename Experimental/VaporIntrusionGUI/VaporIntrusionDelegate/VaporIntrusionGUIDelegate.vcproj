@@ -684,6 +684,36 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\ReactionDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ReactionDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_ReactionDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\ReactionDialog.ui -o .\ui_ReactionDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\ReactionDialog.h&quot; -o &quot;.\GeneratedFiles\moc_ReactionDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ReactionDialog.ui;$(QTDIR)\bin\moc.exe;.\ReactionDialog.h"
+							Outputs=".\ui_ReactionDialog.h;.\GeneratedFiles\moc_ReactionDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_ReactionDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\ReactionDialog.ui -o .\ui_ReactionDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\ReactionDialog.h&quot; -o &quot;.\GeneratedFiles\moc_ReactionDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ReactionDialog.ui;$(QTDIR)\bin\moc.exe;.\ReactionDialog.h"
+							Outputs=".\ui_ReactionDialog.h;.\GeneratedFiles\moc_ReactionDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\ScalarEditorDialog.cpp"
 					>
 				</File>
@@ -1041,6 +1071,10 @@
 				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_PrefSaveLoadDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_ReactionDialog.cpp"
 					>
 				</File>
 				<File

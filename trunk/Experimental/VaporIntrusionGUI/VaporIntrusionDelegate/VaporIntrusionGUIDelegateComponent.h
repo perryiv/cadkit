@@ -39,6 +39,7 @@
 #include "SourcePropertiesDialog.h"
 #include "SoilPropertiesDialog.h"
 #include "GlobalParametersDialog.h"
+#include "ReactionDialog.h"
 
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 
@@ -148,11 +149,16 @@ public:
   // edit the Crack values
   void                        editCracks();
 
+	// edit the chemical reactions
+  void												editReactions();
+
 	// edit the Soil values
   void                        editGlobalParameters();
 
   // send the file to the server
   void                        sendFile();
+
+	
 
   // save or load user preferences
   void                        saveLoadPrefs();

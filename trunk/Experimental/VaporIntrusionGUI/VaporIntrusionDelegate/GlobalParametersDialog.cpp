@@ -70,7 +70,26 @@ GlobalParametersDialog::~GlobalParametersDialog()
 
 void GlobalParametersDialog::initialize()
 {
+	// initialize the drop down items
+	this->_initDropDown();
+
+	// initialize other parameters
   this->_initialize();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize ( Private ).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GlobalParametersDialog::_initDropDown()
+{
+	// add the surface pressure items
+  surfacePressureDD->addItem( "No Flux Boundary" );
+	surfacePressureDD->addItem( "Atmospheric Boundary" );
+	surfacePressureDD->addItem( "Wind-induced Pressure Boundary" );
 }
 
 
@@ -192,6 +211,18 @@ void GlobalParametersDialog::chemicals( ChemicalPair c )
 
 void GlobalParametersDialog::finalize()
 {
+	std::string oName			( _oxygenCO2Table->item( 0, 0 )->text().toStdString() );
+  std::string oAmbient  ( _oxygenCO2Table->item( 0, 1 )->text().toStdString() );
+  std::string oIndoor   ( _oxygenCO2Table->item( 0, 2 )->text().toStdString() );
+  std::string cName			( _oxygenCO2Table->item( 1, 0 )->text().toStdString() );
+  std::string cAmbient	( _oxygenCO2Table->item( 1, 1 )->text().toStdString() );
+  std::string cIndoor		( _oxygenCO2Table->item( 1, 2 )->text().toStdString() );
+
+	_chemicals.first.ambient	= oAmbient;
+	_chemicals.first.indoor		= oIndoor;
+
+	_chemicals.second.ambient = cAmbient;
+	_chemicals.second.indoor	= cIndoor;
 
 }
 

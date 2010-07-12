@@ -84,6 +84,8 @@ public:
   typedef IVaporIntrusionGUI::Sources                           Sources;
   typedef IVaporIntrusionGUI::Soil                              Soil;
   typedef IVaporIntrusionGUI::Soils                             Soils;
+	typedef IVaporIntrusionGUI::Reaction													Reaction;
+	typedef IVaporIntrusionGUI::Reactions													Reactions;
 	typedef osg::Vec3 																						CrackMarker;
   typedef std::vector< std::string >                            StringVec;
   typedef std::map< std::string, unsigned int >                 GridMap;
@@ -246,6 +248,9 @@ public:
 
   virtual void                cracks( CracksPair c );
   virtual CracksPair          cracks();
+
+	virtual Reactions           reactions();
+  virtual void                reactions( Reactions r );
 
   virtual bool                symmetricalGrid();
   virtual void                symmetricalGrid( bool value );
@@ -498,6 +503,9 @@ protected:
   // update the source information for all sources
   void                        _updateSources();
 
+	// update the source information for all reactions
+  void                        _updateReactions();
+
   // write the user preference file for user <username>
 	void                        _writeUserPreferences( const std::string& username, const std::string& directory ) const;
   void                        _writeChemicals( const std::string& filename ) const;
@@ -569,6 +577,7 @@ private:
     Soils                     _soils;
     SoilLibrary               _soilLibrary;
     CracksPair                _cracks;
+		Reactions									_reactions;
     GridAxisPoints            _axisPoints;
     GridMap                   _originalToCurrentIndex;
     bool                      _symmetricalGrid;

@@ -25,6 +25,7 @@
 #include "ui_ReactionDialog.h"
 
 #include "QtGui/QDialog"
+#include "QtGui/QComboBox"
 
 
 class ReactionDialog : public QDialog,
@@ -44,6 +45,8 @@ public:
   void                initialize();
   Reactions           reactions();
   void                reactions( Reactions c );
+
+	void								finalize();
 
 
 protected:

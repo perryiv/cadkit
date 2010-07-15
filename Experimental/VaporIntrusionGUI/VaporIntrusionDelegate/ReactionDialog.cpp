@@ -107,8 +107,14 @@ void ReactionDialog::_initialize()
     //item6->setCheckState( Qt::Unchecked );
 
     // create an item widget for the second column
+#if 0
     QTableWidgetItem *item1 = new QTableWidgetItem;
     item1->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+#else
+		QComboBox *typeBox = new QComboBox;
+		typeBox->addItem( "No Reaction" );
+		typeBox->addItem( "1st-order Reaction" );
+#endif
 
     // create an item widget for the third column
     QTableWidgetItem *item2 = new QTableWidgetItem;
@@ -133,14 +139,15 @@ void ReactionDialog::_initialize()
 
     // insert the columns
     _reactionTable->setItem( rowCount, 0, item0 );
-    _reactionTable->setItem( rowCount, 1, item1 );
+    //_reactionTable->setItem( rowCount, 1, item1 );
+		_reactionTable->setCellWidget( rowCount, 1, typeBox );
     _reactionTable->setItem( rowCount, 2, item2 );
     _reactionTable->setItem( rowCount, 3, item3 );
     _reactionTable->setItem( rowCount, 4, item4 );
 
     // set the values of the row
     _reactionTable->item( rowCount, 0 )->setText( rx.name.c_str()										);
-    _reactionTable->item( rowCount, 1 )->setText( rx.type.c_str()										);
+    //_reactionTable->item( rowCount, 1 )->setText( rx.type.c_str()										);
 		_reactionTable->item( rowCount, 2 )->setText( rx.firstOrderRateConstant.c_str()	);
     _reactionTable->item( rowCount, 3 )->setText( rx.oxygenSRatio.c_str()						);
     _reactionTable->item( rowCount, 4 )->setText( rx.co2SRatio.c_str()							);
@@ -192,3 +199,13 @@ void ReactionDialog::reactions( Reactions c )
   _reactions = c;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Finalize table items and setup _reactions member for retrieval
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReactionDialog::finalize()
+{
+
+}

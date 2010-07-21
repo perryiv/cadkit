@@ -18,6 +18,7 @@
 #define _VAPOR_INTRUSION_GUI_DOCUMENT_H_
 
 #include "VaporIntrusionGUI/Interfaces/IVaporIntrusionGUI.h"
+#include "Scenario.h"
 
 #include "XmlTree/Document.h"
 
@@ -251,6 +252,9 @@ public:
 
 	virtual Reactions           reactions();
   virtual void                reactions( Reactions r );
+
+	virtual VPIScenarios        scenarios();
+  virtual void                scenarios( VPIScenarios s );
 
   virtual bool                symmetricalGrid();
   virtual void                symmetricalGrid( bool value );
@@ -645,6 +649,8 @@ private:
 		bool											_useLighting3D;
 
 		ChemicalPair							_oxygenCO2;
+
+		IVPI::VPIScenarios				_scenarios;
 
   
 };

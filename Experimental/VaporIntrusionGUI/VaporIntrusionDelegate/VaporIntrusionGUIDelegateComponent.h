@@ -40,6 +40,7 @@
 #include "SoilPropertiesDialog.h"
 #include "GlobalParametersDialog.h"
 #include "ReactionDialog.h"
+#include "ScenarioDialog.h"
 
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 
@@ -151,6 +152,9 @@ public:
 
 	// edit the chemical reactions
   void												editReactions();
+
+	// edit the chemical reactions
+  void												editScenarios();
 
 	// edit the Soil values
   void                        editGlobalParameters();

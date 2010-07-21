@@ -279,6 +279,9 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
 
   // add settings menu to the tools menu
   editMenu->append ( MenuKit::Button::create ( "Settings", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editSettings ) ) );
+	
+	// add settings menu to the tools menu
+	editMenu->append ( MenuKit::Button::create ( "Scenario", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editScenarios ) ) );
 
 	 // add settings menu to the tools menu
   editMenu->append ( MenuKit::Button::create ( "Global Parameters", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGlobalParameters ) ) );
@@ -866,6 +869,47 @@ void VaporIntrusionGUIDelegateComponent::editSources()
 
   // rebuild the scene
   document->rebuildScene();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Edit the grid space
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::editScenarios()
+{
+  
+  // Make the dialog.
+  ScenarioDialog editor;
+
+  // Query the active document for IVaporIntrusionGUI
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+	// get the scenarios from the document
+	IVPI::VPIScenarios s ( document->scenarios() );
+
+	// make sure there is at least 1 scenario
+	if( s.size() <= 0 )
+	{
+		std::cout << "No scenarios found!" << std::endl;
+		return;
+	}
+
+  // set the sources
+  editor.scenario( s.at( 0 ) );
+
+  // populate the chemical list
+  editor.initialize();
+
+  // Show the dialog.
+  if ( QDialog::Accepted != editor.exec() )
+    throw Usul::Exceptions::Canceled();
 }
 
 

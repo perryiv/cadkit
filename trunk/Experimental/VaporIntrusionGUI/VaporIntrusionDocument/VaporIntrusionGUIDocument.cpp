@@ -150,7 +150,8 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
 	_soilTransparency( 1.0f ),
 	_sourceTransparency( 1.0f ),
 	_useLighting3D( false ),
-	_oxygenCO2()
+	_oxygenCO2(),
+	_scenarios()
 {
   USUL_TRACE_SCOPE;
 
@@ -3140,6 +3141,15 @@ void VaporIntrusionGUIDocument::initialize()
 
 	// initialize the reaction list
 	this->_updateReactions();
+
+	// file to scenario
+	std::string scenarioFN( Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "scenario1.vsn" );
+
+	// read the scenarios
+	Scenario::RefPtr scenario ( new Scenario );
+	scenario->read( scenarioFN );
+	_scenarios.push_back( scenario->scenario() );
+
 }
 
 
@@ -10899,3 +10909,30 @@ void VaporIntrusionGUIDocument::reactions( Reactions r )
 	_reactions = r;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the scenarios
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::VPIScenarios VaporIntrusionGUIDocument::scenarios()
+{
+	Guard guard ( this );
+
+	return _scenarios;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the scenarios
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::scenarios( VPIScenarios s )
+{
+	Guard guard ( this );
+
+	_scenarios = s;
+}

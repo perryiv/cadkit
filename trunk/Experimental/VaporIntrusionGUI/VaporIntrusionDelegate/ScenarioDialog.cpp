@@ -14,7 +14,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ReactionDialog.h"
+#include "ScenarioDialog.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Exceptions/Canceled.h"
 
@@ -26,25 +26,22 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReactionDialog::ReactionDialog ( QWidget *parent ) : 
+ScenarioDialog::ScenarioDialog ( QWidget *parent ) : 
 BaseClass ( parent ),
-_reactions()
+_scenario()
 {
   //// Initialize code from Designer.
   this->setupUi ( this );  
 
   QStringList titles;
 
-  titles.push_back( "Chemical" );
-  titles.push_back( "Reaction Type" );
-  titles.push_back( "1st-order rate constant [1/h]" );
-  titles.push_back( "Oxygen Stequiometric ratio [g-oxygen/g-carbon]" );
-  titles.push_back( "CO2 Stequiometric Ratio [g-CO2/g-carbon]" );
+  titles.push_back( "Parameter" );
+  titles.push_back( "Option" );
 
-  _reactionTable->setHorizontalHeaderLabels( titles );
+  _scenarioTable->setHorizontalHeaderLabels( titles );
 
   // size the columns
-  _reactionTable->resizeColumnsToContents();
+  _scenarioTable->resizeColumnsToContents();
 
   //initialize the table view
   this->_initialize();
@@ -57,7 +54,7 @@ _reactions()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReactionDialog::~ReactionDialog()
+ScenarioDialog::~ScenarioDialog()
 {
   
 }
@@ -69,7 +66,7 @@ ReactionDialog::~ReactionDialog()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReactionDialog::initialize()
+void ScenarioDialog::initialize()
 {
   this->_initialize();
 }
@@ -81,7 +78,7 @@ void ReactionDialog::initialize()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReactionDialog::_initialize()
+void ScenarioDialog::_initialize()
 {
   // first pass through Source values?
   bool firstPass( true );
@@ -89,111 +86,113 @@ void ReactionDialog::_initialize()
   // the current number of rows
   unsigned int rowCount ( 0 );
 
-  for( unsigned int i = 0; i < _reactions.size(); ++i )
+  for( unsigned int i = 0; i < _scenario.size(); ++i )
   {
     // create a Source object
-    Reaction rx ( _reactions.at( i ) );
+    ScenarioEntry s ( _scenario.at( i ) );
 
     // add a row
-    _reactionTable->insertRow( rowCount );
+    _scenarioTable->insertRow( rowCount );
 
      // create an item widget for the first column
     QTableWidgetItem *item0 = new QTableWidgetItem;
     item0->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter ); 
 
-    // create an item widget for the second column
-		QComboBox *typeBox = new QComboBox;
-		typeBox->addItem( "No Reaction" );
-		typeBox->addItem( "1st-order Reaction" );
+		// insert the columns
+    _scenarioTable->setItem( rowCount, 0, item0 );
 
-    // create an item widget for the third column
-    QTableWidgetItem *item2 = new QTableWidgetItem;
-    item2->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+    // set the values of the row
+    _scenarioTable->item( rowCount, 0 )->setText( s.question.c_str()	);
 
-    // create an item widget for the fourth column
-    QTableWidgetItem *item3 = new QTableWidgetItem;
-    item3->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+		if( s.type == IVPI::SCENARIO_TYPE_DROP_DOWN )
+		{
+			QComboBox *typeBox = new QComboBox;
 
-    // create an item widget for the fifth column
-    QTableWidgetItem *item4 = new QTableWidgetItem;
-    item4->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+			for( unsigned int i = 0; i < s.options.size(); ++i )
+			{
+				typeBox->addItem( s.options.at( i ).c_str() );
+			}
+
+			// insert the columns
+		  _scenarioTable->setCellWidget( rowCount, 1, typeBox );
+		}
+		else
+		{
+			// create an item widget for the first column
+			QTableWidgetItem *item1 = new QTableWidgetItem;
+			item1->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter ); 
+
+			// insert the columns
+			_scenarioTable->setItem( rowCount, 1, item1 );
+
+			// set the values of the row
+			_scenarioTable->item( rowCount, 1 )->setText( s.value.c_str()	);
+
+		}
 
     if( true == firstPass )
     {
       // set the current item
-      _reactionTable->setCurrentItem( item0 );
+      _scenarioTable->setCurrentItem( item0 );
 
       // no longer the first pass
       firstPass = false;
     }
 
-    // insert the columns
-    _reactionTable->setItem( rowCount, 0, item0 );
-		_reactionTable->setCellWidget( rowCount, 1, typeBox );
-    _reactionTable->setItem( rowCount, 2, item2 );
-    _reactionTable->setItem( rowCount, 3, item3 );
-    _reactionTable->setItem( rowCount, 4, item4 );
-
-    // set the values of the row
-    _reactionTable->item( rowCount, 0 )->setText( rx.name.c_str()										);
-		_reactionTable->item( rowCount, 2 )->setText( rx.firstOrderRateConstant.c_str()	);
-    _reactionTable->item( rowCount, 3 )->setText( rx.oxygenSRatio.c_str()						);
-    _reactionTable->item( rowCount, 4 )->setText( rx.co2SRatio.c_str()							);
-
     ++rowCount;
   }
 
   // size the columns
-  _reactionTable->resizeColumnsToContents();
+  _scenarioTable->resizeColumnsToContents();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Clear out the reactions table
+//  Clear out the scenario table
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReactionDialog::_clearTable()
+void ScenarioDialog::_clearTable()
 {
   // remove all the rows
-  for( int i = _reactionTable->rowCount() - 1; i >= 0 ; --i )
+  for( int i = _scenarioTable->rowCount() - 1; i >= 0 ; --i )
   {
-    _reactionTable->removeRow( i );
+    _scenarioTable->removeRow( i );
   }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the reactions
+//  Get the scenario
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReactionDialog::Reactions ReactionDialog::reactions()
+ScenarioDialog::Scenario ScenarioDialog::scenario()
 {
-  return _reactions;
+  return _scenario;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the reactions
+//  Set the scenario
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReactionDialog::reactions( Reactions c )
+void ScenarioDialog::scenario( Scenario c )
 {
-  _reactions = c;
+  _scenario = c;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Finalize table items and setup _reactions member for retrieval
+//  Finalize table items and setup _scenario member for retrieval
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReactionDialog::finalize()
+void ScenarioDialog::finalize()
 {
 
 }

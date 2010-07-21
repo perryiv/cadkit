@@ -744,6 +744,36 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\ScenarioDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ScenarioDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_ScenarioDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\ScenarioDialog.ui -o .\ui_ScenarioDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\ScenarioDialog.h&quot; -o &quot;.\GeneratedFiles\moc_ScenarioDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ScenarioDialog.ui;$(QTDIR)\bin\moc.exe;.\ScenarioDialog.h"
+							Outputs=".\ui_ScenarioDialog.h;.\GeneratedFiles\moc_ScenarioDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_ScenarioDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\ScenarioDialog.ui -o .\ui_ScenarioDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\ScenarioDialog.h&quot; -o &quot;.\GeneratedFiles\moc_ScenarioDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ScenarioDialog.ui;$(QTDIR)\bin\moc.exe;.\ScenarioDialog.h"
+							Outputs=".\ui_ScenarioDialog.h;.\GeneratedFiles\moc_ScenarioDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\SendDialog.cpp"
 					>
 				</File>
@@ -1079,6 +1109,10 @@
 				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_ScalarEditorDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_ScenarioDialog.cpp"
 					>
 				</File>
 				<File

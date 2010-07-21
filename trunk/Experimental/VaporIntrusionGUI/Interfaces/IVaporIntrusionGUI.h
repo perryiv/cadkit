@@ -108,6 +108,12 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 		REACTION_TYPE_1ST_ORDER
 	};
 
+	enum
+	{
+		SCENARIO_TYPE_TEXT,
+		SCENARIO_TYPE_DROP_DOWN
+	};
+
   // structs
   struct PressurePlane
   {
@@ -341,6 +347,21 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     {};
   };
 
+	struct VPIScenarioEntry
+	{
+		std::string question, value;
+		int type;
+		std::vector< std::string > options;
+
+		VPIScenarioEntry(): 
+		question(), value(), type( SCENARIO_TYPE_TEXT ), options(){};
+
+		VPIScenarioEntry( const std::string& q, const std::string& v, int t ):
+		question( q ), value( v ), type( t ), options(){};
+	};
+	typedef std::vector< VPIScenarioEntry > VPIScenario;
+	typedef std::vector< VPIScenario > VPIScenarios;
+
   typedef std::map< std::string, GridMaterial > GridMaterials;
 
   // Highlight the set of cubes at depth <depth>
@@ -425,6 +446,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
 	virtual Reactions             reactions() = 0;
   virtual void                  reactions( Reactions r ) = 0;
+
+	virtual VPIScenarios          scenarios() = 0;
+  virtual void                  scenarios( VPIScenarios s ) = 0;
 
   virtual void                  soils( Soils s ) = 0;
   virtual Soils                 soils() = 0;

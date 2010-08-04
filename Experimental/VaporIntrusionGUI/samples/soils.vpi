@@ -1,0 +1,13 @@
+#type, name, porosity, waterPorosity, permeability, viscosity, carbon;
+C|Clay|0.459|0.215|1.58E-13|0|0
+CL|Clay Loam|0.442|0.168|9.33E-14|0|0
+L|Loam|0.399|0.148|1.37E-13|0|0
+LS|Loamy Sand|0.390|0.076|1.32E-12|0|0
+S|Sand|0.375|0.054|8.41E-12|0|0
+SC|Sandy Clay|0.385|0.197|1.24E-13|0|0
+SCL|Sandy Clay Loam|0.384|0.146|1.49E-13|0|0
+SI|Silt|0.489|0.167|5.06E-13|0|0
+SIC|Silty Clay|0.481|0.216|1.07E-13|0|0
+SICL|Silty Clay Loam|0.482|0.198|1.25E-13|0|0
+SIL|Silt Loam|0.439|0.180|2.08E-13|0|0
+SL|Sandy Loam|0.387|0.103|4.56E-13|0|0

@@ -1,0 +1,65 @@
+# ------------------------------------------------------------------------------------------------------
+# Scenario file for Vapor Intrusion
+#
+# Scenario 1: Steady-state with or without reaction ( Constant Barometric pressure, constant 
+#			  indoor-outdoor pressure difference, no wind effect ).
+#
+#
+# File Format (comma separated):
+# Column 1: Type (0 or 1) denoting text or drop down respectively
+# Column 2: Placement in the output file (the line number). -1 denotes not present in output file
+# Column 3: The selected option (in the case of the drop down).  Enter 0 if using a text value.
+# Column 4: Parameter or question to present to the user
+# Column 5:	if type 0 then put the default answer or a space if there isn't a default,
+#			if type 1 then put a serious of entries to be placed in the drop down box separated by a |
+#
+# Example:
+# 
+# 1,Numerical Method options for calculating the contaminant fate and transport process:,explicit|Crank Nicolson|implicit
+# 0,How long to simulate the initial chemical transport (hrs)?, 
+#
+# ------------------------------------------------------------------------------------------------------		  
+1,-1,0,Numerical Method options for calculating the contaminant fate and transport process:,inplicit|Crank Nicolson|explicit
+0,-1,0,How long to simulate the initial chemical transport (hr)?, 
+0,-1,0,Minimum time step in the initial stage of simulation of chemical transport (s), 
+0,-1,0,Maximum time step in the initial stage of simulation of chemical transport (hr), 
+0,-1,0,Maximum time step in the initial stage of simulation of indoor chemical concentration (h), 
+0,-1,0,Relaxation parameter in the initial stage of simulation of chemical transport, 
+0,-1,0,When to start output the chemical emissions (h), 
+0,-1,0,How often to output the chemical emissions (h), 
+0,-1,0,How often to output the indoor chemical concentration (h), 
+0,-1,0,How long to simulate the chemical fate and transport (h), 
+0,-1,0,Minimum time step in the final stage of simulation of chemical fate and transport (s), 
+0,-1,0,Maximum time step in the final stage of simulation of chemical fate and transport (h), 
+0,-1,0,Maximum time step in the final stage of simulation of chemical fate and transport based on indoor chemical concentration calculation (h), 
+0,-1,0,Relaxation parameter in the final stage of simulation of chemical fate and transport, 
+0,-1,0,Minimum oxygen concentration needed for the reaction to happen (g/cm3), 
+0,-1,0,1st-order reaction rate constant (-=production,+=degration) [1/h], 
+0,-1,0,Stochiometric ratio of oxygen and the chemical (g-oxygen/g-carbon), 
+0,-1,0,Stochiometric ratio carbon dioxide and the chemical (g-CO2/g-carbon), 
+1,-1,0,Numerical Method options for calculating the pressure distribution in the soil,inplicit|Crank Nicolson|explicit
+0,-1,0,Relaxation parameter used for calculating pressure distribution in the soil, 
+0,-1,0,Enter the initial disturbance pressure in the soil [Pa],0.0
+0,-1,0,What is the constant atmospheric pressure [Pa], 
+0,-1,0,What is the constant building-atmosphere pressure difference [Pa], 
+0,-1,0,How long to simulate pressure distribution in soils field (h), 
+0,-1,0,Minimum time step to calculate steady pressure distribution in soils (s), 
+0,-1,0,Maximum time step to calculate steady pressure distribution in soils (hr), 
+1,-1,0,Output data (pressure and/or chemical concentrations) at cross section-X1?[Yes or No],Yes|No
+0,-1,0,Where is the vertical cross section-X1 [m], 
+1,-1,0,Output data (pressure and/or chemical concentrations) at cross section-X2?[Yes or No],Yes|No
+0,-1,0,Where is the vertical cross section-X2 [m], 
+1,-1,0,Output data (pressure and/or chemical concentrations) at cross section-X3?[Yes or No],Yes|No
+0,-1,0,Where is the vertical cross section-X3 [m], 
+1,-1,0,Output data (pressure and/or chemical concentrations) at cross section-Z1?[Yes or No],Yes|No
+0,-1,0,Where is the horizontal cross section-Z1 [m], 
+1,-1,0,Output data (pressure and/or chemical concentrations) at cross section-Z2?[Yes or No],Yes|No
+0,-1,0,Where is the horizontal cross section-Z2 [m], 
+1,-1,0,Output data (pressure and/or chemical concentrations) at cross section-Z3?[Yes or No],Yes|No
+0,-1,0,Where is the horizontal cross section-Z3 [m], 
+0,-1,0,Name of the output file containing the chemical emissions during the initial chemical transport calculation [needs to be an .txt file], 
+0,-1,0,Name of the output file containing the indoor chemical concentration during the initial chemical transport calculation [needs to be an .txt file], 
+0,-1,0,Name of the output file containing the chemical emissions during the final chemical fate and transport calculation [needs to be an .txt file], 
+0,-1,0,Name of the output file containing the indoor chemical concentration during the final chemical fate and transport calculation [needs to be an .txt file], 
+0,-1,0,Name of the output file containing the minimum and maximum indoor chemical concentration during the final chemical fate and transport calculation [needs to be an .txt file], 
+0,-1,0,Name of the output file containing soil gas chemical concentration in whole domain at the end of the final chemical fate and transport calculation [needs to be an .txt file], 

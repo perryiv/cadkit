@@ -910,6 +910,15 @@ void VaporIntrusionGUIDelegateComponent::editScenarios()
   // Show the dialog.
   if ( QDialog::Accepted != editor.exec() )
     throw Usul::Exceptions::Canceled();
+
+	// finalize the dialog
+	editor.finalize();
+	
+	// get the scenario
+	s.at( 0 ) = editor.scenario();
+
+	// set the scenario in the document
+	document->scenarios( s );
 }
 
 

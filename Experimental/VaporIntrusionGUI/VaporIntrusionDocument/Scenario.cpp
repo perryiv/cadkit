@@ -56,6 +56,71 @@ Scenario::~Scenario()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Write the scenario input file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Scenario::write( const std::string& filename )
+{
+	 Guard guard ( this );
+
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+  {
+    std::cout << Usul::Strings::format ( "Failed to open file: ", filename ) << std::endl;
+    return;
+  }
+
+  // feedback.
+  std::cout << "Writing Scenario file: " << filename << std::endl;
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  for( unsigned int i = 0; i < _scenario.size(); ++i )
+  {
+		// get the scenario entry
+		IVPI::VPIScenarioEntry s ( _scenario.at( i ) );
+
+		std::string value ( s.value );
+
+		// format the value if it is a drop down type
+		if( s.type == IVPI::SCENARIO_TYPE_DROP_DOWN )
+		{
+			value = "";
+			for( unsigned int j = 0; j < s.options.size() - 1; ++j )
+			{
+				value = Usul::Strings::format( value, s.options.at( j ), "|" );
+			}
+			value = Usul::Strings::format( value, s.options.at( s.options.size() - 1 ) );
+		}
+
+    // output string
+    std::string str1 ( Usul::Strings::format( s.type, ",", s.lineNumber, ",", s.selectedOption, ",", s.question, ",", value ) );
+
+    // output to the file
+    ofs << str1 << std::endl;    
+  }
+
+  // close file
+  ofs.close();
+}	
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Read the scenario input file
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -106,18 +171,28 @@ void Scenario::read( const std::string &filename )
       Usul::Strings::split( tStr, ",", false, sv );
       
       // make sure all the columns are there
-      if( sv.size() == 3 )
+      if( sv.size() == 5 )
       {
 				// convert the type to an int
 				int type ( Usul::Convert::Type< std::string, int >::convert( sv[0] ) );
 
+				// convert the line number to an int
+				int ln ( Usul::Convert::Type< std::string, int >::convert( sv[1] ) );
+
+				// convert the selected option to an int
+				int so ( Usul::Convert::Type< std::string, int >::convert( sv[2] ) );
+
 				// create the scenario entry
-				VPIScenarioEntry s ( sv[1], sv[2], type );				
+				VPIScenarioEntry s ( sv[3], sv[4], type );		
+
+				// set the line number and selected option
+				s.lineNumber = ln;
+				s.selectedOption = so;
 
 				// If the type is a drop down
 				if( type == IVPI::SCENARIO_TYPE_DROP_DOWN )
 				{
-					s.options = this->_getOptions( sv[2] );
+					s.options = this->_getOptions( sv[4] );
 				}
 
 				// add the scenario entry to the scenario

@@ -3249,8 +3249,16 @@ void VaporIntrusionGUIDocument::_writeUserPreferences( const std::string& userna
 
     this->_writeCracks( fn1, _cracks.first );
 		this->_writeCracks( fn2, _cracks.second );
-  }
+	}
 
+	if( _scenarios.size() > 0 )
+	{
+		std::string fn( path + username + "_scenario.vsn" );
+		Scenario::RefPtr scenario ( new Scenario );
+		scenario->scenario( _scenarios.at( 0 ) );
+		scenario->write( fn );
+		
+	}
 }
 
 
@@ -3929,6 +3937,21 @@ void VaporIntrusionGUIDocument::_readUserPreferences( const std::string& usernam
 
     this->_readCracks( fn1, _cracks.first );
 		this->_readCracks( fn2, _cracks.second );
+  }
+
+	{ // Read the scenario file
+    std::string fn( path + username + "_scenario.vsn" );
+		
+		Scenario::RefPtr scenario ( new Scenario );
+		scenario->read( fn );
+
+		IVPI::VPIScenario sc ( scenario->scenario() );
+
+		if( sc.size() > 0 )
+		{
+			_scenarios.clear();
+			_scenarios.push_back( sc );
+		}
   }
 
   // rebuild the scene

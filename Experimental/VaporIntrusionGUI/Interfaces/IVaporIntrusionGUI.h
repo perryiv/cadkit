@@ -350,14 +350,14 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 	struct VPIScenarioEntry
 	{
 		std::string question, value;
-		int type;
+		int type, lineNumber, selectedOption;
 		std::vector< std::string > options;
 
 		VPIScenarioEntry(): 
-		question(), value(), type( SCENARIO_TYPE_TEXT ), options(){};
+		question(), value(), type( SCENARIO_TYPE_TEXT ), options(), lineNumber( -1 ), selectedOption( 0 ){};
 
 		VPIScenarioEntry( const std::string& q, const std::string& v, int t ):
-		question( q ), value( v ), type( t ), options(){};
+		question( q ), value( v ), type( t ), options(), lineNumber( -1 ), selectedOption( 0 ){};
 	};
 	typedef std::vector< VPIScenarioEntry > VPIScenario;
 	typedef std::vector< VPIScenario > VPIScenarios;

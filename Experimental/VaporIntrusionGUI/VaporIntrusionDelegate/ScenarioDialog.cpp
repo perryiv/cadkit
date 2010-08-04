@@ -111,7 +111,11 @@ void ScenarioDialog::_initialize()
 			for( unsigned int i = 0; i < s.options.size(); ++i )
 			{
 				typeBox->addItem( s.options.at( i ).c_str() );
+				
 			}
+
+			// set the currently selected option
+			typeBox->setCurrentIndex( s.selectedOption );
 
 			// insert the columns
 		  _scenarioTable->setCellWidget( rowCount, 1, typeBox );
@@ -194,5 +198,33 @@ void ScenarioDialog::scenario( Scenario c )
 
 void ScenarioDialog::finalize()
 {
+ 
+  // set the chemical concentrations
+  for( unsigned int i = 0; i < _scenario.size(); ++i )
+  {
+		// get the current scenerio entry
+		IVPI::VPIScenarioEntry entry ( _scenario.at( i ) );
 
+		std::string value ( entry.value );
+
+		if( entry.type == IVPI::SCENARIO_TYPE_DROP_DOWN )
+		{
+			QComboBox *typeBox = new QComboBox;
+
+			typeBox = reinterpret_cast< QComboBox* > (  _scenarioTable->cellWidget( i, 1 ) );
+
+			// get table entries for this index
+			entry.selectedOption = typeBox->currentIndex();
+		}
+		else
+		{
+			// get table entries for this index
+			value = _scenarioTable->item( i, 1 )->text().toStdString();
+		}
+    
+		// set the value
+		entry.value = value;
+
+    _scenario.at( i ) = entry;
+  }
 }

@@ -10,6 +10,7 @@
 #include "Usul/Strings/Format.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/System/LastError.h"
+#include "Usul/System/DateTime.h"
 
 #include "OsgTools/Lod.h"
 #include "OsgTools/State/StateSet.h"
@@ -58,8 +59,8 @@ OctTreeNode::OctTreeNode ( StreamBufferPtr buffer, const std::string &tempPath )
   _distance( 0 ),
   _material( 1.0f, 0.0f, 0.0f, 1.0f )
 {
-  
-  _tempFilename = Usul::Strings::format ( tempPath, '/', Usul::Convert::Type< unsigned int, std::string >::convert ( reinterpret_cast < unsigned int > ( this ) ), ".tmp" );
+	std::string uniqueID ( Usul::System::DateTime::format() );
+  _tempFilename = Usul::Strings::format ( tempPath, '/', uniqueID, ".tmp" );
 #if 1
    _lodDefinitions.push_back( 1 );
    _lodDefinitions.push_back( 3 );

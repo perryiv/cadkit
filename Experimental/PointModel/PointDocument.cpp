@@ -71,7 +71,7 @@ PointDocument::PointDocument() : BaseClass ( "Point Document" ),
 _pointSet( new PointSet() ),
 _numPoints( 0 ),
 _material( new osg::Material() ),
-_color( 1.0f, 0.0f, 0.0f, 1.0f ),
+_color( 0.66f, 0.66f, 0.50f, 1.0f ),
 _workingDir()
 {
   // Set the default material ambient and diffuse

@@ -852,7 +852,7 @@ void PointDocument::_editPointColor()
   Usul::Interfaces::IColorEditor::QueryPtr colorEditor ( this->delegate() );
   if( false == colorEditor.valid() )
     return;
-  Usul::Math::Vec4f color ( 0.0f, 1.0f, 0.0f, 1.0f );
+  Usul::Math::Vec4f color ( 0.66f, 0.66f, 0.50f, 1.0f );
   if( true == colorEditor->editColor( color ) )
   {
     // Set the material color in PointSet

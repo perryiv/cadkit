@@ -94,7 +94,8 @@
 #define eaiHierarchy JtkHierarchy
 #define eaiClientData JtkClientData
 #define eaiTransform JtkTransform
-
+#define eaiGeometry JtkGeometry
+#define eaiPrim JtkPrim
 
 #else // _CADKIT_USE_JTOPEN
 

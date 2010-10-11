@@ -22,6 +22,7 @@
 class eaiEntity;
 class eaiTransform;
 class eaiMaterial;
+class eaiTexImage;
 
 
 namespace CadKit
@@ -37,6 +38,9 @@ namespace CadKit
 
   // Get the material.
   bool getMaterial ( const float &negativeZero, const float &positiveZero, eaiEntity *entity, SlMaterialf &mat );
+
+  // Get the texture.
+  eaiTexImage *getTexture ( eaiEntity *entity );
 };
 
 

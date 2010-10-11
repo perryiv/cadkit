@@ -179,6 +179,9 @@ public:
 
   // Get the material.
   virtual bool            getMaterial ( PartHandle part, SlMaterialf &material, bool tryParents ) const;
+  
+  // Get the texture.
+  bool                    getTexture ( PartHandle part, std::vector<unsigned char> &texture, bool tryParents ) const;
 
   // Get the parent of the entity.
   virtual AssemblyHandle  getParent ( PartHandle part ) const;

@@ -712,7 +712,13 @@ bool DbOsgDatabase::_addAttributes ( IUnknown *caller, ShapeHandle shape, osg::S
       CadKit::setMaterial ( material, state );
   }
 
-  // TODO, texture.
+  // Finally, look for a texture.
+  std::vector<unsigned char> textureData;
+  if ( true == query->getTexture ( shape, textureData, true ) )
+  {
+    // CadKit::setTexture ( textureData, state );
+  }
+
   return true;
 }
 
@@ -1094,7 +1100,7 @@ bool DbOsgDatabase::_addPrimitiveSet  ( IUnknown *caller, PrimHandle prim, osg::
 
     if(topRadius == 0.0f) // cone
     {      
-      cylCenter[1] += cylLength * 0.5f;
+      cylCenter += orientationVec * 0.5f; // offset in direction of cylinder
       
       // Create a shape drawable.
       SlRefPtr<osg::ShapeDrawable> coneDrawable ( new osg::ShapeDrawable );
@@ -1120,7 +1126,7 @@ bool DbOsgDatabase::_addPrimitiveSet  ( IUnknown *caller, PrimHandle prim, osg::
     }
     else if ( topRadius == bottomRadius ) // regular cylinder
     {
-      cylCenter[1] += cylLength * 0.5f;
+      cylCenter += orientationVec * 0.5f;  // offset in direction of cylinder
       
       // Create a shape drawable.
       SlRefPtr<osg::ShapeDrawable> cylDrawable ( new osg::ShapeDrawable );

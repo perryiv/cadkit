@@ -114,46 +114,31 @@ eaiMaterial *getMaterial ( eaiEntity *entity )
   // Have to explicitly test every concrete type because the API does not 
   // offer a mechanism for checking abstract types, and the base classes do 
   // not have a virtual "getMaterial()".
-  switch ( entity->typeID() )
+  eaiEntity::TypeID type = entity->typeID();
+  switch ( type )
   {
   case eaiEntity::eaiASSEMBLY:
   case eaiEntity::eaiPART:
   case eaiEntity::eaiINSTANCE:
 
-#ifdef _CADKIT_USE_JTOPEN
-    // Use new "getAttrib" style of command to get the last material
-    // because that is what should be visible.
-    numMaterials = ((eaiHierarchy *) entity)->numAttribs( JtkEntity::JtkMATERIAL );
-    if(numMaterials > 0)
-      ((eaiHierarchy *) entity)->getAttrib(numMaterials - 1, (JtkAttrib *&) material, JtkEntity::JtkMATERIAL);
-#else
     ((eaiHierarchy *) entity)->getMaterial ( material );
-#endif
     break;
 
   case eaiEntity::eaiLINESTRIPSET:
-
-    ((eaiLineStripSet *) entity)->getMaterial ( material );
-    break;
-
   case eaiEntity::eaiPOINTSET:
-
-    ((eaiPointSet *) entity)->getMaterial ( material );
-    break;
-
   case eaiEntity::eaiPOLYGONSET:
+  case eaiEntity::eaiTRISTRIPSET:
 
-    ((eaiPolygonSet *) entity)->getMaterial ( material );
+    ((eaiShape *) entity)->getMaterial ( material );
     break;
 
-//  case eaiEntity::eaiTRIFANSET:
-//
-//    ((eaiTriFanSet *) entity)->getMaterial ( material );
-//    break;
+  case eaiEntity::eaiBOXSET:
+  case eaiEntity::eaiCYLINDERSET:
+  case eaiEntity::eaiPYRAMIDSET:
+  case eaiEntity::eaiSPHERESET:
+  case eaiEntity::eaiTRIPRISMSET:
 
-  case eaiEntity::eaiTRISTRIPSET:
-    
-    ((eaiTriStripSet *) entity)->getMaterial ( material );
+    ((eaiPrim *) entity)->getMaterial ( material );
     break;
   }
 
@@ -245,5 +230,41 @@ bool getMaterial ( const float &negativeZero, const float &positiveZero, eaiEnti
   return success;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the texture.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+eaiTexImage *getTexture ( eaiEntity *entity )
+{
+  SL_PRINT2 ( "In CadKit::getTexture(), entity = %X\n", entity );
+  SL_ASSERT ( entity );
+
+  // Initialize.
+  eaiTexImage *texture = NULL;
+
+  switch ( entity->typeID() )
+  {
+  case eaiEntity::eaiASSEMBLY:
+  case eaiEntity::eaiPART:
+  case eaiEntity::eaiINSTANCE:
+
+    ((eaiHierarchy *) entity)->getTexImage ( texture );
+    break;
+
+  case eaiEntity::eaiLINESTRIPSET:
+  case eaiEntity::eaiPOINTSET:
+  case eaiEntity::eaiPOLYGONSET:
+  case eaiEntity::eaiTRISTRIPSET:
+
+    ((eaiShape *) entity)->getTexImage ( texture );
+    break;
+  }
+
+  // Did it work?
+  return texture;
+}
 
 }; // namespace CadKit

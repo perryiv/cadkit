@@ -1854,16 +1854,53 @@ bool DbJtDatabase::getTransform ( InstanceHandle instance, SlMatrix44f &matrix, 
   return CadKit::getTransform ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) instance, matrix );
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the part's texture.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getTexture ( PartHandle part, std::vector<unsigned char> &texture, bool tryParents ) const
+{
+  // Try the given entity.
+  eaiTexImage *tex = CadKit::getTexture ( (eaiEntity *) part );
+
+  if ( tex )
+    return true;
+
+  // TODO. handle tryParents
+
+  return false;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the texture.
+//  Get the shape's texture.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 bool DbJtDatabase::getTexture ( ShapeHandle shape, std::vector<unsigned char> &texture, bool tryParents ) const
 {
-  return false; // TODO.
+  // Get the shape.
+  SlRefPtr<eaiShape> temp = this->_getShape ( shape );
+  if ( temp.isNull() )
+  {
+    SL_ASSERT ( 0 ); // Why did this happen?
+    return false;
+  }
+
+  // Try the given entity.
+  eaiTexImage *tex = CadKit::getTexture ( (eaiEntity *) temp.getValue() );
+  
+  if ( tex )
+    return true;
+
+  // If we get to here then try the parent part.
+  LodHandle lod = this->getParent ( shape );
+  SL_ASSERT ( lod );
+  PartHandle part = this->getParent ( lod );
+  return this->getTexture ( part, texture, tryParents );
 }
 
 
@@ -2640,6 +2677,10 @@ bool DbJtDatabase::_setPrimData ( eaiPrim *prim )
   std::for_each ( params.begin(),   params.end(),   _truncate );
   std::for_each ( colors.begin(),    colors.end(),  _truncate );
 
+  // Calculate the bindings.
+  if ( false == _primData->calculateBindings() )
+    return false;
+
   // It worked.
   return true;
 }
@@ -3035,7 +3076,7 @@ bool DbJtDatabase::getColorBinding ( PrimHandle prim, VertexBinding &binding ) c
     return false;
 
   // Set the binding, one color per primitive.
-  binding = BINDING_OVERALL;
+  binding = _primData->getColorBinding();
 
   // It worked.
   return true;

@@ -42,6 +42,8 @@ public:
   DbBasePrimitiveData ( const TokenType &token );
   ~DbBasePrimitiveData(){}
 
+  bool                    calculateBindings();
+
   const TokenType &       getToken() const { return _token; }
   void                    setToken ( const TokenType &token ) { _token = token; }
 
@@ -53,11 +55,15 @@ public:
   Parameters &            getParameters()   { return _parameters; }
   Colors &                getColors()    { return _colors; }
 
+  const VertexBinding &   getColorBinding()  const { return _colorBinding; }
+
   void                    init ( const TokenType &token );
 
 protected:
 
   TokenType _token;
+
+  VertexBinding _colorBinding;
   
   Origins     _origins;
   Parameters  _parameters;
@@ -72,7 +78,8 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////
 
 template <PDTA> inline DbBasePrimitiveData<PDTP>::DbBasePrimitiveData ( const TokenType &token ) : 
-  _token         ( token )
+  _token         ( token ),
+  _colorBinding  ( BINDING_UNDETERMINED )
 {
   // Empty.
 }
@@ -88,9 +95,67 @@ template <PDTA> inline void DbBasePrimitiveData<PDTP>::init ( const TokenType &t
 {
   _token = token;
 
+  _colorBinding  = BINDING_UNDETERMINED;
+
   _origins.clear();
   _parameters.clear();
   _colors.clear();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Calculate the bindings.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class Binding, class PartitionedVector> 
+inline bool calculateBindings ( const PartitionedVector &attribute, 
+                                Binding &binding )
+{
+  // Initialize.
+  binding = BINDING_UNDETERMINED;
+
+  // If we don't have any attributes...
+  if ( attribute.getData().empty() )
+  {
+    binding = BINDING_OFF;
+    return true;
+  }
+
+  // If we have overall binding...
+  else if ( 1 == attribute.getData().size() )
+  {
+    binding = BINDING_OVERALL;
+    return true;
+  }
+
+  // Otherwise...
+  else
+  {
+    SL_ASSERT ( 0 ); // Why did this happen?
+    return false;
+  }
+
+  // Did it work?
+  return BINDING_UNDETERMINED != binding;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Calculate the bindings.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <PDTA> inline bool DbBasePrimitiveData<PDTP>::calculateBindings()
+{
+  // Initialize.
+  _colorBinding  = BINDING_UNDETERMINED;
+
+  if ( false == CadKit::calculateBindings ( _colors, _colorBinding ) )
+    return false;
+
+  // It worked.
+  return true;
 }
 
 }; // namespace CadKit

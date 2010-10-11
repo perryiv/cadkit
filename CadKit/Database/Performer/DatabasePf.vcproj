@@ -1,23 +1,49 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="9.00"
 	Name="DatabasePf"
-	SccProjectName=""
-	SccLocalPath="">
+	ProjectGUID="{F0878CD2-C1AC-45B1-817C-C7E67B948116}"
+	TargetFrameworkVersion="131072"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/DatabasePf.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
@@ -25,68 +51,97 @@
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../,$(PFROOT)/Include,$(PFROOT)/Include/Performer"
 				PreprocessorDefinitions="_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="2"
+				EnableFunctionLevelLinking="true"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="DbPfPrecompiled.h"
 				PrecompiledHeaderFile=".\Release/DatabasePf.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				WarnAsError="true"
+				SuppressStartupBanner="true"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="libpfdu-util.lib libpf.lib odbc32.lib odbccp32.lib"
 				OutputFile="../../bin/CkDbPf.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(PFROOT)/Lib"
 				ProgramDatabaseFile=".\Release/CkDbPf.pdb"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary=".\Release/CkDbPf.lib"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/DatabasePf.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/DatabasePf.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
@@ -95,58 +150,65 @@
 				PreprocessorDefinitions="_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="2"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="DbPfPrecompiled.h"
 				PrecompiledHeaderFile=".\Debug/DatabasePf.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
+				WarnAsError="true"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="libpfdu-util.lib libpf.lib odbc32.lib odbccp32.lib"
 				OutputFile="../../bin/CkDbPfd.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(PFROOT)/Lib"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/CkDbPfd.pdb"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary=".\Debug/CkDbPfd.lib"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/DatabasePf.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -154,168 +216,208 @@
 	<Files>
 		<Filter
 			Name="Precompile"
-			Filter="">
+			>
 			<File
-				RelativePath="DbPfPrecompiled.cpp">
+				RelativePath="DbPfPrecompiled.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="DbPfPrecompiled.h">
+				RelativePath="DbPfPrecompiled.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Source"
-			Filter="">
+			>
 			<File
-				RelativePath="DbPfArraySetters.cpp">
+				RelativePath="DbPfArraySetters.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="DbPfArraySetters.h">
+				RelativePath="DbPfArraySetters.h"
+				>
 			</File>
 			<File
-				RelativePath="DbPfDatabase.cpp">
+				RelativePath="DbPfDatabase.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="DbPfDatabase.h">
+				RelativePath="DbPfDatabase.h"
+				>
 			</File>
 			<File
-				RelativePath="DbPfFunctions.cpp">
+				RelativePath="DbPfFunctions.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="DbPfFunctions.h">
+				RelativePath="DbPfFunctions.h"
+				>
 			</File>
 			<File
-				RelativePath="DbPfInline.h">
+				RelativePath="DbPfInline.h"
+				>
 			</File>
 			<File
-				RelativePath="DbPfPerformer.h">
+				RelativePath="DbPfPerformer.h"
+				>
 			</File>
 			<File
-				RelativePath="DbPfUtility.cpp">
+				RelativePath="DbPfUtility.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="DbPfUtility.h">
+				RelativePath="DbPfUtility.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="DLL"
-			Filter="">
+			>
 			<File
-				RelativePath="DbPfApi.h">
+				RelativePath="DbPfApi.h"
+				>
 			</File>
 			<File
-				RelativePath="DbPfDll.cpp">
+				RelativePath="DbPfDll.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_DATABASE_PERFORMER_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="Notes"
-			Filter="">
+			>
 			<File
-				RelativePath="..\..\Notes\Database.txt">
+				RelativePath="..\..\Notes\Database.txt"
+				>
 			</File>
 			<File
-				RelativePath="..\..\Notes\performer_scene.txt">
+				RelativePath="..\..\Notes\performer_scene.txt"
+				>
 			</File>
 		</Filter>
 	</Files>

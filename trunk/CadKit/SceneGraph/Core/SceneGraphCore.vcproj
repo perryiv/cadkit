@@ -1,23 +1,50 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="9.00"
 	Name="SceneGraphCore"
-	SccProjectName=""
-	SccLocalPath="">
+	ProjectGUID="{0B4F8328-A8FA-4A82-A269-4A6BB85F16F3}"
+	RootNamespace="SceneGraphCore"
+	TargetFrameworkVersion="131072"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/SceneGraphCore.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
@@ -26,65 +53,94 @@
 				PreprocessorDefinitions="_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="2"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="SgPrecompiled.h"
 				PrecompiledHeaderFile=".\Debug/SceneGraphCore.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
+				WarnAsError="true"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="../../bin/CkSgd.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				GenerateDebugInformation="TRUE"
+				SuppressStartupBanner="true"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/CkSgd.pdb"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary=".\Debug/CkSgd.lib"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/SceneGraphCore.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/SceneGraphCore.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
@@ -92,57 +148,64 @@
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../"
 				PreprocessorDefinitions="_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="2"
+				EnableFunctionLevelLinking="true"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="SgPrecompiled.h"
 				PrecompiledHeaderFile=".\Release/SceneGraphCore.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				WarnAsError="true"
+				SuppressStartupBanner="true"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="../../bin/CkSg.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/CkSg.pdb"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary=".\Release/CkSg.lib"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/SceneGraphCore.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -150,1464 +213,1830 @@
 	<Files>
 		<Filter
 			Name="Precompile"
-			Filter="">
+			>
 			<File
-				RelativePath="SgClientHeaders.h">
+				RelativePath="SgClientHeaders.h"
+				>
 			</File>
 			<File
-				RelativePath="SgPrecompiled.cpp">
+				RelativePath="SgPrecompiled.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SgPrecompiled.h">
+				RelativePath="SgPrecompiled.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Source"
-			Filter="">
+			>
 			<Filter
 				Name="Nodes"
-				Filter="">
+				>
 				<File
-					RelativePath="SgNode.cpp">
+					RelativePath="SgNode.cpp"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-							BasicRuntimeChecks="3"/>
+							BasicRuntimeChecks="3"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="SgNode.h">
+					RelativePath="SgNode.h"
+					>
 				</File>
 				<File
-					RelativePath="SgNodeMacros.h">
+					RelativePath="SgNodeMacros.h"
+					>
 				</File>
 				<Filter
 					Name="Attributes"
-					Filter="">
+					>
 					<File
-						RelativePath="SgAttribute.cpp">
+						RelativePath="SgAttribute.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgAttribute.h">
+						RelativePath="SgAttribute.h"
+						>
 					</File>
 					<File
-						RelativePath="SgBackground.cpp">
+						RelativePath="SgBackground.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgBackground.h">
+						RelativePath="SgBackground.h"
+						>
 					</File>
 					<File
-						RelativePath="SgBaseColor.cpp">
+						RelativePath="SgBaseColor.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgBaseColor.h">
+						RelativePath="SgBaseColor.h"
+						>
 					</File>
 					<File
-						RelativePath="SgDrawStyle.cpp">
+						RelativePath="SgDrawStyle.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgDrawStyle.h">
+						RelativePath="SgDrawStyle.h"
+						>
 					</File>
 					<File
-						RelativePath="SgMaterial.cpp">
+						RelativePath="SgMaterial.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgMaterial.h">
+						RelativePath="SgMaterial.h"
+						>
 					</File>
 					<File
-						RelativePath="SgShading.cpp">
+						RelativePath="SgShading.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgShading.h">
+						RelativePath="SgShading.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Shapes"
-					Filter="">
+					>
 					<File
-						RelativePath="SgColorWheel.cpp">
+						RelativePath="SgColorWheel.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgColorWheel.h">
+						RelativePath="SgColorWheel.h"
+						>
 					</File>
 					<File
-						RelativePath="SgShape.cpp">
+						RelativePath="SgShape.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgShape.h">
+						RelativePath="SgShape.h"
+						>
 					</File>
 					<File
-						RelativePath="SgText.cpp">
+						RelativePath="SgText.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgText.h">
+						RelativePath="SgText.h"
+						>
 					</File>
 					<Filter
 						Name="Primitives"
-						Filter="">
+						>
 						<File
-							RelativePath="SgCircle.cpp">
+							RelativePath="SgCircle.cpp"
+							>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="0"
 									AdditionalIncludeDirectories=""
 									PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-									BasicRuntimeChecks="3"/>
+									BasicRuntimeChecks="3"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="2"
 									AdditionalIncludeDirectories=""
-									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="SgCircle.h">
+							RelativePath="SgCircle.h"
+							>
 						</File>
 						<File
-							RelativePath="SgCone.cpp">
+							RelativePath="SgCone.cpp"
+							>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="0"
 									AdditionalIncludeDirectories=""
 									PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-									BasicRuntimeChecks="3"/>
+									BasicRuntimeChecks="3"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="2"
 									AdditionalIncludeDirectories=""
-									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="SgCone.h">
+							RelativePath="SgCone.h"
+							>
 						</File>
 						<File
-							RelativePath="SgCube.cpp">
+							RelativePath="SgCube.cpp"
+							>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="0"
 									AdditionalIncludeDirectories=""
 									PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-									BasicRuntimeChecks="3"/>
+									BasicRuntimeChecks="3"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="2"
 									AdditionalIncludeDirectories=""
-									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="SgCube.h">
+							RelativePath="SgCube.h"
+							>
 						</File>
 						<File
-							RelativePath="SgCylinder.cpp">
+							RelativePath="SgCylinder.cpp"
+							>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="0"
 									AdditionalIncludeDirectories=""
 									PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-									BasicRuntimeChecks="3"/>
+									BasicRuntimeChecks="3"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="2"
 									AdditionalIncludeDirectories=""
-									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="SgCylinder.h">
+							RelativePath="SgCylinder.h"
+							>
 						</File>
 						<File
-							RelativePath="SgEllipse.cpp">
+							RelativePath="SgEllipse.cpp"
+							>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="0"
 									AdditionalIncludeDirectories=""
 									PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-									BasicRuntimeChecks="3"/>
+									BasicRuntimeChecks="3"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="2"
 									AdditionalIncludeDirectories=""
-									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="SgEllipse.h">
+							RelativePath="SgEllipse.h"
+							>
 						</File>
 						<File
-							RelativePath="SgPrimitive.cpp">
+							RelativePath="SgPrimitive.cpp"
+							>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="0"
 									AdditionalIncludeDirectories=""
 									PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-									BasicRuntimeChecks="3"/>
+									BasicRuntimeChecks="3"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="2"
 									AdditionalIncludeDirectories=""
-									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="SgPrimitive.h">
+							RelativePath="SgPrimitive.h"
+							>
 						</File>
 						<File
-							RelativePath="SgRectangle.cpp">
+							RelativePath="SgRectangle.cpp"
+							>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="0"
 									AdditionalIncludeDirectories=""
 									PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-									BasicRuntimeChecks="3"/>
+									BasicRuntimeChecks="3"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="2"
 									AdditionalIncludeDirectories=""
-									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="SgRectangle.h">
+							RelativePath="SgRectangle.h"
+							>
 						</File>
 						<File
-							RelativePath="SgSphere.cpp">
+							RelativePath="SgSphere.cpp"
+							>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="0"
 									AdditionalIncludeDirectories=""
 									PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-									BasicRuntimeChecks="3"/>
+									BasicRuntimeChecks="3"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="2"
 									AdditionalIncludeDirectories=""
-									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="SgSphere.h">
+							RelativePath="SgSphere.h"
+							>
 						</File>
 						<File
-							RelativePath="SgSquare.cpp">
+							RelativePath="SgSquare.cpp"
+							>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="0"
 									AdditionalIncludeDirectories=""
 									PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-									BasicRuntimeChecks="3"/>
+									BasicRuntimeChecks="3"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="2"
 									AdditionalIncludeDirectories=""
-									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="SgSquare.h">
+							RelativePath="SgSquare.h"
+							>
 						</File>
 						<File
-							RelativePath="SgTriangle.cpp">
+							RelativePath="SgTriangle.cpp"
+							>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="0"
 									AdditionalIncludeDirectories=""
 									PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-									BasicRuntimeChecks="3"/>
+									BasicRuntimeChecks="3"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="2"
 									AdditionalIncludeDirectories=""
-									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="SgTriangle.h">
+							RelativePath="SgTriangle.h"
+							>
 						</File>
 					</Filter>
 					<Filter
 						Name="Vertex Sets"
-						Filter="">
+						>
 						<File
-							RelativePath="SgLineSet.cpp">
+							RelativePath="SgLineSet.cpp"
+							>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="0"
 									AdditionalIncludeDirectories=""
 									PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-									BasicRuntimeChecks="3"/>
+									BasicRuntimeChecks="3"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="2"
 									AdditionalIncludeDirectories=""
-									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="SgLineSet.h">
+							RelativePath="SgLineSet.h"
+							>
 						</File>
 						<File
-							RelativePath="SgPointSet.cpp">
+							RelativePath="SgPointSet.cpp"
+							>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="0"
 									AdditionalIncludeDirectories=""
 									PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-									BasicRuntimeChecks="3"/>
+									BasicRuntimeChecks="3"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="2"
 									AdditionalIncludeDirectories=""
-									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="SgPointSet.h">
+							RelativePath="SgPointSet.h"
+							>
 						</File>
 						<File
-							RelativePath="SgQuadMesh.cpp">
+							RelativePath="SgQuadMesh.cpp"
+							>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="0"
 									AdditionalIncludeDirectories=""
 									PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-									BasicRuntimeChecks="3"/>
+									BasicRuntimeChecks="3"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="2"
 									AdditionalIncludeDirectories=""
-									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="SgQuadMesh.h">
+							RelativePath="SgQuadMesh.h"
+							>
 						</File>
 						<File
-							RelativePath="SgTriStrip.cpp">
+							RelativePath="SgTriStrip.cpp"
+							>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="0"
 									AdditionalIncludeDirectories=""
 									PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-									BasicRuntimeChecks="3"/>
+									BasicRuntimeChecks="3"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="2"
 									AdditionalIncludeDirectories=""
-									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="SgTriStrip.h">
+							RelativePath="SgTriStrip.h"
+							>
 						</File>
 						<File
-							RelativePath="SgVertexSet.cpp">
+							RelativePath="SgVertexSet.cpp"
+							>
 							<FileConfiguration
-								Name="Debug|Win32">
+								Name="Debug|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="0"
 									AdditionalIncludeDirectories=""
 									PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-									BasicRuntimeChecks="3"/>
+									BasicRuntimeChecks="3"
+								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32">
+								Name="Release|Win32"
+								>
 								<Tool
 									Name="VCCLCompilerTool"
 									Optimization="2"
 									AdditionalIncludeDirectories=""
-									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+									PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+								/>
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="SgVertexSet.h">
+							RelativePath="SgVertexSet.h"
+							>
 						</File>
 					</Filter>
 				</Filter>
 				<Filter
 					Name="Groups"
-					Filter="">
+					>
 					<File
-						RelativePath="SgGroup.cpp">
+						RelativePath="SgGroup.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgGroup.h">
+						RelativePath="SgGroup.h"
+						>
 					</File>
 					<File
-						RelativePath="SgLevelOfDetail.cpp">
+						RelativePath="SgLevelOfDetail.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgLevelOfDetail.h">
+						RelativePath="SgLevelOfDetail.h"
+						>
 					</File>
 					<File
-						RelativePath="SgSelection.cpp">
+						RelativePath="SgSelection.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgSelection.h">
+						RelativePath="SgSelection.h"
+						>
 					</File>
 					<File
-						RelativePath="SgSeparator.cpp">
+						RelativePath="SgSeparator.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgSeparator.h">
+						RelativePath="SgSeparator.h"
+						>
 					</File>
 					<File
-						RelativePath="SgSwitch.cpp">
+						RelativePath="SgSwitch.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgSwitch.h">
+						RelativePath="SgSwitch.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Transformations"
-					Filter="">
+					>
 					<File
-						RelativePath="SgBillboard.cpp">
+						RelativePath="SgBillboard.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgBillboard.h">
+						RelativePath="SgBillboard.h"
+						>
 					</File>
 					<File
-						RelativePath="SgIdentity.cpp">
+						RelativePath="SgIdentity.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgIdentity.h">
+						RelativePath="SgIdentity.h"
+						>
 					</File>
 					<File
-						RelativePath="SgRotation.cpp">
+						RelativePath="SgRotation.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgRotation.h">
+						RelativePath="SgRotation.h"
+						>
 					</File>
 					<File
-						RelativePath="SgScale.cpp">
+						RelativePath="SgScale.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgScale.h">
+						RelativePath="SgScale.h"
+						>
 					</File>
 					<File
-						RelativePath="SgTransform.cpp">
+						RelativePath="SgTransform.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgTransform.h">
+						RelativePath="SgTransform.h"
+						>
 					</File>
 					<File
-						RelativePath="SgTransformation.cpp">
+						RelativePath="SgTransformation.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgTransformation.h">
+						RelativePath="SgTransformation.h"
+						>
 					</File>
 					<File
-						RelativePath="SgTranslation.cpp">
+						RelativePath="SgTranslation.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgTranslation.h">
+						RelativePath="SgTranslation.h"
+						>
 					</File>
 					<File
-						RelativePath="SgUnScale.cpp">
+						RelativePath="SgUnScale.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgUnScale.h">
+						RelativePath="SgUnScale.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Cameras"
-					Filter="">
+					>
 					<File
-						RelativePath="SgCamera.cpp">
+						RelativePath="SgCamera.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgCamera.h">
+						RelativePath="SgCamera.h"
+						>
 					</File>
 					<File
-						RelativePath="SgOrthographicCamera.cpp">
+						RelativePath="SgOrthographicCamera.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgOrthographicCamera.h">
+						RelativePath="SgOrthographicCamera.h"
+						>
 					</File>
 					<File
-						RelativePath="SgPerspectiveCamera.cpp">
+						RelativePath="SgPerspectiveCamera.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgPerspectiveCamera.h">
+						RelativePath="SgPerspectiveCamera.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Coordinates/Normals"
-					Filter="">
+					>
 					<File
-						RelativePath="SgCoordinate.cpp">
+						RelativePath="SgCoordinate.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgCoordinate.h">
+						RelativePath="SgCoordinate.h"
+						>
 					</File>
 					<File
-						RelativePath="SgCoordinate3.cpp">
+						RelativePath="SgCoordinate3.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgCoordinate3.h">
+						RelativePath="SgCoordinate3.h"
+						>
 					</File>
 					<File
-						RelativePath="SgCoordinate4.cpp">
+						RelativePath="SgCoordinate4.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgCoordinate4.h">
+						RelativePath="SgCoordinate4.h"
+						>
 					</File>
 					<File
-						RelativePath="SgNormal.cpp">
+						RelativePath="SgNormal.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgNormal.h">
+						RelativePath="SgNormal.h"
+						>
 					</File>
 					<File
-						RelativePath="SgVecSequence.h">
+						RelativePath="SgVecSequence.h"
+						>
 					</File>
 				</Filter>
 				<Filter
 					Name="Lights"
-					Filter="">
+					>
 					<File
-						RelativePath="SgDirectionalLight.cpp">
+						RelativePath="SgDirectionalLight.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgDirectionalLight.h">
+						RelativePath="SgDirectionalLight.h"
+						>
 					</File>
 					<File
-						RelativePath="SgLight.cpp">
+						RelativePath="SgLight.cpp"
+						>
 						<FileConfiguration
-							Name="Debug|Win32">
+							Name="Debug|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="0"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-								BasicRuntimeChecks="3"/>
+								BasicRuntimeChecks="3"
+							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32">
+							Name="Release|Win32"
+							>
 							<Tool
 								Name="VCCLCompilerTool"
 								Optimization="2"
 								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+								PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+							/>
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="SgLight.h">
+						RelativePath="SgLight.h"
+						>
 					</File>
 				</Filter>
 			</Filter>
 			<Filter
 				Name="Visitors"
-				Filter="">
+				>
 				<File
-					RelativePath="SgGetBoundingBox.cpp">
+					RelativePath="SgGetBoundingBox.cpp"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-							BasicRuntimeChecks="3"/>
+							BasicRuntimeChecks="3"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="SgGetBoundingBox.h">
+					RelativePath="SgGetBoundingBox.h"
+					>
 				</File>
 				<File
-					RelativePath="SgGetCount.cpp">
+					RelativePath="SgGetCount.cpp"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-							BasicRuntimeChecks="3"/>
+							BasicRuntimeChecks="3"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="SgGetCount.h">
+					RelativePath="SgGetCount.h"
+					>
 				</File>
 				<File
-					RelativePath="SgGetRayIntersection.cpp">
+					RelativePath="SgGetRayIntersection.cpp"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-							BasicRuntimeChecks="3"/>
+							BasicRuntimeChecks="3"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="SgGetRayIntersection.h">
+					RelativePath="SgGetRayIntersection.h"
+					>
 				</File>
 				<File
-					RelativePath="SgOffScreenRenderer.cpp">
+					RelativePath="SgOffScreenRenderer.cpp"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-							BasicRuntimeChecks="3"/>
+							BasicRuntimeChecks="3"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="SgOffScreenRenderer.h">
+					RelativePath="SgOffScreenRenderer.h"
+					>
 				</File>
 				<File
-					RelativePath="SgRenderer.cpp">
+					RelativePath="SgRenderer.cpp"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-							BasicRuntimeChecks="3"/>
+							BasicRuntimeChecks="3"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="SgRenderer.h">
+					RelativePath="SgRenderer.h"
+					>
 				</File>
 				<File
-					RelativePath="SgScreenRenderer.cpp">
+					RelativePath="SgScreenRenderer.cpp"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-							BasicRuntimeChecks="3"/>
+							BasicRuntimeChecks="3"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="SgScreenRenderer.h">
+					RelativePath="SgScreenRenderer.h"
+					>
 				</File>
 				<File
-					RelativePath="SgVisitor.cpp">
+					RelativePath="SgVisitor.cpp"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-							BasicRuntimeChecks="3"/>
+							BasicRuntimeChecks="3"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="SgVisitor.h">
+					RelativePath="SgVisitor.h"
+					>
 				</File>
 				<File
-					RelativePath="SgVisitorMacros.h">
+					RelativePath="SgVisitorMacros.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Viewers"
-				Filter="">
+				>
 				<File
-					RelativePath="SgViewer.cpp">
+					RelativePath="SgViewer.cpp"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-							BasicRuntimeChecks="3"/>
+							BasicRuntimeChecks="3"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="SgViewer.h">
+					RelativePath="SgViewer.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Misc"
-				Filter="">
+				>
 				<File
-					RelativePath="SgAllNodes.h">
+					RelativePath="SgAllNodes.h"
+					>
 				</File>
 				<File
-					RelativePath="SgConstants.h">
+					RelativePath="SgConstants.h"
+					>
 				</File>
 				<File
-					RelativePath="SgDefine.h">
+					RelativePath="SgDefine.h"
+					>
 				</File>
 				<File
-					RelativePath="SgDraw.cpp">
+					RelativePath="SgDraw.cpp"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-							BasicRuntimeChecks="3"/>
+							BasicRuntimeChecks="3"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="SgDraw.h">
+					RelativePath="SgDraw.h"
+					>
 				</File>
 				<File
-					RelativePath="SgMessage.h">
+					RelativePath="SgMessage.h"
+					>
 				</File>
 				<File
-					RelativePath="SgMessageIds.h">
+					RelativePath="SgMessageIds.h"
+					>
 				</File>
 				<File
-					RelativePath="SgPath.cpp">
+					RelativePath="SgPath.cpp"
+					>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-							BasicRuntimeChecks="3"/>
+							BasicRuntimeChecks="3"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+							PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="SgPath.h">
+					RelativePath="SgPath.h"
+					>
 				</File>
 				<File
-					RelativePath="SgTypedefs.h">
+					RelativePath="SgTypedefs.h"
+					>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="DLL"
-			Filter="">
+			>
 			<File
-				RelativePath="SgApi.h">
+				RelativePath="SgApi.h"
+				>
 			</File>
 			<File
-				RelativePath="SgDll.cpp">
+				RelativePath="SgDll.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_CORE_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="Notes"
-			Filter="">
+			>
 			<File
-				RelativePath="..\..\Notes\SceneGraph.txt">
+				RelativePath="..\..\Notes\SceneGraph.txt"
+				>
 			</File>
 		</Filter>
 		<File
-			RelativePath="..\..\Nurbs\Core\notes.txt">
+			RelativePath="..\..\Nurbs\Core\notes.txt"
+			>
 		</File>
 	</Files>
 	<Globals>

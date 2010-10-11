@@ -1,23 +1,44 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="9.00"
 	Name="Interfaces"
-	SccProjectName=""
-	SccLocalPath="">
+	ProjectGUID="{9ACBCBBC-1FFE-4FE3-96C4-207C5B3CBFD0}"
+	TargetFrameworkVersion="131072"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -30,415 +51,552 @@
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
+				WarnAsError="true"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile=".\Debug\Interfaces.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Culture="1033"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLibrarianTool"
+				OutputFile=".\Debug\Interfaces.lib"
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../"
 				PreprocessorDefinitions="_LIB;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;NDEBUG"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
+				EnableFunctionLevelLinking="true"
 				PrecompiledHeaderFile=".\Release/Interfaces.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				WarnAsError="true"
+				SuppressStartupBanner="true"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile=".\Release\Interfaces.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Culture="1033"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLibrarianTool"
+				OutputFile=".\Release\Interfaces.lib"
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
 	</References>
 	<Files>
 		<File
-			RelativePath="Enum.h">
+			RelativePath="Enum.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="Handles.h">
+			RelativePath="Handles.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IChildQuery.h">
+			RelativePath="IChildQuery.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IClientData.h">
+			RelativePath="IClientData.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="ICommandLine.h">
+			RelativePath="ICommandLine.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IControlled.h">
+			RelativePath="IControlled.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IDataRead.h">
+			RelativePath="IDataRead.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IDataSource.h">
+			RelativePath="IDataSource.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IDataTarget.h">
+			RelativePath="IDataTarget.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IDataWrite.h">
+			RelativePath="IDataWrite.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IEntityNotify.h">
+			RelativePath="IEntityNotify.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IEntityQuery.h">
+			RelativePath="IEntityQuery.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IFileExtension.h">
+			RelativePath="IFileExtension.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IFormatAttribute.h">
+			RelativePath="IFormatAttribute.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IInstanceQuery.h">
+			RelativePath="IInstanceQuery.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IInterfaceGroup.h">
+			RelativePath="IInterfaceGroup.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="ILoadOptions.h">
+			RelativePath="ILoadOptions.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="ILodOption.h">
+			RelativePath="ILodOption.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IMessageNotify.h">
+			RelativePath="IMessageNotify.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IMessagePriority.h">
+			RelativePath="IMessagePriority.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IOutputAttribute.h">
+			RelativePath="IOutputAttribute.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IOutputPrecision.h">
+			RelativePath="IOutputPrecision.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IOutputStream.h">
+			RelativePath="IOutputStream.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath=".\IOutputUnits.h">
+			RelativePath=".\IOutputUnits.h"
+			>
 		</File>
 		<File
-			RelativePath=".\IPrimQuery.h">
+			RelativePath=".\IPrimQuery.h"
+			>
 		</File>
 		<File
-			RelativePath="IQueryArray.h">
+			RelativePath="IQueryArray.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IQueryColors.h">
+			RelativePath="IQueryColors.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IQueryNormals.h">
+			RelativePath="IQueryNormals.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath=".\IQueryPrimOrigins.h">
+			RelativePath=".\IQueryPrimOrigins.h"
+			>
 		</File>
 		<File
-			RelativePath=".\IQueryPrimParams.h">
+			RelativePath=".\IQueryPrimParams.h"
+			>
 		</File>
 		<File
-			RelativePath="IQueryTexCoords.h">
+			RelativePath="IQueryTexCoords.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IQueryVertices.h">
+			RelativePath="IQueryVertices.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath=".\IRotate.h">
+			RelativePath=".\IRotate.h"
+			>
 		</File>
 		<File
-			RelativePath="IScale.h">
+			RelativePath="IScale.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IShapeQuery.h">
+			RelativePath="IShapeQuery.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="ISubEntityNotify.h">
+			RelativePath="ISubEntityNotify.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="ITriangleAppend.h">
+			RelativePath="ITriangleAppend.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath=".\IUnits.h">
+			RelativePath=".\IUnits.h"
+			>
 		</File>
 		<File
-			RelativePath="IUnknown.h">
+			RelativePath="IUnknown.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="IZeroRange.h">
+			RelativePath="IZeroRange.h"
+			>
 			<FileConfiguration
 				Name="Debug|Win32"
-				ExcludedFromBuild="TRUE">
+				ExcludedFromBuild="true"
+				>
 				<Tool
-					Name="VCCustomBuildTool"/>
+					Name="VCCustomBuildTool"
+				/>
 			</FileConfiguration>
 		</File>
 	</Files>

@@ -1,75 +1,120 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="9.00"
 	Name="Standard"
-	SccProjectName=""
-	SccLocalPath="">
+	ProjectGUID="{16E81F67-C7F4-4BFB-ACF2-C209FDAAD890}"
+	RootNamespace="Standard"
+	TargetFrameworkVersion="131072"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../"
 				PreprocessorDefinitions="_LIB;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;NDEBUG"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
+				EnableFunctionLevelLinking="true"
 				PrecompiledHeaderFile=".\Release/Standard.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				WarnAsError="true"
+				SuppressStartupBanner="true"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="../bin/CkSl.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Culture="1033"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLibrarianTool"
+				OutputFile="../bin/CkSl.lib"
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -82,36 +127,42 @@
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
+				WarnAsError="true"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="../bin/CkSld.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Culture="1033"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLibrarianTool"
+				OutputFile="../bin/CkSld.lib"
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -119,451 +170,565 @@
 	<Files>
 		<Filter
 			Name="Precompiled"
-			Filter="">
+			>
 			<File
-				RelativePath="SlClientHeaders.h">
+				RelativePath="SlClientHeaders.h"
+				>
 			</File>
 			<File
-				RelativePath="SlPrecompiled.cpp">
+				RelativePath="SlPrecompiled.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SlPrecompiled.h">
+				RelativePath="SlPrecompiled.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Vector"
-			Filter="">
+			>
 			<File
-				RelativePath="SlVec2.h">
+				RelativePath="SlVec2.h"
+				>
 			</File>
 			<File
-				RelativePath="SlVec2IO.h">
+				RelativePath="SlVec2IO.h"
+				>
 			</File>
 			<File
-				RelativePath="SlVec3.h">
+				RelativePath="SlVec3.h"
+				>
 			</File>
 			<File
-				RelativePath="SlVec3IO.h">
+				RelativePath="SlVec3IO.h"
+				>
 			</File>
 			<File
-				RelativePath="SlVec4.h">
+				RelativePath="SlVec4.h"
+				>
 			</File>
 			<File
-				RelativePath="SlVec4IO.h">
+				RelativePath="SlVec4IO.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Misc"
-			Filter="">
+			>
 			<File
-				RelativePath="SlAbsolute.h">
+				RelativePath="SlAbsolute.h"
+				>
 			</File>
 			<File
-				RelativePath="SlAssert.h">
+				RelativePath="SlAssert.h"
+				>
 			</File>
 			<File
-				RelativePath="SlBinaryRecordParser.h">
+				RelativePath="SlBinaryRecordParser.h"
+				>
 			</File>
 			<File
-				RelativePath="SlBitmask.h">
+				RelativePath="SlBitmask.h"
+				>
 			</File>
 			<File
-				RelativePath="SlCallback.h">
+				RelativePath="SlCallback.h"
+				>
 			</File>
 			<File
-				RelativePath="SlCallbackList.h">
+				RelativePath="SlCallbackList.h"
+				>
 			</File>
 			<File
-				RelativePath="SlCharacters.h">
+				RelativePath="SlCharacters.h"
+				>
 			</File>
 			<File
-				RelativePath="SlClamp.h">
+				RelativePath="SlClamp.h"
+				>
 			</File>
 			<File
-				RelativePath="SlConstants.h">
+				RelativePath="SlConstants.h"
+				>
 			</File>
 			<File
-				RelativePath="SlDeclareConst.h">
+				RelativePath="SlDeclareConst.h"
+				>
 			</File>
 			<File
-				RelativePath="SlEndian.h">
+				RelativePath="SlEndian.h"
+				>
 			</File>
 			<File
-				RelativePath="SlFunctionDefines.h">
+				RelativePath="SlFunctionDefines.h"
+				>
 			</File>
 			<File
-				RelativePath="SlInline.h">
+				RelativePath="SlInline.h"
+				>
 			</File>
 			<File
-				RelativePath="SlInlineMath.h">
+				RelativePath="SlInlineMath.h"
+				>
 			</File>
 			<File
-				RelativePath="SlMinMax.h">
+				RelativePath="SlMinMax.h"
+				>
 			</File>
 			<File
-				RelativePath="SlPreComputedArrays.cpp">
+				RelativePath="SlPreComputedArrays.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SlPreComputedArrays.h">
+				RelativePath="SlPreComputedArrays.h"
+				>
 			</File>
 			<File
-				RelativePath="SlScopedSet.h">
+				RelativePath="SlScopedSet.h"
+				>
 			</File>
 			<File
-				RelativePath="SlSwap.h">
+				RelativePath="SlSwap.h"
+				>
 			</File>
 			<File
-				RelativePath="SlTemplateSupport.h">
+				RelativePath="SlTemplateSupport.h"
+				>
 			</File>
 			<File
-				RelativePath="SlTestEquality.h">
+				RelativePath="SlTestEquality.h"
+				>
 			</File>
 			<File
-				RelativePath="SlTrackball.h">
+				RelativePath="SlTrackball.h"
+				>
 			</File>
 			<File
-				RelativePath="SlTruncate.h">
+				RelativePath="SlTruncate.h"
+				>
 			</File>
 			<File
-				RelativePath="SlTuple.h">
+				RelativePath="SlTuple.h"
+				>
 			</File>
 			<File
-				RelativePath="SlTypedefs.h">
+				RelativePath="SlTypedefs.h"
+				>
 			</File>
 			<File
-				RelativePath="SlViewport.h">
+				RelativePath="SlViewport.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Base Class"
-			Filter="">
+			>
 			<File
-				RelativePath="SlBase.cpp">
+				RelativePath="SlBase.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SlBase.h">
+				RelativePath="SlBase.h"
+				>
 			</File>
 			<File
-				RelativePath="SlBaseMacros.h">
+				RelativePath="SlBaseMacros.h"
+				>
 			</File>
 			<File
-				RelativePath="SlType.cpp">
+				RelativePath="SlType.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SlType.h">
+				RelativePath="SlType.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Strings"
-			Filter="">
+			>
 			<File
-				RelativePath="SlConvertStrings.h">
+				RelativePath="SlConvertStrings.h"
+				>
 			</File>
 			<File
-				RelativePath="SlString.h">
+				RelativePath="SlString.h"
+				>
 			</File>
 			<File
-				RelativePath="SlStringCase.h">
+				RelativePath="SlStringCase.h"
+				>
 			</File>
 			<File
-				RelativePath="SlStringCompare.h">
+				RelativePath="SlStringCompare.h"
+				>
 			</File>
 			<File
-				RelativePath="SlStringFunctions.h">
+				RelativePath="SlStringFunctions.h"
+				>
 			</File>
 			<File
-				RelativePath="SlStringIO.h">
+				RelativePath="SlStringIO.h"
+				>
 			</File>
 			<File
-				RelativePath="SlStringReplace.h">
+				RelativePath="SlStringReplace.h"
+				>
 			</File>
 			<File
-				RelativePath="SlStringTrim.h">
+				RelativePath="SlStringTrim.h"
+				>
 			</File>
 			<File
-				RelativePath="SlUnicode.h">
+				RelativePath="SlUnicode.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Threads"
-			Filter="">
+			>
 			<File
-				RelativePath="SlSingleThreaded.h">
+				RelativePath="SlSingleThreaded.h"
+				>
 			</File>
 			<File
-				RelativePath="SlThread.h">
+				RelativePath="SlThread.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Color and Material"
-			Filter="">
+			>
 			<File
-				RelativePath="SlColor.h">
+				RelativePath="SlColor.h"
+				>
 			</File>
 			<File
-				RelativePath="SlMaterial.h">
+				RelativePath="SlMaterial.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Matrix"
-			Filter="">
+			>
 			<File
-				RelativePath="SlMatrix44.h">
+				RelativePath="SlMatrix44.h"
+				>
 			</File>
 			<File
-				RelativePath="SlMatrix44IO.h">
+				RelativePath="SlMatrix44IO.h"
+				>
 			</File>
 			<File
-				RelativePath="SlMatrixNN.h">
+				RelativePath="SlMatrixNN.h"
+				>
 			</File>
 			<File
-				RelativePath="SlMatrixNNIO.h">
+				RelativePath="SlMatrixNNIO.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Geometry"
-			Filter="">
+			>
 			<File
-				RelativePath="SlBoundingBox.h">
+				RelativePath="SlBoundingBox.h"
+				>
 			</File>
 			<File
-				RelativePath="SlGeometry.h">
+				RelativePath="SlGeometry.h"
+				>
 			</File>
 			<File
-				RelativePath="SlLine2.h">
+				RelativePath="SlLine2.h"
+				>
 			</File>
 			<File
-				RelativePath="SlLine3.h">
+				RelativePath="SlLine3.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Debug"
-			Filter="">
+			>
 			<File
-				RelativePath="SlPrint.h">
+				RelativePath="SlPrint.h"
+				>
 			</File>
 			<File
-				RelativePath="SlTrace.cpp">
+				RelativePath="SlTrace.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SlTrace.h">
+				RelativePath="SlTrace.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Reference Counting"
-			Filter="">
+			>
 			<File
-				RelativePath="SlRefBase.cpp">
+				RelativePath="SlRefBase.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SlRefBase.h">
+				RelativePath="SlRefBase.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Containers"
-			Filter="">
+			>
 			<File
-				RelativePath="SlList.h">
+				RelativePath="SlList.h"
+				>
 			</File>
 			<File
-				RelativePath="SlMatrixStack.h">
+				RelativePath="SlMatrixStack.h"
+				>
 			</File>
 			<File
-				RelativePath="SlPartitionedVector.h">
+				RelativePath="SlPartitionedVector.h"
+				>
 			</File>
 			<File
-				RelativePath="SlStack.h">
+				RelativePath="SlStack.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="System"
-			Filter="">
+			>
 			<File
-				RelativePath="SlSystem.cpp">
+				RelativePath="SlSystem.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SlSystem.h">
+				RelativePath="SlSystem.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Messages"
-			Filter="">
+			>
 			<File
-				RelativePath="SlMessage.h">
+				RelativePath="SlMessage.h"
+				>
 			</File>
 			<File
-				RelativePath="SlMessageIds.h">
+				RelativePath="SlMessageIds.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Pointers"
-			Filter="">
+			>
 			<File
-				RelativePath="SlArrayPtr.h">
+				RelativePath="SlArrayPtr.h"
+				>
 			</File>
 			<File
-				RelativePath="SlAutoPtr.h">
+				RelativePath="SlAutoPtr.h"
+				>
 			</File>
 			<File
-				RelativePath="SlQueryPtr.h">
+				RelativePath="SlQueryPtr.h"
+				>
 			</File>
 			<File
-				RelativePath="SlRefPtr.h">
+				RelativePath="SlRefPtr.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="File System"
-			Filter="">
+			>
 			<File
-				RelativePath="SlFileStats.h">
+				RelativePath="SlFileStats.h"
+				>
 			</File>
 			<File
-				RelativePath="SlFileVerify.h">
+				RelativePath="SlFileVerify.h"
+				>
 			</File>
 			<File
-				RelativePath="SlPathname.h">
+				RelativePath="SlPathname.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Functors"
-			Filter="">
+			>
 			<File
-				RelativePath="SlErrorPolicy.h">
+				RelativePath="SlErrorPolicy.h"
+				>
 			</File>
 			<File
-				RelativePath="SlFindExtreme.h">
+				RelativePath="SlFindExtreme.h"
+				>
 			</File>
 			<File
-				RelativePath="SlTruncateFunctor.h">
+				RelativePath="SlTruncateFunctor.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="IO"
-			Filter="">
+			>
 			<File
-				RelativePath="SlManip.h">
+				RelativePath="SlManip.h"
+				>
 			</File>
 			<File
-				RelativePath="SlStreamSetReset.h">
+				RelativePath="SlStreamSetReset.h"
+				>
 			</File>
 		</Filter>
 	</Files>

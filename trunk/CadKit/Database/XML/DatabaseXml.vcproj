@@ -1,23 +1,49 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="9.00"
 	Name="DatabaseXml"
-	SccProjectName=""
-	SccLocalPath="">
+	ProjectGUID="{53402C89-6C12-4551-A7A0-BBCADC790EFC}"
+	TargetFrameworkVersion="131072"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/DatabaseXml.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -25,122 +51,158 @@
 				PreprocessorDefinitions="_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="2"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="DbXmlPrecompiled.h"
 				PrecompiledHeaderFile=".\Debug/DatabaseXml.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
+				WarnAsError="true"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="../../bin/CkDbXmld.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				GenerateDebugInformation="TRUE"
+				SuppressStartupBanner="true"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/CkDbXmld.pdb"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary=".\Debug/CkDbXmld.lib"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/DatabaseXml.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/DatabaseXml.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../"
 				PreprocessorDefinitions="_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="2"
+				EnableFunctionLevelLinking="true"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="DbXmlPrecompiled.h"
 				PrecompiledHeaderFile=".\Release/DatabaseXml.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				WarnAsError="true"
+				SuppressStartupBanner="true"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="../../bin/CkDbXml.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/CkDbXml.pdb"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary=".\Release/CkDbXml.lib"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/DatabaseXml.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -148,193 +210,238 @@
 	<Files>
 		<Filter
 			Name="Precompile"
-			Filter="">
+			>
 			<File
-				RelativePath="DbXmlClientHeaders.h">
+				RelativePath="DbXmlClientHeaders.h"
+				>
 			</File>
 			<File
-				RelativePath="DbXmlPrecompiled.cpp">
+				RelativePath="DbXmlPrecompiled.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="DbXmlPrecompiled.h">
+				RelativePath="DbXmlPrecompiled.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Nodes"
-			Filter="">
+			>
 			<File
-				RelativePath="DbXmlGroup.cpp">
+				RelativePath="DbXmlGroup.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="DbXmlGroup.h">
+				RelativePath="DbXmlGroup.h"
+				>
 			</File>
 			<File
-				RelativePath="DbXmlLeaf.cpp">
+				RelativePath="DbXmlLeaf.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="DbXmlLeaf.h">
+				RelativePath="DbXmlLeaf.h"
+				>
 			</File>
 			<File
-				RelativePath="DbXmlNode.cpp">
+				RelativePath="DbXmlNode.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="DbXmlNode.h">
+				RelativePath="DbXmlNode.h"
+				>
 			</File>
 			<File
-				RelativePath="DbXmlNodeMacros.h">
+				RelativePath="DbXmlNodeMacros.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Visitors"
-			Filter="">
+			>
 			<File
-				RelativePath="DbXmlVisitor.cpp">
+				RelativePath="DbXmlVisitor.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="DbXmlVisitor.h">
+				RelativePath="DbXmlVisitor.h"
+				>
 			</File>
 			<File
-				RelativePath="DbXmlVisitorMacros.h">
+				RelativePath="DbXmlVisitorMacros.h"
+				>
 			</File>
 			<File
-				RelativePath="DbXmlWrite.cpp">
+				RelativePath="DbXmlWrite.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="DbXmlWrite.h">
+				RelativePath="DbXmlWrite.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="DLL"
-			Filter="">
+			>
 			<File
-				RelativePath="DbXmlApi.h">
+				RelativePath="DbXmlApi.h"
+				>
 			</File>
 			<File
-				RelativePath="DbXmlDll.cpp">
+				RelativePath="DbXmlDll.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_USRDLL;_MBCS;_CADKIT_USE_PRECOMPILED_HEADERS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="_MBCS;_USRDLL;_CADKIT_USE_PRECOMPILED_HEADERS;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_DATABASE_XML_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="Notes"
-			Filter="">
+			>
 		</Filter>
 	</Files>
 	<Globals>

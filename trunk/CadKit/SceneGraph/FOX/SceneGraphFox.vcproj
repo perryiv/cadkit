@@ -1,23 +1,49 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="9.00"
 	Name="SceneGraphFox"
-	SccProjectName=""
-	SccLocalPath="">
+	ProjectGUID="{96AEBF52-EEA1-43FE-A23C-B7FD1776CDDF}"
+	TargetFrameworkVersion="131072"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/SceneGraphFox.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
@@ -25,68 +51,97 @@
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../,$(FOX_INCLUDE_DIR)"
 				PreprocessorDefinitions="FOXDLL;_USRDLL;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="2"
+				EnableFunctionLevelLinking="true"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="SgPrecompiled.h"
 				PrecompiledHeaderFile=".\Release/SceneGraphFox.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				WarnAsError="true"
+				SuppressStartupBanner="true"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="fox-1.1.lib odbc32.lib odbccp32.lib"
 				OutputFile="../../bin/CkSgFox.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(FOX_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/CkSgFox.pdb"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary=".\Release/CkSgFox.lib"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/SceneGraphFox.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/SceneGraphFox.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
@@ -95,58 +150,65 @@
 				PreprocessorDefinitions="FOXDLL;_USRDLL;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="2"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="SgPrecompiled.h"
 				PrecompiledHeaderFile=".\Debug/SceneGraphFox.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
+				WarnAsError="true"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="foxd-1.1.lib odbc32.lib odbccp32.lib"
 				OutputFile="../../bin/CkSgFoxd.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(FOX_LIB_DIR)"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/CkSgFoxd.pdb"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary=".\Debug/CkSgFoxd.lib"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/SceneGraphFox.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -154,147 +216,183 @@
 	<Files>
 		<Filter
 			Name="Source"
-			Filter="">
+			>
 			<File
-				RelativePath="SgFoxCanvas.cpp">
+				RelativePath="SgFoxCanvas.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="FOXDLL;_MBCS;_USRDLL;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="FOXDLL;_MBCS;_USRDLL;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="FOXDLL;_USRDLL;_MBCS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SgFoxCanvas.h">
+				RelativePath="SgFoxCanvas.h"
+				>
 			</File>
 			<File
-				RelativePath="SgFoxChildWindow.cpp">
+				RelativePath="SgFoxChildWindow.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="FOXDLL;_MBCS;_USRDLL;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="FOXDLL;_MBCS;_USRDLL;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="FOXDLL;_USRDLL;_MBCS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SgFoxChildWindow.h">
+				RelativePath="SgFoxChildWindow.h"
+				>
 			</File>
 			<File
-				RelativePath="SgFoxContext.cpp">
+				RelativePath="SgFoxContext.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="FOXDLL;_MBCS;_USRDLL;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="FOXDLL;_MBCS;_USRDLL;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="FOXDLL;_USRDLL;_MBCS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SgFoxContext.h">
+				RelativePath="SgFoxContext.h"
+				>
 			</File>
 			<File
-				RelativePath="SgFoxContextImpl.cpp">
+				RelativePath="SgFoxContextImpl.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="FOXDLL;_MBCS;_USRDLL;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="FOXDLL;_MBCS;_USRDLL;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="FOXDLL;_USRDLL;_MBCS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SgFoxContextImpl.h">
+				RelativePath="SgFoxContextImpl.h"
+				>
 			</File>
 			<File
-				RelativePath="SgFoxView.cpp">
+				RelativePath="SgFoxView.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="FOXDLL;_MBCS;_USRDLL;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="FOXDLL;_MBCS;_USRDLL;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="FOXDLL;_USRDLL;_MBCS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="SgFoxView.h">
+				RelativePath="SgFoxView.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Dll"
-			Filter="">
+			>
 			<File
-				RelativePath="SgFoxApi.h">
+				RelativePath="SgFoxApi.h"
+				>
 			</File>
 			<File
-				RelativePath="SgFoxDll.cpp">
+				RelativePath="SgFoxDll.cpp"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions="FOXDLL;_MBCS;_USRDLL;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"/>
+						PreprocessorDefinitions="FOXDLL;_MBCS;_USRDLL;NDEBUG;WIN32;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="FOXDLL;_USRDLL;_MBCS;WIN32;_DEBUG;_WINDOWS;_CADKIT_COMPILING_SCENEGRAPH_OPENGL_FOX_LIBRARY;$(NoInherit)"
-						BasicRuntimeChecks="3"/>
+						BasicRuntimeChecks="3"
+					/>
 				</FileConfiguration>
 			</File>
 		</Filter>

@@ -1053,23 +1053,37 @@ bool DbOsgDatabase::_addPrimitiveSet  ( IUnknown *caller, PrimHandle prim, osg::
     
     // 9 params define x, y, and z vectors
     tmp = set * 9;
-    float xBox = osg::Vec3f(paramSetter.getPrimParams()->at(tmp), 
-                             paramSetter.getPrimParams()->at(tmp+1), 
-                             paramSetter.getPrimParams()->at(tmp+2)).length();
-    float yBox = osg::Vec3f(paramSetter.getPrimParams()->at(tmp+3), 
-                             paramSetter.getPrimParams()->at(tmp+4), 
-                             paramSetter.getPrimParams()->at(tmp+5)).length();
-    float zBox = osg::Vec3f(paramSetter.getPrimParams()->at(tmp+6), 
-                             paramSetter.getPrimParams()->at(tmp+7), 
-                             paramSetter.getPrimParams()->at(tmp+8)).length();
+
+    osg::Vec3f xVec(paramSetter.getPrimParams()->at(tmp), 
+                    paramSetter.getPrimParams()->at(tmp+1), 
+                    paramSetter.getPrimParams()->at(tmp+2));
+
+    osg::Vec3f yVec(paramSetter.getPrimParams()->at(tmp+3), 
+                    paramSetter.getPrimParams()->at(tmp+4), 
+                    paramSetter.getPrimParams()->at(tmp+5));
+
+    osg::Vec3f zVec(paramSetter.getPrimParams()->at(tmp+6), 
+                    paramSetter.getPrimParams()->at(tmp+7), 
+                    paramSetter.getPrimParams()->at(tmp+8));
     
     // Origin is box lower-left corner, so offset to get the center for OSG
     osg::Vec3f boxCenter(originSetter.getPrimOrigins()->at(set));
-    boxCenter[0] += xBox * 0.5;
-    boxCenter[1] += yBox * 0.5;
-    boxCenter[2] += zBox * 0.5;
+    boxCenter += (xVec + yVec + zVec) * 0.5;
 
-    SlRefPtr<osg::Box> box = new osg::Box(boxCenter, xBox, yBox, zBox);
+    // Normalize vectors & create size vector
+    osg::Vec3f size(xVec.normalize(), yVec.normalize(), zVec.normalize());
+    
+    // Rotation from orthogonal vectors
+    osg::Matrix rotMat(xVec[0], xVec[1], xVec[2], 0.0,
+                       yVec[0], yVec[1], yVec[2], 0.0,
+                       zVec[0], zVec[1], zVec[2], 0.0,
+                       0.0, 0.0, 0.0, 1.0);
+    osg::Quat rotQuat;
+    rotQuat.set(rotMat);
+    
+    // Create the box
+    SlRefPtr<osg::Box> box = new osg::Box(boxCenter, size[0], size[1], size[2]);
+    box->setRotation(rotQuat);
     boxDrawable->setShape(box);
 
     // add color to the primitive

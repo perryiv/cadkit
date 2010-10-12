@@ -424,6 +424,7 @@ protected:
   bool                    _postActionTraversalNotify   ( eaiHierarchy *hierarchy, int level );
 
   bool                    _processLods  ( eaiPart *part );
+  bool                    _processLod  ( eaiPart *part,   int whichLod );
   bool                    _processShapeLod   ( eaiPart *part,   int whichLod );
   bool                    _processPrimLod   ( eaiPart *part,   int whichLod );
   bool                    _processShape ( eaiPart *part,   int whichLod, int whichShape );

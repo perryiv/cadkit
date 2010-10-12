@@ -974,7 +974,6 @@ bool DbJtDatabase::_processLods ( eaiPart *part )
   this->_resetStateIndices();
 
   // Get the number of LODs.
-  bool ( DbJtDatabase::*processLod ) ( eaiPart *, int ) = &DbJtDatabase::_processShapeLod;
   int numLods = part->numPolyLODs();
 
   // If there are no Poly LODs, then check for Primitive LODs.
@@ -986,8 +985,6 @@ bool DbJtDatabase::_processLods ( eaiPart *part )
     numLods = part->numPrimLODs();
     if ( numLods <= 0 )
       return true;
-    else
-      processLod = &DbJtDatabase::_processPrimLod;
   }
 
   // We start the loop at zero unless we only want the lowest LOD, 
@@ -1010,12 +1007,50 @@ bool DbJtDatabase::_processLods ( eaiPart *part )
     _current->setSet ( UNSET_INDEX );
 
     // Process the shapes.
-    if ( false == (*this.*processLod) ( part, i ) )
+    if ( false == (this->_processLod) ( part, i ) )
       if ( false == ERROR ( FORMAT ( "Failed to process LOD %d in part '%s'", i, part->name() ), CadKit::FAILED ) )
         return false;
   }
 
   // If we get to here then it worked.
+  return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process a single LOD's shapes & primitives.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_processLod ( eaiPart *part, int whichLod )
+{
+  SL_PRINT4 ( "In DbJtDatabase::_processLod(), this = %X, part = %X, whichLod = %d\n", this, part, whichLod );
+  SL_ASSERT ( part );
+  SL_ASSERT ( whichLod >= 0 && whichLod < part->numPolyLODs() );
+  SL_ASSERT ( whichLod == _current->getLod() );
+  SL_ASSERT ( UNSET_INDEX == _current->getShape() );
+  SL_ASSERT ( UNSET_INDEX == _current->getPrim() );
+  SL_ASSERT ( UNSET_INDEX == _current->getSet() );
+
+  // Try this interface.
+  SlQueryPtr<ILodNotify> notify ( _target );
+  if ( notify.isValid() )
+    if ( false == notify->startEntity ( CadKit::makeLodHandle ( whichLod ), THIS_UNKNOWN ) )
+      if ( false == ERROR ( FORMAT ( "Failed to start LOD %d in part '%s'", whichLod, part->name() ), CadKit::FAILED ) )
+        return false;
+  
+  if( !_processShapeLod( part, whichLod ) )
+    return false;
+
+  if( !_processPrimLod( part, whichLod ) )
+    return false;
+
+  // Try this interface.
+  if ( notify.isValid() )
+    if ( false == notify->endEntity ( CadKit::makeLodHandle ( whichLod ), THIS_UNKNOWN ) )
+      if ( false == ERROR ( FORMAT ( "Failed to end LOD %d in part '%s'", whichLod, part->name() ), CadKit::FAILED ) )
+        return false;
+
   return true;
 }
 
@@ -1029,21 +1064,9 @@ bool DbJtDatabase::_processLods ( eaiPart *part )
 bool DbJtDatabase::_processShapeLod ( eaiPart *part, int whichLod )
 {
   SL_PRINT4 ( "In DbJtDatabase::_processShapeLod(), this = %X, part = %X, whichLod = %d\n", this, part, whichLod );
-  SL_ASSERT ( part );
-  SL_ASSERT ( whichLod >= 0 && whichLod < part->numPolyLODs() );
-  SL_ASSERT ( whichLod == _current->getLod() );
-  SL_ASSERT ( UNSET_INDEX == _current->getShape() );
-  SL_ASSERT ( UNSET_INDEX == _current->getSet() );
 
   // We have to initialize the shape data each time we process a new LOD.
   _shapeData->init ( NULL );
-
-  // Try this interface.
-  SlQueryPtr<ILodNotify> notify ( _target );
-  if ( notify.isValid() )
-    if ( false == notify->startEntity ( CadKit::makeLodHandle ( whichLod ), THIS_UNKNOWN ) )
-      if ( false == ERROR ( FORMAT ( "Failed to start LOD %d in part '%s'", whichLod, part->name() ), CadKit::FAILED ) )
-        return false;
 
   // Get the number of shapes for this LOD.
   int numShapes = part->numPolyShapes ( whichLod );
@@ -1063,12 +1086,6 @@ bool DbJtDatabase::_processShapeLod ( eaiPart *part, int whichLod )
         return false;
   }
 
-  // Try this interface.
-  if ( notify.isValid() )
-    if ( false == notify->endEntity ( CadKit::makeLodHandle ( whichLod ), THIS_UNKNOWN ) )
-      if ( false == ERROR ( FORMAT ( "Failed to end LOD %d in part '%s'", whichLod, part->name() ), CadKit::FAILED ) )
-        return false;
-
   // If we get to here then it worked.
   return true;
 }
@@ -1083,21 +1100,9 @@ bool DbJtDatabase::_processShapeLod ( eaiPart *part, int whichLod )
 bool DbJtDatabase::_processPrimLod ( eaiPart *part, int whichLod )
 {
   SL_PRINT4 ( "In DbJtDatabase::_processPrimLod(), this = %X, part = %X, whichLod = %d\n", this, part, whichLod );
-  SL_ASSERT ( part );
-  SL_ASSERT ( whichLod >= 0 && whichLod < part->numPrimLODs() );
-  SL_ASSERT ( whichLod == _current->getLod() );
-  SL_ASSERT ( UNSET_INDEX == _current->getPrim() );
-  SL_ASSERT ( UNSET_INDEX == _current->getSet() );
 
   // We have to initialize the primitive data each time we process a new LOD.
   _primData->init ( NULL );
-
-  // Try this interface.
-  SlQueryPtr<ILodNotify> notify ( _target );
-  if ( notify.isValid() )
-    if ( false == notify->startEntity ( CadKit::makeLodHandle ( whichLod ), THIS_UNKNOWN ) )
-      if ( false == ERROR ( FORMAT ( "Failed to start LOD %d in part '%s'", whichLod, part->name() ), CadKit::FAILED ) )
-        return false;
 
   // Get the number of shapes for this LOD.
   int numPrims = part->numPrimShapes ( whichLod );
@@ -1116,12 +1121,6 @@ bool DbJtDatabase::_processPrimLod ( eaiPart *part, int whichLod )
       if ( false == ERROR ( FORMAT ( "Failed to process shape %d, LOD %d, part '%s'", i, whichLod, part->name() ), CadKit::FAILED ) )
         return false;
   }
-
-  // Try this interface.
-  if ( notify.isValid() )
-    if ( false == notify->endEntity ( CadKit::makeLodHandle ( whichLod ), THIS_UNKNOWN ) )
-      if ( false == ERROR ( FORMAT ( "Failed to end LOD %d in part '%s'", whichLod, part->name() ), CadKit::FAILED ) )
-        return false;
 
   // If we get to here then it worked.
   return true;

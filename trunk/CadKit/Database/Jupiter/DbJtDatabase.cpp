@@ -1026,7 +1026,7 @@ bool DbJtDatabase::_processLod ( eaiPart *part, int whichLod )
 {
   SL_PRINT4 ( "In DbJtDatabase::_processLod(), this = %X, part = %X, whichLod = %d\n", this, part, whichLod );
   SL_ASSERT ( part );
-  SL_ASSERT ( whichLod >= 0 && whichLod < part->numPolyLODs() );
+  SL_ASSERT ( whichLod >= 0 );
   SL_ASSERT ( whichLod == _current->getLod() );
   SL_ASSERT ( UNSET_INDEX == _current->getShape() );
   SL_ASSERT ( UNSET_INDEX == _current->getPrim() );
@@ -1039,11 +1039,13 @@ bool DbJtDatabase::_processLod ( eaiPart *part, int whichLod )
       if ( false == ERROR ( FORMAT ( "Failed to start LOD %d in part '%s'", whichLod, part->name() ), CadKit::FAILED ) )
         return false;
   
-  if( !_processShapeLod( part, whichLod ) )
-    return false;
+  if ( whichLod < part->numPolyLODs() )
+    if ( !_processShapeLod( part, whichLod ) )
+      return false;
 
-  if( !_processPrimLod( part, whichLod ) )
-    return false;
+  if ( whichLod < part->numPrimLODs() )
+    if( !_processPrimLod( part, whichLod ) )
+      return false;
 
   // Try this interface.
   if ( notify.isValid() )

@@ -1111,9 +1111,9 @@ bool DbOsgDatabase::_addPrimitiveSet  ( IUnknown *caller, PrimHandle prim, osg::
     osg::Vec3f cylCenter(originSetter.getPrimOrigins()->at(set));
     float bottomRadius = paramSetter.getPrimParams()->at(tmp+3);
     float topRadius = paramSetter.getPrimParams()->at(tmp+4);
-
+    
     if(topRadius == 0.0f) // cone
-    {      
+    {            
       cylCenter += orientationVec * 0.5f; // offset in direction of cylinder
       
       // Create a shape drawable.
@@ -1140,8 +1140,8 @@ bool DbOsgDatabase::_addPrimitiveSet  ( IUnknown *caller, PrimHandle prim, osg::
     }
     else if ( topRadius == bottomRadius ) // regular cylinder
     {
-      cylCenter += orientationVec * 0.5f;  // offset in direction of cylinder
-      
+      cylCenter += orientationVec * 0.5f; // offset in direction of cylinder
+
       // Create a shape drawable.
       SlRefPtr<osg::ShapeDrawable> cylDrawable ( new osg::ShapeDrawable );
       if ( cylDrawable.isNull() )
@@ -1172,90 +1172,94 @@ bool DbOsgDatabase::_addPrimitiveSet  ( IUnknown *caller, PrimHandle prim, osg::
       if ( truncDrawable.isNull() )
         return ERROR ( "Failed to create osg::Geometry for truncated cone.", CadKit::FAILED );
       
-      int numFacets = 40;  // TODO, make this configurable
-      int setSize = numFacets + 2;
+      unsigned int numFacets = 40;                 // TODO, make this configurable
+      unsigned int vertsPerCircle = numFacets + 2; // number of vertices for top or bottom cap: center plus edges
+      unsigned int numSideVerts = 2 * (numFacets + 1); // number of vertices for side quads
+      unsigned int numVerts = 2 * vertsPerCircle + numSideVerts; // total number of vertices
+      unsigned int sideStartIndex = 2 * vertsPerCircle;
+      
+      // Vertex ordering:
+      // bottom center
+      // bottom edge vertices
+      // top center
+      // top edge vertices
+      // side 
 
       // create vertices & indices for top & bottom circles
-      SlRefPtr<osg::Vec3Array> truncVertices = new osg::Vec3Array;
-      truncVertices->resize( 4 * setSize );
-
-      SlRefPtr<osg::UByteArray> truncIndices = new osg::UByteArray(4 * setSize, GL_INT);
-
-      SlRefPtr<osg::Vec3Array> truncNormals = new osg::Vec3Array;
-      truncNormals->resize(4 * setSize);
+      SlRefPtr<osg::Vec3Array> truncVertices = new osg::Vec3Array(numVerts);
+      SlRefPtr<osg::Vec3Array> truncNormals = new osg::Vec3Array(numVerts);
       
-      float angleDelta = 2.0f * osg::PI / (float)numFacets;
+      float angleDelta = 2.0f * osg::PI / static_cast<float>(numFacets);
       float angle = 0.0f;
-      float zNorm = (bottomRadius - topRadius) / cylLength;
 
       (*truncVertices)[0].set( 0.0f, 0.0f, 0.0f ); // bottom center
-      (*truncVertices)[setSize].set( 0.0f, 0.0f, cylLength ); // top center
-
-      (*truncIndices)[0] = 0;
-      (*truncIndices)[setSize] = setSize;
+      (*truncVertices)[vertsPerCircle].set( 0.0f, 0.0f, cylLength ); // top center
 
       (*truncNormals)[0].set(0.0, 0.0, -1.0);
-      (*truncNormals)[setSize].set(0.0, 0.0, 1.0);
-      
-      int i, j;
-      for( i = 1, j = 0; i <= numFacets; i++,j+=2,angle+=angleDelta )
+      (*truncNormals)[vertsPerCircle].set(0.0, 0.0, 1.0);
+            
+      for( unsigned int i = 1; i < vertsPerCircle - 1; i++ )
       {
-        // Create vertices, indices & normals for 2 circles
         float c = cosf(angle);
         float s = sinf(angle);
-
+        
+        // Bottom fan vertices
         (*truncVertices)[i].set(c * bottomRadius, 
                                 s * bottomRadius,
                                 0.0f);
-        (*truncIndices)[i] = i;
         (*truncNormals)[i].set(0.0, 0.0, -1.0);
+        
+        // Top fan vertices
+        (*truncVertices)[i+vertsPerCircle].set(c * topRadius, 
+                                               s * topRadius, 
+                                               cylLength);
+        (*truncNormals)[i+vertsPerCircle].set(0.0, 0.0, 1.0);
 
-        (*truncVertices)[i+setSize].set(c * topRadius, 
-                                        s * topRadius, 
-                                        cylLength);
-        (*truncIndices)[i+setSize] = i+setSize;
-        (*truncNormals)[i+setSize].set(0.0, 0.0, 1.0);
-
-        // also create indices & normals for the cylinder sides
-        (*truncIndices)[(2*setSize) + j] = (*truncIndices)[i];
-        (*truncNormals)[(2*setSize) + j].set(c, s, zNorm);
-        (*truncIndices)[(2*setSize) + j + 1] = (*truncIndices)[i+setSize];
-        (*truncNormals)[(2*setSize) + j + 1].set(c, s, zNorm);
+        angle+=angleDelta;
       }
+
+      // last piece of bottom fan
+      int end_index = vertsPerCircle-1;
+      (*truncVertices)[end_index] = (*truncVertices)[1];
+      (*truncNormals)[end_index].set(0.0, 0.0, -1.0);
+
+      // last piece of top fan
+      (*truncVertices)[end_index+vertsPerCircle] = (*truncVertices)[1+vertsPerCircle];
+      (*truncNormals)[end_index+vertsPerCircle].set(0.0, 0.0, 1.0);
       
-      // last piece of fan
-      (*truncIndices)[numFacets+1] = (*truncIndices)[1];
-      (*truncNormals)[numFacets+1].set(0.0, 0.0, -1.0);
-      (*truncIndices)[2*setSize - 1] = (*truncIndices)[setSize + 1];
-      (*truncNormals)[2*setSize - 1].set(0.0, 0.0, 1.0);
-      
-      // last part of strip
-      (*truncIndices)[4*setSize - 4] = (*truncIndices)[(2*setSize)];
-      (*truncNormals)[4*setSize - 4] = (*truncNormals)[(2*setSize)];
-      (*truncIndices)[4*setSize - 3] = (*truncIndices)[(2*setSize)+1];
-      (*truncNormals)[4*setSize - 3] = (*truncNormals)[(2*setSize)+1];
-      
-      // apply transform to vertices
-      for(i = 0; i < 2 * setSize; i++)
+      // side vertices
+      float zNorm = (bottomRadius - topRadius) / cylLength;
+      angle = 0.0f;
+      for( unsigned int i = sideStartIndex, j = 1; i < numVerts; i+=2, j++ )
+      {
+        // Quad vertices
+        (*truncVertices)[i] = (*truncVertices)[j];
+        (*truncNormals)[i].set((*truncVertices)[j][0] / bottomRadius, (*truncVertices)[j][1] / bottomRadius, zNorm);
+        (*truncNormals)[i].normalize();
+
+        unsigned int upper_vert = j+vertsPerCircle;
+        (*truncVertices)[i+1] = (*truncVertices)[upper_vert];
+        (*truncNormals)[i+1] = (*truncNormals)[i];
+
+        angle+=angleDelta;
+      }
+
+      // apply transforms
+      for( unsigned int i = 0; i < numVerts; i++ )
       {
         (*truncVertices)[i] = cylRot * (*truncVertices)[i];
         (*truncVertices)[i] += cylCenter;
-      }
-      
-      // apply transform to normals
-      for(i = 0; i < 4 * setSize; i++)
         (*truncNormals)[i] = cylRot * (*truncNormals)[i];
+      }
 
-      truncDrawable->setVertexArray(truncVertices);
-      truncDrawable->setVertexIndices (truncIndices);
+      truncDrawable->setVertexArray( truncVertices );
       truncDrawable->setNormalArray( truncNormals );
       truncDrawable->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
 
-      osg::Geometry::PrimitiveSetList primitives;
-      primitives.resize(3);
-      primitives[0] = new osg::DrawArrays(osg::PrimitiveSet::TRIANGLE_FAN, 0, setSize);
-      primitives[1] = new osg::DrawArrays(osg::PrimitiveSet::TRIANGLE_FAN, setSize, setSize);
-      primitives[2] = new osg::DrawArrays(osg::PrimitiveSet::QUAD_STRIP, 2 * setSize, 2 * setSize - 2);
+      osg::Geometry::PrimitiveSetList primitives(3);
+      primitives[0] = new osg::DrawArrays(osg::PrimitiveSet::TRIANGLE_FAN, 0, vertsPerCircle);
+      primitives[1] = new osg::DrawArrays(osg::PrimitiveSet::TRIANGLE_FAN, vertsPerCircle, vertsPerCircle);
+      primitives[2] = new osg::DrawArrays(osg::PrimitiveSet::QUAD_STRIP, sideStartIndex, numSideVerts);
       truncDrawable->setPrimitiveSetList( primitives );
 
       // assign a color
